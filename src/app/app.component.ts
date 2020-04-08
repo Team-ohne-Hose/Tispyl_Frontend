@@ -12,7 +12,7 @@ import { Player} from 'src/app/model/Player';
 export class AppComponent {
 
   activeGames: Game[] = [];
-  players: Player[] = [];
+  players: Player[] = [new Player("tizian"), new Player("liebler"), new Player("liebler")];
 
   create() {
     this.activeGames.push(new Game('Mein Game :D', 'Tizian Rettig'))
