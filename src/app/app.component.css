@@ -1,0 +1,27 @@
+
+.top-level-box {
+  padding: 16px;
+  margin: 16px;
+  border: solid 2px black;
+}
+
+.top-level-footer {
+  margin-top: 16px;
+}
+
+.top-level-splitter {
+  border: black solid 1px;
+}
+
+.headline {
+  font-size: x-large;
+  margin-left: 16px;
+  margin-top: 16px;
+}
+
+.split-box {
+  display: flex;
+  justify-content: space-around;
+}
+
+

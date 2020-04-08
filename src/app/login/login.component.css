@@ -1,0 +1,54 @@
+.login-box {
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-box .buttons {
+  width: 100%;
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+
+
+.login-box label {
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.login-box label input {
+  border: 0;
+  background-color: transparent;
+  border-bottom: solid 1px black;
+}
+
+.login-box label input::placeholder{
+  color: whitesmoke;
+}
+
+.login-box label input, select, textarea {
+  color: whitesmoke;
+}
+
+.login-box span {
+  align-self: center;
+}
+
+.spacer {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  width: 100%;
+  height: 0;
+  border: solid 1px black;
+}
+
+.register-link {
+  font-size: small;
+  color: grey;
+  cursor: pointer;
+}
+.register-link:hover {
+  color: lightgrey;
+}
