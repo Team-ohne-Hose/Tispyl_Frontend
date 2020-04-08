@@ -1,0 +1,43 @@
+{
+  "en": {
+    "id": "en",
+    "cname": "English",
+    "text": {
+      "ruleTitle": "RULES",
+      "rule0": "untitled",
+      "rule1": "Everybody positions their drink on any tile of the playing field. If somebody visits this tile, the owner of the drink drinks one ration.",
+      "rule2": "One ration equal two sips or one shot. A given drink should be empty by the 10th sip"
+    }
+  },
+  "de": {
+    "id": "de",
+    "cname": "Deutsch",
+    "text": {
+      "ruleTitle": "REGELN",
+      "rule0": "untitled",
+      "rule1": "untitled",
+      "rule2": "untitled",
+      "titleGame": "texst"
+    }
+  },
+  "he": {
+    "id": "he",
+    "cname": "Hessisch",
+    "text": {
+      "ruleTitle": "RULES",
+      "rule0": "untitled",
+      "rule1": "untitled",
+      "rule2": "untitled"
+    }
+  },
+  "pi": {
+    "id": "pi",
+    "cname": "Pirate",
+    "text": {
+      "ruleTitle": "RULES",
+      "rule0": "untitled",
+      "rule1": "untitled",
+      "rule2": "untitled"
+    }
+  }
+}

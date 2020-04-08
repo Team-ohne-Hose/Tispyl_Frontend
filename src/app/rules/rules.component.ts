@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-rules',
@@ -12,9 +12,10 @@ export class RulesComponent implements OnInit {
   ngOnInit() {
   }
 
+  @Input('testText') testText: { };
   bulletPoints = [
-    {icon:'fas fa-beer', text:'Everybody positions their drink on any tile of the playing field. If somebody visits this tile, the owner of the drink drinks one ration.'},
-    {icon:'fas fa-glass-cheers', text:'One ration equal two sips or one shot. A given drink should be empty by the 10th sip'}
+    {icon:'fas fa-beer', key:'rule1'},
+    {icon:'fas fa-glass-cheers', key:'rule2'}
   ]
 
 

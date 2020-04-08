@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {activateRoutes} from '@angular/router/src/operators/activate_routes';
 import { Game} from 'src/app/model/Game';
 import { Player} from 'src/app/model/Player';
+import { TranslationService } from 'src/app/translation.service';
 
 
 @Component({
@@ -9,10 +10,16 @@ import { Player} from 'src/app/model/Player';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 
   activeGames: Game[] = [];
   players: Player[] = [];
+  translation: { };
+
+  ngOnInit() {
+    this.translation = TranslationService.getTranslations('en');
+    console.log("textingTranslation:", this.translation.testText);
+  }
 
   create() {
     this.activeGames.push(new Game('Mein Game :D', 'Tizian Rettig'))
@@ -23,5 +30,9 @@ export class AppComponent {
     if (index > -1) {
       this.activeGames.splice(index, 1);
     }
+  }
+
+  changeLanguage(lang: String) {
+    this.translation = TranslationService.getTranslations(lang);
   }
 }

@@ -2,7 +2,7 @@
   <h1 data-heading="Rules" contenteditable>Rules</h1>
   <div class="grid">
     <div class="bullet-point" *ngFor="let bullet of bulletPoints" >
-      <i [ngClass]="bullet.icon"></i><span>{{bullet.text}}</span>
+      <i [ngClass]="bullet.icon"></i><span>{{testText[bullet.key]}}</span>
     </div>
   </div>
 </div>
