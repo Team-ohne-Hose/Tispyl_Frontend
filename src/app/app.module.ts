@@ -4,21 +4,21 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { GameDisplayComponent } from './game-display/game-display.component';
 import { LoginComponent } from './login/login.component';
-import { PlayerListComponent } from './player-list/player-list.component';
 import { RegisterComponent } from './register/register.component';
 import { RulesComponent } from './rules/rules.component';
+import { GifViewerComponent } from './gif-viewer/gif-viewer.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     GameDisplayComponent,
     LoginComponent,
-    PlayerListComponent,
     RegisterComponent,
-    RulesComponent
+    RulesComponent,
+    GifViewerComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

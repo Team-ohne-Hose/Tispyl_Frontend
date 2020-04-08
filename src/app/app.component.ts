@@ -13,7 +13,7 @@ import { TranslationService } from 'src/app/translation.service';
 export class AppComponent implements OnInit {
 
   activeGames: Game[] = [];
-  players: Player[] = [];
+  players: Player[] = [new Player("tizian"), new Player("liebler"), new Player("liebler")];
   translation: { };
 
   ngOnInit() {

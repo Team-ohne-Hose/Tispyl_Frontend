@@ -27,10 +27,14 @@ h1:after {
 
 .bullet-point{
   display: flex;
+  justify-items: center;
   align-items: center;
-  justify-items: start;
   margin-top: 8px;
   color: lightgrey;
+}
+
+.flex {
+  display: flex;
 }
 
 span {
