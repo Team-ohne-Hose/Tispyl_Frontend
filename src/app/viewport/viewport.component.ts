@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import * as THREE from 'three';
-import {AudioLoader, Camera, Renderer, Scene} from 'three';
+import {AudioLoader, Camera, Renderer, Scene, TextureLoader} from 'three';
 
 @Component({
   selector: 'app-viewport',
@@ -14,9 +14,9 @@ export class ViewportComponent implements OnInit {
   camera: Camera;
   renderer: Renderer;
 
-
-  geometry = new THREE.BoxGeometry(10, 40, 40);
-  material = new THREE.MeshPhysicalMaterial( {color: 0xff00ff});
+  loader = new TextureLoader();
+  geometry = new THREE.BoxGeometry(40, .2, 40);
+  material = new THREE.MeshPhysicalMaterial( {color: 0xffffff});
   cube = new THREE.Mesh(this.geometry, this.material);
   listener = new THREE.AudioListener();
   sound = new THREE.Audio(this.listener);
@@ -27,7 +27,7 @@ export class ViewportComponent implements OnInit {
   dirLightHeper = new THREE.DirectionalLightHelper( this.dirLight, 10 );
 
   groundGeo = new THREE.PlaneBufferGeometry( 10000, 10000 );
-  groundMat = new THREE.MeshLambertMaterial( { color: 0xffffff } );
+  groundMat = new THREE.MeshLambertMaterial( { color: 0xffffff} );
   ground = new THREE.Mesh( this.groundGeo, this.groundMat );
 
   vertexShader = `varying vec3 vWorldPosition;
@@ -64,37 +64,46 @@ export class ViewportComponent implements OnInit {
   animate() {
     requestAnimationFrame(this.animate.bind(this));
     this.renderer.render(this.scene, this.camera);
-    this.cube.rotation.x += 0.01;
-    this.cube.rotation.y += 0.01;
+    this.cube.rotation.y += 0.002;
   }
 
   ngOnInit(): void {
     this.initScene();
-    this.initAudio();
+    this.loadTexture();
     this.initLighting();
-    this.cube.position.y = 15;
+    this.cube.position.y = 0;
     this.cube.castShadow = true;
     this.cube.receiveShadow = true;
     this.scene.add(this.cube);
 
+    this.camera.position.set( 0, 15, 20 );
+    this.camera.lookAt(0,1,0);
+
 
     this.renderer.shadowMap.enabled = true;
 
-    //this.camera.position.z = 5;
+    this.initAudio();
     this.animate();
   }
 
   initScene(): void {
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 5000);
-    this.camera.position.set( 0, 0, 250 );
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
-    //this.renderer.outputEncoding = THREE.sRGBEncoding;
     document.getElementById('viewport-container').appendChild( this.renderer.domElement );
 
     this.scene.background = new THREE.Color().setHSL( 0.6, 0, 1 );
     this.scene.fog = new THREE.Fog( this.scene.background, 0.1, 5000 );
+  }
+  loadTexture(): void {
+    this.loader.load('/assets/tischspiel.png', (texture) => {
+      //texture.encoding = THREE.sRGBEncoding;
+      this.material.map = texture;
+      this.material.needsUpdate = true;
+    }, undefined, (error) => {
+      console.error(error);
+    });
   }
   initLighting(): void {
     this.hemiLight.color.setHSL( 0.6, 1, 0.6 );
