@@ -3,6 +3,9 @@ import { Game} from 'src/app/model/Game';
 import { Player} from 'src/app/model/Player';
 import { TranslationService } from 'src/app/translation.service';
 import {Translation} from './model/Translation';
+import {User} from './model/User';
+import * as hash from 'object-hash'
+import {Login} from './model/Login';
 
 
 @Component({
@@ -12,9 +15,11 @@ import {Translation} from './model/Translation';
 })
 export class AppComponent implements OnInit {
 
+  currentUser: User;
   activeGames: Game[] = [];
-  players: Player[] = [new Player("tizian"), new Player("liebler"), new Player("liebler")];
   translation: Translation;
+
+  dummyDatasource: User[] = [new User("tizian", "DERGOTT", "handball")];
 
   ngOnInit() {
     this.translation = TranslationService.getTranslations('en');
@@ -33,5 +38,27 @@ export class AppComponent implements OnInit {
 
   changeLanguage(lang: String) {
     this.translation = TranslationService.getTranslations(lang);
+  }
+
+  saveNewUser(r: User) {
+    console.log("Called registration stub with: ", r)
+  }
+
+  login(l) {
+    let found = this.dummyDatasource
+      .find( e => e.login === l.name)
+
+    if (found != undefined && found.password === hash.MD5(l.password)) {
+      this.loginAs(l)
+    } else {
+      console.log("Failed to log in:", l)
+    }
+  }
+
+  private loginAs(l: Login) {
+    let usr = this.dummyDatasource.find( e => e.login === l.name)
+    usr.password = null
+    this.currentUser = usr
+    console.log("Logged in as:", this.currentUser)
   }
 }

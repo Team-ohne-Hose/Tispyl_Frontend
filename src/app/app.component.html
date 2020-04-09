@@ -5,20 +5,27 @@
     <div class="headline">{{translation.text.gamesListTitle}}</div>
     <app-language-selector class="languageContainer top-level-box" (changeLang)="changeLanguage($event)"></app-language-selector>
   </div>
-  <div class="top-level-box">
+
+  <div class="top-level-box split-box">
+    <div *ngIf="currentUser === undefined">
+      <app-login [languageObjects]="translation.text" (registrationEvent)="saveNewUser($event)" (loginEvent)="login($event)"></app-login>
+    </div>
+    <div *ngIf="currentUser !== undefined">
+      <span>PULLER!</span>
+    </div>
+    <div class="top-level-splitter"></div>
+    <app-gif-viewer [languageObjects]="translation.text"></app-gif-viewer>
+  </div>
+
+  <div class="top-level-box"  *ngIf="currentUser !== undefined">
+    <div class="top-level-head">
+      <button (click)="create()">{{translation.text.gamesListCreate}}</button>
+    </div>
     <app-game-display *ngIf="activeGames.length <= 0" [languageObjects]="translation.text" [dummy]="true"></app-game-display>
     <div *ngIf="activeGames.length > 0">
       <app-game-display *ngFor="let game of activeGames" [languageObjects]="translation.text" [game]="game" (delete)="onDelete($event)" ></app-game-display>
     </div>
-    <div class="top-level-footer">
-      <button (click)="create()">{{translation.text.gamesListCreate}}</button>
-    </div>
-  </div>
 
-  <div class="top-level-box split-box">
-    <app-login [languageObjects]="translation.text"></app-login>
-    <div class="top-level-splitter"></div>
-    <app-gif-viewer [languageObjects]="translation.text"></app-gif-viewer>
   </div>
 
   <div class="top-level-box">

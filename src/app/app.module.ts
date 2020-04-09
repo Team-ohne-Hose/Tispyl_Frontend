@@ -5,11 +5,11 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { GameDisplayComponent } from './game-display/game-display.component';
 import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
 import { RulesComponent } from './rules/rules.component';
 import { GifViewerComponent } from './gif-viewer/gif-viewer.component';
 import { LanguageSelectorComponent } from './language-selector/language-selector.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule } from '@angular/forms';
 
 import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
@@ -24,7 +24,6 @@ import {MatSelectModule} from '@angular/material/select';
     AppComponent,
     GameDisplayComponent,
     LoginComponent,
-    RegisterComponent,
     RulesComponent,
     GifViewerComponent,
     LanguageSelectorComponent,
@@ -39,7 +38,8 @@ import {MatSelectModule} from '@angular/material/select';
     MatButtonModule,
     MatCardModule,
     MatSelectModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -4,17 +4,17 @@
   <div>
     <label>
       {{languageObjects.logInUser}}
-      <input placeholder="{{languageObjects.logInUser}}">
+      <input placeholder="{{languageObjects.logInUser}}" [(ngModel)]="loginName">
     </label>
   </div>
   <div>
     <label>
       {{languageObjects.logInPass}}
-      <input type="password" placeholder="{{languageObjects.logInPass}}">
+      <input type="password" placeholder="{{languageObjects.logInPass}}" [(ngModel)]="password">
     </label>
   </div>
   <div class="buttons">
-    <button>{{languageObjects.logInSubmit}}</button>
+    <button (click)="onlogin()">{{languageObjects.logInSubmit}}</button>
     <span (click)="openRegisterDialog()" class="register-link">{{languageObjects.logInRegister}} <i class="fas fa-angle-double-right"></i></span>
   </div>
 </div>
