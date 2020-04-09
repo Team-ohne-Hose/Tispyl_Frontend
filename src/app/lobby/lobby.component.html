@@ -9,7 +9,7 @@
       <app-login [languageObjects]="translation.text" (registrationEvent)="saveNewUser($event)" (loginEvent)="login($event)"></app-login>
     </div>
     <div *ngIf="currentUser !== undefined">
-      <app-profile-display></app-profile-display>
+      <app-profile-display [user]="currentUser" (onLogout)="currentUser = undefined"></app-profile-display>
     </div>
     <div class="top-level-splitter"></div>
     <app-gif-viewer [languageObjects]="translation.text"></app-gif-viewer>

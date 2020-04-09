@@ -4,8 +4,7 @@ import {User} from '../model/User';
 import {Game} from '../model/Game';
 import {Translation} from '../model/Translation';
 import {Login} from '../model/Login';
-import * as hash from 'object-hash';
-
+import * as hash from '../../../node_modules/object-hash';
 
 @Component({
   selector: 'app-lobby',
@@ -43,20 +42,18 @@ export class LobbyComponent implements OnInit {
   }
 
   login(l) {
-    const found = this.dummyDatasource
-      .find( e => e.login === l.name);
-
+    const found = this.dummyDatasource.find( e => e.login === l.name);
     if (found !== undefined && found.password === hash.MD5(l.password)) {
       this.loginAs(l);
+      console.log('Logged in as ', l);
     } else {
       console.log('Failed to log in:', l);
     }
   }
 
   private loginAs(l: Login) {
-    const usr = this.dummyDatasource.find( e => e.login === l.name);
+    const usr = Object.assign({}, this.dummyDatasource.find( e => e.login === l.name));
     usr.password = null;
     this.currentUser = usr;
-    console.log('Logged in as:', this.currentUser);
   }
 }
