@@ -23,6 +23,7 @@ import { LobbyComponent } from './lobby/lobby.component';
 import { RouterModule, Routes } from '@angular/router';
 import { GameComponent } from './game/game.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { ViewportComponent } from './viewport/viewport.component';
 
 const appRoutes: Routes = [
   { path: 'lobby', component: LobbyComponent},
@@ -43,7 +44,8 @@ const appRoutes: Routes = [
     ProfileDisplayComponent,
     LobbyComponent,
     GameComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    ViewportComponent
   ],
   imports: [
     RouterModule.forRoot(

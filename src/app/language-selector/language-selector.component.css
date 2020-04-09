@@ -5,4 +5,8 @@
   color: #ffffff;
   margin-left: 5px;
 }
-
+.flagIcon {
+  max-width: 50px;
+  max-height: 20px;
+  height: auto;
+}
