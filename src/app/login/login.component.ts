@@ -1,4 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
+import {MessageComponent} from '../message/message.component';
 
 @Component({
   selector: 'app-login',
@@ -7,18 +10,23 @@ import {Component, Input, OnInit} from '@angular/core';
 })
 export class LoginComponent implements OnInit {
 
-  constructor() { }
+  constructor(private  dialog:  MatDialog) { }
 
   @Input() languageObjects: { };
 
   ngOnInit() {
   }
 
-  openRegisterDialog(ev) {
+  login(ev) {
     console.log('REGOSTER! UwU');
   }
 
-  login(usr: String, psw: String) {
-
+  openRegisterDialog() {
+    this.dialog.open(MessageComponent,{
+      width: '80%',
+      height: '80%',
+      data: { message:  "Error!!!"},
+      panelClass: 'register-modalbox'
+    });
   }
 }

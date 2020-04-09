@@ -1,4 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
+import {MessageComponent} from '../message/message.component';
 
 @Component({
   selector: 'app-register',
@@ -7,11 +10,25 @@ import {Component, Input, OnInit} from '@angular/core';
 })
 export class RegisterComponent implements OnInit {
 
-  constructor() { }
+  public  email:  string  =  "";
+  public  password:  string  =  "";
 
   @Input() languageObjects: { };
 
-  ngOnInit() {
+  constructor(private  dialog:  MatDialog) { }
+  login(){
+    if(this.email  ===  "email@email.com"  &&  this.password  === "p@ssw0rd")
+    {
+      console.log("NICE")
+    }
+    else
+    {
+      this.dialog.open(MessageComponent,{ data: {
+          message:  "Error!!!"
+        }});
+    }
   }
 
+  ngOnInit(): void {
+  }
 }

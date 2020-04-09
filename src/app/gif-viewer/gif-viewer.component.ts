@@ -15,8 +15,6 @@ export class GifViewerComponent implements OnInit {
 
   giphyURL = encodeURI('https://api.giphy.com/v1/gifs/random?api_key=0UTRbFtkMxAplrohufYco5IY74U8hOes&tag=rainbow'); // &rating=r');
 
-
-
   ngOnInit(): void {
     // this.getNewGif();
   }
