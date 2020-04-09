@@ -44,3 +44,14 @@ button:active {
   -moz-box-shadow: inset 0px 0px 10px 0px rgba(0,0,0,0.75);
   box-shadow: inset 0px 0px 10px 0px rgba(0,0,0,0.75);
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* modals since angular is finicky with styles for modals. TODO: Fix this.*/
+.register-modalbox .mat-dialog-container{
+  background-color: #3d3d3d;
+  border-radius: 0;
+  color: whitesmoke;
+  padding: 0;
+}
