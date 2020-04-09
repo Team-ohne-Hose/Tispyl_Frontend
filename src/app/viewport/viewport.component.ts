@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import * as THREE from 'three';
 import {AudioLoader, Camera, Renderer, Scene, TextureLoader} from 'three';
 
@@ -7,9 +7,10 @@ import {AudioLoader, Camera, Renderer, Scene, TextureLoader} from 'three';
   templateUrl: './viewport.component.html',
   styleUrls: ['./viewport.component.css']
 })
-export class ViewportComponent implements OnInit {
+export class ViewportComponent implements AfterViewInit, OnInit {
 
   constructor() { }
+  @ViewChild('view') view: HTMLDivElement;
 
   vertexShader = `varying vec3 vWorldPosition;
     void main() {
@@ -28,7 +29,7 @@ export class ViewportComponent implements OnInit {
       gl_FragColor = vec4( mix( bottomColor, topColor, max( pow( max( h , 0.0), exponent ), 0.0 ) ), 1.0 );
     }`;
 
-  gameBoardTextureURL: String = '/assets/tischspiel.png';
+  gameBoardTextureURL = '/assets/tischspiel.png';
 
   // Utilities
   scene: Scene;
@@ -78,8 +79,13 @@ export class ViewportComponent implements OnInit {
     this.gameBoard.rotation.y += 0.002;
   }
 
-  ngOnInit(): void {
-    this.initScene(window.innerWidth / window.innerHeight);
+  ngOnInit() {
+  }
+
+  ngAfterViewInit() {
+    document.getElementById('navBar_Test').setAttribute('style', 'display: none');
+    console.log('viewSizing: ', this.view['nativeElement'].offsetWidth, this.view['nativeElement'].offsetHeight, this.view);
+    this.initScene(this.view['nativeElement'].offsetWidth, this.view['nativeElement'].offsetHeight);
     this.loadTexture();
     this.initLighting();
 
@@ -89,28 +95,35 @@ export class ViewportComponent implements OnInit {
     this.scene.add(this.gameBoard);
 
     this.camera.position.set( 0, 10, 20 );
-    this.camera.lookAt(0,0,10);
+    this.camera.lookAt(0, 0, 10);
 
-
-    this.renderer.shadowMap.enabled = true;
+    // this.renderer.shadowMap.enabled = true;
 
     this.initAudio();
     this.animate();
   }
 
-  initScene(aspectRatio: number): void {
+  onWindowResize(event) {
+    console.log('viewResizing: ', window.innerWidth, this.view['nativeElement'].clientWidth, this.view['nativeElement'].scrollWidth, this.view['nativeElement'].offsetWidth, this.view['nativeElement'].offsetHeight, this.view);
+    this.renderer.setSize(this.view['nativeElement'].offsetWidth, this.view['nativeElement'].offsetHeight);
+    this.renderer.setSize(this.view['nativeElement'].offsetWidth, this.view['nativeElement'].offsetHeight);
+  }
+
+  initScene(width: number, height: number): void {
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(60, aspectRatio, 0.1, 5000);
+    this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 5000);
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-    document.getElementById('viewport-container').appendChild( this.renderer.domElement );
+    this.renderer.setSize(width, height);
+    const viewPortRenderer: HTMLCanvasElement = this.renderer.domElement;
+    viewPortRenderer.setAttribute('style', viewPortRenderer.getAttribute('style') + 'display: block;');
+    document.getElementById('viewport-container').appendChild( viewPortRenderer );
 
     this.scene.background = new THREE.Color().setHSL( 0.6, 0, 1 );
     this.scene.fog = new THREE.Fog( this.scene.background, 0.1, 5000 );
   }
   loadTexture(): void {
     this.tLoader.load(this.gameBoardTextureURL, (texture) => {
-      // texture.encoding = THREE.sRGBEncoding;
+      texture.encoding = THREE.sRGBEncoding;
       this.gameBoardMat.map = texture;
       this.gameBoardMat.needsUpdate = true;
     }, undefined, (error) => {
