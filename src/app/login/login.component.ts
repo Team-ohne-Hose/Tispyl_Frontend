@@ -26,8 +26,7 @@ export class LoginComponent implements OnInit {
   }
 
   onlogin() {
-    let l: Login = {name: this.loginName, password: this.password}
-    console.log("Emmitting:", l)
+    let l: Login = {name: 'tizian', password: 'handball'}
     this.loginEvent.emit(l)
   }
 

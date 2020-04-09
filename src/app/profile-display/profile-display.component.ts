@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {User} from '../model/User';
 
 @Component({
   selector: 'app-profile-display',
@@ -7,9 +8,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ProfileDisplayComponent implements OnInit {
 
+  @Input() user: User;
+  @Output() onLogout = new EventEmitter();
+
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  logout() {
+    this.onLogout.emit({})
+  }
+
+  onFileChanged(event) {
+    const file = event.target.files[0]
+    console.log(file)
   }
 
 }

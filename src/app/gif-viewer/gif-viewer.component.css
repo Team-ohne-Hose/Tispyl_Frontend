@@ -10,8 +10,12 @@ img.animated-gif{
   height: 300px;
 }
 img.animated-gif:hover{
-  filter: drop-shadow(16px 16px 20px black)
+  transition: all 0.2s ease-out;
+  filter: drop-shadow(5px 5px 5px black);
+  transform: scale(1.02);
 }
 img.animated-gif:active{
-  transform: scale(1.04);
+  transition: all 0.2s ease-out;
+  filter: drop-shadow(0px 0px 0px black);
+  transform: scale(1.0);
 }
