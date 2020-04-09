@@ -18,6 +18,18 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MessageComponent } from './message/message.component';
 import {MatSelectModule} from '@angular/material/select';
+import { ProfileDisplayComponent } from './profile-display/profile-display.component';
+import { LobbyComponent } from './lobby/lobby.component';
+import { RouterModule, Routes } from '@angular/router';
+import { GameComponent } from './game/game.component';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+
+const appRoutes: Routes = [
+  { path: 'lobby', component: LobbyComponent},
+  { path: 'game', component: GameComponent},
+  { path: '', redirectTo: '/lobby', pathMatch: 'full'},
+  { path: '**', component: PageNotFoundComponent }
+  ];
 
 @NgModule({
   declarations: [
@@ -27,9 +39,17 @@ import {MatSelectModule} from '@angular/material/select';
     RulesComponent,
     GifViewerComponent,
     LanguageSelectorComponent,
-    MessageComponent
+    MessageComponent,
+    ProfileDisplayComponent,
+    LobbyComponent,
+    GameComponent,
+    PageNotFoundComponent
   ],
   imports: [
+    RouterModule.forRoot(
+      appRoutes,
+      { enableTracing: true } // <-- debugging purposes only
+    ),
     BrowserModule,
     HttpClientModule,
     BrowserAnimationsModule,

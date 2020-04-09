@@ -1,35 +1,18 @@
 <!--The content below is only a placeholder and can be replaced.-->
+<router-outlet></router-outlet>
 
-<div>
-  <div class="headlineContainer">
-    <div class="headline">{{translation.text.gamesListTitle}}</div>
-    <app-language-selector class="languageContainer top-level-box" (changeLang)="changeLanguage($event)"></app-language-selector>
+<nav>
+  <div>
+    <a routerLink="/404" routerLinkActive="active">404</a>
   </div>
-
-  <div class="top-level-box split-box">
-    <div *ngIf="currentUser === undefined">
-      <app-login [languageObjects]="translation.text" (registrationEvent)="saveNewUser($event)" (loginEvent)="login($event)"></app-login>
-    </div>
-    <div *ngIf="currentUser !== undefined">
-      <span>PULLER!</span>
-    </div>
-    <div class="top-level-splitter"></div>
-    <app-gif-viewer [languageObjects]="translation.text"></app-gif-viewer>
+  <div>
+    <a routerLink="/game" routerLinkActive="active">Game</a>
   </div>
-
-  <div class="top-level-box"  *ngIf="currentUser !== undefined">
-    <div class="top-level-head">
-      <button (click)="create()">{{translation.text.gamesListCreate}}</button>
-    </div>
-    <app-game-display *ngIf="activeGames.length <= 0" [languageObjects]="translation.text" [dummy]="true"></app-game-display>
-    <div *ngIf="activeGames.length > 0">
-      <app-game-display *ngFor="let game of activeGames" [languageObjects]="translation.text" [game]="game" (delete)="onDelete($event)" ></app-game-display>
-    </div>
-
+  <div>
+    <a routerLink="/lobby" routerLinkActive="active">Lobby</a>
   </div>
-
-  <div class="top-level-box">
-    <app-rules [languageObjects]="translation.text"></app-rules>
+  <div>
+    <a routerLink="/" routerLinkActive="active">Root</a>
   </div>
-</div>
+</nav>
 
