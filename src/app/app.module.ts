@@ -17,6 +17,7 @@ import {MatCardModule} from '@angular/material/card';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MessageComponent } from './message/message.component';
+import {MatSelectModule} from '@angular/material/select';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { MessageComponent } from './message/message.component';
     MatInputModule,
     MatButtonModule,
     MatCardModule,
+    MatSelectModule,
     MatFormFieldModule
   ],
   providers: [],
