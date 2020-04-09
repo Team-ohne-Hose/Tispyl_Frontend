@@ -9,3 +9,9 @@ img.animated-gif{
   width: auto;
   height: 300px;
 }
+img.animated-gif:hover{
+  filter: drop-shadow(16px 16px 20px black)
+}
+img.animated-gif:active{
+  transform: scale(1.04);
+}
