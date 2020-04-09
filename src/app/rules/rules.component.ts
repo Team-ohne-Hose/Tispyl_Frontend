@@ -1,4 +1,5 @@
 import {Component, Input, OnInit } from '@angular/core';
+import {TextContainer} from '../model/TextContainer';
 
 @Component({
   selector: 'app-rules',
@@ -12,7 +13,7 @@ export class RulesComponent implements OnInit {
   ngOnInit() {
   }
 
-  @Input() languageObjects: { };
+  @Input() languageObjects: TextContainer;
   bulletPoints = [
     {icon:'fas fa-beer', key:'rule1'},
     {icon:'fas fa-ruler-combined', key:'rule2'},

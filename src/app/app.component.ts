@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {activateRoutes} from '@angular/router/src/operators/activate_routes';
-import { Component } from '@angular/core';
 import { Game} from 'src/app/model/Game';
 import { Player} from 'src/app/model/Player';
 import { TranslationService } from 'src/app/translation.service';
+import {Translation} from './model/Translation';
 
 
 @Component({
@@ -15,7 +14,7 @@ export class AppComponent implements OnInit {
 
   activeGames: Game[] = [];
   players: Player[] = [new Player("tizian"), new Player("liebler"), new Player("liebler")];
-  translation: { };
+  translation: Translation;
 
   ngOnInit() {
     this.translation = TranslationService.getTranslations('en');

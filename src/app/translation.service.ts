@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 // @ts-ignore
 import translationData from './translations.json';
+import {Translation} from './model/Translation';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ export class TranslationService {
 
   constructor() { }
 
-  static getTranslations(lang: String): {} {
+  static getTranslations(lang: String): Translation {
     return translationData[lang] || translationData['en'];
   }
   static getTranslationNames() {
