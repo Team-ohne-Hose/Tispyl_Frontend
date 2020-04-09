@@ -1,5 +1,5 @@
 import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
-import { Game } from 'src/app/model/Game'
+import { Game } from 'src/app/model/Game';
 
 @Component({
   selector: 'app-game-display',

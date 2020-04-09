@@ -8,7 +8,7 @@
       "rule1": "Everybody positions their drink on any tile of the playing field. If somebody visits this tile, the owner of the drink drinks one ration!",
       "rule2": "One ration equals two sips or one shot. A drink(0.5L/0.004 Bathtubs) should be empty by the 10th sip!",
       "rule3": "Criticism will be punished with 2 rations!",
-      "rule4": "All Tasks have to be tried. Drink 2 rations if fail!",
+      "rule4": "All Tasks have to be tried. Drink 2 rations if you fail!",
       "rule5": "Tasks and rules are effective till the end of the game unless explicitly revoked!",
       "rule6": "Everyone except the active player has to participate in a vote. In case of a tie, the active player decides!",
       "rule7": "By playing along you accept ALL rules!",
@@ -19,7 +19,9 @@
       "logInRegister": "Register here",
       "gamesListTitle": "Current Games:",
       "gamesListCreate": "Create",
-      "gamesListNoGame": "No Game"
+      "gamesListNoGame": "No Game",
+      "gamesListCreateAt": "Created at:",
+      "gamesListBy": "by:"
     }
   },
   "de": {
@@ -42,7 +44,9 @@
       "logInRegister": "Hier Registrieren",
       "gamesListTitle": "Aktuelle Spiele:",
       "gamesListCreate": "Erstellen",
-      "gamesListNoGame": "Kein Spiel"
+      "gamesListNoGame": "Kein Spiel",
+      "gamesListCreateAt": "Erstellt:",
+      "gamesListBy": "von:"
     }
   },
   "he": {
@@ -65,7 +69,9 @@
       "logInRegister": "Hier Registrieren",
       "gamesListTitle": "Aktuelle Spiele:",
       "gamesListCreate": "Erstellen",
-      "gamesListNoGame": "Kein Spiel"
+      "gamesListNoGame": "Kein Spiel",
+      "gamesListCreateAt": "Erstellt:",
+      "gamesListBy": "von:"
     }
   },
   "pi": {
@@ -77,7 +83,7 @@
       "rule1": "Everybody positions their drink on any tile of the playing field. If somebody visits this tile, the owner of the drink drinks one ration!",
       "rule2": "One ration equals two sips or one shot. A drink(0.5L/0.004 Bathtubs) should be empty by the 10th sip!",
       "rule3": "Criticism will be punished with 2 rations!",
-      "rule4": "All Tasks have to be tried. Drink 2 rations if fail!",
+      "rule4": "All Tasks have to be tried. Drink 2 rations if you fail!",
       "rule5": "Tasks and rules are effective till the end of the game unless explicitly revoked!",
       "rule6": "Everyone except the active player has to participate in a vote. In case of a tie, the active player decides!",
       "rule7": "By playing along you accept ALL rules!",
@@ -88,7 +94,9 @@
       "logInRegister": "Register here",
       "gamesListTitle": "Current Games:",
       "gamesListCreate": "Create",
-      "gamesListNoGame": "No Game"
+      "gamesListNoGame": "No Game",
+      "gamesListCreateAt": "Created at:",
+      "gamesListBy": "by:"
     }
   }
 }

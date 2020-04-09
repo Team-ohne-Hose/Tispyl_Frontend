@@ -4,8 +4,8 @@
     <span class="ornamental-box"></span>
     <div class="bounding-box">
       <div class="naming">
-        <div><span class="heading">{{game.name || "undefined"}}</span><span class="trailing">by: {{game.author || "undefined"}}</span></div>
-        <div class="date">Created at: {{(game.creationDate | date:' h:mm a' )|| "undefined"}}</div>
+        <div><span class="heading">{{game.name || "undefined"}}</span><span class="trailing">{{languageObjects.gamesListBy || "undefined"}} {{game.author || "undefined"}}</span></div>
+        <div class="date">{{languageObjects.gamesListCreateAt || "undefined"}} {{(game.creationDate | date:' h:mm a' )|| "undefined"}}</div>
       </div>
       <div class="count">
         <i class="fas fa-users"></i>

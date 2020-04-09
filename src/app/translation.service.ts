@@ -16,9 +16,10 @@ export class TranslationService {
     const res = [];
     for (const tName in translationData) {
       if (translationData.hasOwnProperty(tName)) {
-        res.push({id: translationData.tName.id, desc: translationData.tName.cname});
+        res.push({id: translationData[tName].id, desc: translationData[tName].cname});
       }
     }
+    console.log('QueryNames:', res);
     return res;
   }
 }

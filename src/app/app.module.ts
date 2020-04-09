@@ -8,6 +8,7 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { RulesComponent } from './rules/rules.component';
 import { GifViewerComponent } from './gif-viewer/gif-viewer.component';
+import { LanguageSelectorComponent } from './language-selector/language-selector.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { GifViewerComponent } from './gif-viewer/gif-viewer.component';
     LoginComponent,
     RegisterComponent,
     RulesComponent,
-    GifViewerComponent
+    GifViewerComponent,
+    LanguageSelectorComponent
   ],
   imports: [
     BrowserModule,

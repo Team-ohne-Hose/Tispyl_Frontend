@@ -1,10 +1,13 @@
 <!--The content below is only a placeholder and can be replaced.-->
 
 <div>
-  <div class="headline">{{translation.text.gamesListTitle}}</div>
+  <div class="headlineContainer">
+    <div class="headline">{{translation.text.gamesListTitle}}</div>
+    <app-language-selector class="languageContainer"></app-language-selector>
+  </div>
   <div class="top-level-box">
     <app-game-display *ngIf="activeGames.length <= 0" [languageObjects]="translation.text" [dummy]="true"></app-game-display>
-    <div *ngIf="activeGames.length > 0"><app-game-display *ngFor="let game of activeGames" [game]="game" (delete)="onDelete($event)" ></app-game-display></div>
+    <div *ngIf="activeGames.length > 0"><app-game-display *ngFor="let game of activeGames" [languageObjects]="translation.text" [game]="game" (delete)="onDelete($event)" ></app-game-display></div>
     <div class="top-level-footer"><button (click)="create()">{{translation.text.gamesListCreate}}</button></div>
   </div>
 
