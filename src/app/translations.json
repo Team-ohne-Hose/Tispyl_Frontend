@@ -2,6 +2,7 @@
   "en": {
     "id": "en",
     "cname": "English",
+    "flag": "Wikipedia-Flags-GB-United-Kingdom-Flag.svg",
     "text": {
       "ruleTitle": "RULES",
       "rule0": "untitled",
@@ -27,6 +28,7 @@
   "de": {
     "id": "de",
     "cname": "Deutsch",
+    "flag": "Wikipedia-Flags-DE-Germany-Flag.svg",
     "text": {
       "ruleTitle": "REGELN",
       "rule0": "untitled",
@@ -52,6 +54,7 @@
   "he": {
     "id": "he",
     "cname": "Hessisch",
+    "flag": "Wikipedia-Flags-DE-Germany-Flag.svg",
     "text": {
       "ruleTitle": "Rescheln",
       "rule0": "untitled",
@@ -77,6 +80,7 @@
   "pi": {
     "id": "pi",
     "cname": "Pirate",
+    "flag": "Jolly_Roger_Flag-02.svg",
     "text": {
       "ruleTitle": "RULES",
       "rule0": "untitled",

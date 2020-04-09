@@ -13,6 +13,7 @@ export class LanguageSelectorComponent implements OnInit {
     this.languageList = TranslationService.getTranslationNames();
   }
   languageList = [];
+  //flag resources from http://www.iconarchive.com/show/flags-icons-by-wikipedia.2.html
 
   @Output() changeLang = new EventEmitter<String>();
 
