@@ -1,35 +1,5 @@
 
-.top-level-box {
-  padding: 16px;
-  margin: 16px;
-  border: solid 2px black;
+nav {
+  display: inline-block;
+  background-color: #cfc09f;
 }
-
-.top-level-head {
-  margin-bottom: 16px;
-}
-
-.top-level-splitter {
-  border: black solid 1px;
-}
-
-.headline {
-  font-size: x-large;
-  margin-left: 16px;
-  margin-top: 16px;
-}
-.headlineContainer {
-  display: flex;
-  justify-content:space-between;
-}
-.languageContainer {
-  padding-bottom: 0px;
-  padding-top: 0px;
-}
-
-.split-box {
-  display: flex;
-  justify-content: space-around;
-}
-
-
