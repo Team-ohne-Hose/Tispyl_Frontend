@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import { TranslationService } from 'src/app/translation.service';
+import {Game} from '../model/Game';
 
 @Component({
   selector: 'app-language-selector',
@@ -12,22 +13,16 @@ export class LanguageSelectorComponent implements OnInit {
     this.languageList = TranslationService.getTranslationNames();
   }
   languageList = [];
-  menuShown = '';
-  value = 'en';
+
+  @Output() changeLang = new EventEmitter<String>();
 
   ngOnInit() {
 
   }
 
-  toggleDropdown() {
-    if (this.menuShown === '') {
-      this.menuShown = 'menuItemsVisible';
-    } else {
-      this.menuShown = '';
-    }
-  }
-  selectLang() {
-    console.log('selecting Language: ', this.value);
+  selectLang(lang: String) {
+    console.log('selecting Language: ', lang);
+    this.changeLang.emit(lang);
   }
 }
 

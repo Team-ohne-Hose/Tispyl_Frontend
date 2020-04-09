@@ -22,6 +22,10 @@
   display: flex;
   justify-content:space-between;
 }
+.languageContainer {
+  padding-bottom: 0px;
+  padding-top: 0px;
+}
 
 .split-box {
   display: flex;

@@ -1,14 +1,8 @@
 <span class="languageContainer">
-  <!--
-  <button class="languageSelector" type="button" (click)="toggleDropdown()">{{languageList[0].desc}}</button>
-  <div [ngClass]="menuShown" class="languageSelectorMenu">
-    <a *ngFor="let lang of languageList" class="langMenuItem" type="button" (click)="selectLang(lang.id)" data-lang="{{lang.id}}">{{lang.desc}}</a>
-  </div>
-  -->
   <mat-form-field>
-    <mat-label>Language</mat-label>
+    <mat-label class="languageLabel">Language</mat-label>
     <mat-select>
-      <mat-option *ngFor="let lang of languageList" [value]="lang.id" (click)="selectLang()">
+      <mat-option *ngFor="let lang of languageList" (click)="selectLang(lang.id)">
         {{lang.desc}}
       </mat-option>
     </mat-select>

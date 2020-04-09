@@ -1,4 +1,8 @@
 .languageContainer {
   justify-content: right;
 }
+.languageLabel {
+  color: #ffffff;
+  margin-left: 5px;
+}
 
