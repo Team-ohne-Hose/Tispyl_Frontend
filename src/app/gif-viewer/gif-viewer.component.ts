@@ -21,7 +21,7 @@ export class GifViewerComponent implements OnInit {
 
   getNewGif(): void {
     this.http.get(this.giphyURL).subscribe((val) => {
-      console.log(val['data'].url);
+      //console.log(val.data.url);
       this.contentUrl = val['data'].image_original_url;
     });
   }
