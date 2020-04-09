@@ -5,8 +5,21 @@
     "text": {
       "ruleTitle": "RULES",
       "rule0": "untitled",
-      "rule1": "Everybody positions their drink on any tile of the playing field. If somebody visits this tile, the owner of the drink drinks one ration.",
-      "rule2": "One ration equal two sips or one shot. A given drink should be empty by the 10th sip"
+      "rule1": "Everybody positions their drink on any tile of the playing field. If somebody visits this tile, the owner of the drink drinks one ration!",
+      "rule2": "One ration equals two sips or one shot. A drink(0.5L/0.004 Bathtubs) should be empty by the 10th sip!",
+      "rule3": "Criticism will be punished with 2 rations!",
+      "rule4": "All Tasks have to be tried. Drink 2 rations if fail!",
+      "rule5": "Tasks and rules are effective till the end of the game unless explicitly revoked!",
+      "rule6": "Everyone except the active player has to participate in a vote. In case of a tie, the active player decides!",
+      "rule7": "By playing along you accept ALL rules!",
+      "logInTitle": "Login",
+      "logInUser": "User",
+      "logInPass": "Password",
+      "logInSubmit": "Go !",
+      "logInRegister": "Register here",
+      "gamesListTitle": "Current Games:",
+      "gamesListCreate": "Create",
+      "gamesListNoGame": "No Game"
     }
   },
   "de": {
@@ -15,19 +28,44 @@
     "text": {
       "ruleTitle": "REGELN",
       "rule0": "untitled",
-      "rule1": "untitled",
-      "rule2": "untitled",
-      "titleGame": "texst"
+      "rule1": "Jeder Stellt sein Getränk auf ein beliebiges Spielfeld. Kommt jemand auf dieses Feld, trinkt der Getränkebesitzer",
+      "rule2": "Es wird immer in Rationen getrunken. Eine Ration entspricht zwei Schlücken oder einem Shot. 0,5L(0,004 Badewannen) sind in maximal 10 Schlücken zu leeren!",
+      "rule3": "Negative Kritik am Spiel ist als Regelverstoß(2 Rationen) zu werten!",
+      "rule4": "Alle Aufgaben müssen versucht werden. Schaffst du es nicht, trinkst du zwei Strafrationen!",
+      "rule5": "Regeln und Aktionen gelten immer bis Ende des Spiels, falls Sie nicht explizit aufgelöst werden!",
+      "rule6": "An Abstimmungen müssen alle teilnehmen außer dem Auslöser. Bei Gleichstand darf der Auslöser entscheiden!",
+      "rule7": "Wer mitspielt akzeptiert damit alle Regeln!",
+      "logInTitle": "Login",
+      "logInUser": "Benutzer",
+      "logInPass": "Passwort",
+      "logInSubmit": "Los !",
+      "logInRegister": "Hier Registrieren",
+      "gamesListTitle": "Aktuelle Spiele:",
+      "gamesListCreate": "Erstellen",
+      "gamesListNoGame": "Kein Spiel"
     }
   },
   "he": {
     "id": "he",
     "cname": "Hessisch",
     "text": {
-      "ruleTitle": "RULES",
+      "ruleTitle": "Rescheln",
       "rule0": "untitled",
-      "rule1": "untitled",
-      "rule2": "untitled"
+      "rule1": "Jeder Stellt sein Getränk auf ein beliebiges Spielfeld. Kommt jemand auf dieses Feld, trinkt der Getränkebesitzer",
+      "rule2": "Es wird immer in Rationen getrunken. Eine Ration entspricht zwei Schlücken oder einem Shot. 0,5L(0,004 Badewannen) sind in maximal 10 Schlücken zu leeren!",
+      "rule3": "Uffgeblasene Besserwisser petze sisch oan nei.",
+      "rule4": "Alle Aufgaben müssen versucht werden. Schaffst du es nicht, trinkst du zwei Strafrationen!",
+      "rule5": "Regeln und Aktionen gelten immer bis Ende des Spiels, falls Sie nicht explizit aufgelöst werden!",
+      "rule6": "An Abstimmungen müssen alle teilnehmen außer dem Auslöser. Bei Gleichstand darf der Auslöser entscheiden!",
+      "rule7": "Wer mitspielt akzeptiert damit alle Regeln!",
+      "logInTitle": "Login",
+      "logInUser": "Benutzer",
+      "logInPass": "Passwort",
+      "logInSubmit": "Los !",
+      "logInRegister": "Hier Registrieren",
+      "gamesListTitle": "Aktuelle Spiele:",
+      "gamesListCreate": "Erstellen",
+      "gamesListNoGame": "Kein Spiel"
     }
   },
   "pi": {
@@ -36,8 +74,21 @@
     "text": {
       "ruleTitle": "RULES",
       "rule0": "untitled",
-      "rule1": "untitled",
-      "rule2": "untitled"
+      "rule1": "Everybody positions their drink on any tile of the playing field. If somebody visits this tile, the owner of the drink drinks one ration!",
+      "rule2": "One ration equals two sips or one shot. A drink(0.5L/0.004 Bathtubs) should be empty by the 10th sip!",
+      "rule3": "Criticism will be punished with 2 rations!",
+      "rule4": "All Tasks have to be tried. Drink 2 rations if fail!",
+      "rule5": "Tasks and rules are effective till the end of the game unless explicitly revoked!",
+      "rule6": "Everyone except the active player has to participate in a vote. In case of a tie, the active player decides!",
+      "rule7": "By playing along you accept ALL rules!",
+      "logInTitle": "Login",
+      "logInUser": "User",
+      "logInPass": "Password",
+      "logInSubmit": "Go !",
+      "logInRegister": "Register here",
+      "gamesListTitle": "Current Games:",
+      "gamesListCreate": "Create",
+      "gamesListNoGame": "No Game"
     }
   }
 }

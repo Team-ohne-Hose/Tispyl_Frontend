@@ -18,7 +18,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.translation = TranslationService.getTranslations('en');
-    console.log("textingTranslation:", this.translation.testText);
   }
 
   create() {

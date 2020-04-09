@@ -1,20 +1,20 @@
 <div class="login-box">
-  <span>Login</span>
+  <span>{{languageObjects.logInTitle}}</span>
   <div class="spacer" ></div>
   <div>
     <label>
-      User
-      <input placeholder="name">
+      {{languageObjects.logInUser}}
+      <input placeholder="{{languageObjects.logInUser}}">
     </label>
   </div>
   <div>
     <label>
-      Password
-      <input type="password" placeholder="password">
+      {{languageObjects.logInPass}}
+      <input type="password" placeholder="{{languageObjects.logInPass}}">
     </label>
   </div>
   <div class="buttons">
-    <button>Go !</button>
-    <span (click)="openRegisterDialog($event)" class="register-link">Register here <i class="fas fa-angle-double-right"></i></span>
+    <button>{{languageObjects.logInSubmit}}</button>
+    <span (click)="openRegisterDialog($event)" class="register-link">{{languageObjects.logInRegister}} <i class="fas fa-angle-double-right"></i></span>
   </div>
 </div>

@@ -10,6 +10,7 @@ export class GameDisplayComponent implements OnInit {
 
   @Input('game') game: Game;
   @Input('dummy') isDummy: boolean;
+  @Input() languageObjects: { };
 
   @Output('delete') deleteGame = new EventEmitter<Game>();
 
