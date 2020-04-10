@@ -1,6 +1,7 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import * as THREE from 'three';
 import {AudioLoader, Camera, Renderer, Scene, TextureLoader} from 'three';
+import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 
 @Component({
   selector: 'app-viewport',
@@ -11,6 +12,10 @@ export class ViewportComponent implements AfterViewInit, OnInit {
 
   constructor() { }
   @ViewChild('view') view: HTMLDivElement;
+  @HostListener('window:keydown', ['$event'])
+  onKeyDown(event) {
+
+  }
 
   vertexShader = `varying vec3 vWorldPosition;
     void main() {
@@ -36,6 +41,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   camera: Camera;
   renderer: Renderer;
   tLoader = new TextureLoader();
+  controls: OrbitControls;
 
   // Lighting
   hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.6 );
@@ -74,9 +80,10 @@ export class ViewportComponent implements AfterViewInit, OnInit {
 
   animate() {
     requestAnimationFrame(this.animate.bind(this));
+    //this.controls.update();
     this.renderer.render(this.scene, this.camera);
 
-    this.gameBoard.rotation.y += 0.002;
+    //this.gameBoard.rotation.y += 0.002;
   }
 
   ngOnInit() {
@@ -96,6 +103,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
 
     this.camera.position.set( 0, 10, 20 );
     this.camera.lookAt(0, 0, 10);
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
     // this.renderer.shadowMap.enabled = true;
 
@@ -104,8 +112,11 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   }
 
   onWindowResize(event) {
-    console.log('viewResizing: ', window.innerWidth, this.view['nativeElement'].clientWidth, this.view['nativeElement'].scrollWidth, this.view['nativeElement'].offsetWidth, this.view['nativeElement'].offsetHeight, this.view);
+    console.log('viewResizing: ', window.innerWidth, this.view['nativeElement'].clientWidth, this.view['nativeElement'].scrollWidth,
+      this.view['nativeElement'].offsetWidth, this.view['nativeElement'].offsetHeight, this.view);
     this.renderer.setSize(this.view['nativeElement'].offsetWidth, this.view['nativeElement'].offsetHeight);
+    this.camera.aspect = this.view['nativeElement'].offsetWidth / this.view['nativeElement'].offsetHeight;
+    this.camera.updateProjectionMatrix();
     this.renderer.setSize(this.view['nativeElement'].offsetWidth, this.view['nativeElement'].offsetHeight);
   }
 
@@ -174,7 +185,6 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.scene.fog.color.copy( this.uniforms[ 'bottomColor' ].value );
     this.scene.add( this.sky );
   }
-
   initAudio(): void {
     this.camera.add(this.listener);
     this.audioLoader.load('/assets/ourAnthem.ogg', (buffer) => {
@@ -184,6 +194,6 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     });
   }
   startAnthem() {
-    this.sound.play();
+    //this.sound.play();
   }
 }
