@@ -5,6 +5,9 @@ import {Game} from '../model/Game';
 import {Translation} from '../model/Translation';
 import {Login} from '../model/Login';
 import * as hash from '../../../node_modules/object-hash';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {RegisterPopupComponent} from '../register-popup/register-popup.component';
+import {OpenGamePopupComponent} from '../open-game-popup/open-game-popup.component';
 
 @Component({
   selector: 'app-lobby',
@@ -18,12 +21,27 @@ export class LobbyComponent implements OnInit {
 
   dummyDatasource: User[] = [new User('tizian', 'DERGOTT', 'handball')];
 
+  constructor(private dialog: MatDialog) {
+
+  }
+
   ngOnInit() {
     this.translation = TranslationService.getTranslations('en');
   }
 
   create() {
-    this.activeGames.push(new Game('Mein Game :D', 'Tizian Rettig'))
+    const dialogRef: MatDialogRef<OpenGamePopupComponent, Game> = this.dialog.open(OpenGamePopupComponent,{
+      width: '80%',
+      maxWidth: '500px',
+      height: '30%',
+      maxHeight: '250px',
+      data: { user: this.currentUser},
+      panelClass: 'modalbox-base'
+    });
+
+    dialogRef.afterClosed().subscribe(g => {
+      this.activeGames.push(g);
+    });
   }
 
   onDelete(g: Game) {
