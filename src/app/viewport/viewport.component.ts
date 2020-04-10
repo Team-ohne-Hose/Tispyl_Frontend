@@ -12,10 +12,10 @@ export class ViewportComponent implements AfterViewInit, OnInit {
 
   constructor() { }
   @ViewChild('view') view: HTMLDivElement;
-  @HostListener('window:keydown', ['$event'])
-  onKeyDown(event) {
+  //@HostListener('window:keydown', ['$event'])
+  //onKeyDown(event) {
 
-  }
+  //}
 
   vertexShader = `varying vec3 vWorldPosition;
     void main() {
