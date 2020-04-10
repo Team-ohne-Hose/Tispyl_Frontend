@@ -2,7 +2,6 @@ import {AfterViewInit, Component, EventEmitter, HostListener, OnInit, Output, Vi
 import * as THREE from 'three';
 import {AudioLoader, Camera, PerspectiveCamera, Renderer, Scene, TextureLoader, Vector2} from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
-import {Game} from '../model/Game';
 import {MouseInteraction} from './MouseInteraction';
 import {AudioInteraction} from './AudioInteraction';
 import {BoardItemManagment} from './BoardItemManagment';

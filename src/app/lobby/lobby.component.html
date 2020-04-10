@@ -18,6 +18,7 @@
   <div class="top-level-box"  *ngIf="currentUser !== undefined">
     <div class="top-level-head">
       <button (click)="create()">{{translation.text.gamesListCreate}}</button>
+      <button (click)="loadAvailableGames()">update</button>
     </div>
     <app-game-display *ngIf="activeGames.length <= 0" [languageObjects]="translation.text" [dummy]="true"></app-game-display>
     <div *ngIf="activeGames.length > 0">
