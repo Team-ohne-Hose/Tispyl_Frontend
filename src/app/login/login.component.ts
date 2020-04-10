@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {MessageComponent} from '../message/message.component';
+import {RegisterPopupComponent} from '../register-popup/register-popup.component';
 import {Translation} from '../model/Translation';
 import {TextContainer} from '../model/TextContainer';
 import {User} from '../model/User';
@@ -13,7 +13,7 @@ import {Login} from '../model/Login';
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private  dialog:  MatDialog) { }
+  constructor(private dialog: MatDialog) { }
 
   @Input() languageObjects: TextContainer;
   @Output() registrationEvent = new EventEmitter<User>();
@@ -31,12 +31,12 @@ export class LoginComponent implements OnInit {
   }
 
   openRegisterDialog() {
-    let dialogRef: MatDialogRef<MessageComponent, User> = this.dialog.open(MessageComponent,{
+    let dialogRef: MatDialogRef<RegisterPopupComponent, User> = this.dialog.open(RegisterPopupComponent,{
       width: '80%',
       maxWidth: '500px',
       height: '80%',
       data: {},
-      panelClass: 'register-modalbox'
+      panelClass: 'modalbox-base'
     })
 
     dialogRef.afterClosed().subscribe(r => {
