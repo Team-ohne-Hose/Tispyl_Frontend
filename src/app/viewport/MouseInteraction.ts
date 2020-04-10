@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import {ViewportComponent} from './viewport.component';
+import {BoardItemManagment} from './BoardItemManagment';
+import {Camera, Scene} from 'three';
 
 
 export class MouseInteraction {
@@ -9,10 +10,14 @@ export class MouseInteraction {
   raycaster = new THREE.Raycaster();
   currentSize = new THREE.Vector2();
 
-  myView: ViewportComponent;
+  boardItemManager: BoardItemManagment;
+  camera: Camera;
+  scene: Scene;
 
-  constructor( view: ViewportComponent) {
-    this.myView = view;
+  constructor(scene: Scene, camera: Camera, boardItemManager: BoardItemManagment) {
+    this.boardItemManager = boardItemManager;
+    this.camera = camera;
+    this.scene = scene;
   }
 
   updateScreenSize(width: number, height: number) {
@@ -57,13 +62,17 @@ export class MouseInteraction {
     const normX = (x / this.currentSize.width) * 2 - 1;
     const normY = - (y / this.currentSize.height) * 2 + 1;
     // console.log('clicking on: ', normX, normY);
-    this.raycaster.setFromCamera({x: normX, y: normY}, this.myView.camera);
-    const intersects = this.raycaster.intersectObjects(this.myView.scene.children);
+    this.raycaster.setFromCamera({x: normX, y: normY}, this.camera);
+    //const intersects = this.raycaster.intersectObjects(this.scene.children);
 
-    const inters = this.raycaster.intersectObject(this.myView.gameBoard);
+    const inters = this.raycaster.intersectObject(this.boardItemManager.board);
     if (inters.length > 0) {
       const point = inters[0].point;
-      this.myView.boardItemManager.addMarker(point.x, point.y, point.z, 0x0000ff);
+      this.boardItemManager.addMarker(point.x, point.y, point.z, 0x0000ff);
+
     }
+  }
+  handleBoardTileClick(intersection: THREE.Vector3) {
+    //Todo
   }
 }

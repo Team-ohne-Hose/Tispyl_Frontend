@@ -1,18 +1,14 @@
-import {ViewportComponent} from './viewport.component';
 import * as THREE from 'three';
 import {AudioLoader, Camera} from 'three';
 
-export class AudioInteraction {
-
-  myView: ViewportComponent;
+export class AudioControl {
 
   // Sound
   listener = new THREE.AudioListener();
   sound = new THREE.Audio(this.listener);
   audioLoader = new AudioLoader();
 
-  constructor( view: ViewportComponent) {
-    this.myView = view;
+  constructor() {
   }
 
   initAudio(cam: Camera) {

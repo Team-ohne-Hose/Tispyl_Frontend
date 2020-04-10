@@ -1,6 +1,9 @@
 import {Component, HostListener, OnInit} from '@angular/core';
-import {CameraService} from '../camera.service';
-import {Camera, Vector3} from 'three';
+import {Vector3} from 'three';
+import {BoardItemManagment} from '../viewport/BoardItemManagment';
+import {AudioControl} from '../viewport/AudioControl';
+import {CameraControl} from '../viewport/CameraControl';
+import {BoardCoordConversion} from '../viewport/BoardCoordConversion';
 
 @Component({
   selector: 'app-game',
@@ -11,8 +14,10 @@ export class GameComponent implements OnInit {
 
   constructor() { }
 
-  cameraControl: CameraService;
-  addMarker: (x: number, y: number, z: number, col: number) => void;
+  cameraControl: CameraControl;
+  boardItemControl: BoardItemManagment;
+  audioCtrl: AudioControl;
+
   curField = -1;
 
   ngOnInit(): void {
@@ -32,20 +37,20 @@ export class GameComponent implements OnInit {
       case '7':
       case '8':
       case '9':
-        //this.cameraControl.zoomToField(Number(event.key));
-        const center: {x: number, y: number} = this.cameraControl.getFieldCenter(Number(event.key));
-        const corners: {x1: number, y1: number, x2: number, y2: number} = this.cameraControl.getFieldCoords(Number(event.key));
-        this.addMarker(center.x, 0, center.y, 0xff0000);
-        this.addMarker(corners.x1, 0, corners.y1, 0xff4400);
-        this.addMarker(corners.x1, 0, corners.y2, 0xff4400);
-        this.addMarker(corners.x2, 0, corners.y1, 0xff4400);
-        this.addMarker(corners.x2, 0, corners.y2, 0xff4400);
+        const center: {x: number, y: number} = BoardCoordConversion.getFieldCenter(Number(event.key));
+        const corners: {x1: number, y1: number, x2: number, y2: number} = BoardCoordConversion.getFieldCoords(Number(event.key));
+        this.boardItemControl.addMarker(center.x, 0, center.y, 0xff0000);
+        this.boardItemControl.addMarker(corners.x1, 0, corners.y1, 0xff4400);
+        this.boardItemControl.addMarker(corners.x1, 0, corners.y2, 0xff4400);
+        this.boardItemControl.addMarker(corners.x2, 0, corners.y1, 0xff4400);
+        this.boardItemControl.addMarker(corners.x2, 0, corners.y2, 0xff4400);
         break;
+
       case 'ArrowLeft':
       case 'ArrowRight':
       case 'ArrowUp':
       case 'ArrowDown':
-        const p: Vector3 = this.cameraControl.getCurrentPosition();
+        const p: Vector3 = this.cameraControl.getPosition();
         console.log('Camera At: ', p.x, p.y, p.z);
         break;
       case 'm':
@@ -53,20 +58,24 @@ export class GameComponent implements OnInit {
         if (this.curField >= 64) {
           this.curField = 0;
         }
-        const center2: {x: number, y: number} = this.cameraControl.getFieldCenter(this.curField);
-        const corners2: {x1: number, y1: number, x2: number, y2: number} = this.cameraControl.getFieldCoords(this.curField);
-        this.addMarker(center2.x, 0, center2.y, 0xff0000);
-        this.addMarker(corners2.x1, 0, corners2.y1, 0x034400);
-        this.addMarker(corners2.x1, 0, corners2.y2, 0x034400);
-        this.addMarker(corners2.x2, 0, corners2.y1, 0x034400);
-        this.addMarker(corners2.x2, 0, corners2.y2, 0x034400);
+        const center2: {x: number, y: number} = BoardCoordConversion.getFieldCenter(this.curField);
+        const corners2: {x1: number, y1: number, x2: number, y2: number} = BoardCoordConversion.getFieldCoords(this.curField);
+        this.boardItemControl.addMarker(center2.x, 0, center2.y, 0xff0000);
+        this.boardItemControl.addMarker(corners2.x1, 0, corners2.y1, 0x034400);
+        this.boardItemControl.addMarker(corners2.x1, 0, corners2.y2, 0x034400);
+        this.boardItemControl.addMarker(corners2.x2, 0, corners2.y1, 0x034400);
+        this.boardItemControl.addMarker(corners2.x2, 0, corners2.y2, 0x034400);
+        break;
+      case 'o':
+        this.audioCtrl.playAudio();
         break;
     }
   }
 
-  registerViewport(tuple: [Camera, (x: number, y: number, z: number, col: number) => void]) {
-    this.cameraControl = new CameraService(tuple[0]);
-    this.addMarker = tuple[1];
+  registerViewport(tuple: [CameraControl, BoardItemManagment, AudioControl]) {
+    this.cameraControl = tuple[0];
+    this.boardItemControl = tuple[1];
+    this.audioCtrl = tuple[2];
   }
 
 }
