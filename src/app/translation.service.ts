@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 // @ts-ignore
-import translationData from './translations.json';
+import translationData from './resources/translations.json';
 import {Translation} from './model/Translation';
 
 @Injectable({

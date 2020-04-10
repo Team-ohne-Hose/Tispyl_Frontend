@@ -1,0 +1,453 @@
+{
+  "base": [
+    {
+      "id": 0,
+      "x": 7,
+      "y": 0,
+      "translationKey": "boardField_start",
+      "imageUrl": "/assets/board/start.png"
+    },
+    {
+      "id": 1,
+      "x": 6,
+      "y": 0,
+      "translationKey": "boardField_democracy",
+      "imageUrl": "/assets/board/democracy.png"
+    },
+    {
+      "id": 2,
+      "x": 5,
+      "y": 0,
+      "translationKey": "boardField_buddy",
+      "imageUrl": "/assets/board/buddy.png"
+    },
+    {
+      "id": 3,
+      "x": 4,
+      "y": 0,
+      "translationKey": "boardField_alone",
+      "imageUrl": "/assets/board/alone.png"
+    },
+    {
+      "id": 4,
+      "x": 3,
+      "y": 0,
+      "translationKey": "boardField_paperScissor",
+      "imageUrl": "/assets/board/paperScissor.png"
+    },
+    {
+      "id": 5,
+      "x": 2,
+      "y": 0,
+      "translationKey": "boardField_neverHIE",
+      "imageUrl": "/assets/board/neverHIE.png"
+    },
+    {
+      "id": 6,
+      "x": 1,
+      "y": 0,
+      "translationKey": "boardField_rule",
+      "imageUrl": "/assets/board/rule.png"
+    },
+    {
+      "id": 7,
+      "x": 0,
+      "y": 0,
+      "translationKey": "boardField_community",
+      "imageUrl": "/assets/board/community.png"
+    },
+    {
+      "id": 8,
+      "x": 0,
+      "y": 1,
+      "translationKey": "boardField_diceLuck",
+      "imageUrl": "/assets/board/diceLuck.png"
+    },
+    {
+      "id": 9,
+      "x": 0,
+      "y": 2,
+      "translationKey": "boardField_titties",
+      "imageUrl": "/assets/board/titties.png"
+    },
+    {
+      "id": 10,
+      "x": 0,
+      "y": 3,
+      "translationKey": "boardField_leftExtremism",
+      "imageUrl": "/assets/board/leftExtremism.png"
+    },
+    {
+      "id": 11,
+      "x": 0,
+      "y": 4,
+      "translationKey": "boardField_lucky",
+      "imageUrl": "/assets/board/lucky.png"
+    },
+    {
+      "id": 12,
+      "x": 0,
+      "y": 5,
+      "translationKey": "boardField_coinflip",
+      "imageUrl": "/assets/board/coinflip.png"
+    },
+    {
+      "id": 13,
+      "x": 0,
+      "y": 6,
+      "translationKey": "boardField_exHopp",
+      "imageUrl": "/assets/board/exHopp.png"
+    },
+    {
+      "id": 14,
+      "x": 0,
+      "y": 7,
+      "translationKey": "boardField_donor",
+      "imageUrl": "/assets/board/donor.png"
+    },
+    {
+      "id": 15,
+      "x": 1,
+      "y": 7,
+      "translationKey": "boardField_dicks",
+      "imageUrl": "/assets/board/dicks.png"
+    },
+    {
+      "id": 16,
+      "x": 2,
+      "y": 7,
+      "translationKey": "boardField_waterfall",
+      "imageUrl": "/assets/board/waterfall.png"
+    },
+    {
+      "id": 17,
+      "x": 3,
+      "y": 7,
+      "translationKey": "boardField_truth",
+      "imageUrl": "/assets/board/truth.png"
+    },
+    {
+      "id": 18,
+      "x": 4,
+      "y": 7,
+      "translationKey": "boardField_category",
+      "imageUrl": "/assets/board/category.png"
+    },
+    {
+      "id": 19,
+      "x": 5,
+      "y": 7,
+      "translationKey": "boardField_loneSurvivor",
+      "imageUrl": "/assets/board/loneSurvivor.png"
+    },
+    {
+      "id": 20,
+      "x": 6,
+      "y": 7,
+      "translationKey": "boardField_senior",
+      "imageUrl": "/assets/board/senior.png"
+    },
+    {
+      "id": 21,
+      "x": 7,
+      "y": 7,
+      "translationKey": "boardField_wayHome",
+      "imageUrl": "/assets/board/wayHome.png"
+    },
+    {
+      "id": 22,
+      "x": 7,
+      "y": 6,
+      "translationKey": "boardField_mountUp",
+      "imageUrl": "/assets/board/mountUp.png"
+    },
+    {
+      "id": 23,
+      "x": 7,
+      "y": 5,
+      "translationKey": "boardField_doubleWord",
+      "imageUrl": "/assets/board/doubleWord.png"
+    },
+    {
+      "id": 24,
+      "x": 7,
+      "y": 4,
+      "translationKey": "boardField_blackOut",
+      "imageUrl": "/assets/board/blackOut.png"
+    },
+    {
+      "id": 25,
+      "x": 7,
+      "y": 3,
+      "translationKey": "boardField_dictator",
+      "imageUrl": "/assets/board/dictator.png"
+    },
+    {
+      "id": 26,
+      "x": 7,
+      "y": 2,
+      "translationKey": "boardField_kisses",
+      "imageUrl": "/assets/board/kisses.png"
+    },
+    {
+      "id": 27,
+      "x": 7,
+      "y": 1,
+      "translationKey": "boardField_restart",
+      "imageUrl": "/assets/board/restart.png"
+    },
+    {
+      "id": 28,
+      "x": 6,
+      "y": 1,
+      "translationKey": "boardField_dancingQueen",
+      "imageUrl": "/assets/board/dancingQueen.png"
+    },
+    {
+      "id": 29,
+      "x": 5,
+      "y": 1,
+      "translationKey": "boardField_stepUp",
+      "imageUrl": "/assets/board/stepUp.png"
+    },
+    {
+      "id": 30,
+      "x": 4,
+      "y": 1,
+      "translationKey": "boardField_choir",
+      "imageUrl": "/assets/board/choir.png"
+    },
+    {
+      "id": 31,
+      "x": 3,
+      "y": 1,
+      "translationKey": "boardField_jail",
+      "imageUrl": "/assets/board/jail.png"
+    },
+    {
+      "id": 32,
+      "x": 2,
+      "y": 1,
+      "translationKey": "boardField_chance",
+      "imageUrl": "/assets/board/chance.png"
+    },
+    {
+      "id": 33,
+      "x": 1,
+      "y": 1,
+      "translationKey": "boardField_fistBuddy",
+      "imageUrl": "/assets/board/fistBuddy.png"
+    },
+    {
+      "id": 34,
+      "x": 1,
+      "y": 2,
+      "translationKey": "boardField_butler",
+      "imageUrl": "/assets/board/butler.png"
+    },
+    {
+      "id": 35,
+      "x": 1,
+      "y": 3,
+      "translationKey": "boardField_sixes",
+      "imageUrl": "/assets/board/sixes.png"
+    },
+    {
+      "id": 36,
+      "x": 1,
+      "y": 4,
+      "translationKey": "boardField_perspective",
+      "imageUrl": "/assets/board/perspective.png"
+    },
+    {
+      "id": 37,
+      "x": 1,
+      "y": 5,
+      "translationKey": "boardField_tailLight",
+      "imageUrl": "/assets/board/tailLight.png"
+    },
+    {
+      "id": 38,
+      "x": 1,
+      "y": 6,
+      "translationKey": "boardField_descent",
+      "imageUrl": "/assets/board/descent.png"
+    },
+    {
+      "id": 39,
+      "x": 2,
+      "y": 6,
+      "translationKey": "boardField_striptease",
+      "imageUrl": "/assets/board/striptease.png"
+    },
+    {
+      "id": 40,
+      "x": 3,
+      "y": 6,
+      "translationKey": "boardField_swapPlaces",
+      "imageUrl": "/assets/board/swapPlaces.png"
+    },
+    {
+      "id": 41,
+      "x": 4,
+      "y": 6,
+      "translationKey": "boardField_dehwurmr",
+      "imageUrl": "/assets/board/dehwurmr.png"
+    },
+    {
+      "id": 42,
+      "x": 5,
+      "y": 6,
+      "translationKey": "boardField_blackHole",
+      "imageUrl": "/assets/board/blackHole.png"
+    },
+    {
+      "id": 43,
+      "x": 6,
+      "y": 6,
+      "translationKey": "boardField_fotoshooting",
+      "imageUrl": "/assets/board/fotoshooting.png"
+    },
+    {
+      "id": 44,
+      "x": 6,
+      "y": 5,
+      "translationKey": "boardField_heaven",
+      "imageUrl": "/assets/board/heaven.png"
+    },
+    {
+      "id": 45,
+      "x": 6,
+      "y": 4,
+      "translationKey": "boardField_jeans",
+      "imageUrl": "/assets/board/jeans.png"
+    },
+    {
+      "id": 46,
+      "x": 6,
+      "y": 3,
+      "translationKey": "boardField_multiple",
+      "imageUrl": "/assets/board/multiple.png"
+    },
+    {
+      "id": 47,
+      "x": 6,
+      "y": 2,
+      "translationKey": "boardField_blgrha",
+      "imageUrl": "/assets/board/blgrha.png"
+    },
+    {
+      "id": 48,
+      "x": 5,
+      "y": 2,
+      "translationKey": "boardField_turtle",
+      "imageUrl": "/assets/board/turtle.png"
+    },
+    {
+      "id": 49,
+      "x": 4,
+      "y": 2,
+      "translationKey": "boardField_acrobatics",
+      "imageUrl": "/assets/board/acrobatics.png"
+    },
+    {
+      "id": 50,
+      "x": 3,
+      "y": 2,
+      "translationKey": "boardField_retreat",
+      "imageUrl": "/assets/board/retreat.png"
+    },
+    {
+      "id": 51,
+      "x": 2,
+      "y": 2,
+      "translationKey": "boardField_timeout",
+      "imageUrl": "/assets/board/timeout.png"
+    },
+    {
+      "id": 52,
+      "x": 2,
+      "y": 3,
+      "translationKey": "boardField_story",
+      "imageUrl": "/assets/board/story.png"
+    },
+    {
+      "id": 53,
+      "x": 2,
+      "y": 4,
+      "translationKey": "boardField_secretAgent",
+      "imageUrl": "/assets/board/secretAgent.png"
+    },
+    {
+      "id": 54,
+      "x": 2,
+      "y": 5,
+      "translationKey": "boardField_goethe",
+      "imageUrl": "/assets/board/goethe.png"
+    },
+    {
+      "id": 55,
+      "x": 3,
+      "y": 5,
+      "translationKey": "boardField_bottle",
+      "imageUrl": "/assets/board/bottle.png"
+    },
+    {
+      "id": 56,
+      "x": 4,
+      "y": 5,
+      "translationKey": "boardField_ulf",
+      "imageUrl": "/assets/board/ulf.png"
+    },
+    {
+      "id": 57,
+      "x": 5,
+      "y": 5,
+      "translationKey": "boardField_jellyfish",
+      "imageUrl": "/assets/board/jellyfish.png"
+    },
+    {
+      "id": 58,
+      "x": 5,
+      "y": 4,
+      "translationKey": "boardField_junior",
+      "imageUrl": "/assets/board/junior.png"
+    },
+    {
+      "id": 59,
+      "x": 5,
+      "y": 3,
+      "translationKey": "boardField_joker",
+      "imageUrl": "/assets/board/joker.png"
+    },
+    {
+      "id": 60,
+      "x": 4,
+      "y": 3,
+      "translationKey": "boardField_leek",
+      "imageUrl": "/assets/board/leek.png"
+    },
+    {
+      "id": 61,
+      "x": 3,
+      "y": 3,
+      "translationKey": "boardField_fakeNews",
+      "imageUrl": "/assets/board/fakeNews.png"
+    },
+    {
+      "id": 62,
+      "x": 3,
+      "y": 4,
+      "translationKey": "boardField_edward",
+      "imageUrl": "/assets/board/edward.png"
+    },
+    {
+      "id": 63,
+      "x": 4,
+      "y": 4,
+      "translationKey": "boardField_goal",
+      "imageUrl": "/assets/board/goal.png"
+    }
+  ],
+  "extensions": []
+}

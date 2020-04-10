@@ -1,7 +1,8 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, HostListener, OnInit, Output, ViewChild} from '@angular/core';
 import * as THREE from 'three';
 import {AudioLoader, Camera, PerspectiveCamera, Renderer, Scene, TextureLoader} from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
+import {Game} from '../model/Game';
 
 @Component({
   selector: 'app-viewport',
@@ -12,10 +13,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
 
   constructor() { }
   @ViewChild('view') view: HTMLDivElement;
-  //@HostListener('window:keydown', ['$event'])
-  //onKeyDown(event) {
-
-  //}
+  @Output() registerViewport = new EventEmitter<[Camera, (x: number, y: number, z: number, col: number) => void]>();
 
   vertexShader = `varying vec3 vWorldPosition;
     void main() {
@@ -74,16 +72,27 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   audioLoader = new AudioLoader();
 
   // Board
-  gameBoardGeo = new THREE.BoxGeometry(40, .2, 40);
+  gameBoardGeo = new THREE.BoxGeometry(100, 1, 100);
   gameBoardMat = new THREE.MeshPhysicalMaterial( {color: 0xffffff});
   gameBoard = new THREE.Mesh(this.gameBoardGeo, this.gameBoardMat);
+  markerGeo = new THREE.ConeGeometry(1, 10, 15, 1, false, 0, 2 * Math.PI);
+
+  lastMouseLeftDownCoords: {x: number, y: number, button: number, ts: number};
+
+  setCameraFocus(posX, posY, posZ, lookX, lookY, lookZ) {
+    console.log('setting Camera: ', posX, posY, posZ, '/', lookX, lookY, lookZ);
+    this.camera.position.x = posX;
+    this.camera.position.y = posY;
+    this.camera.position.z = posZ;
+    this.camera.lookAt(lookX, lookY, lookZ);
+  }
 
   animate() {
     requestAnimationFrame(this.animate.bind(this));
-    //this.controls.update();
+    // this.controls.update();
     this.renderer.render(this.scene, this.camera);
 
-    //this.gameBoard.rotation.y += 0.002;
+    // this.gameBoard.rotation.y += 0.002;
   }
 
   ngOnInit() {
@@ -101,13 +110,22 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.gameBoard.receiveShadow = true;
     this.scene.add(this.gameBoard);
 
-    this.camera.position.set( 0, 10, 20 );
-    this.camera.lookAt(0, 0, 10);
+    this.camera.position.set( 0, 50, 0 );
+    this.camera.lookAt(10, 10, -10);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls.enableDamping = true;
+    this.controls.enablePan = false;
+    this.controls.mouseButtons = {
+      LEFT: undefined, // THREE.MOUSE.PAN,
+      MIDDLE: THREE.MOUSE.DOLLY,
+      RIGHT: THREE.MOUSE.ROTATE
+    }
 
     // this.renderer.shadowMap.enabled = true;
 
     this.initAudio();
+
+    this.registerViewport.emit([this.camera, this.addMarker.bind(this)]);
     this.animate();
   }
 
@@ -118,6 +136,19 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.camera.aspect = this.view['nativeElement'].offsetWidth / this.view['nativeElement'].offsetHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(this.view['nativeElement'].offsetWidth, this.view['nativeElement'].offsetHeight);
+  }
+
+  addMarker(x: number, y: number, z: number, col: number): void {
+   const markerMat = new THREE.MeshPhysicalMaterial({color: col});
+    const marker = new THREE.Mesh(this.markerGeo, markerMat);
+    marker.castShadow = true;
+    marker.receiveShadow = true;
+    marker.position.x = x;
+    marker.position.y = y + this.markerGeo.parameters.height / 2;
+    marker.position.z = z;
+    console.log('pos: ', x, y, marker.position.z, this.markerGeo.parameters.height);
+    marker.rotateX(Math.PI);
+    this.scene.add(marker);
   }
 
   initScene(width: number, height: number): void {
@@ -194,6 +225,43 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     });
   }
   startAnthem() {
-    //this.sound.play();
+    console.log('mouseclick');
+    // this.sound.play();
+  }
+  mouseDown(event) {
+    if (event.button === 0) {
+      this.lastMouseLeftDownCoords = {
+        x: event.clientX,
+        y: event.clientY,
+        button: event.button,
+        ts: event.timeStamp,
+      };
+    }
+  }
+  mouseUp(event) {
+    if (event.button === 0 && this.lastMouseLeftDownCoords.ts !== 0) {
+      const travelled = {
+        x: event.clientX - this.lastMouseLeftDownCoords.x,
+        y: event.clientY - this.lastMouseLeftDownCoords.y,
+        time: event.timeStamp - this.lastMouseLeftDownCoords.ts,
+        distance: 0
+      };
+      travelled.distance = Math.sqrt((travelled.x * travelled.x) + (travelled.y * travelled.y));
+
+      if (travelled.distance < 10) {
+        console.log('mouseClickRecognised: ', travelled.x, travelled.y, travelled.distance);
+      } else {
+        console.log('dragDropRecognised: ', travelled.x, travelled.y, travelled.distance);
+      }
+
+      this.lastMouseLeftDownCoords = {
+        x: 0,
+        y: 0,
+        button: event.button,
+        ts: 0,
+      };
+
+    }
+
   }
 }
