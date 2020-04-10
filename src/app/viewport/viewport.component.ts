@@ -1,8 +1,11 @@
 import {AfterViewInit, Component, EventEmitter, HostListener, OnInit, Output, ViewChild} from '@angular/core';
 import * as THREE from 'three';
-import {AudioLoader, Camera, PerspectiveCamera, Renderer, Scene, TextureLoader} from 'three';
+import {AudioLoader, Camera, PerspectiveCamera, Renderer, Scene, TextureLoader, Vector2} from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 import {Game} from '../model/Game';
+import {MouseInteraction} from './MouseInteraction';
+import {AudioInteraction} from './AudioInteraction';
+import {BoardItemManagment} from './BoardItemManagment';
 
 @Component({
   selector: 'app-viewport',
@@ -11,7 +14,15 @@ import {Game} from '../model/Game';
 })
 export class ViewportComponent implements AfterViewInit, OnInit {
 
-  constructor() { }
+  mouseInteract: MouseInteraction;
+  audioInteract: AudioInteraction;
+  boardItemManager: BoardItemManagment;
+
+  constructor() {
+    this.mouseInteract = new MouseInteraction(this);
+    this.audioInteract = new AudioInteraction(this);
+    this.boardItemManager = new BoardItemManagment(this);
+  }
   @ViewChild('view') view: HTMLDivElement;
   @Output() registerViewport = new EventEmitter<[Camera, (x: number, y: number, z: number, col: number) => void]>();
 
@@ -66,18 +77,10 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   });
   sky = new THREE.Mesh( this.skyGeo, this.skyMat );
 
-  // Sound
-  listener = new THREE.AudioListener();
-  sound = new THREE.Audio(this.listener);
-  audioLoader = new AudioLoader();
-
   // Board
   gameBoardGeo = new THREE.BoxGeometry(100, 1, 100);
   gameBoardMat = new THREE.MeshPhysicalMaterial( {color: 0xffffff});
   gameBoard = new THREE.Mesh(this.gameBoardGeo, this.gameBoardMat);
-  markerGeo = new THREE.ConeGeometry(1, 10, 15, 1, false, 0, 2 * Math.PI);
-
-  lastMouseLeftDownCoords: {x: number, y: number, button: number, ts: number};
 
   setCameraFocus(posX, posY, posZ, lookX, lookY, lookZ) {
     console.log('setting Camera: ', posX, posY, posZ, '/', lookX, lookY, lookZ);
@@ -91,8 +94,6 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     requestAnimationFrame(this.animate.bind(this));
     // this.controls.update();
     this.renderer.render(this.scene, this.camera);
-
-    // this.gameBoard.rotation.y += 0.002;
   }
 
   ngOnInit() {
@@ -119,13 +120,11 @@ export class ViewportComponent implements AfterViewInit, OnInit {
       LEFT: undefined, // THREE.MOUSE.PAN,
       MIDDLE: THREE.MOUSE.DOLLY,
       RIGHT: THREE.MOUSE.ROTATE
-    }
+    };
 
-    // this.renderer.shadowMap.enabled = true;
+    this.audioInteract.initAudio(this.camera);
 
-    this.initAudio();
-
-    this.registerViewport.emit([this.camera, this.addMarker.bind(this)]);
+    this.registerViewport.emit([this.camera, this.boardItemManager.addMarker.bind(this.boardItemManager)]);
     this.animate();
   }
 
@@ -136,24 +135,13 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.camera.aspect = this.view['nativeElement'].offsetWidth / this.view['nativeElement'].offsetHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(this.view['nativeElement'].offsetWidth, this.view['nativeElement'].offsetHeight);
-  }
-
-  addMarker(x: number, y: number, z: number, col: number): void {
-   const markerMat = new THREE.MeshPhysicalMaterial({color: col});
-    const marker = new THREE.Mesh(this.markerGeo, markerMat);
-    marker.castShadow = true;
-    marker.receiveShadow = true;
-    marker.position.x = x;
-    marker.position.y = y + this.markerGeo.parameters.height / 2;
-    marker.position.z = z;
-    console.log('pos: ', x, y, marker.position.z, this.markerGeo.parameters.height);
-    marker.rotateX(Math.PI);
-    this.scene.add(marker);
+    this.mouseInteract.updateScreenSize(this.view['nativeElement'].offsetWidth, this.view['nativeElement'].offsetHeight);
   }
 
   initScene(width: number, height: number): void {
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 5000);
+    this.mouseInteract.updateScreenSize(width, height);
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(width, height);
     const viewPortRenderer: HTMLCanvasElement = this.renderer.domElement;
@@ -215,53 +203,5 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.uniforms[ 'topColor' ].value.copy( this.hemiLight.color );
     this.scene.fog.color.copy( this.uniforms[ 'bottomColor' ].value );
     this.scene.add( this.sky );
-  }
-  initAudio(): void {
-    this.camera.add(this.listener);
-    this.audioLoader.load('/assets/ourAnthem.ogg', (buffer) => {
-      this.sound.setBuffer(buffer);
-      this.sound.setLoop(true);
-      this.sound.setVolume(0.5);
-    });
-  }
-  startAnthem() {
-    console.log('mouseclick');
-    // this.sound.play();
-  }
-  mouseDown(event) {
-    if (event.button === 0) {
-      this.lastMouseLeftDownCoords = {
-        x: event.clientX,
-        y: event.clientY,
-        button: event.button,
-        ts: event.timeStamp,
-      };
-    }
-  }
-  mouseUp(event) {
-    if (event.button === 0 && this.lastMouseLeftDownCoords.ts !== 0) {
-      const travelled = {
-        x: event.clientX - this.lastMouseLeftDownCoords.x,
-        y: event.clientY - this.lastMouseLeftDownCoords.y,
-        time: event.timeStamp - this.lastMouseLeftDownCoords.ts,
-        distance: 0
-      };
-      travelled.distance = Math.sqrt((travelled.x * travelled.x) + (travelled.y * travelled.y));
-
-      if (travelled.distance < 10) {
-        console.log('mouseClickRecognised: ', travelled.x, travelled.y, travelled.distance);
-      } else {
-        console.log('dragDropRecognised: ', travelled.x, travelled.y, travelled.distance);
-      }
-
-      this.lastMouseLeftDownCoords = {
-        x: 0,
-        y: 0,
-        button: event.button,
-        ts: 0,
-      };
-
-    }
-
   }
 }
