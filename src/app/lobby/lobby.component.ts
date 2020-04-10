@@ -33,8 +33,8 @@ export class LobbyComponent implements OnInit {
     this.translation = TranslationService.getTranslations('en');
   }
 
-  create() {
-    const dialogRef: MatDialogRef<OpenGamePopupComponent, GameLobby> = this.dialog.open(OpenGamePopupComponent,{
+  create() { // TODO: CLEAN THIS UP !
+    const dialogRef: MatDialogRef<OpenGamePopupComponent, string> = this.dialog.open(OpenGamePopupComponent,{
       width: '80%',
       maxWidth: '500px',
       height: '30%',
@@ -43,11 +43,17 @@ export class LobbyComponent implements OnInit {
       panelClass: 'modalbox-base'
     });
 
-    dialogRef.afterClosed().subscribe(g => {
-      this.gameClient.create('game', { name: 'EinNamen', author: this.currentUser.display}).then( suc => {
-       // if successfull;
-        this.loadAvailableGames();
-      });
+    dialogRef.afterClosed().subscribe(s => {
+      if (s !== undefined) {
+        this.gameClient.create('game', { name: s, author: this.currentUser.display}).then( suc => {
+          // if successfull;
+          this.loadAvailableGames();
+        }, err => {
+            console.log('Could not retrieve info from backend. Is it running?');
+          });
+      } else {
+        console.log('Failed to create game dialog output was: ', s);
+      }
     });
   }
 
@@ -97,6 +103,8 @@ export class LobbyComponent implements OnInit {
         console.log(g);
         return g;
       });
+    }, err => {
+      console.log('Could not retrieve data from backend. Is it running?');
     });
   }
 
