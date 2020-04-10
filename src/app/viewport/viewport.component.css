@@ -1,3 +1,8 @@
 #viewport-container {
-  border: 10px red;
+  display: block;
+  height: 100%;
 }
+.viewPortRenderer {
+  display: block;
+}
+
