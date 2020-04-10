@@ -4,10 +4,10 @@ import {MatDialogRef, MAT_DIALOG_DATA, MatDialog} from  '@angular/material/dialo
 import {User} from '../model/User';
 
 @Component({
-  templateUrl:  './message.component.html',
-  styleUrls: ['./message.component.css']
+  templateUrl:  './register-popup.component.html',
+  styleUrls: ['./register-popup.component.css']
 })
-export  class  MessageComponent {
+export class RegisterPopupComponent {
 
   loginName: String;
   displayName: String;
@@ -15,7 +15,7 @@ export  class  MessageComponent {
   pass1: String;
 
 
-  constructor(private  dialogRef:  MatDialogRef<MessageComponent, User>, @Inject(MAT_DIALOG_DATA) public  data:  any) {
+  constructor(private  dialogRef:  MatDialogRef<RegisterPopupComponent, User>, @Inject(MAT_DIALOG_DATA) public  data:  any) {
   }
 
   public closeMe() {

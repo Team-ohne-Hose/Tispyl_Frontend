@@ -31,3 +31,14 @@
   display: flex;
   justify-content: space-around;
 }
+
+.column-box {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.column-box app-login {
+  padding-bottom: 20%;
+}
