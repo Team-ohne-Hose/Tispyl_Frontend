@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import * as THREE from 'three';
-import {AudioLoader, Camera, Renderer, Scene, TextureLoader} from 'three';
+import {AudioLoader, Camera, PerspectiveCamera, Renderer, Scene, TextureLoader} from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 
 @Component({
@@ -38,7 +38,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
 
   // Utilities
   scene: Scene;
-  camera: Camera;
+  camera: PerspectiveCamera;
   renderer: Renderer;
   tLoader = new TextureLoader();
   controls: OrbitControls;
@@ -130,7 +130,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     document.getElementById('viewport-container').appendChild( viewPortRenderer );
 
     this.scene.background = new THREE.Color().setHSL( 0.6, 0, 1 );
-    this.scene.fog = new THREE.Fog( this.scene.background, 0.1, 5000 );
+    this.scene.fog = new THREE.Fog( this.scene.background.getHex(), 0.1, 5000 );
   }
   loadTexture(): void {
     this.tLoader.load(this.gameBoardTextureURL, (texture) => {
