@@ -4,10 +4,16 @@
   </div>
 
   <div class="content">
-
+    <div class="element">
+      <label>
+        Lobby name:
+        <input [(ngModel)]="lobbyName">
+      </label>
+    </div>
   </div>
 
   <div class="foot">
-    <button (click)="closeMe()">Close</button>
+    <button (click)="closeMe()">Cancel</button>
+    <button (click)="createGame()">Create</button>
   </div>
 </div>

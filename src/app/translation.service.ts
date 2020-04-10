@@ -10,7 +10,7 @@ export class TranslationService {
 
   constructor() { }
 
-  static getTranslations(lang: String): Translation {
+  static getTranslations(lang: string): Translation {
     return translationData[lang] || translationData['en'];
   }
   static getTranslationNames() {
@@ -20,7 +20,6 @@ export class TranslationService {
         res.push({id: translationData[tName].id, desc: translationData[tName].cname, flag: translationData[tName].flag});
       }
     }
-    console.log('QueryNames:', res);
     return res;
   }
 }

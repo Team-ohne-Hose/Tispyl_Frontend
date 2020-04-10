@@ -27,6 +27,7 @@ export class RegisterPopupComponent {
       this.dialogRef.close(new User(this.loginName, this.displayName, this.pass0));
     } else {
       console.log("Passwörter stimmen nicht über ein.")
+      this.dialogRef.close();
     }
   }
 }

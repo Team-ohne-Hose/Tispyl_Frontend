@@ -21,13 +21,13 @@
     "@angular/platform-browser": "~9.1.1",
     "@angular/platform-browser-dynamic": "~9.1.1",
     "@angular/router": "~9.1.1",
-    "colyseus": "^0.12.6",
     "core-js": "^3.6.4",
     "object-hash": "^2.0.3",
     "rxjs": "~6.5.5",
     "three": "^0.115.0",
     "tslib": "^1.10.0",
-    "zone.js": "~0.10.2"
+    "zone.js": "~0.10.2",
+    "colyseus.js": "latest"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.901.1",

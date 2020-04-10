@@ -1,13 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {TranslationService} from '../translation.service';
 import {User} from '../model/User';
-import {Game} from '../model/Game';
+import {GameLobby} from '../model/GameLobby';
 import {Translation} from '../model/Translation';
 import {Login} from '../model/Login';
 import * as hash from '../../../node_modules/object-hash';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {RegisterPopupComponent} from '../register-popup/register-popup.component';
 import {OpenGamePopupComponent} from '../open-game-popup/open-game-popup.component';
+import {ColyseusClientService} from '../colyseus-client.service';
+import {Client} from 'colyseus.js';
 
 @Component({
   selector: 'app-lobby',
@@ -15,22 +16,25 @@ import {OpenGamePopupComponent} from '../open-game-popup/open-game-popup.compone
   styleUrls: ['./lobby.component.css']
 })
 export class LobbyComponent implements OnInit {
+
   currentUser: User;
-  activeGames: Game[] = [];
+  activeGames: GameLobby[] = [];
   translation: Translation;
+  gameClient: Client;
 
   dummyDatasource: User[] = [new User('tizian', 'DERGOTT', 'handball')];
 
-  constructor(private dialog: MatDialog) {
-
+  constructor(private dialog: MatDialog, private colyseus: ColyseusClientService) {
+    this.gameClient = colyseus.getClient();
+    console.log('Received client: ', this.gameClient);
   }
 
   ngOnInit() {
     this.translation = TranslationService.getTranslations('en');
   }
 
-  create() {
-    const dialogRef: MatDialogRef<OpenGamePopupComponent, Game> = this.dialog.open(OpenGamePopupComponent,{
+  create() { // TODO: CLEAN THIS UP !
+    const dialogRef: MatDialogRef<OpenGamePopupComponent, string> = this.dialog.open(OpenGamePopupComponent,{
       width: '80%',
       maxWidth: '500px',
       height: '30%',
@@ -39,19 +43,28 @@ export class LobbyComponent implements OnInit {
       panelClass: 'modalbox-base'
     });
 
-    dialogRef.afterClosed().subscribe(g => {
-      this.activeGames.push(g);
+    dialogRef.afterClosed().subscribe(s => {
+      if (s !== undefined) {
+        this.gameClient.create('game', { name: s, author: this.currentUser.display}).then( suc => {
+          // if successfull;
+          this.loadAvailableGames();
+        }, err => {
+            console.log('Could not retrieve info from backend. Is it running?');
+          });
+      } else {
+        console.log('Failed to create game dialog output was: ', s);
+      }
     });
   }
 
-  onDelete(g: Game) {
+  onDelete(g: GameLobby) {
     const index = this.activeGames.indexOf(g, 0);
     if (index > -1) {
       this.activeGames.splice(index, 1);
     }
   }
 
-  changeLanguage(lang: String) {
+  changeLanguage(lang: string) {
     this.translation = TranslationService.getTranslations(lang);
   }
 
@@ -63,6 +76,7 @@ export class LobbyComponent implements OnInit {
     const found = this.dummyDatasource.find( e => e.login === l.name);
     if (found !== undefined && found.password === hash.MD5(l.password)) {
       this.loginAs(l);
+      this.loadAvailableGames();
       console.log('Logged in as ', l);
     } else {
       console.log('Failed to log in:', l);
@@ -74,4 +88,24 @@ export class LobbyComponent implements OnInit {
     usr.password = null;
     this.currentUser = usr;
   }
+
+  loadAvailableGames() {
+    this.gameClient.getAvailableRooms('game').then( suc => {
+      this.activeGames = suc.map(room => {
+        // TODO: STRONGLY TYPE THIS RETURN VALUE !!
+        const g = new GameLobby(
+          room.metadata['lobbyName'],
+          room.metadata['author'],
+          new Date(room['createdAt']),
+          room.roomId,
+          room.clients
+        );
+        console.log(g);
+        return g;
+      });
+    }, err => {
+      console.log('Could not retrieve data from backend. Is it running?');
+    });
+  }
+
 }

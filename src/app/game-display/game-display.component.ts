@@ -1,28 +1,19 @@
 import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
-import { Game } from 'src/app/model/Game';
+import { GameLobby } from 'src/app/model/GameLobby';
 
 @Component({
   selector: 'app-game-display',
   templateUrl: './game-display.component.html',
   styleUrls: ['./game-display.component.css']
 })
-export class GameDisplayComponent implements OnInit {
-
-  @Input('game') game: Game;
+export class GameDisplayComponent{
+  @Input('game') game: GameLobby;
   @Input('dummy') isDummy: boolean;
   @Input() languageObjects: { };
 
-  @Output('delete') deleteGame = new EventEmitter<Game>();
-
-  constructor() {
-
-  }
-
-  ngOnInit() {
-  }
+  @Output('delete') deleteGame = new EventEmitter<GameLobby>();
 
   delete() {
     this.deleteGame.emit(this.game);
   }
-
 }
