@@ -7,6 +7,8 @@
 
 .top-level-head {
   margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .top-level-splitter {
