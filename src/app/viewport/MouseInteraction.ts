@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import {BoardItemManagment} from './BoardItemManagment';
 import {Camera, Scene} from 'three';
+import {BoardCoordConversion} from './BoardCoordConversion';
+import {Board, Tile} from '../model/Board';
 
 
 export class MouseInteraction {
@@ -69,10 +71,18 @@ export class MouseInteraction {
     if (inters.length > 0) {
       const point = inters[0].point;
       this.boardItemManager.addMarker(point.x, point.y, point.z, 0x0000ff);
+      this.handleBoardTileClick(point);
 
     }
   }
   handleBoardTileClick(intersection: THREE.Vector3) {
-    //Todo
+    const coords = BoardCoordConversion.coordsToFieldCoords(intersection);
+    if (coords.x >= 0 && coords.x < 8 && coords.y >= 0 && coords.y < 8) {
+      const tile = Board.getTile(Board.getId(coords.x, coords.y));
+      console.log('clicked on Tile: ', tile.translationKey, coords.x, coords.y);
+      // TODO
+    } else {
+      console.log('clicked outside of playing field');
+    }
   }
 }
