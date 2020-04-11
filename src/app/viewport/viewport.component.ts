@@ -1,13 +1,13 @@
-import {AfterViewInit, Component, EventEmitter, HostListener, OnInit, Output, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
 import * as THREE from 'three';
-import {AudioLoader, Camera, PerspectiveCamera, Renderer, Scene, TextureLoader, Vector2} from 'three';
-import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
+import {PerspectiveCamera, Renderer, Scene} from 'three';
 import {MouseInteraction} from './MouseInteraction';
 import {AudioControl} from './AudioControl';
 import {BoardItemManagment} from './BoardItemManagment';
 import {CameraControl} from './CameraControl';
 import {SceneBuilderService} from '../scene-builder.service';
 import {GameBoardOrbitControl} from './GameBoardOrbitControl';
+import {BoardCoordConversion} from './BoardCoordConversion';
 
 @Component({
   selector: 'app-viewport',
@@ -80,7 +80,8 @@ export class ViewportComponent implements AfterViewInit, OnInit {
 
     this.controls = this.sceneBuilder.generateGameBoardOrbitControls(this.camera, this.renderer.domElement);
 
-    this.controls.target = new THREE.Vector3(0, 0, -10);
+
+    this.controls.target = new THREE.Vector3(BoardCoordConversion.borderCoords.x[4], 5, BoardCoordConversion.borderCoords.y[4]);
     this.camera.position.set( 0, 70, -30 );
     this.controls.update();
 
@@ -91,7 +92,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.mouseInteract = new MouseInteraction(this.scene, this.camera, this.boardItemManager);
     this.mouseInteract.updateScreenSize(width, height);
 
-    this.boardItemManager.addMarker(0, 0, -10, 0x5d00ff);
+    this.boardItemManager.addMarker(BoardCoordConversion.borderCoords.x[4], 0, BoardCoordConversion.borderCoords.y[4], 0x5d00ff);
 
     this.audioControl.initAudio(this.camera);
     this.registerViewport.emit([this.cameraControl, this.boardItemManager, this.audioControl]);

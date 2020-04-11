@@ -1,4 +1,6 @@
 import {EventDispatcher, MOUSE, PerspectiveCamera, Quaternion, Spherical, TOUCH, Vector2, Vector3} from 'three';
+import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
+
 
 export class GameBoardOrbitControl extends EventDispatcher {
   constructor( cam: PerspectiveCamera, domElement: HTMLElement ) {
@@ -7,6 +9,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
     this.domElement = domElement;
     this.updateState =  {
       offset: new Vector3(),
+      targetOffsetVec: new Vector3(),
       quat: new Quaternion().setFromUnitVectors( this.camera.up, new Vector3(0, 1, 0)),
       quatInverse: undefined,
       lastPosition: new Vector3(),
@@ -34,6 +37,13 @@ export class GameBoardOrbitControl extends EventDispatcher {
     if ( this.domElement.tabIndex === - 1 ) {
       this.domElement.tabIndex = 0;
     }
+
+    this.getDollyAngleFromDist(0.25, 0.1);
+    this.getDollyAngleFromDist(0.5, 0.1);
+    this.getDollyAngleFromDist(0.75, 0.1);
+    this.getDollyAngleFromDist(0.25, 0.3);
+    this.getDollyAngleFromDist(0.5, 0.3);
+    this.getDollyAngleFromDist(0.75, 0.3);
   }
 
   camera: PerspectiveCamera;
@@ -57,6 +67,26 @@ export class GameBoardOrbitControl extends EventDispatcher {
   keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40};
   mouseButtons = { LEFT: MOUSE.ROTATE, MIDDLE: MOUSE.DOLLY, RIGHT: undefined};
   touches = { ONE: TOUCH.ROTATE, TWO: undefined};
+
+// TODO Add targetOffset property
+// TODO Add min/maxTargetOffset property
+// TODO Add targetOffsetRatio, basically movespeed
+// TODO Add enableOffsetTarget
+
+// TODO Add useDollyAdjust
+// TODO Add dollyAngleRatio
+// TODO Add dollyMaxAdjust
+// TODO Add dollyMinAdjust
+
+  enableTargetOffset = false;
+  targetOffsetRatio = 0;
+  minTargetOffset = 0;
+  maxTargetOffset = Infinity;
+
+  useDollyAngle = false;
+  dollyMinAngle = 0;
+  dollyMaxAngle = Math.PI;
+  dollyCurvature = 0.2; // -1 to 1
 
   // for reset
   target0: Vector3;
@@ -85,6 +115,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
   private scale = 1;
   private panOffset = new Vector3();
   private zoomChanged = false;
+  private targetOffset = 0;
 
   private rotateStart = new Vector2();
   private rotateEnd = new Vector2();
@@ -99,7 +130,14 @@ export class GameBoardOrbitControl extends EventDispatcher {
   private dollyDelta = new Vector2();
 
   // functionPrivates
-  private updateState: {offset: Vector3, quat: Quaternion, quatInverse: Quaternion, lastPosition: Vector3, lastQuaternion: Quaternion};
+  private updateState: {
+    offset: Vector3,
+    targetOffsetVec: Vector3,
+    quat: Quaternion,
+    quatInverse: Quaternion,
+    lastPosition: Vector3,
+    lastQuaternion: Quaternion
+  };
   private panLeftV = new Vector3();
   private panUpV = new Vector3();
 
@@ -127,38 +165,70 @@ export class GameBoardOrbitControl extends EventDispatcher {
   update() {
     const position = this.camera.position;
 
+    // ROTATION ==============================================================
+
+    // save vector from target to camera in offset, apply camera rotation to it
     this.updateState.offset.copy(position).sub(this.target);
     this.updateState.offset.applyQuaternion(this.updateState.quat);
 
+    // create a spherical for the camera-target relation
     this.spherical.setFromVector3(this.updateState.offset);
 
+    // apply rotation changes to the spherical
     this.spherical.theta += this.sphericalDelta.theta;
     this.spherical.phi += this.sphericalDelta.phi;
 
+    // restrict phi & theta to be between desired limits
     this.spherical.theta = Math.max( this.minAzimuthAngle, Math.min( this.maxAzimuthAngle, this.spherical.theta ) );
-
-    // restrict phi to be between desired limits
     this.spherical.phi = Math.max( this.minPolarAngle, Math.min( this.maxPolarAngle, this.spherical.phi ) );
 
     this.spherical.makeSafe();
 
+    // move camera away/closer
     this.spherical.radius *= this.scale;
-
-    // restrict radius to be between desired limits
+    // restrict camera distance to be between desired limits
     this.spherical.radius = Math.max( this.minDistance, Math.min( this.maxDistance, this.spherical.radius ) );
 
+    if (this.useDollyAngle) {
+      const dist = (this.spherical.radius - this.minDistance) / (this.maxDistance - this.minDistance);
+      const angleNorm = this.getDollyAngleFromDist(dist, this.dollyCurvature);
+
+      this.spherical.phi = this.dollyMinAngle + angleNorm * (this.dollyMaxAngle - this.dollyMinAngle);
+    }
+
+    // put modified vector back into offset, remove the applied camera rotation again
     this.updateState.offset.setFromSpherical(this.spherical);
+    // if we have a target offset, move camera further back
+    if (this.enableTargetOffset) {
+      this.targetOffset = Math.max(this.minTargetOffset, Math.min(this.maxTargetOffset, this.targetOffset));
+      this.updateState.targetOffsetVec = this.updateState.offset.clone();
+      this.updateState.targetOffsetVec.y = 0;
+      this.updateState.targetOffsetVec.normalize().multiplyScalar(this.targetOffset);
+      //console.log('offsetting from Target by', this.targetOffset, this.updateState.targetOffsetVec);
+      this.updateState.offset.add(this.updateState.targetOffsetVec);
+    }
     this.updateState.offset.applyQuaternion(this.updateState.quatInverse);
 
+    // paning ==============================================================
+    // update target vector and camera position
     this.target.add( this.panOffset );
     position.copy(this.target).add(this.updateState.offset);
 
-    this.camera.lookAt(this.target);
+    if (this.enableTargetOffset) {
+      const tgt = this.target.clone().add(this.updateState.targetOffsetVec);
+      console.log('looking at:', tgt);
+      this.camera.lookAt(tgt);
+    } else {
+      this.camera.lookAt(this.target);
+    }
 
+    // cleanup ==============================================================
+    // reset deltas
     this.sphericalDelta.set(0, 0, 0);
     this.panOffset.set(0, 0, 0);
     this.scale = 1;
 
+    // issue change events if changed enough
     if ( this.zoomChanged ||
       this.updateState.lastPosition.distanceToSquared( this.camera.position ) > this.EPS ||
       8 * ( 1 - this.updateState.lastQuaternion.dot( this.camera.quaternion ) ) > this.EPS ) {
@@ -168,11 +238,8 @@ export class GameBoardOrbitControl extends EventDispatcher {
       this.updateState.lastPosition.copy( this.camera.position );
       this.updateState.lastQuaternion.copy( this.camera.quaternion );
       this.zoomChanged = false;
-
       return true;
-
     }
-
     return false;
   }
   dispose() {
@@ -192,6 +259,17 @@ export class GameBoardOrbitControl extends EventDispatcher {
     // scope.dispatchEvent( { type: 'dispose' } ); // should this be added here?
   }
 
+  private getDollyAngleFromDist(distNormalized: number, curvature: number): number {
+    let a = 0.5 + (curvature / 2);
+    if (a === 0.5) {
+      a += 0.00001;
+    }
+    const b2 = 2 * (1 - a);
+    const om2a = 1 - 2 * a;
+    const t = (Math.sqrt(a * a + om2a * distNormalized) - a) / om2a;
+    const y = (1 - b2) * (t * t) + (b2) * t;
+    return y;
+  }
   private getZoomScale() {
     return Math.pow(0.95, this.zoomSpeed);
   }
@@ -199,7 +277,11 @@ export class GameBoardOrbitControl extends EventDispatcher {
     this.sphericalDelta.theta -= angle;
   }
   private rotateUp( angle ) {
-    this.sphericalDelta.phi -= angle;
+    if (this.enableTargetOffset) {
+      this.targetOffset += this.targetOffsetRatio * angle;
+    } else {
+      this.sphericalDelta.phi -= angle;
+    }
   }
   private panLeft( distance, objectMatrix ) {
     this.panLeftV.setFromMatrixColumn( objectMatrix, 0 ); // get X column of objectMatrix
