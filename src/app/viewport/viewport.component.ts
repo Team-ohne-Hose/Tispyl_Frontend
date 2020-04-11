@@ -87,12 +87,13 @@ export class ViewportComponent implements AfterViewInit, OnInit {
 
     this.audioControl = new AudioControl();
     this.cameraControl = new CameraControl(this.camera, this.controls);
-    this.boardItemManager = new BoardItemManagment(this.scene);
+    this.boardItemManager = new BoardItemManagment(this.scene, this.sceneBuilder);
     this.boardItemManager.board = gameBoard;
     this.mouseInteract = new MouseInteraction(this.scene, this.camera, this.boardItemManager);
     this.mouseInteract.updateScreenSize(width, height);
 
     this.boardItemManager.addMarker(BoardCoordConversion.borderCoords.x[4], 0, BoardCoordConversion.borderCoords.y[4], 0x5d00ff);
+    this.boardItemManager.addGameFigure();
 
     this.audioControl.initAudio(this.camera);
     this.registerViewport.emit([this.cameraControl, this.boardItemManager, this.audioControl]);

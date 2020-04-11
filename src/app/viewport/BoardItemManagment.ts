@@ -1,5 +1,7 @@
 import {ViewportComponent} from './viewport.component';
 import * as THREE from 'three';
+import {SceneBuilderService} from '../scene-builder.service';
+import {BoardCoordConversion} from './BoardCoordConversion';
 
 export enum BoardItemRole {
   Dice = 1,
@@ -20,9 +22,29 @@ export class BoardItemManagment {
   markerGeo = new THREE.ConeGeometry(1, 10, 15, 1, false, 0, 2 * Math.PI);
 
 
-  constructor( scene: THREE.Scene) {
+  constructor(scene: THREE.Scene, private sceneBuilder: SceneBuilderService) {
     this.scene = scene;
     this.boardItems = [];
+  }
+
+  moveGameFigure(object: THREE.Object3D, fieldID: number) {
+    console.log('move Figure to ', fieldID);
+    for (const itemKey in this.boardItems) {
+      if (this.boardItems[itemKey].mesh === object) {
+        console.log('found Item, role is: ', this.boardItems[itemKey].role);
+        const newField = BoardCoordConversion.getFieldCenter(fieldID);
+        this.boardItems[itemKey].mesh.position.set(newField.x, 1.1, newField.y);
+      }
+    }
+  }
+
+  addGameFigure() {
+    const figure = this.sceneBuilder.generateGameFigure(0x004412);
+    const startPos = BoardCoordConversion.getFieldCenter(0);
+    figure.position.set(startPos.x, 1.1, startPos.y);
+
+    this.boardItems.push({mesh: figure, role: BoardItemRole.figure, removeBy: undefined});
+    this.scene.add(figure);
   }
 
   addMarker(x: number, y: number, z: number, col: number): void {

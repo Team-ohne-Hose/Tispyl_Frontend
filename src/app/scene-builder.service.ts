@@ -113,7 +113,7 @@ export class SceneBuilderService {
     orbitCtrl.enableTargetOffset = true;
     orbitCtrl.targetOffsetRatio = 25;
     orbitCtrl.minTargetOffset = 0;
-    orbitCtrl.maxTargetOffset = 45;
+    orbitCtrl.maxTargetOffset = 55;
 
 
     orbitCtrl.update();
@@ -139,6 +139,7 @@ export class SceneBuilderService {
     gameBoard.position.y = 0;
     gameBoard.castShadow = true;
     gameBoard.receiveShadow = true;
+    gameBoard.name = 'gameboard';
 
     this.tLoader.load(this.gameBoardTextureURL, (texture) => {
       texture.encoding = THREE.sRGBEncoding;
@@ -148,5 +149,16 @@ export class SceneBuilderService {
       console.error(error);
     });
     return gameBoard;
+  }
+
+  generateGameFigure(color: number): THREE.Mesh {
+    const gameFigureGeo = new THREE.CylinderGeometry(1.3, 1.5, 1, 20, 1);
+    const gameFigureMat = new THREE.MeshPhysicalMaterial({color: color});
+    const gameFigure = new THREE.Mesh(gameFigureGeo, gameFigureMat);
+    gameFigure.receiveShadow = true;
+    gameFigure.castShadow = true;
+    gameFigure.name = 'gamefigure';
+
+    return gameFigure;
   }
 }

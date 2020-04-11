@@ -16,6 +16,8 @@ export class MouseInteraction {
   camera: Camera;
   scene: Scene;
 
+  currentlySelected: THREE.Object3D;
+
   constructor(scene: Scene, camera: Camera, boardItemManager: BoardItemManagment) {
     this.boardItemManager = boardItemManager;
     this.camera = camera;
@@ -65,24 +67,43 @@ export class MouseInteraction {
     const normY = - (y / this.currentSize.height) * 2 + 1;
     // console.log('clicking on: ', normX, normY);
     this.raycaster.setFromCamera({x: normX, y: normY}, this.camera);
-    //const intersects = this.raycaster.intersectObjects(this.scene.children);
+    const intersects = this.raycaster.intersectObjects(this.scene.children);
 
-    const inters = this.raycaster.intersectObject(this.boardItemManager.board);
+    if (intersects.length > 0) {
+      const point = intersects[0].point;
+      if (intersects[0].object.name === 'gameboard') {
+        if (!this.handleBoardTileClick(point)) {
+          this.boardItemManager.addMarker(point.x, point.y, point.z, 0x0000ff);
+        }
+        this.currentlySelected = undefined;
+      } else if (intersects[0].object.name === 'gamefigure') {
+        this.currentlySelected = intersects[0].object;
+        console.log('selected Object');
+      }
+
+
+    }
+
+    /*const inters = this.raycaster.intersectObject(this.boardItemManager.board);
     if (inters.length > 0) {
       const point = inters[0].point;
       this.boardItemManager.addMarker(point.x, point.y, point.z, 0x0000ff);
       this.handleBoardTileClick(point);
-
-    }
+    }*/
   }
-  handleBoardTileClick(intersection: THREE.Vector3) {
+  handleBoardTileClick(intersection: THREE.Vector3): boolean {
     const coords = BoardCoordConversion.coordsToFieldCoords(intersection);
     if (coords.x >= 0 && coords.x < 8 && coords.y >= 0 && coords.y < 8) {
-      const tile = Board.getTile(Board.getId(coords.x, coords.y));
+      const tileId = Board.getId(coords.x, coords.y);
+      const tile = Board.getTile(tileId);
       console.log('clicked on Tile: ', tile.translationKey, coords.x, coords.y);
-      // TODO
+      if (this.currentlySelected !== undefined) {
+        this.boardItemManager.moveGameFigure(this.currentlySelected, tileId);
+        return true;
+      }
     } else {
       console.log('clicked outside of playing field');
     }
+    return false;
   }
 }
