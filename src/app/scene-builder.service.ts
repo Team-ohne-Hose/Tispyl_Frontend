@@ -106,14 +106,14 @@ export class SceneBuilderService {
     };
     orbitCtrl.dollyMinAngle = Math.PI * 0.48;
     orbitCtrl.dollyMaxAngle = Math.PI * 0.2;
-    orbitCtrl.dollyCurvature = -1;
+    orbitCtrl.dollyCurvature = 1;
     orbitCtrl.useDollyAngle = true;
     orbitCtrl.minDistance = 10;
     orbitCtrl.maxDistance = 100;
     orbitCtrl.enableTargetOffset = true;
     orbitCtrl.targetOffsetRatio = 25;
     orbitCtrl.minTargetOffset = 0;
-    orbitCtrl.maxTargetOffset = 100;
+    orbitCtrl.maxTargetOffset = 45;
 
 
     orbitCtrl.update();
