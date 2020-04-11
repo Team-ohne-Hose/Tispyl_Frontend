@@ -18,6 +18,13 @@ export class Board {
     }
     return {x: boardTiles.base[fieldId].x, y: boardTiles.base[fieldId].y};
   }
+  static getId(x: number, y: number): number {
+    for (const t in boardTiles.base) {
+      if (boardTiles.base[t].x === x && boardTiles.base[t].y === y) {
+        return Number(t);
+      }
+    }
+  }
 
   static getTile(fieldId: number): Tile {
     if (fieldId < 0 || fieldId > 63) {

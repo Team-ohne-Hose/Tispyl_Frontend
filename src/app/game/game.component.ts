@@ -1,5 +1,5 @@
 import {Component, HostListener, OnInit} from '@angular/core';
-import {Vector3} from 'three';
+import {Quaternion, Vector3} from 'three';
 import {BoardItemManagment} from '../viewport/BoardItemManagment';
 import {AudioControl} from '../viewport/AudioControl';
 import {CameraControl} from '../viewport/CameraControl';
@@ -37,15 +37,21 @@ export class GameComponent implements OnInit {
       case '7':
       case '8':
       case '9':
-        const center: {x: number, y: number} = BoardCoordConversion.getFieldCenter(Number(event.key));
-        const corners: {x1: number, y1: number, x2: number, y2: number} = BoardCoordConversion.getFieldCoords(Number(event.key));
-        this.boardItemControl.addMarker(center.x, 0, center.y, 0xff0000);
-        this.boardItemControl.addMarker(corners.x1, 0, corners.y1, 0xff4400);
-        this.boardItemControl.addMarker(corners.x1, 0, corners.y2, 0xff4400);
-        this.boardItemControl.addMarker(corners.x2, 0, corners.y1, 0xff4400);
-        this.boardItemControl.addMarker(corners.x2, 0, corners.y2, 0xff4400);
+        let param = Number(event.key);
+        if (param === 0) {
+          param = 10;
+        }
+        param--;
+        const slightAdj = 4.5 - Math.abs(param - 4.5);
+        const pos = new Vector3(0, -10 * param, 0);
+        this.cameraControl.lookAtPosition(pos, new Vector3(0, -1,  - 1), 40 + 10 * param);
+        this.boardItemControl.addMarker(pos.x, pos.y, pos.z, 0x00df4b);
         break;
 
+      case 'i':
+        this.cameraControl.lookAtPosition(new Vector3(0, -10, 0), new Vector3(0, -1, -1), 50);
+        this.boardItemControl.addMarker(pos.x, pos.y, pos.z, 0x00df4b);
+        break;
       case 'ArrowLeft':
       case 'ArrowRight':
       case 'ArrowUp':
@@ -69,6 +75,11 @@ export class GameComponent implements OnInit {
       case 'o':
         this.audioCtrl.playAudio();
         break;
+      case 'l':
+        console.log('zoom: ', this.cameraControl.cam.zoom);
+        console.log('focus: ', this.cameraControl.cam.focus);
+        const quat = new Quaternion().setFromUnitVectors( this.cameraControl.cam.up, new Vector3(0, 1, 0));
+        console.log('quat: ', quat);
     }
   }
 

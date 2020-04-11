@@ -7,6 +7,7 @@ import {AudioControl} from './AudioControl';
 import {BoardItemManagment} from './BoardItemManagment';
 import {CameraControl} from './CameraControl';
 import {SceneBuilderService} from '../scene-builder.service';
+import {GameBoardOrbitControl} from './GameBoardOrbitControl';
 
 @Component({
   selector: 'app-viewport',
@@ -29,7 +30,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   scene: Scene;
   camera: PerspectiveCamera;
   renderer: Renderer;
-  controls: OrbitControls;
+  controls: GameBoardOrbitControl;
 
   animate() {
     requestAnimationFrame(this.animate.bind(this));
@@ -52,16 +53,13 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.scene.fog = new THREE.Fog( this.scene.background.getHex(), 0.1, 5000 );
 
     this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 5000);
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance' });
 
     this.renderer.setSize(width, height);
 
     const viewPortRenderer: HTMLCanvasElement = this.renderer.domElement;
     viewPortRenderer.setAttribute('style', viewPortRenderer.getAttribute('style') + 'display: block;');
     document.getElementById('viewport-container').appendChild( viewPortRenderer );
-
-    this.camera.position.set( 0, 50, 0 );
-    this.camera.lookAt(10, 10, -10);
 
     // Add environment into Scene
     const hemi = this.sceneBuilder.generateHemisphereLight();
@@ -80,14 +78,20 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.scene.add(gameBoard);
 
 
-    this.controls = this.sceneBuilder.generateOrbitControls(this.camera, this.renderer.domElement);
+    this.controls = this.sceneBuilder.generateGameBoardOrbitControls(this.camera, this.renderer.domElement);
+
+    this.controls.target = new THREE.Vector3(0, 0, -10);
+    this.camera.position.set( 0, 70, -30 );
+    this.controls.update();
 
     this.audioControl = new AudioControl();
-    this.cameraControl = new CameraControl(this.camera);
+    this.cameraControl = new CameraControl(this.camera, this.controls);
     this.boardItemManager = new BoardItemManagment(this.scene);
     this.boardItemManager.board = gameBoard;
     this.mouseInteract = new MouseInteraction(this.scene, this.camera, this.boardItemManager);
     this.mouseInteract.updateScreenSize(width, height);
+
+    this.boardItemManager.addMarker(0, 0, -10, 0x5d00ff);
 
     this.audioControl.initAudio(this.camera);
     this.registerViewport.emit([this.cameraControl, this.boardItemManager, this.audioControl]);
