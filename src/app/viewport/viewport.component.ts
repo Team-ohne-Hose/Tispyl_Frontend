@@ -8,6 +8,7 @@ import {CameraControl} from './CameraControl';
 import {SceneBuilderService} from '../services/scene-builder.service';
 import {GameBoardOrbitControl} from './GameBoardOrbitControl';
 import {BoardCoordConversion} from './BoardCoordConversion';
+import {ObjectLoaderService} from '../object-loader.service';
 
 @Component({
   selector: 'app-viewport',
@@ -21,7 +22,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   boardItemManager: BoardItemManagment;
   audioControl: AudioControl;
 
-  constructor(private sceneBuilder: SceneBuilderService) {  }
+  constructor(private sceneBuilder: SceneBuilderService, private objectLoaderService: ObjectLoaderService) {  }
 
   @ViewChild('view') view: HTMLDivElement;
   @Output() registerViewport = new EventEmitter<[CameraControl, BoardItemManagment, AudioControl]>();
@@ -94,6 +95,16 @@ export class ViewportComponent implements AfterViewInit, OnInit {
 
     this.boardItemManager.addMarker(BoardCoordConversion.borderCoords.x[4], 0, BoardCoordConversion.borderCoords.y[4], 0x5d00ff);
     this.boardItemManager.addGameFigure();
+
+    this.objectLoaderService.loadObject(ObjectLoaderService.LoadableObject.dice, (model: THREE.Group) => {
+      model.position.set(0, 2, 0);
+      model.scale.set(0.5, 0.5, 0.5);
+      this.scene.add(model);
+    });
+    this.objectLoaderService.loadObject(ObjectLoaderService.LoadableObject.dice2, (model: THREE.Group) => {
+      model.position.set(2, 2, 0);
+      this.scene.add(model);
+    });
 
     this.audioControl.initAudio(this.camera);
     this.registerViewport.emit([this.cameraControl, this.boardItemManager, this.audioControl]);

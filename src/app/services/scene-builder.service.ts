@@ -136,7 +136,7 @@ export class SceneBuilderService {
     const gameBoardGeo = new THREE.BoxGeometry(100, 1, 100);
     const gameBoardMat = new THREE.MeshPhysicalMaterial({color: 0xffffff});
     const gameBoard = new THREE.Mesh(gameBoardGeo, gameBoardMat);
-    gameBoard.position.y = 0;
+    gameBoard.position.y = -0.5;
     gameBoard.castShadow = true;
     gameBoard.receiveShadow = true;
     gameBoard.name = 'gameboard';
