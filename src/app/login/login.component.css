@@ -38,3 +38,13 @@
 .register-link:hover {
   color: lightgrey;
 }
+.error-text {
+  margin-top: 16px;
+  height: 16px;
+  font-size: small;
+  color: lightcoral;
+}
+
+.error-text i{
+  padding-right: 8px;
+}
