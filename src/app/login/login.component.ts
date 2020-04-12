@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 import {RegisterPopupComponent} from '../register-popup/register-popup.component';
 import {Translation} from '../model/Translation';
 import {TextContainer} from '../model/TextContainer';
@@ -11,7 +11,7 @@ import {Login} from '../model/Login';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
 
   constructor(private dialog: MatDialog) { }
 
@@ -19,28 +19,27 @@ export class LoginComponent implements OnInit {
   @Output() registrationEvent = new EventEmitter<User>();
   @Output() loginEvent = new EventEmitter<Login>()
 
-  loginName: String;
-  password: String;
+  login_name: string;
+  password_plain: string;
 
-  ngOnInit() {
-  }
+  dialog_config: MatDialogConfig = {
+    width: '80%',
+    maxWidth: '500px',
+    data: {},
+    panelClass: 'modalbox-base'
+  };
 
   onlogin() {
-    let l: Login = {name: 'tizian', password: 'handball'}
+    let l: Login = {name: this.login_name, password: this.password_plain}
     this.loginEvent.emit(l)
   }
 
   openRegisterDialog() {
-    let dialogRef: MatDialogRef<RegisterPopupComponent, User> = this.dialog.open(RegisterPopupComponent,{
-      width: '80%',
-      maxWidth: '500px',
-      height: '80%',
-      data: {},
-      panelClass: 'modalbox-base'
-    })
-
-    dialogRef.afterClosed().subscribe(r => {
-      this.registrationEvent.emit(r)
+    let dialogRef: MatDialogRef<RegisterPopupComponent, User> = this.dialog.open(RegisterPopupComponent, this.dialog_config)
+    dialogRef.afterClosed().subscribe(usr => {
+      if (usr !== undefined) {
+        this.registrationEvent.emit(usr)
+      }
     });
   }
 }

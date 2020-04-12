@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {TranslationService} from '../translation.service';
+import {TranslationService} from '../services/translation.service';
 import {User} from '../model/User';
 import {GameLobby} from '../model/GameLobby';
 import {Translation} from '../model/Translation';
@@ -7,8 +7,9 @@ import {Login} from '../model/Login';
 import * as hash from '../../../node_modules/object-hash';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {OpenGamePopupComponent} from '../open-game-popup/open-game-popup.component';
-import {ColyseusClientService} from '../colyseus-client.service';
+import {ColyseusClientService} from '../services/colyseus-client.service';
 import {Client} from 'colyseus.js';
+import {MariaService} from '../services/maria.service';
 
 @Component({
   selector: 'app-lobby',
@@ -22,9 +23,7 @@ export class LobbyComponent implements OnInit {
   translation: Translation;
   gameClient: Client;
 
-  dummyDatasource: User[] = [new User('tizian', 'DERGOTT', 'handball')];
-
-  constructor(private dialog: MatDialog, private colyseus: ColyseusClientService) {
+  constructor(private dialog: MatDialog, private colyseus: ColyseusClientService, private maria: MariaService) {
     this.gameClient = colyseus.getClient();
     console.log('Received client: ', this.gameClient);
   }
@@ -45,7 +44,7 @@ export class LobbyComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(s => {
       if (s !== undefined) {
-        this.gameClient.create('game', { name: s, author: this.currentUser.display}).then( suc => {
+        this.gameClient.create('game', { name: s, author: this.currentUser.display_name}).then(suc => {
           // if successfull;
           this.loadAvailableGames();
         }, err => {
@@ -69,25 +68,37 @@ export class LobbyComponent implements OnInit {
   }
 
   saveNewUser(r: User) {
-    console.log('Called registration stub with: ', r);
+    console.log('Called registration with: ', r);
+    this.maria.addUsers(r).subscribe( suc => {
+      console.log(suc);
+    }, err => {
+      console.log(err);
+    });
   }
 
+  // TODO: Move Login into the Login Component and add a Login service
   login(l) {
-    const found = this.dummyDatasource.find( e => e.login === l.name);
-    if (found !== undefined && found.password === hash.MD5(l.password)) {
-      this.loginAs(l);
-      this.loadAvailableGames();
-      console.log('Logged in as ', l);
-    } else {
-      console.log('Failed to log in:', l);
-    }
+    this.maria.login(l.name, hash.MD5(l.password)).subscribe( suc => {
+      if (suc) {
+        console.log('A', suc);
+        this.maria.getUser(l.name).subscribe( succ => {
+
+          const usr = new User(succ[0].login_name, succ[0].display_name, null);
+          console.log('B', succ, usr);
+          this.currentUser = usr;
+          this.loadAvailableGames();
+          console.log('Logged in as ', l);
+        }, err => {
+          console.log('Failed to log in:', l);
+        });
+      } else {
+        console.log('Failed to log in:', l);
+      }
+    }, err => {
+      console.log(err);
+    });
   }
 
-  private loginAs(l: Login) {
-    const usr = Object.assign({}, this.dummyDatasource.find( e => e.login === l.name));
-    usr.password = null;
-    this.currentUser = usr;
-  }
 
   loadAvailableGames() {
     this.gameClient.getAvailableRooms('game').then( suc => {
