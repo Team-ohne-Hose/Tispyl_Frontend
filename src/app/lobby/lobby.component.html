@@ -6,7 +6,7 @@
 
   <div class="top-level-box split-box">
     <div class="column-box" *ngIf="currentUser === undefined">
-      <app-login [languageObjects]="translation.text" (registrationEvent)="saveNewUser($event)" (loginEvent)="login($event)"></app-login>
+      <app-login [languageObjects]="translation.text" (loginEvent)="login($event)"></app-login>
     </div>
     <div *ngIf="currentUser !== undefined">
       <app-profile-display [user]="currentUser" (onLogout)="currentUser = undefined"></app-profile-display>

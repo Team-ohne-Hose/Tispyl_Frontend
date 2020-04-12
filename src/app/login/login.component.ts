@@ -1,10 +1,11 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 import {RegisterPopupComponent} from '../register-popup/register-popup.component';
-import {Translation} from '../model/Translation';
 import {TextContainer} from '../model/TextContainer';
 import {User} from '../model/User';
-import {Login} from '../model/Login';
+import * as hash from 'object-hash';
+import {UserService} from '../services/user.service';
+import {APIResponse} from '../model/APIResponse';
 
 @Component({
   selector: 'app-login',
@@ -13,14 +14,14 @@ import {Login} from '../model/Login';
 })
 export class LoginComponent {
 
-  constructor(private dialog: MatDialog) { }
+  constructor(private dialog: MatDialog, private userManagent: UserService) { }
 
   @Input() languageObjects: TextContainer;
-  @Output() registrationEvent = new EventEmitter<User>();
-  @Output() loginEvent = new EventEmitter<Login>()
+  @Output() loginEvent = new EventEmitter<User>();
 
-  login_name: string;
-  password_plain: string;
+  login_name = '';
+  password_plain = '';
+  errorMessage = '';
 
   dialog_config: MatDialogConfig = {
     width: '80%',
@@ -30,15 +31,34 @@ export class LoginComponent {
   };
 
   onlogin() {
-    let l: Login = {name: this.login_name, password: this.password_plain}
-    this.loginEvent.emit(l)
+    this.userManagent.loginUser(this.login_name, hash.MD5(this.password_plain)).subscribe( suc => {
+      console.log(suc.payload);
+      this.loginEvent.emit(suc.payload[0]);
+    }, err => {
+      if (err.error as APIResponse<any[]> && err.error.success) {
+        console.log('Login Failed: ', err.error);
+        this.errorMessage = 'Failed to login. Check your credentials.';
+      } else {
+        console.log('Unexpected error: ', err);
+      }
+    });
+  }
+
+  enter(keyEvent) {
+    if (keyEvent.key === 'Enter') {
+      this.onlogin();
+    }
   }
 
   openRegisterDialog() {
-    let dialogRef: MatDialogRef<RegisterPopupComponent, User> = this.dialog.open(RegisterPopupComponent, this.dialog_config)
+    const dialogRef: MatDialogRef<RegisterPopupComponent, User> = this.dialog.open(RegisterPopupComponent, this.dialog_config);
     dialogRef.afterClosed().subscribe(usr => {
       if (usr !== undefined) {
-        this.registrationEvent.emit(usr)
+        this.userManagent.addUser(usr).subscribe( suc => {
+          console.log('Registered: ', suc);
+        }, err => {
+          console.log('Unexpected error: ', err);
+        });
       }
     });
   }

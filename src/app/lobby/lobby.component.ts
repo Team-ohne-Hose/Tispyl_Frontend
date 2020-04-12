@@ -23,7 +23,7 @@ export class LobbyComponent implements OnInit {
   translation: Translation;
   gameClient: Client;
 
-  constructor(private dialog: MatDialog, private colyseus: ColyseusClientService, private maria: MariaService) {
+  constructor(private dialog: MatDialog, private colyseus: ColyseusClientService) {
     this.gameClient = colyseus.getClient();
     console.log('Received client: ', this.gameClient);
   }
@@ -48,7 +48,7 @@ export class LobbyComponent implements OnInit {
           // if successfull;
           this.loadAvailableGames();
         }, err => {
-            console.log('Could not retrieve info from backend. Is it running?');
+            console.log('Could not retrieve info from backend. Is it running?', err);
           });
       } else {
         console.log('Failed to create game dialog output was: ', s);
@@ -67,38 +67,10 @@ export class LobbyComponent implements OnInit {
     this.translation = TranslationService.getTranslations(lang);
   }
 
-  saveNewUser(r: User) {
-    console.log('Called registration with: ', r);
-    this.maria.addUsers(r).subscribe( suc => {
-      console.log(suc);
-    }, err => {
-      console.log(err);
-    });
+  login(user) {
+    this.currentUser = user;
+    this.loadAvailableGames();
   }
-
-  // TODO: Move Login into the Login Component and add a Login service
-  login(l) {
-    this.maria.login(l.name, hash.MD5(l.password)).subscribe( suc => {
-      if (suc) {
-        console.log('A', suc);
-        this.maria.getUser(l.name).subscribe( succ => {
-
-          const usr = new User(succ[0].login_name, succ[0].display_name, null);
-          console.log('B', succ, usr);
-          this.currentUser = usr;
-          this.loadAvailableGames();
-          console.log('Logged in as ', l);
-        }, err => {
-          console.log('Failed to log in:', l);
-        });
-      } else {
-        console.log('Failed to log in:', l);
-      }
-    }, err => {
-      console.log(err);
-    });
-  }
-
 
   loadAvailableGames() {
     this.gameClient.getAvailableRooms('game').then( suc => {
@@ -115,7 +87,7 @@ export class LobbyComponent implements OnInit {
         return g;
       });
     }, err => {
-      console.log('Could not retrieve data from backend. Is it running?');
+      console.log('Could not retrieve data from backend. Is it running?', err);
     });
   }
 
