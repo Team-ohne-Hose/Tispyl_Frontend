@@ -5,6 +5,7 @@ import {Translation} from '../model/Translation';
 import {TextContainer} from '../model/TextContainer';
 import {User} from '../model/User';
 import {Login} from '../model/Login';
+import {UserService} from '../services/user.service';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +14,7 @@ import {Login} from '../model/Login';
 })
 export class LoginComponent {
 
-  constructor(private dialog: MatDialog) { }
+  constructor(private dialog: MatDialog, private userManagent: UserService) { }
 
   @Input() languageObjects: TextContainer;
   @Output() registrationEvent = new EventEmitter<User>();
