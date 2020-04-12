@@ -5,7 +5,7 @@ import {MouseInteraction} from './MouseInteraction';
 import {AudioControl} from './AudioControl';
 import {BoardItemManagment} from './BoardItemManagment';
 import {CameraControl} from './CameraControl';
-import {SceneBuilderService} from '../scene-builder.service';
+import {SceneBuilderService} from '../services/scene-builder.service';
 import {GameBoardOrbitControl} from './GameBoardOrbitControl';
 import {BoardCoordConversion} from './BoardCoordConversion';
 
@@ -44,7 +44,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
 
   ngAfterViewInit() {
     // disable navBar
-    document.getElementById('navBar_Test').setAttribute('style', 'display: none');
+    document.getElementById('navBar_Test').setAttribute('style', 'display_name: none');
     const width = this.view['nativeElement'].offsetWidth;
     const height = this.view['nativeElement'].offsetHeight;
 
@@ -58,7 +58,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.renderer.setSize(width, height);
 
     const viewPortRenderer: HTMLCanvasElement = this.renderer.domElement;
-    viewPortRenderer.setAttribute('style', viewPortRenderer.getAttribute('style') + 'display: block;');
+    viewPortRenderer.setAttribute('style', viewPortRenderer.getAttribute('style') + 'display_name: block;');
     document.getElementById('viewport-container').appendChild( viewPortRenderer );
 
     // Add environment into Scene

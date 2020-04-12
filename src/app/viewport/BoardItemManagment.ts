@@ -1,6 +1,6 @@
 import {ViewportComponent} from './viewport.component';
 import * as THREE from 'three';
-import {SceneBuilderService} from '../scene-builder.service';
+import {SceneBuilderService} from '../services/scene-builder.service';
 import {BoardCoordConversion} from './BoardCoordConversion';
 
 export enum BoardItemRole {
