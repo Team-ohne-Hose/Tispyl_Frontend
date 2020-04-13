@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
 import * as THREE from 'three';
-import {PerspectiveCamera, Renderer, Scene} from 'three';
+import {Mesh, Object3D, PerspectiveCamera, Renderer, Scene} from 'three';
 import {MouseInteraction} from './MouseInteraction';
 import {AudioControl} from './AudioControl';
 import {BoardItemManagment} from './BoardItemManagment';
@@ -8,6 +8,9 @@ import {CameraControl} from './CameraControl';
 import {SceneBuilderService} from '../services/scene-builder.service';
 import {GameBoardOrbitControl} from './GameBoardOrbitControl';
 import {BoardCoordConversion} from './BoardCoordConversion';
+import {ObjectLoaderService} from '../object-loader.service';
+import {PhysicsEngine} from './PhysicsEngine';
+import Stats from 'THREE/examples/jsm/libs/stats.module.js';
 
 @Component({
   selector: 'app-viewport',
@@ -20,8 +23,9 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   cameraControl: CameraControl;
   boardItemManager: BoardItemManagment;
   audioControl: AudioControl;
+  stats: Stats;
 
-  constructor(private sceneBuilder: SceneBuilderService) {  }
+  constructor(private sceneBuilder: SceneBuilderService, private objectLoaderService: ObjectLoaderService) {  }
 
   @ViewChild('view') view: HTMLDivElement;
   @Output() registerViewport = new EventEmitter<[CameraControl, BoardItemManagment, AudioControl]>();
@@ -31,12 +35,15 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   camera: PerspectiveCamera;
   renderer: Renderer;
   controls: GameBoardOrbitControl;
+  physics: PhysicsEngine;
 
   animate() {
     requestAnimationFrame(this.animate.bind(this));
     // this.controls.update();
     this.renderer.render(this.scene, this.camera);
     this.boardItemManager.removeToDelete();
+    this.physics.update();
+    this.stats.update();
   }
 
   ngOnInit() {
@@ -60,6 +67,8 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     const viewPortRenderer: HTMLCanvasElement = this.renderer.domElement;
     viewPortRenderer.setAttribute('style', viewPortRenderer.getAttribute('style') + 'display_name: block;');
     document.getElementById('viewport-container').appendChild( viewPortRenderer );
+    this.stats = Stats();
+    document.getElementById('viewport-container').appendChild(this.stats.dom);
 
     // Add environment into Scene
     const hemi = this.sceneBuilder.generateHemisphereLight();
@@ -87,13 +96,34 @@ export class ViewportComponent implements AfterViewInit, OnInit {
 
     this.audioControl = new AudioControl();
     this.cameraControl = new CameraControl(this.camera, this.controls);
-    this.boardItemManager = new BoardItemManagment(this.scene, this.sceneBuilder);
+    this.physics = new PhysicsEngine();
+    this.boardItemManager = new BoardItemManagment(this.scene, this.sceneBuilder, this.physics);
     this.boardItemManager.board = gameBoard;
-    this.mouseInteract = new MouseInteraction(this.scene, this.camera, this.boardItemManager);
+    this.mouseInteract = new MouseInteraction(this.scene, this.camera, this.boardItemManager, this.physics);
     this.mouseInteract.updateScreenSize(width, height);
 
-    this.boardItemManager.addMarker(BoardCoordConversion.borderCoords.x[4], 0, BoardCoordConversion.borderCoords.y[4], 0x5d00ff);
     this.boardItemManager.addGameFigure();
+
+    /*this.objectLoaderService.loadObject(ObjectLoaderService.LoadableObject.dice, (model: THREE.Group) => {
+      model.position.set(0, 2, 0);
+      model.scale.set(0.5, 0.5, 0.5);
+      this.scene.add(model);
+    });*/
+    this.objectLoaderService.loadObject(ObjectLoaderService.LoadableObject.dice2, (model: Object3D) => {
+      model.position.set(2, 2, 0);
+      // this.scene.add(model);
+      console.log(model);
+      const myModel = model.children[0] as Mesh;
+      this.scene.add(myModel);
+      // this.scene.add(model.children[1]);
+      const dicePhys = this.physics.addObject(myModel);
+      // dicePhys.attachedObjects.push({object: model.children[1], offset: new THREE.Vector3()});
+      this.boardItemManager.dice = dicePhys;
+    });
+
+    // const dice = this.sceneBuilder.generateDice();
+    // dice.position.setY(5);
+    // this.scene.add(dice);
 
     this.audioControl.initAudio(this.camera);
     this.registerViewport.emit([this.cameraControl, this.boardItemManager, this.audioControl]);
