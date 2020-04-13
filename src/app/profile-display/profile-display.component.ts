@@ -1,5 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {User} from '../model/User';
+import {UserService} from '../services/user.service';
 
 @Component({
   selector: 'app-profile-display',
@@ -9,15 +10,15 @@ import {User} from '../model/User';
 export class ProfileDisplayComponent implements OnInit {
 
   @Input() user: User;
-  @Output() onLogout = new EventEmitter();
 
-  constructor() { }
+  constructor(private userManagement: UserService) { }
 
   ngOnInit(): void {
   }
 
   logout() {
-    this.onLogout.emit({})
+    this.userManagement.setActiveUser(undefined);
+    this.userManagement.getActiveUser().subscribe( u => console.log('LOGGED OUT, USER NOW:', u));
   }
 
   onFileChanged(event) {

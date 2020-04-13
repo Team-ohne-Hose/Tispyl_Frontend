@@ -25,6 +25,7 @@ import { GameComponent } from './game/game.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ViewportComponent } from './viewport/viewport.component';
 import { OpenGamePopupComponent } from './open-game-popup/open-game-popup.component';
+import { JoinGameComponent } from './join-game/join-game.component';
 
 const appRoutes: Routes = [
   { path: 'lobby', component: LobbyComponent},
@@ -47,7 +48,8 @@ const appRoutes: Routes = [
     GameComponent,
     PageNotFoundComponent,
     ViewportComponent,
-    OpenGamePopupComponent
+    OpenGamePopupComponent,
+    JoinGameComponent
   ],
   imports: [
     RouterModule.forRoot(

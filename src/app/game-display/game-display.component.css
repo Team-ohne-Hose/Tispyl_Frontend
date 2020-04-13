@@ -41,16 +41,9 @@
 }
 
 .component-box:hover .bounding-box {
-  background-color: grey;
+  background-color: #4b4b4b;
 }
 
-.component-box:hover .date {
-  color: #3d3d3d;
-}
-
-.component-box:hover .trailing {
-  color: #3d3d3d;
-}
 
 .heading {
   font-size: large;
@@ -78,7 +71,17 @@
 
 }
 
-.delete-game button {
+.blue-text {
+  color: lightskyblue;
+}
+
+
+.controls {
+  display: flex;
+  align-items: center;
+}
+
+.controls button {
   margin-left: 16px;
   font-size: large;
   -webkit-box-shadow: 0 0 0 0;
@@ -87,11 +90,28 @@
   background-color: transparent;
 }
 
-.delete-game button:hover {
+
+.controls .enter {
+  color: rgb(205, 238, 200);
+}
+
+.controls .enter:hover {
+  color: #8cff00;
+}
+
+.controls .enter:active {
+  color: darkgreen;
+}
+
+.controls .leave {
+  color: #f3ccc9;
+}
+
+.controls .leave:hover {
   color: red;
 }
 
-.delete-game button:active {
+.controls .leave:active {
   color: darkred;
 }
 

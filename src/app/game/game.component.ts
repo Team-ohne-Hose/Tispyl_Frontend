@@ -4,6 +4,9 @@ import {BoardItemManagment} from '../viewport/BoardItemManagment';
 import {AudioControl} from '../viewport/AudioControl';
 import {CameraControl} from '../viewport/CameraControl';
 import {BoardCoordConversion} from '../viewport/BoardCoordConversion';
+import {filter, map} from 'rxjs/operators';
+import {Observable} from 'rxjs';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-game',
@@ -12,7 +15,9 @@ import {BoardCoordConversion} from '../viewport/BoardCoordConversion';
 })
 export class GameComponent implements OnInit {
 
-  constructor() { }
+  state$: Observable<object>;
+
+  constructor(public activatedRoute: ActivatedRoute, private router: Router) {}
 
   cameraControl: CameraControl;
   boardItemControl: BoardItemManagment;
@@ -21,6 +26,17 @@ export class GameComponent implements OnInit {
   curField = -1;
 
   ngOnInit(): void {
+      this.state$ = this.activatedRoute.paramMap
+        .pipe(map(() => {
+          console.log('STATE', window.history.state);
+          return window.history.state;
+        }));
+  }
+
+  debug(ev) {
+    this.state$.subscribe( s => {
+      console.log(s);
+    });
   }
 
   @HostListener('window:keydown', ['$event'])

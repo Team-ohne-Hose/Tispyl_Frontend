@@ -9,10 +9,20 @@
   margin-bottom: 16px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .top-level-splitter {
   border: black solid 1px;
+}
+
+.blue-text {
+  color: lightskyblue;
+  font-size: small;
+}
+
+.blue-text span {
+  padding-left: 8px;
 }
 
 .headline {
