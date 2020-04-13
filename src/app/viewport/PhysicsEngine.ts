@@ -5,6 +5,10 @@ export interface TurnInstruction {
   rotationTarget: Vector3;
   timeLeft: number;
 }
+export interface AttachedObject {
+  object: THREE.Object3D;
+  offset: Vector3;
+}
 export interface PhysicsObject {
   mesh: THREE.Mesh;
   boundingBox: THREE.Box3;
@@ -16,13 +20,15 @@ export interface PhysicsObject {
   rotationalDragFactor: number;
   dragFactor: number;
   instructions: TurnInstruction;
+  physicsEnabled: boolean;
+  attachedObjects: AttachedObject[];
 }
 
 export class PhysicsEngine {
   constructor() { }
 
   gravity = 98.1; // units/dsec^2, 100 units = 1m, 1 dsec = 0.1 sec
-  rotationDrag = 0.001; // 1/unit Area/Volume
+  rotationDrag = 0.1; // 1/unit Area/Volume
   drag = 0.025;
 
   physicsObjects: PhysicsObject[] = [];
@@ -87,9 +93,17 @@ export class PhysicsEngine {
     // update rotation
     obj.mesh.rotateOnAxis(obj.rotationalAxis, obj.rotationalVelocity * delta);
     obj.rotationalVelocity -= (obj.rotationalVelocity * obj.rotationalVelocity) * this.rotationDrag * obj.rotationalDragFactor * delta;
+    obj.rotationalVelocity = obj.rotationalVelocity > 1 ? obj.rotationalVelocity : 0;
 
     if (obj.mesh.position.y - obj.boundingSphere.radius < 0 && obj.velocity.y < 0) {
       this.handleCollision(obj);
+    }
+    for (const attachedKey in obj.attachedObjects) {
+      if (attachedKey in obj.attachedObjects) {
+        console.log(obj.attachedObjects[attachedKey], obj.attachedObjects);
+        obj.attachedObjects[attachedKey].object.position.copy(obj.mesh.position.clone().add(obj.attachedObjects[attachedKey].offset));
+        obj.attachedObjects[attachedKey].object.rotation.copy(obj.mesh.rotation);
+      }
     }
   }
 
@@ -106,7 +120,9 @@ export class PhysicsEngine {
 
     for (const key in this.physicsObjects) {
       if (key in this.physicsObjects) {
-        this.updatePhysicsObject(this.physicsObjects[key], delta);
+        if (this.physicsObjects[key].physicsEnabled) {
+          this.updatePhysicsObject(this.physicsObjects[key], delta);
+        }
       }
     }
   }
@@ -124,10 +140,21 @@ export class PhysicsEngine {
       rotationalDragFactor: rotationalDragFactor || 1,
       rotationalAxis: new Vector3(0, 1, 0),
       dragFactor: 1,
-      instructions: undefined
+      instructions: undefined,
+      physicsEnabled: true,
+      attachedObjects: []
     };
     this.physicsObjects.push(physObj);
     console.log('now simulating ' + this.physicsObjects.length + ' Objects');
     return physObj;
+  }
+
+  getObjectFromMesh(mesh: THREE.Mesh): PhysicsObject {
+    for (const key in this.physicsObjects) {
+      if (this.physicsObjects[key].mesh === mesh) {
+        return this.physicsObjects[key];
+      }
+    }
+    return undefined;
   }
 }

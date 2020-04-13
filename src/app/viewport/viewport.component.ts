@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
 import * as THREE from 'three';
-import {Object3D, PerspectiveCamera, Renderer, Scene} from 'three';
+import {Mesh, Object3D, PerspectiveCamera, Renderer, Scene} from 'three';
 import {MouseInteraction} from './MouseInteraction';
 import {AudioControl} from './AudioControl';
 import {BoardItemManagment} from './BoardItemManagment';
@@ -99,7 +99,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.physics = new PhysicsEngine();
     this.boardItemManager = new BoardItemManagment(this.scene, this.sceneBuilder, this.physics);
     this.boardItemManager.board = gameBoard;
-    this.mouseInteract = new MouseInteraction(this.scene, this.camera, this.boardItemManager);
+    this.mouseInteract = new MouseInteraction(this.scene, this.camera, this.boardItemManager, this.physics);
     this.mouseInteract.updateScreenSize(width, height);
 
     this.boardItemManager.addGameFigure();
@@ -111,14 +111,19 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     });*/
     this.objectLoaderService.loadObject(ObjectLoaderService.LoadableObject.dice2, (model: Object3D) => {
       model.position.set(2, 2, 0);
-      this.scene.add(model);
-      // this.boardItemManager.dice = model;
-      // this.physics.addObject(model);
+      // this.scene.add(model);
+      console.log(model);
+      const myModel = model.children[0] as Mesh;
+      this.scene.add(myModel);
+      // this.scene.add(model.children[1]);
+      const dicePhys = this.physics.addObject(myModel);
+      // dicePhys.attachedObjects.push({object: model.children[1], offset: new THREE.Vector3()});
+      this.boardItemManager.dice = dicePhys;
     });
 
-    const dice = this.sceneBuilder.generateDice();
-    dice.position.setY(5);
-    this.scene.add(dice);
+    // const dice = this.sceneBuilder.generateDice();
+    // dice.position.setY(5);
+    // this.scene.add(dice);
 
     this.audioControl.initAudio(this.camera);
     this.registerViewport.emit([this.cameraControl, this.boardItemManager, this.audioControl]);

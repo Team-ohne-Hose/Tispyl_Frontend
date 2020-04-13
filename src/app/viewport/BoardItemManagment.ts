@@ -2,7 +2,7 @@ import {ViewportComponent} from './viewport.component';
 import * as THREE from 'three';
 import {SceneBuilderService} from '../services/scene-builder.service';
 import {BoardCoordConversion} from './BoardCoordConversion';
-import {PhysicsEngine} from './PhysicsEngine';
+import {PhysicsEngine, PhysicsObject} from './PhysicsEngine';
 
 export enum BoardItemRole {
   Dice = 1,
@@ -19,7 +19,7 @@ export class BoardItemManagment {
   myView: ViewportComponent;
   boardItems: BoardItem[];
   board: THREE.Mesh;
-  dice: THREE.Mesh;
+  dice: PhysicsObject;
   scene: THREE.Scene;
   markerGeo = new THREE.ConeBufferGeometry(1, 10, 15, 1, false, 0, 2 * Math.PI);
 
@@ -30,15 +30,35 @@ export class BoardItemManagment {
   }
 
   throwDice() {
-
+    console.log('throwing Dice');
+    if (this.dice !== undefined) {
+      this.dice.mesh.position.set(0, 40, 0);
+      this.dice.rotationalAxis.copy(new THREE.Vector3(1, 1, 0).normalize());
+      this.dice.rotationalVelocity = (1 + 15 * Math.random()) * Math.PI;
+      const velocityVec = new THREE.Vector3(Math.random() - 0.5, Math.random() / 10, Math.random() - 0.5).normalize();
+      this.dice.velocity.copy(velocityVec.multiplyScalar(Math.random() * 40));
+      console.log('..', this.dice, this.scene);
+      for (const attKey in this.dice.attachedObjects) {
+        if (attKey in this.dice.attachedObjects) {
+          console.log('..');
+          const offset = this.dice.attachedObjects[attKey].offset;
+          this.dice.attachedObjects[attKey].object.position.copy(this.dice.mesh.position.clone().add(offset));
+          this.dice.attachedObjects[attKey].object.rotation.copy(this.dice.mesh.rotation);
+        }
+      }
+    }
   }
-  moveGameFigure(object: THREE.Object3D, fieldID: number) {
+  moveGameFigure(object: THREE.Mesh, fieldID: number) {
     console.log('move Figure to ', fieldID);
     for (const itemKey in this.boardItems) {
       if (this.boardItems[itemKey].mesh === object) {
         console.log('found Item, role is: ', this.boardItems[itemKey].role);
         const newField = BoardCoordConversion.getFieldCenter(fieldID);
-        this.boardItems[itemKey].mesh.position.set(newField.x, 8, newField.y);
+        this.boardItems[itemKey].mesh.position.set(newField.x, 10, newField.y);
+        const p = this.physics.getObjectFromMesh(object);
+        if (p !== undefined) {
+          p.physicsEnabled = true;
+        }
       }
     }
   }

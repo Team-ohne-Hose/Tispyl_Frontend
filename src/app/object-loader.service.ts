@@ -19,13 +19,13 @@ export class ObjectLoaderService {
       cname: 'diceModel',
       resourcePath: '/assets/models/dice/',
       fname: 'scene.gltf',
-      rootObj: 'Cube'
+      rootObj: 'pCube22'
     },
     dice2: {
       cname: 'diceModel2',
       resourcePath: '/assets/models/dice2/',
       fname: 'scene.gltf',
-      rootObj: 'pCube22'
+      rootObj: 'Cube'
     }
   };
   constructor() { }
