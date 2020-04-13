@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Observable, pipe} from 'rxjs';
+import {BehaviorSubject, Observable, pipe} from 'rxjs';
 import {User} from '../model/User';
 import {query} from '@angular/animations';
 import {map} from 'rxjs/operators';
@@ -13,8 +13,19 @@ import {APIResponse} from '../model/APIResponse';
 export class UserService {
 
   private userEndpoint = 'http://localhost:2567/api/users';
+  activeUser: BehaviorSubject<User>;
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient) {
+    this.activeUser = new BehaviorSubject<User>(undefined);
+  }
+
+  setActiveUser(user: User): void {
+    this.activeUser.next(user);
+  }
+
+  getActiveUser(): Observable<User> {
+    return this.activeUser.asObservable();
+  }
 
   getUserById(user_id: number): Observable<User> {
     const requestUrl = this.userEndpoint + '?user_id=' + user_id;

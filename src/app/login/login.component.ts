@@ -17,7 +17,6 @@ export class LoginComponent {
   constructor(private dialog: MatDialog, private userManagent: UserService) { }
 
   @Input() languageObjects: TextContainer;
-  @Output() loginEvent = new EventEmitter<User>();
 
   login_name = '';
   password_plain = '';
@@ -30,10 +29,10 @@ export class LoginComponent {
     panelClass: 'modalbox-base'
   };
 
-  onlogin() {
+  onLogin() {
     this.userManagent.loginUser(this.login_name, hash.MD5(this.password_plain)).subscribe( suc => {
-      console.log(suc.payload);
-      this.loginEvent.emit(suc.payload[0]);
+      this.userManagent.setActiveUser(suc.payload[0]);
+      console.log('LOGGED IN AS:',  suc.payload[0]);
     }, err => {
       if (err.error as APIResponse<any[]> && err.error.success) {
         console.log('Login Failed: ', err.error);
@@ -46,7 +45,7 @@ export class LoginComponent {
 
   enter(keyEvent) {
     if (keyEvent.key === 'Enter') {
-      this.onlogin();
+      this.onLogin();
     }
   }
 

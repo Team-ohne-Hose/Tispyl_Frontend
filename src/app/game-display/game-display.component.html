@@ -4,15 +4,16 @@
     <span class="ornamental-box"></span>
     <div class="bounding-box">
       <div class="naming">
-        <div><span class="heading">{{game.name || "undefined"}}</span><span class="trailing">{{languageObjects.gamesListBy || "undefined"}} {{game.author || "undefined"}}</span></div>
-        <div class="date">{{languageObjects.gamesListCreateAt || "undefined"}} {{(game.creationDate | date:' h:mm a' )|| "undefined"}}</div>
+        <div><span class="heading">{{game.metadata.lobbyName || "undefined"}}</span><span class="trailing">{{languageObjects.gamesListBy || "undefined"}} {{game.metadata.author || "undefined"}}</span></div>
+        <div class="date">{{languageObjects.gamesListCreateAt || "undefined"}} {{(game.createdAt | date:' h:mm a' )|| "undefined"}}</div>
       </div>
-      <div class="count">
+      <div [ngClass]="isActive ? 'count blue-text' : 'count'">
         <i class="fas fa-users"></i>
-        {{game.playerCount || "undefined"}}
+        {{game.clients || "undefined"}}{{game.maxClients ? (' / ' + game.maxClients) : ''}}
       </div>
-      <div class="delete-game">
-        <button (click)="delete()"><i class="fas fa-times"></i></button>
+      <div class="controls">
+        <div><button class="enter" (click)="enter()"><i class="fas fa-share"></i></button></div>
+        <div><button class="leave" (click)="leave()"><i class="fas fa-door-open"></i></button></div>
       </div>
     </div>
   </div>
