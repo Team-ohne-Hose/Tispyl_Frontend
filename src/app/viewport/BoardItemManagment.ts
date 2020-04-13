@@ -2,6 +2,7 @@ import {ViewportComponent} from './viewport.component';
 import * as THREE from 'three';
 import {SceneBuilderService} from '../services/scene-builder.service';
 import {BoardCoordConversion} from './BoardCoordConversion';
+import {PhysicsEngine} from './PhysicsEngine';
 
 export enum BoardItemRole {
   Dice = 1,
@@ -22,7 +23,7 @@ export class BoardItemManagment {
   markerGeo = new THREE.ConeGeometry(1, 10, 15, 1, false, 0, 2 * Math.PI);
 
 
-  constructor(scene: THREE.Scene, private sceneBuilder: SceneBuilderService) {
+  constructor(scene: THREE.Scene, private sceneBuilder: SceneBuilderService, private physics: PhysicsEngine) {
     this.scene = scene;
     this.boardItems = [];
   }
@@ -45,6 +46,17 @@ export class BoardItemManagment {
 
     this.boardItems.push({mesh: figure, role: BoardItemRole.figure, removeBy: undefined});
     this.scene.add(figure);
+
+    // TODO: add to Physics
+  }
+
+  addFlummi(x: number, y: number, z: number, color: number) {
+    const geometry = new THREE.SphereGeometry( 2, 32, 32 );
+    const material = new THREE.MeshBasicMaterial( {color: color} );
+    const sphere = new THREE.Mesh( geometry, material );
+    sphere.position.set(x, y, z);
+    this.scene.add( sphere );
+    this.physics.addObject(sphere, 1, 1, 1);
   }
 
   addMarker(x: number, y: number, z: number, col: number): void {

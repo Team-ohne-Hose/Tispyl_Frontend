@@ -9,6 +9,7 @@ import {SceneBuilderService} from '../services/scene-builder.service';
 import {GameBoardOrbitControl} from './GameBoardOrbitControl';
 import {BoardCoordConversion} from './BoardCoordConversion';
 import {ObjectLoaderService} from '../object-loader.service';
+import {PhysicsEngine} from './PhysicsEngine';
 
 @Component({
   selector: 'app-viewport',
@@ -32,12 +33,14 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   camera: PerspectiveCamera;
   renderer: Renderer;
   controls: GameBoardOrbitControl;
+  physics: PhysicsEngine;
 
   animate() {
     requestAnimationFrame(this.animate.bind(this));
     // this.controls.update();
     this.renderer.render(this.scene, this.camera);
     this.boardItemManager.removeToDelete();
+    this.physics.update();
   }
 
   ngOnInit() {
@@ -88,13 +91,15 @@ export class ViewportComponent implements AfterViewInit, OnInit {
 
     this.audioControl = new AudioControl();
     this.cameraControl = new CameraControl(this.camera, this.controls);
-    this.boardItemManager = new BoardItemManagment(this.scene, this.sceneBuilder);
+    this.physics = new PhysicsEngine();
+    this.boardItemManager = new BoardItemManagment(this.scene, this.sceneBuilder, this.physics);
     this.boardItemManager.board = gameBoard;
     this.mouseInteract = new MouseInteraction(this.scene, this.camera, this.boardItemManager);
     this.mouseInteract.updateScreenSize(width, height);
 
     this.boardItemManager.addMarker(BoardCoordConversion.borderCoords.x[4], 0, BoardCoordConversion.borderCoords.y[4], 0x5d00ff);
     this.boardItemManager.addGameFigure();
+    this.boardItemManager.addFlummi(0, 20, 0, 0x004444);
 
     this.objectLoaderService.loadObject(ObjectLoaderService.LoadableObject.dice, (model: THREE.Group) => {
       model.position.set(0, 2, 0);
