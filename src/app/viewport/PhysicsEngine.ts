@@ -14,6 +14,7 @@ export interface PhysicsObject {
   rotationalVelocity: number;
   elasticity: number; // 0 to 1
   rotationalDragFactor: number;
+  dragFactor: number;
   instructions: TurnInstruction;
 }
 
@@ -22,6 +23,7 @@ export class PhysicsEngine {
 
   gravity = 98.1; // units/dsec^2, 100 units = 1m, 1 dsec = 0.1 sec
   rotationDrag = 0.001; // 1/unit Area/Volume
+  drag = 0.025;
 
   physicsObjects: PhysicsObject[] = [];
   lastUpdate: number;
@@ -74,10 +76,13 @@ export class PhysicsEngine {
     const testSpd = obj.velocity.y;
     obj.velocity.add(gravityAccel);
 
+    const dragAccel = obj.velocity.clone().dot(obj.velocity.clone()) * this.drag;
+    obj.velocity.add(obj.velocity.clone().normalize().multiplyScalar(-dragAccel * obj.dragFactor * delta).setY(0));
+
     /*if (testSpd > 0 && obj.velocity.y < 0) {
       console.log('apoapsis: ', obj.mesh.position.y);
     }*/
-    console.log('velocity: ', obj.velocity.y);
+    // console.log('velocity: ', obj.velocity.y);
 
     // update rotation
     obj.mesh.rotateOnAxis(obj.rotationalAxis, obj.rotationalVelocity * delta);
@@ -118,6 +123,7 @@ export class PhysicsEngine {
       rotationalVelocity: 0,
       rotationalDragFactor: rotationalDragFactor || 1,
       rotationalAxis: new Vector3(0, 1, 0),
+      dragFactor: 1,
       instructions: undefined
     };
     this.physicsObjects.push(physObj);

@@ -21,7 +21,7 @@ export class BoardItemManagment {
   board: THREE.Mesh;
   dice: THREE.Mesh;
   scene: THREE.Scene;
-  markerGeo = new THREE.ConeGeometry(1, 10, 15, 1, false, 0, 2 * Math.PI);
+  markerGeo = new THREE.ConeBufferGeometry(1, 10, 15, 1, false, 0, 2 * Math.PI);
 
 
   constructor(scene: THREE.Scene, private sceneBuilder: SceneBuilderService, private physics: PhysicsEngine) {
@@ -55,16 +55,16 @@ export class BoardItemManagment {
 
   addFlummi(x: number, y: number, z: number, color: number) {
     const geometry = new THREE.SphereGeometry( 2, 32, 32 );
-    const material = new THREE.MeshBasicMaterial( {color: color} );
+    const material = new THREE.MeshStandardMaterial( {color: color} );
     const sphere = new THREE.Mesh( geometry, material );
     sphere.position.set(x, y, z);
     this.scene.add( sphere );
-    const pObj = this.physics.addObject(sphere, 0.995, 1);
+    const pObj = this.physics.addObject(sphere, 0.5, 1);
     pObj.velocity.set((2 * Math.random() - 1) * 15, Math.random() * 15, (2 * Math.random() - 1) * 15);
   }
 
   addMarker(x: number, y: number, z: number, col: number): void {
-    const markerMat = new THREE.MeshPhysicalMaterial({color: col});
+    const markerMat = new THREE.MeshStandardMaterial({color: col});
     const marker = new THREE.Mesh(this.markerGeo, markerMat);
     marker.castShadow = true;
     marker.receiveShadow = true;

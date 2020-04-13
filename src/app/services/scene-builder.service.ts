@@ -2,12 +2,14 @@ import {Injectable} from '@angular/core';
 import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 import {GameBoardOrbitControl} from '../viewport/GameBoardOrbitControl';
+import {Mesh} from 'three';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SceneBuilderService {
   gameBoardTextureURL = '/assets/tischspiel.png';
+  diceTextureURLBase = '/assets/dice/';
 
   vertexShader = `varying vec3 vWorldPosition;
     void main() {
@@ -27,8 +29,30 @@ export class SceneBuilderService {
     }`;
 
   tLoader = new THREE.TextureLoader();
+  cubeLoader = new THREE.CubeTextureLoader();
 
   constructor() {
+  }
+
+  generateDice(): Mesh {
+    const diceGeo = new THREE.BoxBufferGeometry(1, 1, 1);
+    const diceMat = new THREE.MeshStandardMaterial({color: 0xff0000});
+    const dice = new THREE.Mesh(diceGeo, diceMat);
+    dice.position.y = 1;
+    dice.castShadow = true;
+    dice.receiveShadow = true;
+    dice.name = 'dice';
+
+    this.cubeLoader.setPath(this.diceTextureURLBase);
+    this.cubeLoader.load(['1.png', '6.png', '2.png', '5.png', '3.png', '4.png'], (texture) => {
+      texture.encoding = THREE.sRGBEncoding;
+      texture.anisotropy = 16;
+      // diceMat.map = texture;
+      diceMat.needsUpdate = true;
+    }, undefined, (error) => {
+      console.error(error);
+    });
+    return dice;
   }
 
   generateHemisphereLight(): { hemi: THREE.HemisphereLight, hemiHelp: THREE.HemisphereLightHelper } {
@@ -39,7 +63,6 @@ export class SceneBuilderService {
     hemiLight.position.set(0, 50, 0);
     return {hemi: hemiLight, hemiHelp: hemiLightHelper};
   }
-
   generateDirectionalLight(): { dir: THREE.DirectionalLight, dirHelp: THREE.DirectionalLightHelper } {
     const dirLight = new THREE.DirectionalLight(0xffffff, 1);
     const dirLightHeper = new THREE.DirectionalLightHelper(dirLight, 10);
@@ -62,7 +85,6 @@ export class SceneBuilderService {
 
     return {dir: dirLight, dirHelp: dirLightHeper};
   }
-
   generateGround(): THREE.Mesh {
     const groundGeo = new THREE.PlaneBufferGeometry(10000, 10000);
     const groundMat = new THREE.MeshLambertMaterial({color: 0xffffff});
@@ -74,7 +96,6 @@ export class SceneBuilderService {
     ground.receiveShadow = true;
     return ground;
   }
-
   generateSkyDome(topCol: THREE.Color, fog: THREE.IFog): THREE.Mesh {
     const uniforms = {
       'topColor': {value: new THREE.Color(0x0077ff)},
@@ -95,7 +116,6 @@ export class SceneBuilderService {
 
     return sky;
   }
-
   generateGameBoardOrbitControls(cam: THREE.PerspectiveCamera, domElem: HTMLElement): GameBoardOrbitControl {
     const orbitCtrl = new GameBoardOrbitControl(cam, domElem);
     orbitCtrl.enablePan = false;
@@ -119,7 +139,6 @@ export class SceneBuilderService {
     orbitCtrl.update();
     return orbitCtrl;
   }
-
   generateOrbitControls(cam: THREE.Camera, domElem: HTMLElement): OrbitControls {
     const orbitCtrl = new OrbitControls(cam, domElem);
     orbitCtrl.enableDamping = true;
@@ -131,18 +150,19 @@ export class SceneBuilderService {
     };
     return orbitCtrl;
   }
-
   generateGameBoard(): THREE.Mesh {
-    const gameBoardGeo = new THREE.BoxGeometry(100, 1, 100);
-    const gameBoardMat = new THREE.MeshPhysicalMaterial({color: 0xffffff});
+    const gameBoardGeo = new THREE.BoxBufferGeometry(100, 1, 100);
+    const gameBoardMat = new THREE.MeshStandardMaterial({color: 0xffffff});
     const gameBoard = new THREE.Mesh(gameBoardGeo, gameBoardMat);
     gameBoard.position.y = -0.5;
     gameBoard.castShadow = true;
     gameBoard.receiveShadow = true;
     gameBoard.name = 'gameboard';
+    gameBoard.matrixAutoUpdate = false;
 
     this.tLoader.load(this.gameBoardTextureURL, (texture) => {
       texture.encoding = THREE.sRGBEncoding;
+      texture.anisotropy = 16;
       gameBoardMat.map = texture;
       gameBoardMat.needsUpdate = true;
     }, undefined, (error) => {
@@ -152,8 +172,8 @@ export class SceneBuilderService {
   }
 
   generateGameFigure(color: number): THREE.Mesh {
-    const gameFigureGeo = new THREE.CylinderGeometry(1.3, 1.5, 1, 20, 1);
-    const gameFigureMat = new THREE.MeshPhysicalMaterial({color: color});
+    const gameFigureGeo = new THREE.CylinderBufferGeometry(1.3, 1.5, 1, 20, 1);
+    const gameFigureMat = new THREE.MeshStandardMaterial({color: color});
     const gameFigure = new THREE.Mesh(gameFigureGeo, gameFigureMat);
     gameFigure.receiveShadow = true;
     gameFigure.castShadow = true;

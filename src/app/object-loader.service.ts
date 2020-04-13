@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {GLTF, GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
-import {Group, Object3D} from 'three';
+import * as THREE from 'three';
 
 
 enum LoadableObject {
@@ -30,7 +30,7 @@ export class ObjectLoaderService {
   };
   constructor() { }
 
-  loadObject(toLoad: LoadableObject, callback: (model: Object3D) => void) {
+  loadObject(toLoad: LoadableObject, callback: (model: THREE.Object3D) => void) {
     const loader = new GLTFLoader().setPath(this.objectResourceList[toLoad].resourcePath);
     loader.load(this.objectResourceList[toLoad].fname, (gltf: GLTF) => {
       gltf.scene.children[0].castShadow = true;
@@ -49,7 +49,6 @@ export class ObjectLoaderService {
         }
         toScan = toScan[0].children;
       }
-      callback(gltf.scene);
     });
   }
 }

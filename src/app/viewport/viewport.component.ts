@@ -111,6 +111,10 @@ export class ViewportComponent implements AfterViewInit, OnInit {
       // this.physics.addObject(model);
     });
 
+    const dice = this.sceneBuilder.generateDice();
+    dice.position.setY(5);
+    this.scene.add(dice);
+
     this.audioControl.initAudio(this.camera);
     this.registerViewport.emit([this.cameraControl, this.boardItemManager, this.audioControl]);
     this.animate();
