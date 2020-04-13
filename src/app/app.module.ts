@@ -26,6 +26,8 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { ViewportComponent } from './viewport/viewport.component';
 import { OpenGamePopupComponent } from './open-game-popup/open-game-popup.component';
 import { JoinGameComponent } from './join-game/join-game.component';
+import { InterfaceComponent } from './interface/interface.component';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 const appRoutes: Routes = [
   { path: 'lobby', component: LobbyComponent},
@@ -49,12 +51,14 @@ const appRoutes: Routes = [
     PageNotFoundComponent,
     ViewportComponent,
     OpenGamePopupComponent,
-    JoinGameComponent
+    JoinGameComponent,
+    InterfaceComponent
   ],
   imports: [
     RouterModule.forRoot(
       appRoutes // ,{ enableTracing: true } // <-- debugging purposes only
     ),
+    DragDropModule,
     BrowserModule,
     HttpClientModule,
     BrowserAnimationsModule,

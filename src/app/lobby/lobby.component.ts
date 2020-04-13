@@ -36,6 +36,8 @@ export class LobbyComponent implements OnInit {
   }
 
   ngOnInit() {
+    // enable scrollbars
+    document.documentElement.setAttribute('style', 'overflow: scrollbars');
     this.translation = TranslationService.getTranslations('en');
 
     this.userManagement.getActiveUser().subscribe( u => this.currentUser = u);

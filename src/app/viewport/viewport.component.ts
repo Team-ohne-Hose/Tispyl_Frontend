@@ -11,6 +11,7 @@ import {BoardCoordConversion} from './BoardCoordConversion';
 import {ObjectLoaderService} from '../object-loader.service';
 import {PhysicsEngine} from './PhysicsEngine';
 import Stats from 'THREE/examples/jsm/libs/stats.module.js';
+import {style} from '@angular/animations';
 
 @Component({
   selector: 'app-viewport',
@@ -50,8 +51,8 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit() {
-    // disable navBar
-    document.getElementById('navBar_Test').setAttribute('style', 'display_name: none');
+    // disable scrollbars
+    document.documentElement.setAttribute('style', 'overflow: hidden');
     const width = this.view['nativeElement'].offsetWidth;
     const height = this.view['nativeElement'].offsetHeight;
 
