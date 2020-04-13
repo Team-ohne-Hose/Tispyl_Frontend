@@ -20,6 +20,6 @@ export class JoinGameComponent {
   }
 
   public join() {
-    this.router.navigateByUrl('/game');
+    this.router.navigateByUrl('/game').then( e => this.dialogRef.close());
   }
 }

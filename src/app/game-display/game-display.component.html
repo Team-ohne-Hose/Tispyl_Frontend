@@ -12,8 +12,9 @@
         {{game.clients || "undefined"}}{{game.maxClients ? (' / ' + game.maxClients) : ''}}
       </div>
       <div class="controls">
-        <div><button class="enter" (click)="enter()"><i class="fas fa-share"></i></button></div>
-        <div><button class="leave" (click)="leave()"><i class="fas fa-door-open"></i></button></div>
+        <div *ngIf="!isActive"><button class="enter" (click)="join()"><i class="fas fa-sign-in-alt"></i></button></div>
+        <div *ngIf="isActive"><button class="enter" (click)="enter()"><i class="fas fa-share"></i></button></div>
+        <div *ngIf="isActive"><button class="leave" (click)="leave()"><i class="fas fa-door-open"></i></button></div>
       </div>
     </div>
   </div>

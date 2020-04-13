@@ -3,16 +3,11 @@
 
 <nav id="navBar_Test">
   <div>
-    <a routerLink="/404" routerLinkActive="active">404</a>
-  </div>
-  <div>
-    <a routerLink="/game" routerLinkActive="active">Game</a>
-  </div>
-  <div>
-    <a routerLink="/lobby" routerLinkActive="active">Lobby</a>
-  </div>
-  <div>
     <a routerLink="/" routerLinkActive="active">Root (redirects to lobby)</a>
+  </div>
+  <div *ngFor="let route of routes"><a routerLink="{{route.path}}" routerLinkActive="active">{{route.component.name}}</a></div>
+  <div>
+    <a routerLink="/404" routerLinkActive="active">404</a>
   </div>
 </nav>
 

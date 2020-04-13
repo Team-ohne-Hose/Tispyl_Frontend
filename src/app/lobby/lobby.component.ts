@@ -57,10 +57,10 @@ export class LobbyComponent implements OnInit {
       if (s !== undefined) {
         this.colyseus.hostGame({name: s, author: this.currentUser.display_name});
         this.colyseus.updateAvailableRooms();
-        this.router.navigateByUrl('/game')
-          .then(e => {
-            console.log('Routed =)', e);
-          });
+        // this.router.navigateByUrl('/game')
+        //  .then(e => {
+        //    console.log('Routed =)', e);
+        //  });
       }});
   }
 
@@ -70,18 +70,21 @@ export class LobbyComponent implements OnInit {
     this.colyseus.updateAvailableRooms();
   }
 
-  /*joinGame(lobby: RoomAvailable<RoomMetaInfo>) {
+  isActive(lobby: RoomAvailable<RoomMetaInfo>) {
+    return this.activeLobby ? this.activeLobby.id === lobby.roomId : false;
+  }
+
+  joinGame(lobby: RoomAvailable<RoomMetaInfo>) {
     const dialogRef: MatDialogRef<JoinGameComponent, void> = this.dialog.open(JoinGameComponent,{
-      width: '80%',
-      maxWidth: '500px',
-      height: '30%',
-      maxHeight: '250px',
+      width: '60%',
+      maxWidth: '400px',
       data: {lobby: lobby},
       panelClass: 'modalbox-base'
     });
 
     dialogRef.afterClosed().subscribe(s => console.log('closed dialog'));
-  }*/
+    console.log('JOIN STUB: ', lobby);
+  }
 
   changeLanguage(lang: string) {
     this.translation = TranslationService.getTranslations(lang);

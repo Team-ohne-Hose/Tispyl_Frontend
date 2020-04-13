@@ -23,7 +23,7 @@
     </div>
     <app-game-display *ngIf="availableLobbies.length <= 0" [languageObjects]="translation.text" [isDummy]="true"></app-game-display>
     <div *ngIf="availableLobbies.length > 0">
-      <app-game-display (join)="joinGame($event)" *ngFor="let game of availableLobbies" [isActive]="activeLobby.id == game.roomId" [languageObjects]="translation.text" [game]="game" (leave)="onLeaveLobby($event)" ></app-game-display>
+      <app-game-display *ngFor="let game of availableLobbies" (join)="joinGame($event)" [isActive]="isActive(game)" [languageObjects]="translation.text" [game]="game" (leave)="onLeaveLobby($event)" ></app-game-display>
     </div>
   </div>
 
