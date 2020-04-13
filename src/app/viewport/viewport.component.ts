@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
 import * as THREE from 'three';
-import {PerspectiveCamera, Renderer, Scene} from 'three';
+import {Object3D, PerspectiveCamera, Renderer, Scene} from 'three';
 import {MouseInteraction} from './MouseInteraction';
 import {AudioControl} from './AudioControl';
 import {BoardItemManagment} from './BoardItemManagment';
@@ -99,14 +99,16 @@ export class ViewportComponent implements AfterViewInit, OnInit {
 
     this.boardItemManager.addGameFigure();
 
-    this.objectLoaderService.loadObject(ObjectLoaderService.LoadableObject.dice, (model: THREE.Group) => {
+    /*this.objectLoaderService.loadObject(ObjectLoaderService.LoadableObject.dice, (model: THREE.Group) => {
       model.position.set(0, 2, 0);
       model.scale.set(0.5, 0.5, 0.5);
       this.scene.add(model);
-    });
-    this.objectLoaderService.loadObject(ObjectLoaderService.LoadableObject.dice2, (model: THREE.Group) => {
+    });*/
+    this.objectLoaderService.loadObject(ObjectLoaderService.LoadableObject.dice2, (model: Object3D) => {
       model.position.set(2, 2, 0);
       this.scene.add(model);
+      // this.boardItemManager.dice = model;
+      // this.physics.addObject(model);
     });
 
     this.audioControl.initAudio(this.camera);

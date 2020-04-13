@@ -74,21 +74,25 @@ export class MouseInteraction {
       if (intersects[0].object.name === 'gameboard') {
         if (!this.handleBoardTileClick(point)) {
           // this.boardItemManager.addMarker(point.x, point.y, point.z, 0x0000ff);
-          this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 20, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
-          this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 20, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
-          this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 20, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
-          this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 20, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
-          this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 20, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
-          this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 20, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
-          this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 20, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
-          this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 20, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
-          this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 20, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
-          this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 20, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
+          this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 30, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
+          this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 30, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
+          this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 30, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
+          this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 30, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
+          this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 30, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
+          this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 30, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
+          this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 30, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
+          this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 30, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
+          this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 30, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
+          this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 30, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
         }
         this.currentlySelected = undefined;
       } else if (intersects[0].object.name === 'gamefigure') {
         this.currentlySelected = intersects[0].object;
         console.log('selected Object');
+      } else if (intersects[0].object.name === 'Cube' ||
+        intersects[0].object.name === 'Cube_2' ||
+        intersects[0].object.name === 'Cube_1') {
+        this.boardItemManager.throwDice();
       }
 
 

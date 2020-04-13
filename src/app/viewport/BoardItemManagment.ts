@@ -19,6 +19,7 @@ export class BoardItemManagment {
   myView: ViewportComponent;
   boardItems: BoardItem[];
   board: THREE.Mesh;
+  dice: THREE.Mesh;
   scene: THREE.Scene;
   markerGeo = new THREE.ConeGeometry(1, 10, 15, 1, false, 0, 2 * Math.PI);
 
@@ -28,6 +29,9 @@ export class BoardItemManagment {
     this.boardItems = [];
   }
 
+  throwDice() {
+
+  }
   moveGameFigure(object: THREE.Object3D, fieldID: number) {
     console.log('move Figure to ', fieldID);
     for (const itemKey in this.boardItems) {
@@ -46,7 +50,7 @@ export class BoardItemManagment {
 
     this.boardItems.push({mesh: figure, role: BoardItemRole.figure, removeBy: undefined});
     this.scene.add(figure);
-    const pObj = this.physics.addObject(figure, 0.5, 1, 1);
+    const pObj = this.physics.addObject(figure, 0.8, 1);
   }
 
   addFlummi(x: number, y: number, z: number, color: number) {
@@ -55,7 +59,7 @@ export class BoardItemManagment {
     const sphere = new THREE.Mesh( geometry, material );
     sphere.position.set(x, y, z);
     this.scene.add( sphere );
-    const pObj = this.physics.addObject(sphere, 0.5, 1, 1);
+    const pObj = this.physics.addObject(sphere, 0.995, 1);
     pObj.velocity.set((2 * Math.random() - 1) * 15, Math.random() * 15, (2 * Math.random() - 1) * 15);
   }
 

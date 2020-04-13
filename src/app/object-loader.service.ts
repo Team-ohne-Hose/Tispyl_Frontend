@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {GLTF, GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
-import {Group} from 'three';
+import {Group, Object3D} from 'three';
 
 
 enum LoadableObject {
@@ -18,22 +18,37 @@ export class ObjectLoaderService {
     dice: {
       cname: 'diceModel',
       resourcePath: '/assets/models/dice/',
-      fname: 'scene.gltf'
+      fname: 'scene.gltf',
+      rootObj: 'Cube'
     },
     dice2: {
       cname: 'diceModel2',
       resourcePath: '/assets/models/dice2/',
-      fname: 'scene.gltf'
+      fname: 'scene.gltf',
+      rootObj: 'pCube22'
     }
   };
   constructor() { }
 
-  loadObject(toLoad: LoadableObject, callback: (model: Group) => void) {
+  loadObject(toLoad: LoadableObject, callback: (model: Object3D) => void) {
     const loader = new GLTFLoader().setPath(this.objectResourceList[toLoad].resourcePath);
     loader.load(this.objectResourceList[toLoad].fname, (gltf: GLTF) => {
       gltf.scene.children[0].castShadow = true;
       gltf.scene.children[0].receiveShadow = true;
       console.log(gltf.scene.children[0]);
+      let toScan = gltf.scene.children;
+      while (true) {
+        if (toScan.length === 0) {
+          break;
+        }
+        for (const c in toScan) {
+          if (c in toScan && toScan[c].name === this.objectResourceList[toLoad].rootObj) {
+            callback( toScan[c] );
+            return;
+          }
+        }
+        toScan = toScan[0].children;
+      }
       callback(gltf.scene);
     });
   }
