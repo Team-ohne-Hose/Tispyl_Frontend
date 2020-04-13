@@ -10,6 +10,7 @@ import {GameBoardOrbitControl} from './GameBoardOrbitControl';
 import {BoardCoordConversion} from './BoardCoordConversion';
 import {ObjectLoaderService} from '../object-loader.service';
 import {PhysicsEngine} from './PhysicsEngine';
+import Stats from 'THREE/examples/jsm/libs/stats.module.js';
 
 @Component({
   selector: 'app-viewport',
@@ -22,6 +23,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   cameraControl: CameraControl;
   boardItemManager: BoardItemManagment;
   audioControl: AudioControl;
+  stats: Stats;
 
   constructor(private sceneBuilder: SceneBuilderService, private objectLoaderService: ObjectLoaderService) {  }
 
@@ -41,6 +43,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.renderer.render(this.scene, this.camera);
     this.boardItemManager.removeToDelete();
     this.physics.update();
+    this.stats.update();
   }
 
   ngOnInit() {
@@ -64,6 +67,8 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     const viewPortRenderer: HTMLCanvasElement = this.renderer.domElement;
     viewPortRenderer.setAttribute('style', viewPortRenderer.getAttribute('style') + 'display_name: block;');
     document.getElementById('viewport-container').appendChild( viewPortRenderer );
+    this.stats = Stats();
+    document.getElementById('viewport-container').appendChild(this.stats.dom);
 
     // Add environment into Scene
     const hemi = this.sceneBuilder.generateHemisphereLight();
