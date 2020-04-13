@@ -31,15 +31,11 @@ export class PhysicsEngine {
   private handleCollision(obj: PhysicsObject) {
     // TODO check for actual collisions
     // TODO fix rotation
-    console.log('got Collision', obj.mesh.position.y, obj.velocity.y);
 
     const deltaS = obj.mesh.position.y - 2;
-
-
     const pq1 = Math.sqrt(obj.velocity.y * obj.velocity.y + 2 * deltaS * this.gravity) / this.gravity;
     const deltaT1 = - obj.velocity.y / (this.gravity) + pq1;
     const deltaT2 = - obj.velocity.y / (this.gravity) - pq1;
-
 
     let deltaT: number;
     if (Math.min(deltaT1, deltaT2) < 0) {
@@ -47,44 +43,37 @@ export class PhysicsEngine {
     } else {
       deltaT = Math.min(deltaT1, deltaT2);
     }
-    // console.log('got Collision', obj.velocity.y, obj.mesh.position.y, deltaT);
 
-
-    obj.mesh.position.y = 2 - obj.velocity.y * deltaT - 1.5 * this.gravity * deltaT * deltaT;
-    obj.velocity.y = -obj.velocity.y - 2 * this.gravity * deltaT;
-    // obj.velocity.y = -obj.velocity.y; // * obj.elasticity;
-    // obj.mesh.position.y = 4 - obj.mesh.position.y;
-    console.log('got Collision', obj.mesh.position.y, obj.velocity.y, deltaT1, deltaT2);
+    obj.mesh.position.y = 2 - obj.velocity.y * deltaT * obj.elasticity - 1.5 * this.gravity * deltaT * deltaT;
+    if ( obj.mesh.position.y ) {
+      obj.mesh.position.y = 2;
+    }
+    obj.velocity.y = -obj.velocity.y * obj.elasticity - 2 * this.gravity * deltaT;
+    // console.log('got Collision', obj.mesh.position.y, obj.velocity.y, deltaT1, deltaT2);
   }
 
   private updatePhysicsObject(obj: PhysicsObject, delta: number) {
-    console.log(obj.mesh.position.y, obj.velocity.y, delta);
-    const oldSpeed = obj.velocity.clone();
     const gravityAccel = new Vector3(0, -this.gravity * delta, 0);
 
     // update position
     obj.mesh.position.add(obj.velocity.clone().multiplyScalar(delta));
     obj.mesh.position.add(gravityAccel.clone().multiplyScalar(0.5 * delta));
 
-
-    console.log(obj.mesh.position.y, obj.velocity.y, delta, gravityAccel.y);
     // update speed
     const testSpd = obj.velocity.y;
     obj.velocity.add(gravityAccel);
 
-    if (testSpd > 0 && obj.velocity.y < 0) {
+    /*if (testSpd > 0 && obj.velocity.y < 0) {
       console.log('apoapsis: ', obj.mesh.position.y);
-    }
+    }*/
     // const dragAccel = obj.velocity.clone().dot(obj.velocity.clone()) * this.drag;
     // obj.velocity.add(obj.velocity.clone().normalize().multiplyScalar(-dragAccel * obj.dragFactor * delta));
 
     // update rotation
-    // obj.mesh.rotateOnAxis(obj.rotationalAxis, obj.rotationalVelocity * delta);
-    // obj.rotationalVelocity -= (obj.rotationalVelocity * obj.rotationalVelocity) * this.rotationDrag * obj.rotationalDragFactor * delta;
+    obj.mesh.rotateOnAxis(obj.rotationalAxis, obj.rotationalVelocity * delta);
+    obj.rotationalVelocity -= (obj.rotationalVelocity * obj.rotationalVelocity) * this.rotationDrag * obj.rotationalDragFactor * delta;
 
-    console.log(obj.mesh.position.y, obj.velocity.y, delta);
     if (obj.mesh.position.y - obj.boundingSphere.radius < 0 && obj.velocity.y < 0) {
-      console.log(delta);
       this.handleCollision(obj);
     }
   }
@@ -119,6 +108,7 @@ export class PhysicsEngine {
       instructions: undefined
     };
     this.physicsObjects.push(physObj);
+    console.log('now simulating ' + this.physicsObjects.length + ' Objects');
     return physObj;
   }
 }

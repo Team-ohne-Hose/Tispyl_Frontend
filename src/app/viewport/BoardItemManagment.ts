@@ -34,7 +34,7 @@ export class BoardItemManagment {
       if (this.boardItems[itemKey].mesh === object) {
         console.log('found Item, role is: ', this.boardItems[itemKey].role);
         const newField = BoardCoordConversion.getFieldCenter(fieldID);
-        this.boardItems[itemKey].mesh.position.set(newField.x, 1.1, newField.y);
+        this.boardItems[itemKey].mesh.position.set(newField.x, 8, newField.y);
       }
     }
   }
@@ -42,12 +42,11 @@ export class BoardItemManagment {
   addGameFigure() {
     const figure = this.sceneBuilder.generateGameFigure(0x004412);
     const startPos = BoardCoordConversion.getFieldCenter(0);
-    figure.position.set(startPos.x, 1.1, startPos.y);
+    figure.position.set(startPos.x, 8, startPos.y);
 
     this.boardItems.push({mesh: figure, role: BoardItemRole.figure, removeBy: undefined});
     this.scene.add(figure);
-
-    // TODO: add to Physics
+    const pObj = this.physics.addObject(figure, 0.5, 1, 1);
   }
 
   addFlummi(x: number, y: number, z: number, color: number) {
@@ -56,7 +55,8 @@ export class BoardItemManagment {
     const sphere = new THREE.Mesh( geometry, material );
     sphere.position.set(x, y, z);
     this.scene.add( sphere );
-    this.physics.addObject(sphere, 1, 1, 1);
+    const pObj = this.physics.addObject(sphere, 0.5, 1, 1);
+    pObj.velocity.set((2 * Math.random() - 1) * 15, Math.random() * 15, (2 * Math.random() - 1) * 15);
   }
 
   addMarker(x: number, y: number, z: number, col: number): void {

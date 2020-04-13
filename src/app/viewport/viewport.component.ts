@@ -97,9 +97,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.mouseInteract = new MouseInteraction(this.scene, this.camera, this.boardItemManager);
     this.mouseInteract.updateScreenSize(width, height);
 
-    this.boardItemManager.addMarker(BoardCoordConversion.borderCoords.x[4], 0, BoardCoordConversion.borderCoords.y[4], 0x5d00ff);
     this.boardItemManager.addGameFigure();
-    this.boardItemManager.addFlummi(0, 20, 0, 0x004444);
 
     this.objectLoaderService.loadObject(ObjectLoaderService.LoadableObject.dice, (model: THREE.Group) => {
       model.position.set(0, 2, 0);
