@@ -1,9 +1,9 @@
 import {Component, HostListener, OnInit} from '@angular/core';
 import {Quaternion, Vector3} from 'three';
-import {BoardItemManagment} from '../viewport/BoardItemManagment';
-import {AudioControl} from '../viewport/AudioControl';
-import {CameraControl} from '../viewport/CameraControl';
-import {BoardCoordConversion} from '../viewport/BoardCoordConversion';
+import {BoardItemManagment} from './viewport/BoardItemManagment';
+import {AudioControl} from './viewport/AudioControl';
+import {CameraControl} from './viewport/CameraControl';
+import {BoardCoordConversion} from './viewport/BoardCoordConversion';
 import {filter, map} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 import {ActivatedRoute, Router} from '@angular/router';

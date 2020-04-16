@@ -4,13 +4,13 @@ import {User} from '../model/User';
 import {GameLobby} from '../model/GameLobby';
 import {Translation} from '../model/Translation';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {OpenGamePopupComponent} from '../open-game-popup/open-game-popup.component';
+import {OpenGamePopupComponent} from './dialogs/open-game-popup/open-game-popup.component';
 import {ColyseusClientService} from '../services/colyseus-client.service';
 import {Client, Room, RoomAvailable} from 'colyseus.js';
 import { Router} from '@angular/router';
 import {UserService} from '../services/user.service';
 import {RoomMetaInfo} from '../model/RoomMetaInfo';
-import {JoinGameComponent} from '../join-game/join-game.component';
+import {JoinGameComponent} from './dialogs/join-game/join-game.component';
 
 @Component({
   selector: 'app-lobby',
