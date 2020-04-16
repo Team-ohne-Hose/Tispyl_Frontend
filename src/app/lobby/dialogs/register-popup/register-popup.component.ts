@@ -1,7 +1,7 @@
 import {Component, Inject, Injectable, Output} from '@angular/core';
 
 import {MatDialogRef, MAT_DIALOG_DATA, MatDialog} from  '@angular/material/dialog';
-import {User} from '../model/User';
+import {User} from '../../../model/User';
 
 @Component({
   templateUrl:  './register-popup.component.html',

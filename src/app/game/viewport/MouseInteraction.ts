@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import {BoardItemManagment} from './BoardItemManagment';
 import {Camera, Mesh, Scene, Vector3} from 'three';
 import {BoardCoordConversion} from './BoardCoordConversion';
-import {Board, Tile} from '../model/Board';
+import {Board, Tile} from '../../model/Board';
 import {PhysicsEngine, PhysicsObject} from './PhysicsEngine';
 
 

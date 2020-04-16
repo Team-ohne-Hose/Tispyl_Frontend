@@ -1,7 +1,7 @@
 import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 import { GameLobby } from 'src/app/model/GameLobby';
 import {RoomAvailable} from 'colyseus.js';
-import {RoomMetaInfo} from '../model/RoomMetaInfo';
+import {RoomMetaInfo} from '../../model/RoomMetaInfo';
 import {Router} from '@angular/router';
 
 @Component({

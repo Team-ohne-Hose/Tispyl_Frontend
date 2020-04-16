@@ -1,5 +1,5 @@
 import {Component, Input, OnInit } from '@angular/core';
-import {TextContainer} from '../model/TextContainer';
+import {TextContainer} from '../../model/TextContainer';
 
 @Component({
   selector: 'app-rules',

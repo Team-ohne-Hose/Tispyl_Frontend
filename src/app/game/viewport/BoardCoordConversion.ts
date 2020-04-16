@@ -1,4 +1,4 @@
-import {Board} from '../model/Board';
+import {Board} from '../../model/Board';
 
 
 export class BoardCoordConversion {

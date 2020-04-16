@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
-import {GameBoardOrbitControl} from '../viewport/GameBoardOrbitControl';
+import {GameBoardOrbitControl} from '../game/viewport/GameBoardOrbitControl';
 import {Mesh} from 'three';
 
 @Injectable({

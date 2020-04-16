@@ -1,6 +1,6 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import { TranslationService } from 'src/app/services/translation.service';
-import {GameLobby} from '../model/GameLobby';
+import {GameLobby} from '../../model/GameLobby';
 
 @Component({
   selector: 'app-language-selector',

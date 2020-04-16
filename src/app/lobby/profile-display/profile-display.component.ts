@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {User} from '../model/User';
-import {UserService} from '../services/user.service';
+import {User} from '../../model/User';
+import {UserService} from '../../services/user.service';
 
 @Component({
   selector: 'app-profile-display',
