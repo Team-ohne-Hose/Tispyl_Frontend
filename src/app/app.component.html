@@ -1,15 +1,2 @@
 <!--The content below is only a placeholder and can be replaced.-->
 <router-outlet></router-outlet>
-
-<div class="BOX">
-  <nav id="navBar_Test" cdkDrag  cdkDragBoundary=".BOX">
-    <div>
-      <a routerLink="/" routerLinkActive="active">Root (redirects to lobby)</a>
-    </div>
-    <div *ngFor="let route of routes"><a routerLink="{{route.path}}" routerLinkActive="active">{{route.component.name}}</a></div>
-    <div>
-      <a routerLink="/404" routerLinkActive="active">404</a>
-    </div>
-  </nav>
-</div>
-

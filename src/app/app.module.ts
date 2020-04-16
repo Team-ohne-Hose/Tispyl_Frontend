@@ -28,6 +28,7 @@ import { OpenGamePopupComponent } from './open-game-popup/open-game-popup.compon
 import { JoinGameComponent } from './join-game/join-game.component';
 import { InterfaceComponent } from './interface/interface.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import { ChatWindowComponent } from './interface/chat-window/chat-window.component';
 
 const appRoutes: Routes = [
   { path: 'lobby', component: LobbyComponent},
@@ -52,7 +53,8 @@ const appRoutes: Routes = [
     ViewportComponent,
     OpenGamePopupComponent,
     JoinGameComponent,
-    InterfaceComponent
+    InterfaceComponent,
+    ChatWindowComponent
   ],
   imports: [
     RouterModule.forRoot(
