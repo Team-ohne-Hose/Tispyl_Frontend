@@ -46,7 +46,7 @@ export class LobbyComponent implements OnInit {
   }
 
   create() { // TODO: CLEAN THIS UP !
-    const dialogRef: MatDialogRef<OpenGamePopupComponent, string> = this.dialog.open(OpenGamePopupComponent,{
+    const dialogRef: MatDialogRef<OpenGamePopupComponent, string> = this.dialog.open(OpenGamePopupComponent, {
       width: '80%',
       maxWidth: '500px',
       height: '30%',
@@ -57,7 +57,7 @@ export class LobbyComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(s => {
       if (s !== undefined) {
-        this.colyseus.hostGame({name: s, author: this.currentUser.display_name});
+        this.colyseus.hostGame({name: s, author: this.currentUser.display_name, displayName: this.currentUser.display_name});
         this.colyseus.updateAvailableRooms();
         // this.router.navigateByUrl('/game')
         //  .then(e => {
@@ -77,7 +77,7 @@ export class LobbyComponent implements OnInit {
   }
 
   joinGame(lobby: RoomAvailable<RoomMetaInfo>) {
-    const dialogRef: MatDialogRef<JoinGameComponent, void> = this.dialog.open(JoinGameComponent,{
+    const dialogRef: MatDialogRef<JoinGameComponent, void> = this.dialog.open(JoinGameComponent, {
       width: '60%',
       maxWidth: '400px',
       data: {lobby: lobby},
@@ -86,6 +86,7 @@ export class LobbyComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(s => console.log('closed dialog'));
     console.log('JOIN STUB: ', lobby);
+    this.colyseus.joinActiveRoom(lobby, {displayName: this.currentUser.display_name});
   }
 
   changeLanguage(lang: string) {

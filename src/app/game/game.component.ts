@@ -7,6 +7,7 @@ import {BoardCoordConversion} from './viewport/BoardCoordConversion';
 import {filter, map} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 import {ActivatedRoute, Router} from '@angular/router';
+import {ColyseusClientService} from '../services/colyseus-client.service';
 
 @Component({
   selector: 'app-game',
@@ -17,7 +18,7 @@ export class GameComponent implements OnInit {
 
   state$: Observable<object>;
 
-  constructor(public activatedRoute: ActivatedRoute, private router: Router) {}
+  constructor(public activatedRoute: ActivatedRoute, private router: Router, private colyseus: ColyseusClientService) {}
 
   cameraControl: CameraControl;
   boardItemControl: BoardItemManagment;
@@ -31,6 +32,15 @@ export class GameComponent implements OnInit {
           console.log('STATE', window.history.state);
           return window.history.state;
         }));
+      this.colyseus.getActiveRoom().subscribe((myRoom) => {
+        console.log('Room is', myRoom);
+        if (myRoom === undefined) {
+          this.router.navigateByUrl('/lobby');
+        }
+      }, (errRoom) => {
+        console.log('ErrorRoom is', errRoom);
+        this.router.navigateByUrl('/lobby');
+      });
   }
 
   debug(ev) {
@@ -58,15 +68,6 @@ export class GameComponent implements OnInit {
           param = 10;
         }
         param--;
-        const slightAdj = 4.5 - Math.abs(param - 4.5);
-        const pos = new Vector3(0, -10 * param, 0);
-        this.cameraControl.lookAtPosition(pos, new Vector3(0, -1,  - 1), 40 + 10 * param);
-        this.boardItemControl.addMarker(pos.x, pos.y, pos.z, 0x00df4b);
-        break;
-
-      case 'i':
-        this.cameraControl.lookAtPosition(new Vector3(0, -10, 0), new Vector3(0, -1, -1), 50);
-        this.boardItemControl.addMarker(pos.x, pos.y, pos.z, 0x00df4b);
         break;
       case 'ArrowLeft':
       case 'ArrowRight':
@@ -75,27 +76,9 @@ export class GameComponent implements OnInit {
         const p: Vector3 = this.cameraControl.getPosition();
         console.log('Camera At: ', p.x, p.y, p.z);
         break;
-      case 'm':
-        this.curField++;
-        if (this.curField >= 64) {
-          this.curField = 0;
-        }
-        const center2: {x: number, y: number} = BoardCoordConversion.getFieldCenter(this.curField);
-        const corners2: {x1: number, y1: number, x2: number, y2: number} = BoardCoordConversion.getFieldCoords(this.curField);
-        this.boardItemControl.addMarker(center2.x, 0, center2.y, 0xff0000);
-        this.boardItemControl.addMarker(corners2.x1, 0, corners2.y1, 0x034400);
-        this.boardItemControl.addMarker(corners2.x1, 0, corners2.y2, 0x034400);
-        this.boardItemControl.addMarker(corners2.x2, 0, corners2.y1, 0x034400);
-        this.boardItemControl.addMarker(corners2.x2, 0, corners2.y2, 0x034400);
-        break;
       case 'o':
         this.audioCtrl.playAudio();
         break;
-      case 'l':
-        console.log('zoom: ', this.cameraControl.cam.zoom);
-        console.log('focus: ', this.cameraControl.cam.focus);
-        const quat = new Quaternion().setFromUnitVectors( this.cameraControl.cam.up, new Vector3(0, 1, 0));
-        console.log('quat: ', quat);
     }
   }
 

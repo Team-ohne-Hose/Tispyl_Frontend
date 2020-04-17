@@ -6,21 +6,11 @@
 
 
 
-
-
-
-
-
-
-          <textarea class="chat-window" rows="16" cols="80" readonly></textarea>
-
-
-
-
-
-
-
-
+          <textarea class="chat-window" rows="8" cols="80" [(ngModel)]="chatContent" readonly></textarea>
+      <div class="chat-text-bar">
+          <input type="text" placeholder="Type a message ..." [(ngModel)]="currentMessage">
+          <button (click)="submitMessage()"><i class="fas fa-chevron-right"></i></button>
+      </div>
 
     </div>
   </div>
