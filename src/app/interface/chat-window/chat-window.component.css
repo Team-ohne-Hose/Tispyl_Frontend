@@ -8,6 +8,30 @@ nav a:visited {
   color: #5aa300;
 }
 
+.chat-window {
+  resize: none;
+}
+
+.chat-text-bar {
+  display: flex;
+  width: 100%;
+}
+
+.chat-text-bar input {
+  width: 95%;
+  margin-right: auto;
+  color: whitesmoke;
+}
+
+.chat-text-bar button {
+  margin-right: auto;
+  font-size: large;
+  -webkit-box-shadow: 0 0 0 0;
+  -moz-box-shadow: 0 0 0 0;
+  box-shadow: 0 0 0 0;
+  background-color: transparent;
+}
+
 .basic-window {
   pointer-events: visibleFill;
   display: inline-block;

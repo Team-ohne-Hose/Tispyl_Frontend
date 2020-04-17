@@ -30,6 +30,7 @@ export class ColyseusClientService {
   }
 
   setActiveRoom(room): void {
+    const extendedRoom = this.attatchRoomCallbacks(room);
     this.activeRoom.next(room);
   }
 
@@ -48,5 +49,9 @@ export class ColyseusClientService {
       this.setActiveRoom(suc);
       console.log(suc);
     });
+  }
+
+  attatchRoomCallbacks(room: Room): Room {
+
   }
 }
