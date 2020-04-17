@@ -14,15 +14,22 @@ export class ChatWindowComponent implements OnInit {
   chatContent = '';
 
   ngOnInit(): void {
+    this.colyseus.setChatCallback(data => {
+      this.chatContent =  this.chatContent + '\n' + data.content.message;
+      console.log('GOT: ', data);
+    });
 
     // SOME DEBUG INIT CODE
-    this.colyseus.getClient().create('game').then( room => {
+    /*this.colyseus.getClient().create('game').then( room => {
+      console.log('room: ', room);
       this.colyseus.setActiveRoom(room);
+
+      /*this.colyseus.setActiveRoom(room);
         room.onMessage( data => {
           this.chatContent =  this.chatContent + '\n' + data.content.message;
           console.log('GOT: ', data);
-        });
-    });
+        });*/
+    //});
     ///////////////////////
 
   }

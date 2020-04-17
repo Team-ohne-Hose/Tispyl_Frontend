@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {Client, Room, RoomAvailable} from 'colyseus.js';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {RoomMetaInfo} from '../model/RoomMetaInfo';
+import {room} from 'colyseus.js/lib/sync/helpers';
 
 
 @Injectable({
@@ -15,6 +16,8 @@ export class ColyseusClientService {
   private client: Client = new Client(this.backendWStarget);
   private activeRoom: BehaviorSubject<Room>;
   private availableRooms: BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>;
+
+  private chatCallback: (data: any) => void;
 
   constructor() {
     this.activeRoom = new BehaviorSubject<Room>(undefined);
@@ -32,6 +35,13 @@ export class ColyseusClientService {
   setActiveRoom(room): void {
     const extendedRoom = this.attatchRoomCallbacks(room);
     this.activeRoom.next(room);
+    console.log('set room', this.activeRoom, this.availableRooms);
+  }
+
+  joinActiveRoom(roomAva: RoomAvailable<RoomMetaInfo>, options?: any) {
+    this.client.joinById(roomAva.roomId, options).then((myRoom) => {
+      this.setActiveRoom(myRoom);
+    });
   }
 
   watchAvailableRooms(): Observable<RoomAvailable<RoomMetaInfo>[]> {
@@ -51,7 +61,22 @@ export class ColyseusClientService {
     });
   }
 
-  attatchRoomCallbacks(room: Room): Room {
+  private defaultCallback(data) {
+    console.log('cb was undefined', data);
+  }
 
+  setChatCallback(f: (data: any) => void): void {
+    this.chatCallback = f;
+    console.log(this.activeRoom, this.availableRooms);
+    this.getActiveRoom().subscribe((myRoom) => {
+      myRoom.onMessage(this.chatCallback || this.defaultCallback);
+    });
+  }
+
+  attatchRoomCallbacks(roomToAttatch: Room): Room {
+    console.log('attaching', this.activeRoom, this.availableRooms, roomToAttatch);
+    roomToAttatch.onMessage(this.chatCallback || this.defaultCallback);
+    console.log('attaching2', this.activeRoom, this.availableRooms, roomToAttatch);
+    return roomToAttatch;
   }
 }
