@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import {ChatWindowComponent} from './chat-window/chat-window.component';
 import {ColyseusClientService} from '../services/colyseus-client.service';
@@ -28,7 +28,10 @@ export class InterfaceComponent implements OnInit {
     {k: '/showLocalState', f: this.showLocalState.bind(this), h: ''},
     {k: '/setLocalState', f: this.setLocalStateCommand.bind(this), h: 'name:string value:any'},
     {k: '/advanceRound', f: this.advanceRound.bind(this), h: ''},
-    {k: '/advanceAction', f: this.advanceTurn.bind(this), h: ''},
+    {k: '/advanceAction', f: this.advanceAction.bind(this), h: ''},
+    {k: '/advanceTurn', f: this.advanceTurn.bind(this), h: ''},
+    {k: '/start', f: this.start.bind(this), h: ''},
+    {k: '/next', f: this.advanceAction.bind(this), h: ''},
     {k: '/enableDebugLog', f: this.enableDebugLogCommand.bind(this), h: ''}
   ];
 
@@ -37,6 +40,7 @@ export class InterfaceComponent implements OnInit {
     this.colyseus.getActiveRoom().subscribe( room => {
       room.state.onChange = (changes: DataChange[]) => {
         changes.forEach(change => {
+          console.log('ON_CHANGE', change);
           switch (change.field) {
             case 'round': { this.currentState.round = change.value; break; }
             case 'turn': { this.currentState.turn = change.value; break; }
@@ -83,9 +87,21 @@ export class InterfaceComponent implements OnInit {
     });
   }
 
+  advanceAction( args ) {
+    this.colyseus.getActiveRoom().subscribe( r => {
+      r.send({type: 'ADVANCE_ACTION'});
+    });
+  }
+
   advanceTurn( args ) {
     this.colyseus.getActiveRoom().subscribe( r => {
       r.send({type: 'ADVANCE_TURN'});
+    });
+  }
+
+  start( args ) {
+    this.colyseus.getActiveRoom().subscribe( r => {
+      r.send({type: 'SET_STARTING_CONDITIONS'});
     });
   }
 
