@@ -3,6 +3,10 @@ import {Client, Room, RoomAvailable} from 'colyseus.js';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {RoomMetaInfo} from '../model/RoomMetaInfo';
 import {room} from 'colyseus.js/lib/sync/helpers';
+import {GameState} from '../model/GameState';
+import {ChatMessage, WsData} from '../model/WsData';
+import {Schema, DataChange} from '@colyseus/schema';
+
 
 
 @Injectable({
@@ -14,13 +18,16 @@ export class ColyseusClientService {
   private backendWStarget = 'ws://localhost:' + this.port;
 
   private client: Client = new Client(this.backendWStarget);
-  private activeRoom: BehaviorSubject<Room>;
+  private activeRoom: BehaviorSubject<Room<GameState>>;
   private availableRooms: BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>;
 
-  private chatCallback: (data: any) => void;
+  private callbacks: Map<string, ((WsData) => void) | ((DataChange) => any)> = new Map([
+    ['onChatMessage', this.defaultCallback]
+  ]);
+
 
   constructor() {
-    this.activeRoom = new BehaviorSubject<Room>(undefined);
+    this.activeRoom = new BehaviorSubject<Room<GameState>>(undefined);
     this.availableRooms = new BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>([]);
   }
 
@@ -28,13 +35,15 @@ export class ColyseusClientService {
     return this.client;
   }
 
-  getActiveRoom(): Observable<Room> {
+  getActiveRoom(): Observable<Room<GameState>> {
     return this.activeRoom.asObservable();
   }
 
-  setActiveRoom(room): void {
-    const extendedRoom = this.attatchRoomCallbacks(room);
-    this.activeRoom.next(room);
+  setActiveRoom(newRoom): void {
+    if (newRoom !== undefined) {
+      this.updateRoomCallbacks(newRoom);
+    }
+    this.activeRoom.next(newRoom);
   }
 
   joinActiveRoom(roomAva: RoomAvailable<RoomMetaInfo>, options?: any) {
@@ -59,19 +68,53 @@ export class ColyseusClientService {
     });
   }
 
-  private defaultCallback(data) {
-    console.log('cb was undefined', data);
+  private defaultCallback(data: WsData) {
+    console.warn('A server message was not addressed. Call back was undefined', data.type, data);
   }
 
-  setChatCallback(f: (data: any) => void): void {
-    this.chatCallback = f;
-    this.getActiveRoom().subscribe((myRoom) => {
-      myRoom.onMessage(this.chatCallback || this.defaultCallback);
-    });
+  registerCallBack(key: string, newCb: (WsData) => void): boolean {
+    const currentCb = this.callbacks.get(key);
+    if ( currentCb !== undefined ) {
+      if ( currentCb !== this.defaultCallback ) {
+        console.warn(`Overridden an existing callback with key: ${key}`);
+      }
+      const previousValues = Object.assign({}, this.callbacks);
+      this.callbacks.set(key, newCb);
+      if ( this.callbacks === previousValues ) {
+        console.warn('Callback registration did not alter any values.');
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      console.warn(`Failed to register a callback (${key} was no known callback identifier) : `, newCb);
+      return false;
+    }
   }
 
-  attatchRoomCallbacks(roomToAttatch: Room): Room {
-    roomToAttatch.onMessage(this.chatCallback || this.defaultCallback);
-    return roomToAttatch;
+  /**
+   * Will distribute WsData to callbacks based on the WsData type in the Future.
+   * @note: Excluded from directly being located inside the "updateRoomCallbacks()" to avoid function nesting.
+   * @param data passed on to the callbacks based on its type value.
+   */
+  private gatherFunctionCalls(data: WsData): void {
+    [
+      this.callbacks.get('onChatMessage')
+    ].map(f => f(data));
   }
+
+
+  updateRoomCallbacks(currentRoom?: Room<GameState>) {
+    const onMsg = this.gatherFunctionCalls.bind(this);
+    if ( currentRoom === undefined ) {
+      this.getActiveRoom().subscribe((activeRoom) => {
+        if (activeRoom !== undefined) {
+          activeRoom.onMessage(onMsg);
+        }
+      });
+    } else {
+      currentRoom.onMessage(onMsg);
+    }
+  }
+
 }

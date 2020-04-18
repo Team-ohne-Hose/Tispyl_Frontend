@@ -1,0 +1,75 @@
+
+.state-area {
+  width: 100%;
+  margin-top: 8px;
+  position: absolute;
+  pointer-events: visibleFill;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+}
+
+.state-window {
+  padding: 4px 16px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  flex-direction: row;
+  background-color: #3d3d3d;
+  filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, 0.7));
+}
+
+.rules {
+  margin-left: 16px;
+}
+
+
+.state-element {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+}
+
+.state-description {
+  color: grey;
+}
+
+.state-element span {
+  font-size: medium;
+  padding-left: 8px;
+}
+
+.no-icon span{
+  padding-left: 0;
+}
+
+.state-value {
+  padding-top: 8px;
+  font-size: x-large;
+  align-self: center;
+}
+
+.seperator {
+  height: 48px;
+  margin-left: 16px;
+  margin-right: 16px;
+  border: solid 1px black;
+}
+
+.show-rules-button {
+  text-align: center;
+  width: 48px;
+  color: grey;
+  font-size: x-large;
+}
+
+.show-rules-button:hover {
+  color: whitesmoke;
+}
+
+.show-rules-button:active {
+  color: grey;
+}

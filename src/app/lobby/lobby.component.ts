@@ -11,6 +11,7 @@ import { Router} from '@angular/router';
 import {UserService} from '../services/user.service';
 import {RoomMetaInfo} from '../model/RoomMetaInfo';
 import {JoinGameComponent} from './dialogs/join-game/join-game.component';
+import {GameState} from '../model/GameState';
 
 @Component({
   selector: 'app-lobby',
@@ -20,7 +21,7 @@ import {JoinGameComponent} from './dialogs/join-game/join-game.component';
 export class LobbyComponent implements OnInit {
 
   currentUser: User;
-  activeLobby: Room<RoomMetaInfo>;
+  activeLobby: Room<GameState>;
   gameClient: Client;
 
   availableLobbies: RoomAvailable<RoomMetaInfo>[] = [];
@@ -40,7 +41,10 @@ export class LobbyComponent implements OnInit {
     document.documentElement.setAttribute('style', 'overflow: scrollbars');
     this.translation = TranslationService.getTranslations('en');
 
-    this.userManagement.getActiveUser().subscribe( u => this.currentUser = u);
+    this.userManagement.getActiveUser().subscribe( u => {
+      this.currentUser = u;
+      if (this.currentUser !== undefined) { this.refresh(); }
+    });
     this.colyseus.getActiveRoom().subscribe( r => this.activeLobby = r);
     this.colyseus.watchAvailableRooms().subscribe( arr => this.availableLobbies = arr);
   }
@@ -59,10 +63,6 @@ export class LobbyComponent implements OnInit {
       if (s !== undefined) {
         this.colyseus.hostGame({name: s, author: this.currentUser.display_name, displayName: this.currentUser.display_name});
         this.colyseus.updateAvailableRooms();
-        // this.router.navigateByUrl('/game')
-        //  .then(e => {
-        //    console.log('Routed =)', e);
-        //  });
       }});
   }
 
@@ -85,7 +85,6 @@ export class LobbyComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(s => console.log('closed dialog'));
-    console.log('JOIN STUB: ', lobby);
     this.colyseus.joinActiveRoom(lobby, {displayName: this.currentUser.display_name});
   }
 

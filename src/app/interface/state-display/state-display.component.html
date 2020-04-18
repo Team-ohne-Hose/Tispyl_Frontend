@@ -1,0 +1,47 @@
+<div class="state-area">
+  <div class="state-window">
+
+    <div class="state-element">
+      <div class="state-description">
+        <i class="fas fa-flag-checkered"></i>
+        <span>Round</span>
+      </div>
+      <div class="state-value">{{round}}</div>
+    </div>
+
+    <div class="seperator"></div>
+
+    <div class="state-element">
+      <div class="state-description">
+        <i class="far fa-address-card"></i>
+        <span>Turn</span>
+      </div>
+      <div class="state-value">{{turn}}</div>
+    </div>
+
+    <div class="seperator"></div>
+
+    <div class="state-element">
+      <div class="state-description no-icon">
+        <span>Action</span>
+      </div>
+      <div class="state-value">
+        <i [ngClass]="knownActions[action] || 'fas fa-angry'"></i>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="state-window rules">
+    <div class="state-element">
+      <div class="state-description">
+        <i class="fas fa-clipboard-list"></i>
+        <span>Rules</span>
+      </div>
+      <div class="state-value">
+        <button class="show-rules-button"><i class="fas fa-level-down-alt"></i></button>
+      </div>
+    </div>
+  </div>
+
+</div>
