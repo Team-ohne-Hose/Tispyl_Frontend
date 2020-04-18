@@ -3,6 +3,7 @@ import {Client, Room, RoomAvailable} from 'colyseus.js';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {RoomMetaInfo} from '../model/RoomMetaInfo';
 import {room} from 'colyseus.js/lib/sync/helpers';
+import {GameState} from '../model/GameState';
 
 
 @Injectable({
@@ -14,13 +15,13 @@ export class ColyseusClientService {
   private backendWStarget = 'ws://localhost:' + this.port;
 
   private client: Client = new Client(this.backendWStarget);
-  private activeRoom: BehaviorSubject<Room>;
+  private activeRoom: BehaviorSubject<Room<GameState>>;
   private availableRooms: BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>;
 
   private chatCallback: (data: any) => void;
 
   constructor() {
-    this.activeRoom = new BehaviorSubject<Room>(undefined);
+    this.activeRoom = new BehaviorSubject<Room<GameState>>(undefined);
     this.availableRooms = new BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>([]);
   }
 
@@ -28,13 +29,15 @@ export class ColyseusClientService {
     return this.client;
   }
 
-  getActiveRoom(): Observable<Room> {
+  getActiveRoom(): Observable<Room<GameState>> {
     return this.activeRoom.asObservable();
   }
 
-  setActiveRoom(room): void {
-    const extendedRoom = this.attatchRoomCallbacks(room);
-    this.activeRoom.next(room);
+  setActiveRoom(newRoom): void {
+    if (newRoom !== undefined) {
+      this.attatchRegisteredCallbacks(newRoom);
+    }
+    this.activeRoom.next(newRoom);
   }
 
   joinActiveRoom(roomAva: RoomAvailable<RoomMetaInfo>, options?: any) {
@@ -59,18 +62,28 @@ export class ColyseusClientService {
     });
   }
 
+
+  /**
+   * If this happens while hosting a game without initializing the ingame chat. This will happen once.
+   * @param data
+   */
   private defaultCallback(data) {
-    console.log('cb was undefined', data);
+    console.log('call back was undefined', data);
   }
 
   setChatCallback(f: (data: any) => void): void {
     this.chatCallback = f;
-    this.getActiveRoom().subscribe((myRoom) => {
-      myRoom.onMessage(this.chatCallback || this.defaultCallback);
-    });
+
+    if (f !== undefined) {
+      this.getActiveRoom().subscribe((r) => {
+        if (r !== undefined) {
+          r.onMessage(this.chatCallback || this.defaultCallback);
+        }
+      });
+    }
   }
 
-  attatchRoomCallbacks(roomToAttatch: Room): Room {
+  attatchRegisteredCallbacks(roomToAttatch: Room): Room {
     roomToAttatch.onMessage(this.chatCallback || this.defaultCallback);
     return roomToAttatch;
   }

@@ -33,6 +33,9 @@ nav a:visited {
 }
 
 .basic-window {
+  left: 2%;
+  bottom: 2%;
+  position: absolute;
   pointer-events: visibleFill;
   display: inline-block;
   background-color: rgba(0, 0, 0, 0.76);

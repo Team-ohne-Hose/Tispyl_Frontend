@@ -16,22 +16,13 @@ import {ColyseusClientService} from '../services/colyseus-client.service';
 })
 export class GameComponent implements OnInit {
 
-  state$: Observable<object>;
-
-  constructor(public activatedRoute: ActivatedRoute, private router: Router, private colyseus: ColyseusClientService) {}
+  constructor(private router: Router, private colyseus: ColyseusClientService) {}
 
   cameraControl: CameraControl;
   boardItemControl: BoardItemManagement;
   audioCtrl: AudioControl;
 
-  curField = -1;
-
   ngOnInit(): void {
-      this.state$ = this.activatedRoute.paramMap
-        .pipe(map(() => {
-          console.log('STATE', window.history.state);
-          return window.history.state;
-        }));
       this.colyseus.getActiveRoom().subscribe((myRoom) => {
         console.log('Room is', myRoom);
         if (myRoom === undefined) {
@@ -43,15 +34,8 @@ export class GameComponent implements OnInit {
       });
   }
 
-  debug(ev) {
-    this.state$.subscribe( s => {
-      console.log(s);
-    });
-  }
-
   @HostListener('window:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent) {
-    console.log('Key: ', event);
     switch (event.key) {
       case '0':
       case '1':
