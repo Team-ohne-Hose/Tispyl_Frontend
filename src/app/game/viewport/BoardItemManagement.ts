@@ -2,7 +2,8 @@ import {ViewportComponent} from './viewport.component';
 import * as THREE from 'three';
 import {SceneBuilderService} from '../../services/scene-builder.service';
 import {BoardCoordConversion} from './BoardCoordConversion';
-import {PhysicsEngine, PhysicsObject} from './PhysicsEngine';
+import {PhysicsEngine} from './PhysicsEngine';
+import Ammo from 'ammojs-typed';
 
 export enum BoardItemRole {
   Dice = 1,
@@ -14,12 +15,15 @@ export interface BoardItem {
   role: BoardItemRole;
   removeBy: number;
 }
-export class BoardItemManagment {
+export class BoardItemManagement {
+
+  gameFigureMass = 1;
+  flummiMass = 1;
 
   myView: ViewportComponent;
   boardItems: BoardItem[];
   board: THREE.Mesh;
-  dice: PhysicsObject;
+  dice: THREE.Mesh;
   scene: THREE.Scene;
   markerGeo = new THREE.ConeBufferGeometry(1, 10, 15, 1, false, 0, 2 * Math.PI);
 
@@ -29,35 +33,39 @@ export class BoardItemManagment {
     this.boardItems = [];
   }
 
+  listDebugPhysicsItems() {
+    this.physics.listBodies();
+  }
+
   throwDice() {
     console.log('throwing Dice');
     if (this.dice !== undefined) {
-      this.dice.mesh.position.set(0, 40, 0);
-      this.dice.rotationalAxis.copy(new THREE.Vector3(1, 1, 0).normalize());
-      this.dice.rotationalVelocity = (1 + 15 * Math.random()) * Math.PI;
-      const velocityVec = new THREE.Vector3(Math.random() - 0.5, Math.random() / 10, Math.random() - 0.5).normalize();
-      this.dice.velocity.copy(velocityVec.multiplyScalar(Math.random() * 40));
-      console.log('..', this.dice, this.scene);
-      for (const attKey in this.dice.attachedObjects) {
-        if (attKey in this.dice.attachedObjects) {
-          console.log('..');
-          const offset = this.dice.attachedObjects[attKey].offset;
-          this.dice.attachedObjects[attKey].object.position.copy(this.dice.mesh.position.clone().add(offset));
-          this.dice.attachedObjects[attKey].object.rotation.copy(this.dice.mesh.rotation);
-        }
-      }
+      this.physics.setPosition(this.dice, 0, 40, 0);
+      this.physics.setRotationQuat(this.dice, 0, 0, 0, 1);
+      const phys = PhysicsEngine.getPhys(this.dice);
+      const vel = new Ammo.btVector3(Math.random() - 0.5, Math.random() / 10, Math.random() - 0.5);
+      const rot = new Ammo.btVector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
+      vel.normalize();
+      vel.op_mul(Math.random() * 35); // TODO: balance Dice speed
+      rot.op_mul(1 * Math.PI); // TODO: balance Dice rotation speed
+      phys.physicsBody.setLinearVelocity(vel);
+      phys.physicsBody.setAngularVelocity(rot);
     }
   }
-  moveGameFigure(object: THREE.Mesh, fieldID: number) {
+  hoverGameFigure(object: THREE.Object3D, x: number, y: number) {
+    this.physics.setKinematic(object, true);
+    this.physics.setRotationQuat(object, 0, 0, 0, 1);
+    this.physics.setPosition(object, x, 10, y);
+  }
+  moveGameFigure(object: THREE.Object3D, fieldID: number) {
     console.log('move Figure to ', fieldID);
     for (const itemKey in this.boardItems) {
       if (this.boardItems[itemKey].mesh === object) {
         console.log('found Item, role is: ', this.boardItems[itemKey].role);
         const newField = BoardCoordConversion.getFieldCenter(fieldID);
         this.boardItems[itemKey].mesh.position.set(newField.x, 10, newField.y);
-        const p = this.physics.getObjectFromMesh(object);
-        if (p !== undefined) {
-          p.physicsEnabled = true;
+        if (object !== undefined) {
+          this.physics.setKinematic(object, false);
         }
       }
     }
@@ -70,17 +78,25 @@ export class BoardItemManagment {
 
     this.boardItems.push({mesh: figure, role: BoardItemRole.figure, removeBy: undefined});
     this.scene.add(figure);
-    const pObj = this.physics.addObject(figure, 0.8, 1);
+    this.physics.addMesh(figure, this.gameFigureMass, (obj) => {
+      this.physics.setPosition(figure, 0, 0, 10);
+      return true;
+    });
   }
 
   addFlummi(x: number, y: number, z: number, color: number) {
-    const geometry = new THREE.SphereGeometry( 2, 32, 32 );
+    // const geometry = new THREE.SphereGeometry( 2, 32, 32 );
+    const geometry = new THREE.SphereBufferGeometry( 2, 32, 32 );
     const material = new THREE.MeshStandardMaterial( {color: color} );
     const sphere = new THREE.Mesh( geometry, material );
     sphere.position.set(x, y, z);
     this.scene.add( sphere );
-    const pObj = this.physics.addObject(sphere, 0.5, 1);
-    pObj.velocity.set((2 * Math.random() - 1) * 15, Math.random() * 15, (2 * Math.random() - 1) * 15);
+    this.physics.addMesh(sphere, this.flummiMass);
+    const phys = PhysicsEngine.getPhys(sphere);
+    if (phys !== undefined) {
+      const vec = new Ammo.btVector3((2 * Math.random() - 1) * 15, Math.random() * 15, (2 * Math.random() - 1) * 15);
+      phys.physicsBody.setLinearVelocity(vec);
+    }
   }
 
   addMarker(x: number, y: number, z: number, col: number): void {

@@ -1,160 +1,247 @@
 import * as THREE from 'three';
-import {Quaternion, Vector3} from 'three';
+import {BufferGeometry, Object3D, Quaternion, Vector3} from 'three';
+import Ammo from 'ammojs-typed';
+import btVector3 = Ammo.btVector3;
+import btCollisionShape = Ammo.btCollisionShape;
+import {toNumbers} from '@angular/compiler-cli/src/diagnostics/typescript_version';
 
-export interface TurnInstruction {
-  rotationTarget: Vector3;
-  timeLeft: number;
+export interface PhysicsUserdata {
+  physicsBody: Ammo.btRigidBody;
+  collided: boolean;
+  objectType: ObjectType;
+  onDelete: (obj: THREE.Object3D) => boolean;
 }
-export interface AttachedObject {
+export enum ObjectType {
+  Object3D,
+  Mesh,
+  Group
+}
+export enum CollisionGroups {
+  All = 15,
+  Other = 1,
+  Plane = 2,
+  Figures = 4,
+  Dice = 8
+}
+export enum FLAGS {
+  CF_KINEMATIC_OBJECT = 2
+}
+export enum STATE {
+  DISABLE_DEACTIVATION = 4
+}
+export interface RigidBodyParams {
   object: THREE.Object3D;
-  offset: Vector3;
+  shape: btCollisionShape;
+  mass: number;
+  pos: THREE.Vector3;
+  quat: THREE.Quaternion;
+  colGroup: number;
+  colMask: number;
 }
-export interface PhysicsObject {
-  mesh: THREE.Mesh;
-  boundingBox: THREE.Box3;
-  boundingSphere: THREE.Sphere;
-  velocity: Vector3;
-  rotationalAxis: Vector3;
-  rotationalVelocity: number;
-  elasticity: number; // 0 to 1
-  rotationalDragFactor: number;
-  dragFactor: number;
-  instructions: TurnInstruction;
-  physicsEnabled: boolean;
-  attachedObjects: AttachedObject[];
-}
-
 export class PhysicsEngine {
-  constructor() { }
+  constructor() {
+    this.init();
+  }
+  static FLAGS = { CF_KINEMATIC_OBJECT: 2 };
 
-  gravity = 98.1; // units/dsec^2, 100 units = 1m, 1 dsec = 0.1 sec
-  rotationDrag = 0.1; // 1/unit Area/Volume
-  drag = 0.025;
+  physicsWorld: Ammo.btDiscreteDynamicsWorld;
+  clock: THREE.Clock;
+  tmpVec3: Ammo.btVector3;
+  tmpTrans: Ammo.btTransform;
+  tmpQuat: Ammo.btQuaternion;
+  rigidBodies: THREE.Object3D[] = [];
+  margin = 0.05;
+  deletionPlane = -15;
+  disposeFromViewport: (obj: THREE.Object3D) => {};
 
-  physicsObjects: PhysicsObject[] = [];
-  lastUpdate: number;
-
-  private handleCollision(obj: PhysicsObject) {
-    // TODO check for actual collisions
-    // TODO fix rotation
-    const bottomToCenter = obj.boundingSphere.radius;
-
-    const deltaS = obj.mesh.position.y - bottomToCenter;
-    const pq1 = Math.sqrt(obj.velocity.y * obj.velocity.y + 2 * deltaS * this.gravity) / this.gravity;
-    const deltaT1 = - obj.velocity.y / (this.gravity) + pq1;
-    const deltaT2 = - obj.velocity.y / (this.gravity) - pq1;
-
-    let deltaT: number;
-    if (Math.min(deltaT1, deltaT2) < 0) {
-      deltaT = Math.max(deltaT1, deltaT2);
-    } else {
-      deltaT = Math.min(deltaT1, deltaT2);
+  private static isUserdataPhysics(userDataPhysics: PhysicsUserdata | any): userDataPhysics is PhysicsUserdata {
+    return (userDataPhysics as PhysicsUserdata).physicsBody !== undefined;
+  }
+  static getPhys(object: THREE.Object3D): PhysicsUserdata {
+    const phys = object.userData.physics;
+    if (this.isUserdataPhysics(phys)) {
+      return phys;
     }
-
-    obj.mesh.position.y = bottomToCenter - obj.velocity.y * deltaT * obj.elasticity - 1.5 * this.gravity * deltaT * deltaT;
-    if ( obj.mesh.position.y ) {
-      obj.mesh.position.y = bottomToCenter;
-    }
-    obj.velocity.y = -obj.velocity.y * obj.elasticity - 2 * this.gravity * deltaT;
-    if (Number.isNaN(obj.velocity.y)) {
-      obj.velocity.y = 0;
-    }
-    if (Number.isNaN(obj.mesh.position.y)) {
-      obj.mesh.position.y = bottomToCenter;
-    }
-    // console.log('got Collision', obj.mesh.position.y, obj.velocity.y, deltaT1, deltaT2);
+    return undefined;
   }
 
-  private updatePhysicsObject(obj: PhysicsObject, delta: number) {
-    if (Number.isNaN(obj.velocity.y)) {
-      obj.velocity.y = 0;
-    }
-    if (Number.isNaN(obj.mesh.position.y)) {
-      obj.mesh.position.y = 0;
-    }
-    const gravityAccel = new Vector3(0, -this.gravity * delta, 0);
+  setupPhysicsWorld() {
+    const collisionConfiguration  = new Ammo.btDefaultCollisionConfiguration();
+    const dispatcher              = new Ammo.btCollisionDispatcher(collisionConfiguration);
+    const overlappingPairCache    = new Ammo.btDbvtBroadphase();
+    const solver                  = new Ammo.btSequentialImpulseConstraintSolver();
 
-    // update position
-    obj.mesh.position.add(obj.velocity.clone().multiplyScalar(delta));
-    obj.mesh.position.add(gravityAccel.clone().multiplyScalar(0.5 * delta));
-
-    // update speed
-    const testSpd = obj.velocity.y;
-    obj.velocity.add(gravityAccel);
-
-    const dragAccel = obj.velocity.clone().dot(obj.velocity.clone()) * this.drag;
-    obj.velocity.add(obj.velocity.clone().normalize().multiplyScalar(-dragAccel * obj.dragFactor * delta).setY(0));
-
-    /*if (testSpd > 0 && obj.velocity.y < 0) {
-      console.log('apoapsis: ', obj.mesh.position.y);
-    }*/
-    // console.log('velocity: ', obj.velocity.y);
-
-    // update rotation
-    obj.mesh.rotateOnAxis(obj.rotationalAxis, obj.rotationalVelocity * delta);
-    obj.rotationalVelocity -= (obj.rotationalVelocity * obj.rotationalVelocity) * this.rotationDrag * obj.rotationalDragFactor * delta;
-    obj.rotationalVelocity = obj.rotationalVelocity > 1 ? obj.rotationalVelocity : 0;
-
-    if (obj.mesh.position.y - obj.boundingSphere.radius < 0 && obj.velocity.y < 0) {
-      this.handleCollision(obj);
-    }
-    for (const attachedKey in obj.attachedObjects) {
-      if (attachedKey in obj.attachedObjects) {
-        console.log(obj.attachedObjects[attachedKey], obj.attachedObjects);
-        obj.attachedObjects[attachedKey].object.position.copy(obj.mesh.position.clone().add(obj.attachedObjects[attachedKey].offset));
-        obj.attachedObjects[attachedKey].object.rotation.copy(obj.mesh.rotation);
-      }
-    }
+    this.physicsWorld           = new Ammo.btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration);
+    this.physicsWorld.setGravity(new Ammo.btVector3(0, -100, 0));
   }
 
-  update() {
-    if (this.lastUpdate === undefined) {
-      this.lastUpdate = Date.now();
-    }
-    let delta = (Date.now() - this.lastUpdate) / 1000;
-    if (Number.isNaN(delta)) {
-      console.log('delta is NaN');
-      delta = 0.01;
-    }
-    this.lastUpdate = Date.now();
+  init() {
+    Ammo(Ammo).then(() => {
+      this.tmpTrans = new Ammo.btTransform();
+      this.tmpVec3 = new Ammo.btVector3();
+      this.tmpQuat = new Ammo.btQuaternion(0, 0, 0 , 1);
+      this.clock = new THREE.Clock();
+      this.setupPhysicsWorld();
+    });
+  }
 
-    for (const key in this.physicsObjects) {
-      if (key in this.physicsObjects) {
-        if (this.physicsObjects[key].physicsEnabled) {
-          this.updatePhysicsObject(this.physicsObjects[key], delta);
+  updatePhysics() {
+    const deltaTime = this.clock.getDelta();
+    this.physicsWorld.stepSimulation( deltaTime, 10 );
+    for (const body in this.rigidBodies) {
+      if (body in this.rigidBodies) {
+        const phys = PhysicsEngine.getPhys(this.rigidBodies[body]);
+        if (phys !== undefined) {
+          const pBody: Ammo.btRigidBody = phys.physicsBody;
+          const ms: Ammo.btMotionState = pBody.getMotionState();
+          if (ms) {
+            ms.getWorldTransform(this.tmpTrans);
+            const p = this.tmpTrans.getOrigin();
+            const q = this.tmpTrans.getRotation();
+            this.rigidBodies[body].position.set(p.x(), p.y(), p.z());
+            this.rigidBodies[body].quaternion.set(q.x(), q.y(), q.z(), q.w());
+
+            if (p.y() < this.deletionPlane) {
+              const obj = this.rigidBodies[body];
+              if (!phys.onDelete || !phys.onDelete(obj)) {
+                this.rigidBodies.splice(Number(body), 1);
+                if (this.disposeFromViewport) {
+                  this.disposeFromViewport(obj);
+                }
+              }
+            }
+          }
         }
       }
     }
   }
-
-  addObject(mesh: THREE.Mesh, elasticity?: number, rotationalDragFactor?: number): PhysicsObject {
-    mesh.geometry.computeBoundingBox();
-    mesh.geometry.computeBoundingSphere();
-    const physObj: PhysicsObject = {
-      mesh: mesh,
-      boundingBox: mesh.geometry.boundingBox,
-      boundingSphere: mesh.geometry.boundingSphere,
-      elasticity: elasticity || 0.5,
-      velocity: new Vector3(),
-      rotationalVelocity: 0,
-      rotationalDragFactor: rotationalDragFactor || 1,
-      rotationalAxis: new Vector3(0, 1, 0),
-      dragFactor: 1,
-      instructions: undefined,
-      physicsEnabled: true,
-      attachedObjects: []
-    };
-    this.physicsObjects.push(physObj);
-    console.log('now simulating ' + this.physicsObjects.length + ' Objects');
-    return physObj;
-  }
-
-  getObjectFromMesh(mesh: THREE.Mesh): PhysicsObject {
-    for (const key in this.physicsObjects) {
-      if (this.physicsObjects[key].mesh === mesh) {
-        return this.physicsObjects[key];
+  listBodies() {
+    for (const body in this.rigidBodies) {
+      if (body in this.rigidBodies) {
+        console.log('Body: ', this.rigidBodies[body]);
       }
     }
-    return undefined;
+  }
+  setKinematic(obj: Object3D, kinematic: boolean) {
+    if (kinematic) {
+      const body = PhysicsEngine.getPhys(obj).physicsBody;
+      body.setActivationState( STATE.DISABLE_DEACTIVATION );
+      body.setCollisionFlags( FLAGS.CF_KINEMATIC_OBJECT );
+    } else {
+      const body = PhysicsEngine.getPhys(obj).physicsBody;
+      body.setActivationState(0);
+      body.setCollisionFlags(0);
+    }
+  }
+  setPosition(obj: Object3D, x: number, y: number, z: number) {
+    const pBody = PhysicsEngine.getPhys(obj).physicsBody;
+    const ms = pBody.getMotionState();
+    if ( ms ) {
+      this.tmpVec3.setValue(x, y, z);
+      this.tmpTrans.setIdentity();
+      this.tmpTrans.setOrigin(this.tmpVec3);
+      ms.setWorldTransform(this.tmpTrans);
+      pBody.setWorldTransform(this.tmpTrans);
+
+      obj.position.set(x, y, z);
+    }
+  }
+  setRotation(obj: Object3D, x: number, y: number, z: number) {
+    const ms = PhysicsEngine.getPhys(obj).physicsBody.getMotionState();
+    if ( ms ) {
+      this.tmpQuat.setEulerZYX(z, y, x);
+      this.tmpTrans.setIdentity();
+      this.tmpTrans.setRotation(this.tmpQuat);
+      ms.setWorldTransform(this.tmpTrans);
+
+      obj.rotation.x = x;
+      obj.rotation.y = y;
+      obj.rotation.z = z;
+    }
+  }
+  setRotationQuat(obj: Object3D, x: number, y: number, z: number, w: number) {
+    const ms = PhysicsEngine.getPhys(obj).physicsBody.getMotionState();
+    if ( ms ) {
+      this.tmpQuat.setValue(x, y, z, w);
+      this.tmpTrans.setIdentity();
+      this.tmpTrans.setRotation(this.tmpQuat);
+      ms.setWorldTransform(this.tmpTrans);
+
+      obj.rotation.setFromQuaternion(new THREE.Quaternion(x, y, z, w));
+    }
+  }
+
+  private createRigidBody(params: RigidBodyParams) {
+    if ( params.pos ) {
+      params.object.position.copy( params.pos );
+    } else {
+      params.pos = params.object.position;
+    }
+    if ( params.quat ) {
+      params.object.quaternion.copy( params.quat );
+    } else {
+      params.quat = params.object.quaternion;
+    }
+    const transform = new Ammo.btTransform();
+    transform.setIdentity();
+    transform.setOrigin( new Ammo.btVector3( params.pos.x, params.pos.y, params.pos.z ) );
+    transform.setRotation( new Ammo.btQuaternion( params.quat.x, params.quat.y, params.quat.z, params.quat.w ) );
+    const motionState = new Ammo.btDefaultMotionState( transform );
+    const localInertia = new Ammo.btVector3( 0, 0, 0 );
+    params.shape.calculateLocalInertia( params.mass, localInertia );
+
+    const rbInfo = new Ammo.btRigidBodyConstructionInfo( params.mass, motionState, params.shape, localInertia );
+    const body = new Ammo.btRigidBody( rbInfo );
+
+    body.setFriction( 0.5 );
+
+    params.object.userData.physics.physicsBody = body;
+    params.object.userData.physics.collided = false;
+    if ( params.mass > 0 ) {
+      this.rigidBodies.push( params.object );
+      // Disable deactivation
+      body.setActivationState(4);
+    }
+    this.physicsWorld.addRigidBody(body, params.colGroup, params.colMask);
+    return body;
+  }
+  private createConvexHullPhysicsShape(points: ArrayLike<number>) {
+    const shape = new Ammo.btConvexHullShape();
+    for ( let i = 0, il = points.length; i < il; i += 3 ) {
+      this.tmpVec3.setValue( points[ i ], points[ i + 1 ], points[ i + 2 ] );
+      const lastOne = ( i >= ( il - 3 ) );
+      shape.addPoint( this.tmpVec3, lastOne );
+    }
+    return shape;
+  }
+
+  private addShape(geo: BufferGeometry, obj: THREE.Object3D, mass: number, colGroup: number, colMask: number) {
+    const shape = this.createConvexHullPhysicsShape(geo.getAttribute('position').array);
+    shape.setMargin(this.margin);
+    const rigidBodyParams: RigidBodyParams = {
+      object: obj,
+      shape: shape,
+      mass: mass,
+      pos: obj.position,
+      quat: obj.quaternion,
+      colGroup: colGroup,
+      colMask: colMask
+    };
+    const body = this.createRigidBody(rigidBodyParams);
+  }
+  addGroup(group: THREE.Group, mass: number, collisionGroup?: number, collisionMask?: number) {
+    // TODO make work with groups
+    // TODO create geometry by merging geometries
+    group.userData.objectType = ObjectType.Group;
+  }
+  addMesh(mesh: THREE.Mesh, mass: number, onDelete?: (obj: THREE.Object3D) => boolean, collisionGroup?: number, collisionMask?: number) {
+    mesh.userData.physics = mesh.userData.physics || {};
+    mesh.userData.physics.objectType = ObjectType.Mesh;
+    mesh.userData.physics.onDelete = onDelete;
+    const colGroup = collisionGroup || CollisionGroups.Other;
+    const colMask = collisionMask || CollisionGroups.All;
+    let geo = mesh.geometry.clone();
+    geo = geo instanceof THREE.BufferGeometry ? geo : new THREE.BufferGeometry().fromGeometry(geo);
+    this.addShape(geo , mesh, mass, colGroup, colMask);
   }
 }

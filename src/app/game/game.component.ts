@@ -1,6 +1,6 @@
 import {Component, HostListener, OnInit} from '@angular/core';
 import {Quaternion, Vector3} from 'three';
-import {BoardItemManagment} from './viewport/BoardItemManagment';
+import {BoardItemManagement} from './viewport/BoardItemManagement';
 import {AudioControl} from './viewport/AudioControl';
 import {CameraControl} from './viewport/CameraControl';
 import {BoardCoordConversion} from './viewport/BoardCoordConversion';
@@ -21,7 +21,7 @@ export class GameComponent implements OnInit {
   constructor(public activatedRoute: ActivatedRoute, private router: Router, private colyseus: ColyseusClientService) {}
 
   cameraControl: CameraControl;
-  boardItemControl: BoardItemManagment;
+  boardItemControl: BoardItemManagement;
   audioCtrl: AudioControl;
 
   curField = -1;
@@ -76,13 +76,16 @@ export class GameComponent implements OnInit {
         const p: Vector3 = this.cameraControl.getPosition();
         console.log('Camera At: ', p.x, p.y, p.z);
         break;
+      case 'p':
+        this.boardItemControl.listDebugPhysicsItems();
+        break;
       case 'o':
         this.audioCtrl.playAudio();
         break;
     }
   }
 
-  registerViewport(tuple: [CameraControl, BoardItemManagment, AudioControl]) {
+  registerViewport(tuple: [CameraControl, BoardItemManagement, AudioControl]) {
     this.cameraControl = tuple[0];
     this.boardItemControl = tuple[1];
     this.audioCtrl = tuple[2];
