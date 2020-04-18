@@ -35,7 +35,6 @@ export class ObjectLoaderService {
     loader.load(this.objectResourceList[toLoad].fname, (gltf: GLTF) => {
       gltf.scene.children[0].castShadow = true;
       gltf.scene.children[0].receiveShadow = true;
-      console.log(gltf.scene.children[0]);
       let toScan = gltf.scene.children;
       while (true) {
         if (toScan.length === 0) {

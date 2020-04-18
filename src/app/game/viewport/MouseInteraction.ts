@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {BoardItemManagment} from './BoardItemManagment';
+import {BoardItemManagement} from './BoardItemManagement';
 import {Camera, Scene, Vector3} from 'three';
 import {BoardCoordConversion} from './BoardCoordConversion';
 import {Board} from '../../model/Board';
@@ -13,13 +13,13 @@ export class MouseInteraction {
   raycaster = new THREE.Raycaster();
   currentSize = new THREE.Vector2();
 
-  boardItemManager: BoardItemManagment;
+  boardItemManager: BoardItemManagement;
   camera: Camera;
   scene: Scene;
 
   currentlySelected: {obj: THREE.Object3D, oldPos: Vector3};
 
-  constructor(scene: Scene, camera: Camera, boardItemManager: BoardItemManagment, private physics: PhysicsEngine) {
+  constructor(scene: Scene, camera: Camera, boardItemManager: BoardItemManagement, private physics: PhysicsEngine) {
     this.boardItemManager = boardItemManager;
     this.camera = camera;
     this.scene = scene;
@@ -37,7 +37,7 @@ export class MouseInteraction {
       const intersects = this.raycaster.intersectObject(this.boardItemManager.board);
       if (intersects.length > 0) {
         const point = intersects[0].point;
-        this.currentlySelected.obj.position.copy(point.setY(10));
+        this.boardItemManager.hoverGameFigure(this.currentlySelected.obj, point.x, point.z);
       }
     }
   }
@@ -100,10 +100,11 @@ export class MouseInteraction {
         }
         this.currentlySelected = undefined;
       } else if (intersects[0].object.name === 'gamefigure') {
-        if (intersects[0].object.userData.physicsBody !== undefined) {
-          const pObj = intersects[0].object.userData.physicsBody;
-          pObj.physicsEnabled = false;
-          this.currentlySelected = {obj: pObj, oldPos: pObj.mesh.position.clone()};
+        const obj = intersects[0].object;
+        const phys = PhysicsEngine.getPhys(obj);
+        if (phys !== undefined) {
+          this.physics.setKinematic(obj, true);
+          this.currentlySelected = {obj: obj, oldPos: obj.position.clone()};
           console.log('selected Object');
         }
       } else if (intersects[0].object.name === 'Cube' ||
@@ -121,13 +122,14 @@ export class MouseInteraction {
       console.log('clicked on Tile: ', tile.translationKey, coords.x, coords.y);
       if (this.currentlySelected !== undefined) {
         this.boardItemManager.moveGameFigure(this.currentlySelected.obj, tileId);
-        this.currentlySelected.obj.userData.physicsEnabled = true;
+        this.physics.setKinematic(this.currentlySelected.obj, false);
         return true;
       }
     } else {
       console.log('clicked outside of playing field');
-      this.currentlySelected.obj.userData.mesh.position.copy(this.currentlySelected.oldPos);
-      this.currentlySelected.obj.userData.physicsEnabled = true;
+      const oldPos = this.currentlySelected.oldPos;
+      this.physics.setPosition(this.currentlySelected.obj, oldPos.x, oldPos.y, oldPos.z);
+      this.physics.setKinematic(this.currentlySelected.obj, false);
     }
     return false;
   }

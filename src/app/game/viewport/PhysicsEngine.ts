@@ -8,6 +8,7 @@ export interface PhysicsUserdata {
   physicsBody: Ammo.btRigidBody;
   collided: boolean;
   objectType: ObjectType;
+  onDelete: (obj: THREE.Object3D) => boolean;
 }
 export enum ObjectType {
   Object3D,
@@ -20,6 +21,12 @@ export enum CollisionGroups {
   Plane = 2,
   Figures = 4,
   Dice = 8
+}
+export enum FLAGS {
+  CF_KINEMATIC_OBJECT = 2
+}
+export enum STATE {
+  DISABLE_DEACTIVATION = 4
 }
 export interface RigidBodyParams {
   object: THREE.Object3D;
@@ -34,14 +41,26 @@ export class PhysicsEngine {
   constructor() {
     this.init();
   }
+  static FLAGS = { CF_KINEMATIC_OBJECT: 2 };
 
   physicsWorld: Ammo.btDiscreteDynamicsWorld;
   clock: THREE.Clock;
-  tmpTrans;
-  tmpVec3: btVector3;
+  tmpVec3: Ammo.btVector3;
+  tmpTrans: Ammo.btTransform;
+  tmpQuat: Ammo.btQuaternion;
   rigidBodies: THREE.Object3D[] = [];
-
   margin = 0.05;
+
+  private static isUserdataPhysics(userDataPhysics: PhysicsUserdata | any): userDataPhysics is PhysicsUserdata {
+    return (userDataPhysics as PhysicsUserdata).physicsBody !== undefined;
+  }
+  static getPhys(object: THREE.Object3D): PhysicsUserdata {
+    const phys = object.userData.physics;
+    if (this.isUserdataPhysics(phys)) {
+      return phys;
+    }
+    return undefined;
+  }
 
   setupPhysicsWorld() {
     const collisionConfiguration  = new Ammo.btDefaultCollisionConfiguration();
@@ -57,8 +76,9 @@ export class PhysicsEngine {
     Ammo(Ammo).then(() => {
       this.tmpTrans = new Ammo.btTransform();
       this.tmpVec3 = new Ammo.btVector3();
-      this.setupPhysicsWorld();
+      this.tmpQuat = new Ammo.btQuaternion(0, 0, 0 , 1);
       this.clock = new THREE.Clock();
+      this.setupPhysicsWorld();
     });
   }
 
@@ -67,14 +87,17 @@ export class PhysicsEngine {
     this.physicsWorld.stepSimulation( deltaTime, 10 );
     for (const body in this.rigidBodies) {
       if (body in this.rigidBodies) {
-        const pBody: Ammo.btRigidBody = this.rigidBodies[body].userData.physicsBody;
-        const ms: Ammo.btMotionState = pBody.getMotionState();
-        if (ms) {
-          ms.getWorldTransform(this.tmpTrans);
-          const p = this.tmpTrans.getOrigin();
-          const q = this.tmpTrans.getRotation();
-          this.rigidBodies[body].position.set(p.x(), p.y(), p.z());
-          this.rigidBodies[body].quaternion.set(q.x(), q.y(), q.z(), q.w());
+        const phys = this.rigidBodies[body].userData.physics;
+        if (PhysicsEngine.isUserdataPhysics(phys)) {
+          const pBody: Ammo.btRigidBody = phys.physicsBody;
+          const ms: Ammo.btMotionState = pBody.getMotionState();
+          if (ms) {
+            ms.getWorldTransform(this.tmpTrans);
+            const p = this.tmpTrans.getOrigin();
+            const q = this.tmpTrans.getRotation();
+            this.rigidBodies[body].position.set(p.x(), p.y(), p.z());
+            this.rigidBodies[body].quaternion.set(q.x(), q.y(), q.z(), q.w());
+          }
         }
       }
     }
@@ -84,6 +107,54 @@ export class PhysicsEngine {
       if (body in this.rigidBodies) {
         console.log('Body: ', this.rigidBodies[body]);
       }
+    }
+  }
+  setKinematic(obj: Object3D, kinematic: boolean) {
+    if (kinematic) {
+      const body = PhysicsEngine.getPhys(obj).physicsBody;
+      body.setActivationState( STATE.DISABLE_DEACTIVATION );
+      body.setCollisionFlags( FLAGS.CF_KINEMATIC_OBJECT );
+    } else {
+      const body = PhysicsEngine.getPhys(obj).physicsBody;
+      body.setActivationState(0);
+      body.setCollisionFlags(0);
+    }
+  }
+  setPosition(obj: Object3D, x: number, y: number, z: number) {
+    const pBody = PhysicsEngine.getPhys(obj).physicsBody;
+    const ms = pBody.getMotionState();
+    if ( ms ) {
+      this.tmpVec3.setValue(x, y, z);
+      this.tmpTrans.setIdentity();
+      this.tmpTrans.setOrigin(this.tmpVec3);
+      ms.setWorldTransform(this.tmpTrans);
+      pBody.setWorldTransform(this.tmpTrans);
+
+      obj.position.set(x, y, z);
+    }
+  }
+  setRotation(obj: Object3D, x: number, y: number, z: number) {
+    const ms = PhysicsEngine.getPhys(obj).physicsBody.getMotionState();
+    if ( ms ) {
+      this.tmpQuat.setEulerZYX(z, y, x);
+      this.tmpTrans.setIdentity();
+      this.tmpTrans.setRotation(this.tmpQuat);
+      ms.setWorldTransform(this.tmpTrans);
+
+      obj.rotation.x = x;
+      obj.rotation.y = y;
+      obj.rotation.z = z;
+    }
+  }
+  setRotationQuat(obj: Object3D, x: number, y: number, z: number, w: number) {
+    const ms = PhysicsEngine.getPhys(obj).physicsBody.getMotionState();
+    if ( ms ) {
+      this.tmpQuat.setValue(x, y, z, w);
+      this.tmpTrans.setIdentity();
+      this.tmpTrans.setRotation(this.tmpQuat);
+      ms.setWorldTransform(this.tmpTrans);
+
+      obj.rotation.setFromQuaternion(new THREE.Quaternion(x, y, z, w));
     }
   }
 
@@ -111,8 +182,8 @@ export class PhysicsEngine {
 
     body.setFriction( 0.5 );
 
-    params.object.userData.physicsBody = body;
-    params.object.userData.collided = false;
+    params.object.userData.physics.physicsBody = body;
+    params.object.userData.physics.collided = false;
     if ( params.mass > 0 ) {
       this.rigidBodies.push( params.object );
       // Disable deactivation
@@ -132,8 +203,6 @@ export class PhysicsEngine {
   }
 
   private addShape(geo: BufferGeometry, obj: THREE.Object3D, mass: number, colGroup: number, colMask: number) {
-    // TODO make work with groups
-    // TODO create geometry by merging geometries
     const shape = this.createConvexHullPhysicsShape(geo.getAttribute('position').array);
     shape.setMargin(this.margin);
     const rigidBodyParams: RigidBodyParams = {
@@ -148,15 +217,18 @@ export class PhysicsEngine {
     const body = this.createRigidBody(rigidBodyParams);
   }
   addGroup(group: THREE.Group, mass: number, collisionGroup?: number, collisionMask?: number) {
-    // TODO
+    // TODO make work with groups
+    // TODO create geometry by merging geometries
     group.userData.objectType = ObjectType.Group;
   }
-  addMesh(mesh: THREE.Mesh, mass: number, collisionGroup?: number, collisionMask?: number) {
+  addMesh(mesh: THREE.Mesh, mass: number, onDelete?: (obj: THREE.Object3D) => boolean, collisionGroup?: number, collisionMask?: number) {
+    mesh.userData.physics = mesh.userData.physics || {};
+    mesh.userData.physics.objectType = ObjectType.Mesh;
+    mesh.userData.physics.onDelete = onDelete;
     const colGroup = collisionGroup || CollisionGroups.Other;
     const colMask = collisionMask || CollisionGroups.All;
     let geo = mesh.geometry.clone();
     geo = geo instanceof THREE.BufferGeometry ? geo : new THREE.BufferGeometry().fromGeometry(geo);
     this.addShape(geo , mesh, mass, colGroup, colMask);
-    mesh.userData.objectType = ObjectType.Mesh;
   }
 }

@@ -16,7 +16,6 @@ export class ChatWindowComponent implements OnInit {
   ngOnInit(): void {
     this.colyseus.setChatCallback(data => {
       this.chatContent =  this.chatContent + '\n' + data.content.message;
-      console.log('GOT: ', data);
     });
 
     // SOME DEBUG INIT CODE

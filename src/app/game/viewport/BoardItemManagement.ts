@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import {SceneBuilderService} from '../../services/scene-builder.service';
 import {BoardCoordConversion} from './BoardCoordConversion';
 import {PhysicsEngine} from './PhysicsEngine';
+import Ammo from 'ammojs-typed';
 
 export enum BoardItemRole {
   Dice = 1,
@@ -14,7 +15,10 @@ export interface BoardItem {
   role: BoardItemRole;
   removeBy: number;
 }
-export class BoardItemManagment {
+export class BoardItemManagement {
+
+  gameFigureMass = 1;
+  flummiMass = 1;
 
   myView: ViewportComponent;
   boardItems: BoardItem[];
@@ -36,14 +40,22 @@ export class BoardItemManagment {
   throwDice() {
     console.log('throwing Dice');
     if (this.dice !== undefined) {
-      this.dice.position.set(0, 40, 0);
-      // TODO: redo axial throw
-      // this.dice.rotationalAxis.copy(new THREE.Vector3(1, 1, 0).normalize());
-      // this.dice.rotationalVelocity = (1 + 15 * Math.random()) * Math.PI;
-      // const velocityVec = new THREE.Vector3(Math.random() - 0.5, Math.random() / 10, Math.random() - 0.5).normalize();
-      // this.dice.velocity.copy(velocityVec.multiplyScalar(Math.random() * 40));
-      console.log('..', this.dice, this.scene);
+      this.physics.setPosition(this.dice, 0, 40, 0);
+      this.physics.setRotationQuat(this.dice, 0, 0, 0, 1);
+      const phys = PhysicsEngine.getPhys(this.dice);
+      const vel = new Ammo.btVector3(Math.random() - 0.5, Math.random() / 10, Math.random() - 0.5);
+      const rot = new Ammo.btVector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
+      vel.normalize();
+      vel.op_mul(Math.random() * 35); // TODO: balance Dice speed
+      rot.op_mul(1 * Math.PI); // TODO: balance Dice rotation speed
+      phys.physicsBody.setLinearVelocity(vel);
+      phys.physicsBody.setAngularVelocity(rot);
     }
+  }
+  hoverGameFigure(object: THREE.Object3D, x: number, y: number) {
+    this.physics.setKinematic(object, true);
+    this.physics.setRotationQuat(object, 0, 0, 0, 1);
+    this.physics.setPosition(object, x, 10, y);
   }
   moveGameFigure(object: THREE.Object3D, fieldID: number) {
     console.log('move Figure to ', fieldID);
@@ -52,9 +64,8 @@ export class BoardItemManagment {
         console.log('found Item, role is: ', this.boardItems[itemKey].role);
         const newField = BoardCoordConversion.getFieldCenter(fieldID);
         this.boardItems[itemKey].mesh.position.set(newField.x, 10, newField.y);
-        if (object !== undefined && object.userData.physicsBody !== undefined) {
-          // TODO make correct ammo call
-          object.userData.physicsBody.physicsEnabled = true;
+        if (object !== undefined) {
+          this.physics.setKinematic(object, false);
         }
       }
     }
@@ -67,8 +78,7 @@ export class BoardItemManagment {
 
     this.boardItems.push({mesh: figure, role: BoardItemRole.figure, removeBy: undefined});
     this.scene.add(figure);
-    // TODO redo mass
-    const pObj = this.physics.addMesh(figure, 1);
+    const pObj = this.physics.addMesh(figure, this.gameFigureMass);
   }
 
   addFlummi(x: number, y: number, z: number, color: number) {
@@ -78,11 +88,11 @@ export class BoardItemManagment {
     const sphere = new THREE.Mesh( geometry, material );
     sphere.position.set(x, y, z);
     this.scene.add( sphere );
-    // TODO redo mass
-    this.physics.addMesh(sphere, 1);
-    if (sphere !== undefined && sphere.userData.physicsBody !== undefined) {
-      // TODO make correct ammo call
-      // sphere.userData.physicsBody.velocity.set((2 * Math.random() - 1) * 15, Math.random() * 15, (2 * Math.random() - 1) * 15);
+    this.physics.addMesh(sphere, this.flummiMass);
+    const phys = PhysicsEngine.getPhys(sphere);
+    if (phys !== undefined) {
+      const vec = new Ammo.btVector3((2 * Math.random() - 1) * 15, Math.random() * 15, (2 * Math.random() - 1) * 15);
+      phys.physicsBody.setLinearVelocity(vec);
     }
   }
 

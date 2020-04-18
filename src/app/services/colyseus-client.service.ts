@@ -35,7 +35,6 @@ export class ColyseusClientService {
   setActiveRoom(room): void {
     const extendedRoom = this.attatchRoomCallbacks(room);
     this.activeRoom.next(room);
-    console.log('set room', this.activeRoom, this.availableRooms);
   }
 
   joinActiveRoom(roomAva: RoomAvailable<RoomMetaInfo>, options?: any) {
@@ -57,7 +56,6 @@ export class ColyseusClientService {
   hostGame(opt): void {
     this.client.create('game', opt).then( suc => {
       this.setActiveRoom(suc);
-      console.log(suc);
     });
   }
 
@@ -67,16 +65,13 @@ export class ColyseusClientService {
 
   setChatCallback(f: (data: any) => void): void {
     this.chatCallback = f;
-    console.log(this.activeRoom, this.availableRooms);
     this.getActiveRoom().subscribe((myRoom) => {
       myRoom.onMessage(this.chatCallback || this.defaultCallback);
     });
   }
 
   attatchRoomCallbacks(roomToAttatch: Room): Room {
-    console.log('attaching', this.activeRoom, this.availableRooms, roomToAttatch);
     roomToAttatch.onMessage(this.chatCallback || this.defaultCallback);
-    console.log('attaching2', this.activeRoom, this.availableRooms, roomToAttatch);
     return roomToAttatch;
   }
 }

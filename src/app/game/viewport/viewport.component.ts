@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import {Mesh, Object3D, PerspectiveCamera, Renderer, Scene} from 'three';
 import {MouseInteraction} from './MouseInteraction';
 import {AudioControl} from './AudioControl';
-import {BoardItemManagment} from './BoardItemManagment';
+import {BoardItemManagement} from './BoardItemManagement';
 import {CameraControl} from './CameraControl';
 import {SceneBuilderService} from '../../services/scene-builder.service';
 import {GameBoardOrbitControl} from './GameBoardOrbitControl';
@@ -22,14 +22,14 @@ export class ViewportComponent implements AfterViewInit, OnInit {
 
   mouseInteract: MouseInteraction;
   cameraControl: CameraControl;
-  boardItemManager: BoardItemManagment;
+  boardItemManager: BoardItemManagement;
   audioControl: AudioControl;
   stats: Stats;
 
   constructor(private sceneBuilder: SceneBuilderService, private objectLoaderService: ObjectLoaderService) {  }
 
   @ViewChild('view') view: HTMLDivElement;
-  @Output() registerViewport = new EventEmitter<[CameraControl, BoardItemManagment, AudioControl]>();
+  @Output() registerViewport = new EventEmitter<[CameraControl, BoardItemManagement, AudioControl]>();
 
   // Utilities
   scene: Scene;
@@ -98,7 +98,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.audioControl = new AudioControl();
     this.cameraControl = new CameraControl(this.camera, this.controls);
     this.physics = new PhysicsEngine();
-    this.boardItemManager = new BoardItemManagment(this.scene, this.sceneBuilder, this.physics);
+    this.boardItemManager = new BoardItemManagement(this.scene, this.sceneBuilder, this.physics);
     this.boardItemManager.board = gameBoard;
     this.mouseInteract = new MouseInteraction(this.scene, this.camera, this.boardItemManager, this.physics);
     this.mouseInteract.updateScreenSize(width, height);
@@ -106,25 +106,14 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.physics.addMesh(gameBoard, 0);
     this.boardItemManager.addGameFigure();
 
-    /*this.objectLoaderService.loadObject(ObjectLoaderService.LoadableObject.dice, (model: THREE.Group) => {
-      model.position.set(0, 2, 0);
-      model.scale.set(0.5, 0.5, 0.5);
-      this.scene.add(model);
-    });*/
     this.objectLoaderService.loadObject(ObjectLoaderService.LoadableObject.dice2, (model: Object3D) => {
       model.position.set(2, 2, 0);
-      // this.scene.add(model);
-      console.log(model);
       const myModel = model.children[0] as Mesh;
       this.scene.add(myModel);
       // this.scene.add(model.children[1]);
       this.physics.addMesh(myModel, 1);
       this.boardItemManager.dice = myModel;
     });
-
-    // const dice = this.sceneBuilder.generateDice();
-    // dice.position.setY(5);
-    // this.scene.add(dice);
 
     this.audioControl.initAudio(this.camera);
     this.registerViewport.emit([this.cameraControl, this.boardItemManager, this.audioControl]);
