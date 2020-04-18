@@ -43,7 +43,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     // this.controls.update();
     this.renderer.render(this.scene, this.camera);
     this.boardItemManager.removeToDelete();
-    this.physics.update();
+    this.physics.updatePhysics();
     this.stats.update();
   }
 
@@ -103,6 +103,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.mouseInteract = new MouseInteraction(this.scene, this.camera, this.boardItemManager, this.physics);
     this.mouseInteract.updateScreenSize(width, height);
 
+    this.physics.addMesh(gameBoard, 0);
     this.boardItemManager.addGameFigure();
 
     /*this.objectLoaderService.loadObject(ObjectLoaderService.LoadableObject.dice, (model: THREE.Group) => {
@@ -117,9 +118,8 @@ export class ViewportComponent implements AfterViewInit, OnInit {
       const myModel = model.children[0] as Mesh;
       this.scene.add(myModel);
       // this.scene.add(model.children[1]);
-      const dicePhys = this.physics.addObject(myModel);
-      // dicePhys.attachedObjects.push({object: model.children[1], offset: new THREE.Vector3()});
-      this.boardItemManager.dice = dicePhys;
+      this.physics.addMesh(myModel, 1);
+      this.boardItemManager.dice = myModel;
     });
 
     // const dice = this.sceneBuilder.generateDice();

@@ -2,7 +2,7 @@ import {ViewportComponent} from './viewport.component';
 import * as THREE from 'three';
 import {SceneBuilderService} from '../../services/scene-builder.service';
 import {BoardCoordConversion} from './BoardCoordConversion';
-import {PhysicsEngine, PhysicsObject} from './PhysicsEngine';
+import {PhysicsEngine} from './PhysicsEngine';
 
 export enum BoardItemRole {
   Dice = 1,
@@ -19,7 +19,7 @@ export class BoardItemManagment {
   myView: ViewportComponent;
   boardItems: BoardItem[];
   board: THREE.Mesh;
-  dice: PhysicsObject;
+  dice: THREE.Mesh;
   scene: THREE.Scene;
   markerGeo = new THREE.ConeBufferGeometry(1, 10, 15, 1, false, 0, 2 * Math.PI);
 
@@ -29,35 +29,32 @@ export class BoardItemManagment {
     this.boardItems = [];
   }
 
+  listDebugPhysicsItems() {
+    this.physics.listBodies();
+  }
+
   throwDice() {
     console.log('throwing Dice');
     if (this.dice !== undefined) {
-      this.dice.mesh.position.set(0, 40, 0);
-      this.dice.rotationalAxis.copy(new THREE.Vector3(1, 1, 0).normalize());
-      this.dice.rotationalVelocity = (1 + 15 * Math.random()) * Math.PI;
-      const velocityVec = new THREE.Vector3(Math.random() - 0.5, Math.random() / 10, Math.random() - 0.5).normalize();
-      this.dice.velocity.copy(velocityVec.multiplyScalar(Math.random() * 40));
+      this.dice.position.set(0, 40, 0);
+      // TODO: redo axial throw
+      // this.dice.rotationalAxis.copy(new THREE.Vector3(1, 1, 0).normalize());
+      // this.dice.rotationalVelocity = (1 + 15 * Math.random()) * Math.PI;
+      // const velocityVec = new THREE.Vector3(Math.random() - 0.5, Math.random() / 10, Math.random() - 0.5).normalize();
+      // this.dice.velocity.copy(velocityVec.multiplyScalar(Math.random() * 40));
       console.log('..', this.dice, this.scene);
-      for (const attKey in this.dice.attachedObjects) {
-        if (attKey in this.dice.attachedObjects) {
-          console.log('..');
-          const offset = this.dice.attachedObjects[attKey].offset;
-          this.dice.attachedObjects[attKey].object.position.copy(this.dice.mesh.position.clone().add(offset));
-          this.dice.attachedObjects[attKey].object.rotation.copy(this.dice.mesh.rotation);
-        }
-      }
     }
   }
-  moveGameFigure(object: THREE.Mesh, fieldID: number) {
+  moveGameFigure(object: THREE.Object3D, fieldID: number) {
     console.log('move Figure to ', fieldID);
     for (const itemKey in this.boardItems) {
       if (this.boardItems[itemKey].mesh === object) {
         console.log('found Item, role is: ', this.boardItems[itemKey].role);
         const newField = BoardCoordConversion.getFieldCenter(fieldID);
         this.boardItems[itemKey].mesh.position.set(newField.x, 10, newField.y);
-        const p = this.physics.getObjectFromMesh(object);
-        if (p !== undefined) {
-          p.physicsEnabled = true;
+        if (object !== undefined && object.userData.physicsBody !== undefined) {
+          // TODO make correct ammo call
+          object.userData.physicsBody.physicsEnabled = true;
         }
       }
     }
@@ -70,17 +67,23 @@ export class BoardItemManagment {
 
     this.boardItems.push({mesh: figure, role: BoardItemRole.figure, removeBy: undefined});
     this.scene.add(figure);
-    const pObj = this.physics.addObject(figure, 0.8, 1);
+    // TODO redo mass
+    const pObj = this.physics.addMesh(figure, 1);
   }
 
   addFlummi(x: number, y: number, z: number, color: number) {
-    const geometry = new THREE.SphereGeometry( 2, 32, 32 );
+    // const geometry = new THREE.SphereGeometry( 2, 32, 32 );
+    const geometry = new THREE.SphereBufferGeometry( 2, 32, 32 );
     const material = new THREE.MeshStandardMaterial( {color: color} );
     const sphere = new THREE.Mesh( geometry, material );
     sphere.position.set(x, y, z);
     this.scene.add( sphere );
-    const pObj = this.physics.addObject(sphere, 0.5, 1);
-    pObj.velocity.set((2 * Math.random() - 1) * 15, Math.random() * 15, (2 * Math.random() - 1) * 15);
+    // TODO redo mass
+    this.physics.addMesh(sphere, 1);
+    if (sphere !== undefined && sphere.userData.physicsBody !== undefined) {
+      // TODO make correct ammo call
+      // sphere.userData.physicsBody.velocity.set((2 * Math.random() - 1) * 15, Math.random() * 15, (2 * Math.random() - 1) * 15);
+    }
   }
 
   addMarker(x: number, y: number, z: number, col: number): void {

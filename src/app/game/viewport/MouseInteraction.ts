@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 import {BoardItemManagment} from './BoardItemManagment';
-import {Camera, Mesh, Scene, Vector3} from 'three';
+import {Camera, Scene, Vector3} from 'three';
 import {BoardCoordConversion} from './BoardCoordConversion';
-import {Board, Tile} from '../../model/Board';
-import {PhysicsEngine, PhysicsObject} from './PhysicsEngine';
+import {Board} from '../../model/Board';
+import {PhysicsEngine} from './PhysicsEngine';
 
 
 export class MouseInteraction {
@@ -17,7 +17,7 @@ export class MouseInteraction {
   camera: Camera;
   scene: Scene;
 
-  currentlySelected: {obj: PhysicsObject, oldPos: Vector3};
+  currentlySelected: {obj: THREE.Object3D, oldPos: Vector3};
 
   constructor(scene: Scene, camera: Camera, boardItemManager: BoardItemManagment, private physics: PhysicsEngine) {
     this.boardItemManager = boardItemManager;
@@ -37,7 +37,7 @@ export class MouseInteraction {
       const intersects = this.raycaster.intersectObject(this.boardItemManager.board);
       if (intersects.length > 0) {
         const point = intersects[0].point;
-        this.currentlySelected.obj.mesh.position.copy(point.setY(10));
+        this.currentlySelected.obj.position.copy(point.setY(10));
       }
     }
   }
@@ -62,7 +62,6 @@ export class MouseInteraction {
       travelled.distance = Math.sqrt((travelled.x * travelled.x) + (travelled.y * travelled.y));
 
       if (travelled.distance < 10) {
-        // console.log('mouseClickRecognised: ', travelled.x, travelled.y, travelled.distance);
         this.clickToCoords(this.lastMouseLeftDownCoords.x, this.lastMouseLeftDownCoords.y);
       } else {
         console.log('dragDropRecognised: ', travelled.x, travelled.y, travelled.distance);
@@ -101,28 +100,18 @@ export class MouseInteraction {
         }
         this.currentlySelected = undefined;
       } else if (intersects[0].object.name === 'gamefigure') {
-        const pObj = this.physics.getObjectFromMesh(intersects[0].object as Mesh);
-        if (pObj !== undefined) {
+        if (intersects[0].object.userData.physicsBody !== undefined) {
+          const pObj = intersects[0].object.userData.physicsBody;
           pObj.physicsEnabled = false;
           this.currentlySelected = {obj: pObj, oldPos: pObj.mesh.position.clone()};
+          console.log('selected Object');
         }
-        console.log('selected Object');
       } else if (intersects[0].object.name === 'Cube' ||
         intersects[0].object.name === 'Cube_0' ||
         intersects[0].object.name === 'Cube_1') {
         this.boardItemManager.throwDice();
-      } else {
       }
-
-
     }
-
-    /*const inters = this.raycaster.intersectObject(this.boardItemManager.board);
-    if (inters.length > 0) {
-      const point = inters[0].point;
-      this.boardItemManager.addMarker(point.x, point.y, point.z, 0x0000ff);
-      this.handleBoardTileClick(point);
-    }*/
   }
   handleBoardTileClick(intersection: THREE.Vector3): boolean {
     const coords = BoardCoordConversion.coordsToFieldCoords(intersection);
@@ -131,14 +120,14 @@ export class MouseInteraction {
       const tile = Board.getTile(tileId);
       console.log('clicked on Tile: ', tile.translationKey, coords.x, coords.y);
       if (this.currentlySelected !== undefined) {
-        this.boardItemManager.moveGameFigure(this.currentlySelected.obj.mesh, tileId);
-        this.currentlySelected.obj.physicsEnabled = true;
+        this.boardItemManager.moveGameFigure(this.currentlySelected.obj, tileId);
+        this.currentlySelected.obj.userData.physicsEnabled = true;
         return true;
       }
     } else {
       console.log('clicked outside of playing field');
-      this.currentlySelected.obj.mesh.position.copy(this.currentlySelected.oldPos);
-      this.currentlySelected.obj.physicsEnabled = true;
+      this.currentlySelected.obj.userData.mesh.position.copy(this.currentlySelected.oldPos);
+      this.currentlySelected.obj.userData.physicsEnabled = true;
     }
     return false;
   }

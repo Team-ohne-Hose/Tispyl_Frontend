@@ -76,6 +76,9 @@ export class GameComponent implements OnInit {
         const p: Vector3 = this.cameraControl.getPosition();
         console.log('Camera At: ', p.x, p.y, p.z);
         break;
+      case 'p':
+        this.boardItemControl.listDebugPhysicsItems();
+        break;
       case 'o':
         this.audioCtrl.playAudio();
         break;
