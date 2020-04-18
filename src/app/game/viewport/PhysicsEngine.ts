@@ -53,6 +53,7 @@ export class PhysicsEngine {
   margin = 0.05;
   deletionPlane = -15;
   disposeFromViewport: (obj: THREE.Object3D) => {};
+  private onUpdateCallbacks: (() => {void})[] = [];
 
   private static isUserdataPhysics(userDataPhysics: PhysicsUserdata | any): userDataPhysics is PhysicsUserdata {
     return (userDataPhysics as PhysicsUserdata).physicsBody !== undefined;
@@ -112,6 +113,11 @@ export class PhysicsEngine {
             }
           }
         }
+      }
+    }
+    for (const k in this.onUpdateCallbacks) {
+      if (k in this.onUpdateCallbacks) {
+        this.onUpdateCallbacks[k]();
       }
     }
   }
@@ -243,5 +249,9 @@ export class PhysicsEngine {
     let geo = mesh.geometry.clone();
     geo = geo instanceof THREE.BufferGeometry ? geo : new THREE.BufferGeometry().fromGeometry(geo);
     this.addShape(geo , mesh, mass, colGroup, colMask);
+  }
+
+  addOnUpdateCallback(func: () => {void}) {
+    this.onUpdateCallbacks.push(func);
   }
 }

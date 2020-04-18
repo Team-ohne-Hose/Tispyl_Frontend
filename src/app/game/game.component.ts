@@ -64,7 +64,7 @@ export class GameComponent implements OnInit {
         this.boardItemControl.listDebugPhysicsItems();
         break;
       case 'o':
-        this.audioCtrl.playAudio();
+        // this.audioCtrl.playAudio();
         break;
     }
   }

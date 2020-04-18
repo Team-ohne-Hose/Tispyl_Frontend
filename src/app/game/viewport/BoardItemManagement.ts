@@ -17,6 +17,10 @@ export interface BoardItem {
 }
 export class BoardItemManagement {
 
+  private diceStillOffset = 0.1; //max Velocity for dice to be recognised as still
+  private sqrtHalf = Math.sqrt(.5);
+  private checkDiceTriggered = false;
+
   gameFigureMass = 1;
   flummiMass = 1;
 
@@ -31,10 +35,57 @@ export class BoardItemManagement {
   constructor(scene: THREE.Scene, private sceneBuilder: SceneBuilderService, private physics: PhysicsEngine) {
     this.scene = scene;
     this.boardItems = [];
+    this.physics.addOnUpdateCallback(this.checkDice.bind(this));
   }
 
   listDebugPhysicsItems() {
     this.physics.listBodies();
+  }
+
+  private checkDice() {
+    const diceRes = this.getDiceNumber();
+    if (diceRes > 0) {
+      if (!this.checkDiceTriggered) {
+        // TODO call Event
+        console.log('rolled ' + diceRes);
+        this.checkDiceTriggered = true;
+      }
+    } else if (diceRes <= -2) { // reset only after moving 10x as fast as threshold. this prevents most of multiple (false) recognitions
+      this.checkDiceTriggered = false;
+    }
+  }
+  // returns rolled dice number, -1 for not stable/initialized, -2 for even more unstable
+  getDiceNumber(): number {
+    if (this.dice !== undefined) {
+      if (PhysicsEngine.getPhys(this.dice).physicsBody.getLinearVelocity().length() < this.diceStillOffset) {
+        const diceOrientationUp = new THREE.Vector3(0, 1, 0).normalize().applyQuaternion(this.dice.quaternion);
+        const diceOrientationLeft = new THREE.Vector3(1, 0, 0).normalize().applyQuaternion(this.dice.quaternion);
+        const diceOrientationFwd = new THREE.Vector3(0, 0, 1).normalize().applyQuaternion(this.dice.quaternion);
+        let diceNumber = -1;
+        if (diceOrientationUp.y >= this.sqrtHalf) {
+          diceNumber = 4;
+        } else if (diceOrientationUp.y <= -this.sqrtHalf) {
+          diceNumber = 3;
+        } else if (diceOrientationLeft.y >= this.sqrtHalf) {
+          diceNumber = 5;
+        } else if (diceOrientationLeft.y <= -this.sqrtHalf) {
+          diceNumber = 2;
+        } else if (diceOrientationFwd.y >= this.sqrtHalf) {
+          diceNumber = 1;
+        } else if (diceOrientationFwd.y <= -this.sqrtHalf) {
+          diceNumber = 6;
+        }
+        return diceNumber;
+      } else if (PhysicsEngine.getPhys(this.dice).physicsBody.getLinearVelocity().length() < 10 * this.diceStillOffset) {
+        // console.log('dice too fast', PhysicsEngine.getPhys(this.dice).physicsBody.getLinearVelocity().length());
+        return -1;
+      } else {
+        // console.log('dice super fast', PhysicsEngine.getPhys(this.dice).physicsBody.getLinearVelocity().length());
+        return -2;
+      }
+    }
+    // console.log('dice too undefined');
+    return -1;
   }
 
   throwDice() {
@@ -71,15 +122,16 @@ export class BoardItemManagement {
     }
   }
 
-  addGameFigure() {
-    const figure = this.sceneBuilder.generateGameFigure(0x004412);
+  addGameFigure(color?: number) {
+    color = color || Math.random() * 0xffffff;
+    const figure = this.sceneBuilder.generateGameFigure(color);
     const startPos = BoardCoordConversion.getFieldCenter(0);
     figure.position.set(startPos.x, 8, startPos.y);
 
     this.boardItems.push({mesh: figure, role: BoardItemRole.figure, removeBy: undefined});
     this.scene.add(figure);
     this.physics.addMesh(figure, this.gameFigureMass, (obj) => {
-      this.physics.setPosition(figure, 0, 0, 10);
+      this.physics.setPosition(figure, 0, 20, 0);
       return true;
     });
   }

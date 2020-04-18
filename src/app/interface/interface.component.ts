@@ -1,10 +1,12 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import {ChatWindowComponent} from './chat-window/chat-window.component';
 import {ColyseusClientService} from '../services/colyseus-client.service';
 import {Room} from 'colyseus.js';
 import {GameState} from '../model/GameState';
 import {Schema, DataChange} from '@colyseus/schema';
+import {AudioControl} from '../game/viewport/AudioControl';
+import {GameComponent} from '../game/game.component';
 
 
 @Component({
@@ -21,10 +23,14 @@ export class InterfaceComponent implements OnInit {
   routes;
   currentState;
 
+  @Input() gameComponent: GameComponent;
   @ViewChild('chat') chatRef: ChatWindowComponent;
 
   knownCommands: any[] = [
     {k: '/help', f: this.printHelpCommand.bind(this), h: ''},
+    {k: '/ourAnthem', f: this.playAnthem.bind(this), h: ''},
+    {k: '/addFigure', f: this.addGamefigure.bind(this), h: ''},
+    {k: '/diceRoll', f: this.printDice.bind(this), h: ''},
     {k: '/showLocalState', f: this.showLocalState.bind(this), h: ''},
     {k: '/setLocalState', f: this.setLocalStateCommand.bind(this), h: 'name:string value:any'},
     {k: '/advanceRound', f: this.advanceRound.bind(this), h: ''},
@@ -47,6 +53,16 @@ export class InterfaceComponent implements OnInit {
 
       this.currentState = room.state;
     });
+  }
+
+  private playAnthem() {
+    this.gameComponent.audioCtrl.playAudio.bind(this.gameComponent.audioCtrl)();
+  }
+  private addGamefigure() {
+    this.gameComponent.boardItemControl.addGameFigure();
+  }
+  private printDice() {
+    this.print('Rolled ' + this.gameComponent.boardItemControl.getDiceNumber.bind(this.gameComponent.boardItemControl)());
   }
 
   executeChatCommand( args ) {

@@ -113,7 +113,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
       this.scene.add(myModel);
       // this.scene.add(model.children[1]);
       this.physics.addMesh(myModel, 1, (obj) => {
-        this.physics.setPosition(myModel, 0, 0, 10);
+        this.physics.setPosition(myModel, 0, 10, 0);
         return true;
       });
       this.boardItemManager.dice = myModel;
