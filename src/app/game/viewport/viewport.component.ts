@@ -98,6 +98,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.audioControl = new AudioControl();
     this.cameraControl = new CameraControl(this.camera, this.controls);
     this.physics = new PhysicsEngine();
+    this.physics.disposeFromViewport = this.disposeFromViewport.bind(this);
     this.boardItemManager = new BoardItemManagement(this.scene, this.sceneBuilder, this.physics);
     this.boardItemManager.board = gameBoard;
     this.mouseInteract = new MouseInteraction(this.scene, this.camera, this.boardItemManager, this.physics);
@@ -111,13 +112,20 @@ export class ViewportComponent implements AfterViewInit, OnInit {
       const myModel = model.children[0] as Mesh;
       this.scene.add(myModel);
       // this.scene.add(model.children[1]);
-      this.physics.addMesh(myModel, 1);
+      this.physics.addMesh(myModel, 1, (obj) => {
+        this.physics.setPosition(myModel, 0, 0, 10);
+        return true;
+      });
       this.boardItemManager.dice = myModel;
     });
 
     this.audioControl.initAudio(this.camera);
     this.registerViewport.emit([this.cameraControl, this.boardItemManager, this.audioControl]);
     this.animate();
+  }
+
+  disposeFromViewport(obj: Object3D) {
+    this.scene.remove(obj);
   }
 
   onWindowResize(event) {

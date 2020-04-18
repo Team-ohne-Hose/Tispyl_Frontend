@@ -78,7 +78,10 @@ export class BoardItemManagement {
 
     this.boardItems.push({mesh: figure, role: BoardItemRole.figure, removeBy: undefined});
     this.scene.add(figure);
-    const pObj = this.physics.addMesh(figure, this.gameFigureMass);
+    this.physics.addMesh(figure, this.gameFigureMass, (obj) => {
+      this.physics.setPosition(figure, 0, 0, 10);
+      return true;
+    });
   }
 
   addFlummi(x: number, y: number, z: number, color: number) {

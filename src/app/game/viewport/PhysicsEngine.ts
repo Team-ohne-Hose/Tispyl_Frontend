@@ -3,6 +3,7 @@ import {BufferGeometry, Object3D, Quaternion, Vector3} from 'three';
 import Ammo from 'ammojs-typed';
 import btVector3 = Ammo.btVector3;
 import btCollisionShape = Ammo.btCollisionShape;
+import {toNumbers} from '@angular/compiler-cli/src/diagnostics/typescript_version';
 
 export interface PhysicsUserdata {
   physicsBody: Ammo.btRigidBody;
@@ -50,6 +51,8 @@ export class PhysicsEngine {
   tmpQuat: Ammo.btQuaternion;
   rigidBodies: THREE.Object3D[] = [];
   margin = 0.05;
+  deletionPlane = -15;
+  disposeFromViewport: (obj: THREE.Object3D) => {};
 
   private static isUserdataPhysics(userDataPhysics: PhysicsUserdata | any): userDataPhysics is PhysicsUserdata {
     return (userDataPhysics as PhysicsUserdata).physicsBody !== undefined;
@@ -87,8 +90,8 @@ export class PhysicsEngine {
     this.physicsWorld.stepSimulation( deltaTime, 10 );
     for (const body in this.rigidBodies) {
       if (body in this.rigidBodies) {
-        const phys = this.rigidBodies[body].userData.physics;
-        if (PhysicsEngine.isUserdataPhysics(phys)) {
+        const phys = PhysicsEngine.getPhys(this.rigidBodies[body]);
+        if (phys !== undefined) {
           const pBody: Ammo.btRigidBody = phys.physicsBody;
           const ms: Ammo.btMotionState = pBody.getMotionState();
           if (ms) {
@@ -97,6 +100,16 @@ export class PhysicsEngine {
             const q = this.tmpTrans.getRotation();
             this.rigidBodies[body].position.set(p.x(), p.y(), p.z());
             this.rigidBodies[body].quaternion.set(q.x(), q.y(), q.z(), q.w());
+
+            if (p.y() < this.deletionPlane) {
+              const obj = this.rigidBodies[body];
+              if (!phys.onDelete || !phys.onDelete(obj)) {
+                this.rigidBodies.splice(Number(body), 1);
+                if (this.disposeFromViewport) {
+                  this.disposeFromViewport(obj);
+                }
+              }
+            }
           }
         }
       }
