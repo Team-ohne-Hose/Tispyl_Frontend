@@ -1,5 +1,5 @@
 
 <div class="interface-bounds">
-<app-state-display [round]="round" [turn]="turn" [action]="action" [rules]="rules" ></app-state-display>
+<app-state-display [round]="currentState.round" [turn]="currentState.turn" [action]="currentState.action" [rules]="currentState.rules" ></app-state-display>
 <app-chat-window (chatCommand)="executeChatCommand($event)" #chat></app-chat-window>
 </div>

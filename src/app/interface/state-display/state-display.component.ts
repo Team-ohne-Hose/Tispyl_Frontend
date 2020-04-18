@@ -13,7 +13,7 @@ export class StateDisplayComponent implements OnInit {
   @Input() action: string;
   @Input() rules: string[];
 
-  knownActions = { roll: 'fas fa-dice', move: 'fas fa-running', execute: 'fas fa-beer' };
+  knownActions = { ROLL: 'fas fa-dice', MOVE: 'fas fa-running', EXECUTE: 'fas fa-beer' };
 
   constructor() { }
 

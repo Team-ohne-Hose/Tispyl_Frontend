@@ -1,9 +1,11 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import {ChatWindowComponent} from './chat-window/chat-window.component';
 import {ColyseusClientService} from '../services/colyseus-client.service';
 import {Room} from 'colyseus.js';
 import {GameState} from '../model/GameState';
+import {Schema, DataChange} from '@colyseus/schema';
+
 
 @Component({
   selector: 'app-interface',
@@ -14,72 +16,91 @@ export class InterfaceComponent implements OnInit {
 
   constructor(private router: Router, private colyseus: ColyseusClientService) {
     this.routes = router.config.filter( route => route.path !== '**' && route.path.length > 0);
-
   }
 
   routes;
-
-  round = 0;
-  turn = 'n/a';
-  action = '';
-  rules: string[] = [];
+  currentState;
 
   @ViewChild('chat') chatRef: ChatWindowComponent;
 
   knownCommands: any[] = [
-    {k: '/help', f: this.printHelpCommand, h: ''},
-    {k: '/setLocalState', f: this.setLocalStateCommand, h: 'name:string value:any'},
-    {k: '/advanceRound', f: this.advanceRound, h: ''},
-    {k: '/enableDebugLog', f: this.enableDebugLogCommand, h: ''}
+    {k: '/help', f: this.printHelpCommand.bind(this), h: ''},
+    {k: '/showLocalState', f: this.showLocalState.bind(this), h: ''},
+    {k: '/setLocalState', f: this.setLocalStateCommand.bind(this), h: 'name:string value:any'},
+    {k: '/advanceRound', f: this.advanceRound.bind(this), h: ''},
+    {k: '/advanceAction', f: this.advanceTurn.bind(this), h: ''},
+    {k: '/enableDebugLog', f: this.enableDebugLogCommand.bind(this), h: ''}
   ];
 
   ngOnInit(): void {
+    // This should be part of the colyseus service callback infrastructure
+    this.colyseus.getActiveRoom().subscribe( room => {
+      room.state.onChange = (changes: DataChange[]) => {
+        changes.forEach(change => {
+          switch (change.field) {
+            case 'round': { this.currentState.round = change.value; break; }
+            case 'turn': { this.currentState.turn = change.value; break; }
+            case 'action': { this.currentState.action = change.value; break; }
+          }
+        });
+      };
+
+      this.currentState = room.state;
+    });
   }
 
   executeChatCommand( args ) {
-    console.log('Parent: ', args);
     const command = this.knownCommands.find( e => {
-      return e.k === args[0];
-    }).f;
+      return e.k.trim().toString() === args[0].trim().toString();
+    });
     if (command !== undefined) {
-      command(this, args);
+      command.f(args);
     } else {
       console.log('Unknown command: ', args);
     }
   }
 
-  setLocalStateCommand( scopedThis, args ) {
-    scopedThis.print('Setting local state: ', args[1], args[2]);
-    scopedThis[args[1]] = args[2];
+  asArray(str: string): number[] {
+    const arr: number[] = [];
+    for (let i = 0; i < str.length; i++) {
+      arr.push(str.charCodeAt(i));
+    }
+    return arr;
   }
 
-  advanceRound( scopedThis, args ) {
-    scopedThis.colyseus.getActiveRoom().subscribe( r => {
+  setLocalStateCommand( args ) {
+    this.print(`Setting local state: ${args[1]} ${args[2]}`);
+    this[args[1]] = args[2];
+  }
+
+  showLocalState( args ) {
+    this.print(`State ${JSON.stringify(this.currentState)}`);
+  }
+
+  advanceRound( args ) {
+    this.colyseus.getActiveRoom().subscribe( r => {
       r.send({type: 'ADVANCE_ROUND'});
     });
   }
 
-  printHelpCommand( scopedThis, args ) {
-    const commands: string[] = scopedThis.knownCommands.map( a => `${a.k} ${a.h}`);
-    scopedThis.print(commands.join('\n'));
-  }
-
-  enableDebugLogCommand( scopedThis, args ) {
-    scopedThis.colyseus.getActiveRoom().subscribe( room => {
-      room.state.onChange = (changes) => {
-        changes.forEach(change => {
-          scopedThis.print(change.value);
-          if (change.field === 'round') {
-            scopedThis.print(change.value);
-            scopedThis.round = change.value;
-          }
-        });
-      };
+  advanceTurn( args ) {
+    this.colyseus.getActiveRoom().subscribe( r => {
+      r.send({type: 'ADVANCE_TURN'});
     });
   }
 
-  print(msg: string) {
-    this.chatRef.chatContent =  this.chatRef.chatContent + '\n' + msg;
+  printHelpCommand( args ) {
+    const commands: string[] = this.knownCommands.map( a => `${a.k} ${a.h}`);
+    this.print(commands.join('\n'));
   }
+
+  enableDebugLogCommand( scopedThis, args ) {
+    this.print('already there');
+  }
+
+  print(msg: string) {
+    this.chatRef.postChatMessage(msg);
+  }
+
 
 }
