@@ -1,12 +1,12 @@
-import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import {ChatWindowComponent} from './chat-window/chat-window.component';
 import {ColyseusClientService} from '../services/colyseus-client.service';
-import {Room} from 'colyseus.js';
-import {GameState} from '../model/GameState';
-import {Schema, DataChange} from '@colyseus/schema';
-import {AudioControl} from '../game/viewport/AudioControl';
+import {DataChange} from '@colyseus/schema';
 import {GameComponent} from '../game/game.component';
+import {GameState} from '../model/GameState';
+import {Schema, MapSchema, type} from '@colyseus/schema';
+
 
 
 @Component({
@@ -21,7 +21,7 @@ export class InterfaceComponent implements OnInit {
   }
 
   routes;
-  currentState;
+  currentState: GameState;
 
   @Input() gameComponent: GameComponent;
   @ViewChild('chat') chatRef: ChatWindowComponent;
@@ -38,12 +38,14 @@ export class InterfaceComponent implements OnInit {
     {k: '/advanceTurn', f: this.advanceTurn.bind(this), h: ''},
     {k: '/start', f: this.start.bind(this), h: ''},
     {k: '/next', f: this.advanceAction.bind(this), h: ''},
+    {k: '/fps', f: this.toggleFpsDisplay.bind(this), h: ''},
     {k: '/enableDebugLog', f: this.enableDebugLogCommand.bind(this), h: ''}
   ];
 
   ngOnInit(): void {
     // This should be part of the colyseus service callback infrastructure
     this.colyseus.getActiveRoom().subscribe( room => {
+
       room.state.onChange = (changes: DataChange[]) => {
         changes.forEach(change => {
           console.log('ON_CHANGE', change);
@@ -80,7 +82,7 @@ export class InterfaceComponent implements OnInit {
     }
   }
 
-  asArray(str: string): number[] {
+  strAsArray(str: string): number[] {
     const arr: number[] = [];
     for (let i = 0; i < str.length; i++) {
       arr.push(str.charCodeAt(i));
@@ -115,6 +117,10 @@ export class InterfaceComponent implements OnInit {
     });
   }
 
+  toggleFpsDisplay( args ) {
+    this.gameComponent.viewRef.stats.dom.hidden = !this.gameComponent.viewRef.stats.dom.hidden;
+  }
+
   start( args ) {
     this.colyseus.getActiveRoom().subscribe( r => {
       r.send({type: 'SET_STARTING_CONDITIONS'});
@@ -132,6 +138,14 @@ export class InterfaceComponent implements OnInit {
 
   print(msg: string) {
     this.chatRef.postChatMessage(msg);
+  }
+
+  asArray<T>(map: MapSchema<T>): T[] {
+    const tmpArray: T[] = [];
+    for (const id in map) {
+      tmpArray.push(map[id]);
+    }
+    return tmpArray;
   }
 
 

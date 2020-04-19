@@ -1,4 +1,4 @@
-import {Component, HostListener, OnInit} from '@angular/core';
+import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {Quaternion, Vector3} from 'three';
 import {BoardItemManagement} from './viewport/BoardItemManagement';
 import {AudioControl} from './viewport/AudioControl';
@@ -8,6 +8,7 @@ import {filter, map} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ColyseusClientService} from '../services/colyseus-client.service';
+import {ViewportComponent} from './viewport/viewport.component';
 
 @Component({
   selector: 'app-game',
@@ -18,6 +19,9 @@ export class GameComponent implements OnInit {
 
   constructor(private router: Router, private colyseus: ColyseusClientService) {}
 
+  @ViewChild('viewRef') viewRef: ViewportComponent;
+
+  // might be obsolete in the future
   cameraControl: CameraControl;
   boardItemControl: BoardItemManagement;
   audioCtrl: AudioControl;

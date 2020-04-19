@@ -30,6 +30,7 @@ import { InterfaceComponent } from './interface/interface.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import { ChatWindowComponent } from './interface/chat-window/chat-window.component';
 import { StateDisplayComponent } from './interface/state-display/state-display.component';
+import { ConnectedPlayersComponent } from './interface/connected-players/connected-players.component';
 
 const appRoutes: Routes = [
   { path: 'lobby', component: LobbyComponent},
@@ -56,7 +57,8 @@ const appRoutes: Routes = [
     JoinGameComponent,
     InterfaceComponent,
     ChatWindowComponent,
-    StateDisplayComponent
+    StateDisplayComponent,
+    ConnectedPlayersComponent
   ],
   imports: [
     RouterModule.forRoot(
