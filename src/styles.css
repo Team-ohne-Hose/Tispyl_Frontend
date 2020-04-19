@@ -16,8 +16,6 @@
 }
 
 body {
-  display: flex;
-  justify-content: center;
   color: whitesmoke;
   font-family: Roboto, sans-serif;
   margin: 0;
