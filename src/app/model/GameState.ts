@@ -46,14 +46,11 @@ export class GameState extends Schema {
   @type('string')
   action = 'roll';
 
-<<<<<<< HEAD
   @type({map: Player})
   playerList = new MapSchema<Player>();
-=======
+
   @type(PhysicsState)
   physicsState = new PhysicsState();
-
->>>>>>> working on moving the physics
 
   nextRound() {
     this.round += 1;
