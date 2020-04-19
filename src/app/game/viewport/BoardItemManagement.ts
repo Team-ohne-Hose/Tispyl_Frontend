@@ -38,9 +38,6 @@ export class BoardItemManagement {
     // this.physics.addOnUpdateCallback(this.checkDice.bind(this)); // TODO redo updateCallbacks
   }
 
-  listDebugPhysicsItems() {
-    // this.physics.listBodies(); // TODO redo listing Physics
-  }
   // returns rolled dice number, -1 for not stable/initialized, -2 for even more unstable
   getDiceNumber(): number {
     if (this.dice !== undefined) {
@@ -76,14 +73,13 @@ export class BoardItemManagement {
     if (this.dice !== undefined) {
       this.physics.setPosition(this.dice.id, 0, 40, 0);
       this.physics.setRotation(this.dice.id, 0, 0, 0, 1);
-      // TODO: redo Velocity
-      // const vel = new Ammo.btVector3(Math.random() - 0.5, Math.random() / 10, Math.random() - 0.5);
-      // const rot = new Ammo.btVector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
-      // vel.normalize();
-      // vel.op_mul(Math.random() * 35); // TODO: balance Dice speed
-      // rot.op_mul(1 * Math.PI); // TODO: balance Dice rotation speed
-      // phys.physicsBody.setLinearVelocity(vel);
-      // phys.physicsBody.setAngularVelocity(rot);
+
+      const vel = new THREE.Vector3(Math.random() - 0.5, Math.random() / 10, Math.random() - 0.5);
+      const rot = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
+      vel.normalize().multiplyScalar(Math.random() * 35);
+      rot.multiplyScalar(Math.PI);
+      this.physics.setVelocity(this.dice.id, vel.x, vel.y, vel.z);
+      this.physics.setAngularVelocity(this.dice.id, rot.x, rot.y, rot.z);
     }
   }
 
@@ -130,12 +126,8 @@ export class BoardItemManagement {
     sphere.position.set(x, y, z);
     this.scene.add( sphere );
     this.physics.addMesh(sphere, this.flummiMass);
-    // TODO: redo Velocity
-    // const phys = PhysicsEngine.getPhys(sphere);
-    // if (phys !== undefined) {
-    // const vec = new Ammo.btVector3((2 * Math.random() - 1) * 15, Math.random() * 15, (2 * Math.random() - 1) * 15);
-    // phys.physicsBody.setLinearVelocity(vec);
-    // }
+
+    this.physics.setVelocity(sphere.id, (2 * Math.random() - 1) * 15, Math.random() * 15, (2 * Math.random() - 1) * 15)
   }
 
   addMarker(x: number, y: number, z: number, col: number): void {

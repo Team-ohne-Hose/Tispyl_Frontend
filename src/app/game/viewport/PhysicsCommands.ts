@@ -29,6 +29,7 @@ export class PhysicsCommands {
       activeRoom.state.physicsState.objects.onChange = (item: PhysicsObjectState, key: string) => {
         // console.log('new Position: ', key, item.position.x, item.position.y, item.position.z, item.position);
         this.scene.getObjectById(item.objectIDTHREE).position.set(item.position.x, item.position.y, item.position.z);
+        // console.log("rotation is: ", item.quaternion.x, item.quaternion.y, item.quaternion.z, item.quaternion.w);
         this.scene.getObjectById(item.objectIDTHREE).quaternion.set(item.quaternion.x, item.quaternion.y, item.quaternion.z, item.quaternion.w);
       };
     });
