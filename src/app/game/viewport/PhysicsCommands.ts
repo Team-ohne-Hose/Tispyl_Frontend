@@ -27,7 +27,7 @@ export class PhysicsCommands {
 
     this.colyseus.getActiveRoom().subscribe((activeRoom: Room<GameState>) => {
       activeRoom.state.physicsState.objects.onChange = (item: PhysicsObjectState, key: string) => {
-        console.log('new Position: ', key, item.position.x, item.position.y, item.position.z, item.position);
+        // console.log('new Position: ', key, item.position.x, item.position.y, item.position.z, item.position);
         this.scene.getObjectById(item.objectIDTHREE).position.set(item.position.x, item.position.y, item.position.z);
         this.scene.getObjectById(item.objectIDTHREE).quaternion.set(item.quaternion.x, item.quaternion.y, item.quaternion.z, item.quaternion.w);
       };
@@ -76,7 +76,7 @@ export class PhysicsCommands {
   }
   addObject(id: number, geo: THREE.BufferGeometry, x: number, y: number, z: number, mass: number, cGroup?: CollisionGroups, cMask?: CollisionGroups, onDelete?: number) {
     const cmd: PhysicsCommand = this.createEmptyMessage(id, PhysicsCommandType.create);
-    cmd.geo = geo.getAttribute('position').array;
+    cmd.geo = Array.from(geo.getAttribute('position').array);
     cmd.mass = mass;
     cmd.colGroup = cGroup;
     cmd.colMask = cMask;
@@ -87,7 +87,6 @@ export class PhysicsCommands {
     this.sendMessage(cmd);
   }
   addMesh(mesh: THREE.Mesh, mass: number, cGroup?: CollisionGroups, cMask?: CollisionGroups, onDelete?: number) {
-    console.log('adding: ', mesh.name, mesh.id);
     const geo = mesh.geometry.clone();
     const buffGeo = geo instanceof THREE.BufferGeometry ? geo : new THREE.BufferGeometry().fromGeometry(geo);
     this.addObject(mesh.id, buffGeo, mesh.position.x, mesh.position.y, mesh.position.z, mass, cGroup, cMask, onDelete);

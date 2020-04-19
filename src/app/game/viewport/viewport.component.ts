@@ -105,6 +105,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.mouseInteract.updateScreenSize(width, height);
 
     this.physics.addMesh(gameBoard, 0);
+    this.physics.setKinematic(gameBoard.id, true);
     this.boardItemManager.addGameFigure();
 
     this.objectLoaderService.loadObject(ObjectLoaderService.LoadableObject.dice2, (model: Object3D) => {
