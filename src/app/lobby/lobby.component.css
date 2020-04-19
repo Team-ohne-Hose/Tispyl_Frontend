@@ -1,6 +1,10 @@
 
-.top-level-box {
+.lobby-body {
   max-width: 1500px;
+  margin: 0 auto;
+}
+
+.top-level-box {
   background-color: rgba(48, 48, 48, 0.58);
   padding: 16px;
   margin: 16px;
