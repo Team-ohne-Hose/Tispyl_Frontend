@@ -2,8 +2,8 @@ import {ViewportComponent} from './viewport.component';
 import * as THREE from 'three';
 import {SceneBuilderService} from '../../services/scene-builder.service';
 import {BoardCoordConversion} from './BoardCoordConversion';
-import {PhysicsEngine} from './PhysicsEngine';
 import Ammo from 'ammojs-typed';
+import {PhysicsCommands} from './PhysicsCommands';
 
 export enum BoardItemRole {
   Dice = 1,
@@ -17,7 +17,7 @@ export interface BoardItem {
 }
 export class BoardItemManagement {
 
-  private diceStillOffset = 0.1; //max Velocity for dice to be recognised as still
+  private diceStillOffset = 0.1; // max Velocity for dice to be recognised as still
   private sqrtHalf = Math.sqrt(.5);
   private checkDiceTriggered = false;
 
@@ -32,32 +32,19 @@ export class BoardItemManagement {
   markerGeo = new THREE.ConeBufferGeometry(1, 10, 15, 1, false, 0, 2 * Math.PI);
 
 
-  constructor(scene: THREE.Scene, private sceneBuilder: SceneBuilderService, private physics: PhysicsEngine) {
+  constructor(scene: THREE.Scene, private sceneBuilder: SceneBuilderService, private physics: PhysicsCommands) {
     this.scene = scene;
     this.boardItems = [];
-    this.physics.addOnUpdateCallback(this.checkDice.bind(this));
+    // this.physics.addOnUpdateCallback(this.checkDice.bind(this)); // TODO redo updateCallbacks
   }
 
   listDebugPhysicsItems() {
-    this.physics.listBodies();
-  }
-
-  private checkDice() {
-    const diceRes = this.getDiceNumber();
-    if (diceRes > 0) {
-      if (!this.checkDiceTriggered) {
-        // TODO call Event
-        console.log('rolled ' + diceRes);
-        this.checkDiceTriggered = true;
-      }
-    } else if (diceRes <= -2) { // reset only after moving 10x as fast as threshold. this prevents most of multiple (false) recognitions
-      this.checkDiceTriggered = false;
-    }
+    // this.physics.listBodies(); // TODO redo listing Physics
   }
   // returns rolled dice number, -1 for not stable/initialized, -2 for even more unstable
   getDiceNumber(): number {
     if (this.dice !== undefined) {
-      if (PhysicsEngine.getPhys(this.dice).physicsBody.getLinearVelocity().length() < this.diceStillOffset) {
+      if (true) { // TODO: check for moving dice
         const diceOrientationUp = new THREE.Vector3(0, 1, 0).normalize().applyQuaternion(this.dice.quaternion);
         const diceOrientationLeft = new THREE.Vector3(1, 0, 0).normalize().applyQuaternion(this.dice.quaternion);
         const diceOrientationFwd = new THREE.Vector3(0, 0, 1).normalize().applyQuaternion(this.dice.quaternion);
@@ -76,47 +63,44 @@ export class BoardItemManagement {
           diceNumber = 6;
         }
         return diceNumber;
-      } else if (PhysicsEngine.getPhys(this.dice).physicsBody.getLinearVelocity().length() < 10 * this.diceStillOffset) {
+      } else {
         // console.log('dice too fast', PhysicsEngine.getPhys(this.dice).physicsBody.getLinearVelocity().length());
         return -1;
-      } else {
-        // console.log('dice super fast', PhysicsEngine.getPhys(this.dice).physicsBody.getLinearVelocity().length());
-        return -2;
       }
     }
     // console.log('dice too undefined');
     return -1;
   }
-
   throwDice() {
     console.log('throwing Dice');
     if (this.dice !== undefined) {
-      this.physics.setPosition(this.dice, 0, 40, 0);
-      this.physics.setRotationQuat(this.dice, 0, 0, 0, 1);
-      const phys = PhysicsEngine.getPhys(this.dice);
-      const vel = new Ammo.btVector3(Math.random() - 0.5, Math.random() / 10, Math.random() - 0.5);
-      const rot = new Ammo.btVector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
-      vel.normalize();
-      vel.op_mul(Math.random() * 35); // TODO: balance Dice speed
-      rot.op_mul(1 * Math.PI); // TODO: balance Dice rotation speed
-      phys.physicsBody.setLinearVelocity(vel);
-      phys.physicsBody.setAngularVelocity(rot);
+      this.physics.setPosition(this.dice.id, 0, 40, 0);
+      this.physics.setRotation(this.dice.id, 0, 0, 0, 1);
+      // TODO: redo Velocity
+      // const vel = new Ammo.btVector3(Math.random() - 0.5, Math.random() / 10, Math.random() - 0.5);
+      // const rot = new Ammo.btVector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
+      // vel.normalize();
+      // vel.op_mul(Math.random() * 35); // TODO: balance Dice speed
+      // rot.op_mul(1 * Math.PI); // TODO: balance Dice rotation speed
+      // phys.physicsBody.setLinearVelocity(vel);
+      // phys.physicsBody.setAngularVelocity(rot);
     }
   }
+
   hoverGameFigure(object: THREE.Object3D, x: number, y: number) {
-    this.physics.setKinematic(object, true);
-    this.physics.setRotationQuat(object, 0, 0, 0, 1);
-    this.physics.setPosition(object, x, 10, y);
+    this.physics.setKinematic(object.id, true);
+    this.physics.setRotation(object.id, 0, 0, 0, 1);
+    this.physics.setPosition(object.id, x, 10, y);
   }
   moveGameFigure(object: THREE.Object3D, fieldID: number) {
     console.log('move Figure to ', fieldID);
     for (const itemKey in this.boardItems) {
       if (this.boardItems[itemKey].mesh === object) {
         console.log('found Item, role is: ', this.boardItems[itemKey].role);
-        const newField = BoardCoordConversion.getFieldCenter(fieldID);
-        this.boardItems[itemKey].mesh.position.set(newField.x, 10, newField.y);
+        // const newField = BoardCoordConversion.getFieldCenter(fieldID);
+        // this.boardItems[itemKey].mesh.position.set(newField.x, 10, newField.y);
         if (object !== undefined) {
-          this.physics.setKinematic(object, false);
+          this.physics.setKinematic(object.id, false);
         }
       }
     }
@@ -130,10 +114,12 @@ export class BoardItemManagement {
 
     this.boardItems.push({mesh: figure, role: BoardItemRole.figure, removeBy: undefined});
     this.scene.add(figure);
-    this.physics.addMesh(figure, this.gameFigureMass, (obj) => {
-      this.physics.setPosition(figure, 0, 20, 0);
+    this.physics.addMesh(figure, this.gameFigureMass, undefined, undefined);
+    /* TODO: redo onDelete
+    , (obj) => {
+      this.physics.setPosition(figure.id, 0, 20, 0);
       return true;
-    });
+    });*/
   }
 
   addFlummi(x: number, y: number, z: number, color: number) {
@@ -144,11 +130,12 @@ export class BoardItemManagement {
     sphere.position.set(x, y, z);
     this.scene.add( sphere );
     this.physics.addMesh(sphere, this.flummiMass);
-    const phys = PhysicsEngine.getPhys(sphere);
-    if (phys !== undefined) {
-      const vec = new Ammo.btVector3((2 * Math.random() - 1) * 15, Math.random() * 15, (2 * Math.random() - 1) * 15);
-      phys.physicsBody.setLinearVelocity(vec);
-    }
+    // TODO: redo Velocity
+    // const phys = PhysicsEngine.getPhys(sphere);
+    // if (phys !== undefined) {
+    // const vec = new Ammo.btVector3((2 * Math.random() - 1) * 15, Math.random() * 15, (2 * Math.random() - 1) * 15);
+    // phys.physicsBody.setLinearVelocity(vec);
+    // }
   }
 
   addMarker(x: number, y: number, z: number, col: number): void {

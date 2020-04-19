@@ -39,25 +39,30 @@ export class InterfaceComponent implements OnInit {
     {k: '/start', f: this.start.bind(this), h: ''},
     {k: '/next', f: this.advanceAction.bind(this), h: ''},
     {k: '/fps', f: this.toggleFpsDisplay.bind(this), h: ''},
+    {k: '/physics', f: this.listPhysics.bind(this), h: ''},
     {k: '/enableDebugLog', f: this.enableDebugLogCommand.bind(this), h: ''}
   ];
 
   ngOnInit(): void {
-    // This should be part of the colyseus service callback infrastructure
+    this.colyseus.addOnChangeCallback((changes: DataChange[]) => {
+      changes.forEach(change => {
+        // console.log('ON_CHANGE', change);
+        switch (change.field) {
+          case 'round': { this.currentState.round = change.value; break; }
+          case 'turn': { this.currentState.turn = change.value; break; }
+          case 'action': { this.currentState.action = change.value; break; }
+        }
+      });
+    });
+
     this.colyseus.getActiveRoom().subscribe( room => {
-
-      room.state.onChange = (changes: DataChange[]) => {
-        changes.forEach(change => {
-          console.log('ON_CHANGE', change);
-          switch (change.field) {
-            case 'round': { this.currentState.round = change.value; break; }
-            case 'turn': { this.currentState.turn = change.value; break; }
-            case 'action': { this.currentState.action = change.value; break; }
-          }
-        });
-      };
-
       this.currentState = room.state;
+    });
+  }
+
+  private listPhysics() {
+    this.colyseus.getActiveRoom().subscribe( room => {
+      room.send({type: 'SERVER_COMMAND', content: {subType: 'listphysics'}});
     });
   }
 

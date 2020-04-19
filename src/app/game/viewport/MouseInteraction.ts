@@ -3,7 +3,7 @@ import {BoardItemManagement} from './BoardItemManagement';
 import {Camera, Scene, Vector3} from 'three';
 import {BoardCoordConversion} from './BoardCoordConversion';
 import {Board} from '../../model/Board';
-import {PhysicsEngine} from './PhysicsEngine';
+import {PhysicsCommands} from './PhysicsCommands';
 
 
 export class MouseInteraction {
@@ -19,7 +19,7 @@ export class MouseInteraction {
 
   currentlySelected: {obj: THREE.Object3D, oldPos: Vector3};
 
-  constructor(scene: Scene, camera: Camera, boardItemManager: BoardItemManagement, private physics: PhysicsEngine) {
+  constructor(scene: Scene, camera: Camera, boardItemManager: BoardItemManagement, private physics: PhysicsCommands) {
     this.boardItemManager = boardItemManager;
     this.camera = camera;
     this.scene = scene;
@@ -101,12 +101,9 @@ export class MouseInteraction {
         this.currentlySelected = undefined;
       } else if (intersects[0].object.name === 'gamefigure') {
         const obj = intersects[0].object;
-        const phys = PhysicsEngine.getPhys(obj);
-        if (phys !== undefined) {
-          this.physics.setKinematic(obj, true);
-          this.currentlySelected = {obj: obj, oldPos: obj.position.clone()};
-          console.log('selected Object');
-        }
+        this.physics.setKinematic(obj.id, true);
+        this.currentlySelected = {obj: obj, oldPos: obj.position.clone()};
+        console.log('selected Object');
       } else if (intersects[0].object.name === 'Cube' ||
         intersects[0].object.name === 'Cube_0' ||
         intersects[0].object.name === 'Cube_1') {
@@ -122,14 +119,14 @@ export class MouseInteraction {
       console.log('clicked on Tile: ', tile.translationKey, coords.x, coords.y);
       if (this.currentlySelected !== undefined) {
         this.boardItemManager.moveGameFigure(this.currentlySelected.obj, tileId);
-        this.physics.setKinematic(this.currentlySelected.obj, false);
+        this.physics.setKinematic(this.currentlySelected.obj.id, false);
         return true;
       }
     } else {
       console.log('clicked outside of playing field');
       const oldPos = this.currentlySelected.oldPos;
-      this.physics.setPosition(this.currentlySelected.obj, oldPos.x, oldPos.y, oldPos.z);
-      this.physics.setKinematic(this.currentlySelected.obj, false);
+      this.physics.setPosition(this.currentlySelected.obj.id, oldPos.x, oldPos.y, oldPos.z);
+      this.physics.setKinematic(this.currentlySelected.obj.id, false);
     }
     return false;
   }
