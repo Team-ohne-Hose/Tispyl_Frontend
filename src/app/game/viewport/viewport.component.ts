@@ -9,9 +9,9 @@ import {SceneBuilderService} from '../../services/scene-builder.service';
 import {GameBoardOrbitControl} from './GameBoardOrbitControl';
 import {BoardCoordConversion} from './BoardCoordConversion';
 import {ObjectLoaderService} from '../../services/object-loader.service';
-import {PhysicsEngine} from './PhysicsEngine';
 import Stats from 'THREE/examples/jsm/libs/stats.module.js';
-import {style} from '@angular/animations';
+import {PhysicsCommands} from './PhysicsCommands';
+import {ColyseusClientService} from '../../services/colyseus-client.service';
 
 @Component({
   selector: 'app-viewport',
@@ -26,7 +26,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   audioControl: AudioControl;
   stats: Stats;
 
-  constructor(private sceneBuilder: SceneBuilderService, private objectLoaderService: ObjectLoaderService) {  }
+  constructor(private sceneBuilder: SceneBuilderService, private objectLoaderService: ObjectLoaderService, private colyseus: ColyseusClientService) {  }
 
   @ViewChild('view') view: HTMLDivElement;
   @Output() registerViewport = new EventEmitter<[CameraControl, BoardItemManagement, AudioControl]>();
@@ -36,14 +36,13 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   camera: PerspectiveCamera;
   renderer: Renderer;
   controls: GameBoardOrbitControl;
-  physics: PhysicsEngine;
+  physics: PhysicsCommands;
 
   animate() {
     requestAnimationFrame(this.animate.bind(this));
     // this.controls.update();
     this.renderer.render(this.scene, this.camera);
     this.boardItemManager.removeToDelete();
-    this.physics.updatePhysics();
     this.stats.update();
   }
 
@@ -97,8 +96,9 @@ export class ViewportComponent implements AfterViewInit, OnInit {
 
     this.audioControl = new AudioControl();
     this.cameraControl = new CameraControl(this.camera, this.controls);
-    this.physics = new PhysicsEngine();
+    this.physics = new PhysicsCommands(this.colyseus);
     this.physics.disposeFromViewport = this.disposeFromViewport.bind(this);
+    this.physics.scene = this.scene;
     this.boardItemManager = new BoardItemManagement(this.scene, this.sceneBuilder, this.physics);
     this.boardItemManager.board = gameBoard;
     this.mouseInteract = new MouseInteraction(this.scene, this.camera, this.boardItemManager, this.physics);
@@ -112,10 +112,13 @@ export class ViewportComponent implements AfterViewInit, OnInit {
       const myModel = model.children[0] as Mesh;
       this.scene.add(myModel);
       // this.scene.add(model.children[1]);
-      this.physics.addMesh(myModel, 1, (obj) => {
+      this.physics.addMesh(myModel, 1);
+      /* TODO: redo onDelete
+      (obj) => {
         this.physics.setPosition(myModel, 0, 10, 0);
         return true;
       });
+       */
       this.boardItemManager.dice = myModel;
     });
 
@@ -124,8 +127,8 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.animate();
   }
 
-  disposeFromViewport(obj: Object3D) {
-    this.scene.remove(obj);
+  disposeFromViewport(id: number) {
+    this.scene.remove(this.scene.getObjectById(id));
   }
 
   onWindowResize(event) {

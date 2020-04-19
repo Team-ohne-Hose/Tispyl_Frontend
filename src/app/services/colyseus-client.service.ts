@@ -25,6 +25,8 @@ export class ColyseusClientService {
     ['onChatMessage', this.defaultCallback]
   ]);
 
+  private onChangeCallbacks: ((changes: DataChange<any>[]) => void)[] = [];
+
 
   constructor() {
     this.activeRoom = new BehaviorSubject<Room<GameState>>(undefined);
@@ -104,6 +106,12 @@ export class ColyseusClientService {
     ].map(f => f(data));
   }
 
+  addOnChangeCallback(cb: (changes: DataChange<any>[]) => void) {
+    this.onChangeCallbacks.push(cb);
+  }
+  private distributeOnChange(changes: DataChange<any>[]) {
+    this.onChangeCallbacks.map(f => f(changes));
+  }
 
   updateRoomCallbacks(currentRoom?: Room<GameState>) {
     const onMsg = this.gatherFunctionCalls.bind(this);
@@ -111,10 +119,12 @@ export class ColyseusClientService {
       this.getActiveRoom().subscribe((activeRoom) => {
         if (activeRoom !== undefined) {
           activeRoom.onMessage(onMsg);
+          activeRoom.state.onChange = this.distributeOnChange.bind(this);
         }
       });
     } else {
       currentRoom.onMessage(onMsg);
+      currentRoom.state.onChange = this.distributeOnChange.bind(this);
     }
   }
 
