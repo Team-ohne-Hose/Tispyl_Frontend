@@ -21,7 +21,7 @@ export class ColyseusClientService {
   private activeRoom: BehaviorSubject<Room<GameState>>;
   private availableRooms: BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>;
 
-  private callbacks: Map<string, ((WsData) => void) | ((DataChange) => any)> = new Map([
+  private callbacks: Map<string, (WsData) => void> = new Map([
     ['onChatMessage', this.defaultCallback]
   ]);
 
@@ -71,6 +71,7 @@ export class ColyseusClientService {
   private defaultCallback(data: WsData) {
     console.warn('A server message was not addressed. Call back was undefined', data.type, data);
   }
+
 
   registerCallBack(key: string, newCb: (WsData) => void): boolean {
     const currentCb = this.callbacks.get(key);

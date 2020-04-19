@@ -1,5 +1,11 @@
 
-import {Schema, type} from '@colyseus/schema';
+import {Schema, MapSchema, type} from '@colyseus/schema';
+
+
+export class Player extends Schema {
+  @type('string')
+  displayName: string;
+}
 
 export class GameState extends Schema {
   @type('number')
@@ -11,7 +17,8 @@ export class GameState extends Schema {
   @type('string')
   action: string = 'roll';
 
-
+  @type({map: Player})
+  playerList = new MapSchema<Player>();
 
   nextRound() {
     this.round += 1;
@@ -19,5 +26,13 @@ export class GameState extends Schema {
 
   setRound( n: number ) {
     this.round = n;
+  }
+
+  private asArray<T>(map: MapSchema<T>): T[] {
+    const tmpArray: T[] = [];
+    for (const id in map) {
+      tmpArray.push(map[id]);
+    }
+    return tmpArray;
   }
 }
