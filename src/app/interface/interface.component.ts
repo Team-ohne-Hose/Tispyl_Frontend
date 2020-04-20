@@ -36,7 +36,7 @@ export class InterfaceComponent implements OnInit {
     {k: '/start', f: this.start.bind(this), h: ''},
     {k: '/next', f: this.advanceAction.bind(this), h: ''},
     {k: '/fps', f: this.toggleFpsDisplay.bind(this), h: ''},
-    {k: '/physics', f: this.listPhysics.bind(this), h: ''},
+    {k: '/physics', f: this.listPhysics.bind(this), h: ''}
   ];
 
   ngOnInit(): void {

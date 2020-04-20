@@ -8,6 +8,12 @@ export class Player extends Schema {
   isCurrentHost: boolean;
   @type('boolean')
   isReady: boolean;
+  @type('number')
+  figureId: number;
+  @type('number')
+  figureColor: number;
+  @type('number')
+  currentTile: number;
 }
 
 export class Vector extends Schema {

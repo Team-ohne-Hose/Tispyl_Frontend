@@ -1,12 +1,10 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Client, Room, RoomAvailable} from 'colyseus.js';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {RoomMetaInfo} from '../model/RoomMetaInfo';
-import {room} from 'colyseus.js/lib/sync/helpers';
 import {GameState} from '../model/GameState';
-import {ChatMessage, WsData} from '../model/WsData';
-import {Schema, DataChange} from '@colyseus/schema';
-
+import {MessageType, PhysicsCommandGetNewId, PhysicsCommandType, WsData} from '../model/WsData';
+import {DataChange} from '@colyseus/schema';
 
 
 @Injectable({
@@ -22,6 +20,7 @@ export class ColyseusClientService {
   private availableRooms: BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>;
 
   private callbacks: Map<string, (WsData) => void> = new Map([
+    ['onIncrementId', this.defaultCallback],
     ['onChatMessage', this.defaultCallback]
   ]);
 
@@ -102,6 +101,7 @@ export class ColyseusClientService {
    */
   private gatherFunctionCalls(data: WsData): void {
     [
+      this.callbacks.get('onIncrementId'),
       this.callbacks.get('onChatMessage')
     ].map(f => f(data));
   }

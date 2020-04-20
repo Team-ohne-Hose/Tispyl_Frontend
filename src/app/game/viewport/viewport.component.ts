@@ -38,6 +38,24 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   controls: GameBoardOrbitControl;
   physics: PhysicsCommands;
 
+  static getObjectByPhysId(toSearch: Object3D, physId: number): THREE.Object3D {
+    // console.log('searching for ' + physId + ' in: ', toSearch.name, toSearch.userData.physId, toSearch.userData, toSearch);
+    if (toSearch.userData.physId === physId) {
+      return toSearch;
+    } else {
+      toSearch.children.forEach((obj: THREE.Object3D, index: number) => {
+        const res = ViewportComponent.getObjectByPhysId(obj, physId);
+        if (res !== undefined) {
+          return res;
+        }
+      });
+      return undefined;
+    }
+  }
+  static getPhysId(obj: Object3D): number {
+    return obj.userData.physId;
+  }
+
   animate() {
     requestAnimationFrame(this.animate.bind(this));
     // this.controls.update();
@@ -49,7 +67,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   ngOnInit() {
   }
 
-  ngAfterViewInit() {
+  async ngAfterViewInit() {
     // disable scrollbars
     document.documentElement.setAttribute('style', 'overflow: hidden');
     const width = this.view['nativeElement'].offsetWidth;
@@ -99,21 +117,27 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.physics = new PhysicsCommands(this.colyseus);
     this.physics.disposeFromViewport = this.disposeFromViewport.bind(this);
     this.physics.scene = this.scene;
-    this.boardItemManager = new BoardItemManagement(this.scene, this.sceneBuilder, this.physics);
+    this.boardItemManager = new BoardItemManagement(this.scene, this.sceneBuilder, this.physics, this.colyseus);
     this.boardItemManager.board = gameBoard;
     this.mouseInteract = new MouseInteraction(this.scene, this.camera, this.boardItemManager, this.physics);
     this.mouseInteract.updateScreenSize(width, height);
 
-    this.physics.addMesh(gameBoard, 0);
-    this.physics.setKinematic(gameBoard.id, true);
-    this.boardItemManager.addGameFigure();
+    this.physics.addMesh('test1', gameBoard, 0, physId => {
+      this.physics.setKinematic(physId, true);
+    });
+    /* await new Promise(resolve => {
+      setTimeout(resolve, 1000);
+    }); */
+    this.colyseus.getActiveRoom().subscribe((room) => {
+      this.boardItemManager.loadGameFigure(room.sessionId, Math.random() * 0xffffff);
+    });
 
     this.objectLoaderService.loadObject(ObjectLoaderService.LoadableObject.dice2, (model: Object3D) => {
       model.position.set(2, 2, 0);
       const myModel = model.children[0] as Mesh;
       this.scene.add(myModel);
       // this.scene.add(model.children[1]);
-      this.physics.addMesh(myModel, 1);
+      this.physics.addMesh('', myModel, 1);
       /* TODO: redo onDelete
       (obj) => {
         this.physics.setPosition(myModel, 0, 10, 0);

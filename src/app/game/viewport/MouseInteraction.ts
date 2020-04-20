@@ -4,6 +4,7 @@ import {Camera, Scene, Vector3} from 'three';
 import {BoardCoordConversion} from './BoardCoordConversion';
 import {Board} from '../../model/Board';
 import {PhysicsCommands} from './PhysicsCommands';
+import {ViewportComponent} from './viewport.component';
 
 
 export class MouseInteraction {
@@ -92,7 +93,7 @@ export class MouseInteraction {
         this.currentlySelected = undefined;
       } else if (intersects[0].object.name === 'gamefigure') {
         const obj = intersects[0].object;
-        this.physics.setKinematic(obj.id, true);
+        this.physics.setKinematic(ViewportComponent.getPhysId(obj), true);
         this.currentlySelected = {obj: obj, oldPos: obj.position.clone()};
         console.log('selected Object');
       } else if (intersects[0].object.name === 'Cube' ||
@@ -110,14 +111,14 @@ export class MouseInteraction {
       console.log('clicked on Tile: ', tile.translationKey, coords.x, coords.y);
       if (this.currentlySelected !== undefined) {
         this.boardItemManager.moveGameFigure(this.currentlySelected.obj, tileId);
-        this.physics.setKinematic(this.currentlySelected.obj.id, false);
+        this.physics.setKinematic(ViewportComponent.getPhysId(this.currentlySelected.obj), false);
         return true;
       }
     } else {
       console.log('clicked outside of playing field');
       const oldPos = this.currentlySelected.oldPos;
-      this.physics.setPosition(this.currentlySelected.obj.id, oldPos.x, oldPos.y, oldPos.z);
-      this.physics.setKinematic(this.currentlySelected.obj.id, false);
+      this.physics.setPosition(ViewportComponent.getPhysId(this.currentlySelected.obj), oldPos.x, oldPos.y, oldPos.z);
+      this.physics.setKinematic(ViewportComponent.getPhysId(this.currentlySelected.obj), false);
     }
     return false;
   }

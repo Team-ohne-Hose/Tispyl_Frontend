@@ -73,14 +73,14 @@ export interface SetFigure {
 
 export enum PhysicsCommandType {
   addEntity,
+  getNewId,
+  create,
   remove,
   kinematic,
   position,
   quaternion,
   velocity,
   angularVelocity,
-  getNewId,
-  create
 }
 export type PhysicsCommand = PhysicsCommandKinematic |
   PhysicsCommandRemove    |
@@ -138,6 +138,28 @@ export interface PhysicsCommandQuat {
   quaternionZ: number;
   quaternionW: number;
 }
+export interface PhysicsCommandRemove {
+  type: MessageType.PHYSICS_MESSAGE;
+  subType: PhysicsCommandType.remove;
+  objectID: number;
+}
+export interface PhysicsCommandPosition {
+  type: MessageType.PHYSICS_MESSAGE;
+  subType: PhysicsCommandType.position;
+  objectID: number;
+  positionX: number;
+  positionY: number;
+  positionZ: number;
+}
+export interface PhysicsCommandQuat {
+  type: MessageType.PHYSICS_MESSAGE;
+  subType: PhysicsCommandType.quaternion;
+  objectID: number;
+  quaternionX: number;
+  quaternionY: number;
+  quaternionZ: number;
+  quaternionW: number;
+}
 export interface PhysicsCommandVelocity {
   type: MessageType.PHYSICS_MESSAGE;
   subType: PhysicsCommandType.velocity;
@@ -154,6 +176,11 @@ export interface PhysicsCommandAngular {
   angularY: number;
   angularZ: number;
 }
+export interface PhysicsCommandGetNewId {
+  type: MessageType.PHYSICS_MESSAGE;
+  subType: PhysicsCommandType.getNewId;
+  id: number;
+}
 
 export type DebugCommand = ListPhysics;
 export enum DebugCommandType {
@@ -163,8 +190,3 @@ export interface ListPhysics {
   type: MessageType.DEBUG_COMMAND;
   subType: DebugCommandType.listPhysics;
 }
-
-
-
-
-
