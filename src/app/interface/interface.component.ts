@@ -23,7 +23,6 @@ export class InterfaceComponent implements OnInit {
 
   routes;
   currentState: GameState;
-  hasStarted: false;
 
   @Input() gameComponent: GameComponent;
   @ViewChild('chat') chatRef: ChatWindowComponent;
@@ -48,7 +47,7 @@ export class InterfaceComponent implements OnInit {
           case 'round': { this.currentState.round = change.value; break; }
           case 'turn': { this.currentState.turn = change.value; break; }
           case 'action': { this.currentState.action = change.value; break; }
-          case 'playerList': {this.currentState.playerList = change.value; break;}
+          case 'playerList': {this.currentState.playerList = change.value; break; }
         }
       });
     });
