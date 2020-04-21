@@ -1,0 +1,18 @@
+<div class="transparent-banner">
+  <div [ngClass]="{'banner-headline-box':true, 'green-box': isReady, 'red-box': !isReady}">
+    <div class="banner-headline-text">
+      Waiting for players
+    </div>
+    <div class="banner-interaction-box">
+      <div class="element-wrapper">
+        <div [ngClass]="{'slight-green': isReady, 'slight-red': !isReady}">{{countReadyPlayers()}}/{{players.length}}</div>
+      </div>
+      <div class="element-wrapper">
+        <div [ngClass]="{'icon-wrapper':true, 'green-icon': isReady, 'red-icon': !isReady}"><i *ngIf="isReady" class="fas fa-check"></i><i *ngIf="!isReady" class="fas fa-times"></i></div>
+      </div>
+      <div class="element-wrapper">
+        <button [ngClass]="{'button-red': !isReady}" (click)="readyEvent()">{{isReady ? 'Not yet!' : 'Ready?'}}</button>
+      </div>
+    </div>
+  </div>
+</div>

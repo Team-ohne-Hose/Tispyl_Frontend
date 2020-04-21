@@ -1,0 +1,9 @@
+
+.debug-buttons {
+  position: fixed;
+  bottom: 0;
+}
+
+.debug-buttons button {
+  margin-left: 1em;
+}

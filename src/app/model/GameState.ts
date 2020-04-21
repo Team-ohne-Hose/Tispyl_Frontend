@@ -6,6 +6,8 @@ export class Player extends Schema {
   displayName: string;
   @type('boolean')
   isCurrentHost: boolean;
+  @type('boolean')
+  isReady: boolean;
 }
 
 export class Vector extends Schema {
@@ -53,6 +55,9 @@ export class GameState extends Schema {
 
   @type('string')
   hostSession = '';
+
+  @type('boolean')
+  hasStarted: boolean = false;
 
   @type(PhysicsState)
   physicsState = new PhysicsState();

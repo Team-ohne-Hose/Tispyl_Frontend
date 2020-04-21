@@ -2,5 +2,6 @@
 <div class="interface-bounds">
   <app-state-display [round]="currentState.round" [turn]="currentState.turn" [action]="currentState.action"></app-state-display>
   <app-chat-window (chatCommand)="executeChatCommand($event)" #chat></app-chat-window>
+  <app-pregame-banner *ngIf="!currentState.hasStarted" [players]="asArray(currentState.playerList)"></app-pregame-banner>
   <app-connected-players [players]="asArray(currentState.playerList)" [turn]="currentState.turn"></app-connected-players>
 </div>
