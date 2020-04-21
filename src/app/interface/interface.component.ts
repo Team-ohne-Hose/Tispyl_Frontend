@@ -23,6 +23,7 @@ export class InterfaceComponent implements OnInit {
 
   routes;
   currentState: GameState;
+  hasStarted: false;
 
   @Input() gameComponent: GameComponent;
   @ViewChild('chat') chatRef: ChatWindowComponent;

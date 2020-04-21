@@ -1,15 +1,16 @@
 
 .state-area {
+  pointer-events: none;
   width: 100%;
   margin-top: 8px;
   position: absolute;
-  pointer-events: visibleFill;
   background-color: transparent;
   display: flex;
   justify-content: center;
 }
 
 .state-window {
+  pointer-events: visibleFill;
   padding: 4px 16px;
   display: flex;
   justify-content: center;

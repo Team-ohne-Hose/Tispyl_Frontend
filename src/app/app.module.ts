@@ -31,9 +31,12 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
 import { ChatWindowComponent } from './interface/chat-window/chat-window.component';
 import { StateDisplayComponent } from './interface/state-display/state-display.component';
 import { ConnectedPlayersComponent } from './interface/connected-players/connected-players.component';
+import { PregameBannerComponent } from './interface/pregame-banner/pregame-banner.component';
+import { DebugdummyComponent } from './debugdummy/debugdummy.component';
 
 const appRoutes: Routes = [
   { path: 'lobby', component: LobbyComponent},
+  { path: 'debug', component: DebugdummyComponent},
   { path: 'game', component: GameComponent},
   { path: '', redirectTo: '/lobby', pathMatch: 'full'},
   { path: '**', component: PageNotFoundComponent }
@@ -58,7 +61,9 @@ const appRoutes: Routes = [
     InterfaceComponent,
     ChatWindowComponent,
     StateDisplayComponent,
-    ConnectedPlayersComponent
+    ConnectedPlayersComponent,
+    PregameBannerComponent,
+    DebugdummyComponent
   ],
   imports: [
     RouterModule.forRoot(
