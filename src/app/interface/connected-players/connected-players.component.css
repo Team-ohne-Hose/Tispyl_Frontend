@@ -9,6 +9,22 @@
   filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, 0.7));
 }
 
+.img-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-items: center;
+  justify-content: center;
+}
+
+.img-container .host{
+  color: rgb(232, 183, 4);
+  font-size: x-small;
+  position: absolute;
+  bottom: 0;
+  right: -15%;
+}
+
 .player-displays {
   align-self: center;
 }

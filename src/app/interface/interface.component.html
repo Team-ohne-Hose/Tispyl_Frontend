@@ -2,5 +2,5 @@
 <div class="interface-bounds">
   <app-state-display [round]="currentState.round" [turn]="currentState.turn" [action]="currentState.action"></app-state-display>
   <app-chat-window (chatCommand)="executeChatCommand($event)" #chat></app-chat-window>
-  <app-connected-players [players]="asArray(currentState.playerList)" [turn]="currentState.turn"></app-connected-players>
+  <app-connected-players [players]="asArray(currentState.playerList)"></app-connected-players>
 </div>

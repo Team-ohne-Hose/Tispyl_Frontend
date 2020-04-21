@@ -36,47 +36,47 @@ export class PhysicsCommands {
   }
 
   setKinematic(id: number, enabled: boolean) {
-    const cmd: PhysicsCommand = this.createEmptyMessage(id, PhysicsCommandType.kinematic);
+    const cmd: any = this.createEmptyMessage(id, PhysicsCommandType.kinematic);
     cmd.kinematic = enabled;
-    this.sendMessage(cmd);
+    //this.sendMessage(cmd);
   }
   setPositionVec(id: number, vec: THREE.Vector3) {
-    this.setPosition(id, vec.x, vec.y, vec.z);
+    // this.setPosition(id, vec.x, vec.y, vec.z);
   }
   setPosition(id: number, x: number, y: number, z: number) {
-    const cmd: PhysicsCommand = this.createEmptyMessage(id, PhysicsCommandType.position);
+    const cmd: any = this.createEmptyMessage(id, PhysicsCommandType.position);
     cmd.positionX = x;
     cmd.positionY = y;
     cmd.positionZ = z;
-    this.sendMessage(cmd);
+    // this.sendMessage(cmd);
   }
   setRotationQuat(id, quat: THREE.Quaternion) {
-    this.setRotation(id, quat.x, quat.y, quat.z, quat.w);
+    // this.setRotation(id, quat.x, quat.y, quat.z, quat.w);
   }
   setRotation(id: number, x: number, y: number, z: number, w: number) {
-    const cmd: PhysicsCommand = this.createEmptyMessage(id, PhysicsCommandType.quaternion);
+    const cmd: any = this.createEmptyMessage(id, PhysicsCommandType.quaternion);
     cmd.quaternionX = x;
     cmd.quaternionY = y;
     cmd.quaternionZ = z;
     cmd.quaternionW = w;
-    this.sendMessage(cmd);
+    // this.sendMessage(cmd);
   }
   setVelocity(id: number, x: number, y: number, z: number) {
-    const cmd: PhysicsCommand = this.createEmptyMessage(id, PhysicsCommandType.velocity);
+    const cmd: any = this.createEmptyMessage(id, PhysicsCommandType.velocity);
     cmd.velX = x;
     cmd.velY = y;
     cmd.velZ = z;
-    this.sendMessage(cmd);
+    // this.sendMessage(cmd);
   }
   setAngularVelocity(id: number, x: number, y: number, z: number) {
-    const cmd: PhysicsCommand = this.createEmptyMessage(id, PhysicsCommandType.angularVelocity);
+    const cmd: any = this.createEmptyMessage(id, PhysicsCommandType.angularVelocity);
     cmd.angularX = x;
     cmd.angularY = y;
     cmd.angularZ = z;
-    this.sendMessage(cmd);
+    // this.sendMessage(cmd);
   }
   addObject(id: number, geo: THREE.BufferGeometry, x: number, y: number, z: number, mass: number, cGroup?: CollisionGroups, cMask?: CollisionGroups, onDelete?: number) {
-    const cmd: PhysicsCommand = this.createEmptyMessage(id, PhysicsCommandType.create);
+    const cmd: any = this.createEmptyMessage(id, PhysicsCommandType.create);
     cmd.geo = Array.from(geo.getAttribute('position').array);
     cmd.mass = mass;
     cmd.colGroup = cGroup;
@@ -85,7 +85,7 @@ export class PhysicsCommands {
     cmd.positionX = x;
     cmd.positionY = y;
     cmd.positionZ = z;
-    this.sendMessage(cmd);
+    // this.sendMessage(cmd);
   }
   addMesh(mesh: THREE.Mesh, mass: number, cGroup?: CollisionGroups, cMask?: CollisionGroups, onDelete?: number) {
     const geo = mesh.geometry.clone();
@@ -95,30 +95,8 @@ export class PhysicsCommands {
   removePhysics(id: number) {
     const cmd: PhysicsCommand = this.createEmptyMessage(id, PhysicsCommandType.remove);
   }
-  private createEmptyMessage(id: number, subType: PhysicsCommandType): PhysicsCommand {
-    return {
-      subType: subType,
-      objectID: id,
-      kinematic: undefined,
-      geo: [],
-      mass: undefined,
-      colGroup: undefined,
-      colMask: undefined,
-      behavior: undefined,
-      positionX: undefined,
-      positionY: undefined,
-      positionZ: undefined,
-      quaternionX: undefined,
-      quaternionY: undefined,
-      quaternionZ: undefined,
-      quaternionW: undefined,
-      velX: undefined,
-      velY: undefined,
-      velZ: undefined,
-      angularX: undefined,
-      angularY: undefined,
-      angularZ: undefined,
-    };
+  private createEmptyMessage(id: number, subType: PhysicsCommandType): any {
+    return {};
   }
   private sendMessage(cmd: PhysicsCommand) {
     this.colyseus.getActiveRoom().subscribe( room => {

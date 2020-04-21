@@ -4,6 +4,8 @@ import {Schema, MapSchema, type} from '@colyseus/schema';
 export class Player extends Schema {
   @type('string')
   displayName: string;
+  @type('boolean')
+  isCurrentHost: boolean;
 }
 
 export class Vector extends Schema {
@@ -48,6 +50,9 @@ export class GameState extends Schema {
 
   @type({map: Player})
   playerList = new MapSchema<Player>();
+
+  @type('string')
+  hostSession = '';
 
   @type(PhysicsState)
   physicsState = new PhysicsState();

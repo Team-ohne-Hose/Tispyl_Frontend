@@ -4,7 +4,10 @@
     <div *ngFor="let p of players; index as i">
       <din [ngClass]="{'display-wrap': true, 'active': turn === p.displayName}">
         <div class="display">
-          <img class="avatar-img" src="https://www.kindernetz.de/-/id=474688/property=smallPano/width=752/height=423/pubVersion=2/a2v40z/Star.jpg">
+          <div class="img-container">
+            <i *ngIf="p.isCurrentHost" class="fas fa-crown host"></i>
+            <img class="avatar-img" src="https://www.kindernetz.de/-/id=474688/property=smallPano/width=752/height=423/pubVersion=2/a2v40z/Star.jpg">
+          </div>
           <span class="name">
           <span class="index">{{i+1}}.</span>
           <span class="spacer"></span>

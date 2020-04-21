@@ -6,6 +6,7 @@ import {DataChange} from '@colyseus/schema';
 import {GameComponent} from '../game/game.component';
 import {GameState} from '../model/GameState';
 import {Schema, MapSchema, type} from '@colyseus/schema';
+import {GameActionType, MessageType} from '../model/WsData';
 
 
 
@@ -32,15 +33,10 @@ export class InterfaceComponent implements OnInit {
     {k: '/addFigure', f: this.addGamefigure.bind(this), h: ''},
     {k: '/diceRoll', f: this.printDice.bind(this), h: ''},
     {k: '/showLocalState', f: this.showLocalState.bind(this), h: ''},
-    {k: '/setLocalState', f: this.setLocalStateCommand.bind(this), h: 'name:string value:any'},
-    {k: '/advanceRound', f: this.advanceRound.bind(this), h: ''},
-    {k: '/advanceAction', f: this.advanceAction.bind(this), h: ''},
-    {k: '/advanceTurn', f: this.advanceTurn.bind(this), h: ''},
     {k: '/start', f: this.start.bind(this), h: ''},
     {k: '/next', f: this.advanceAction.bind(this), h: ''},
     {k: '/fps', f: this.toggleFpsDisplay.bind(this), h: ''},
     {k: '/physics', f: this.listPhysics.bind(this), h: ''},
-    {k: '/enableDebugLog', f: this.enableDebugLogCommand.bind(this), h: ''}
   ];
 
   ngOnInit(): void {
@@ -51,6 +47,7 @@ export class InterfaceComponent implements OnInit {
           case 'round': { this.currentState.round = change.value; break; }
           case 'turn': { this.currentState.turn = change.value; break; }
           case 'action': { this.currentState.action = change.value; break; }
+          case 'playerList': {this.currentState.playerList = change.value; break;}
         }
       });
     });
@@ -87,68 +84,39 @@ export class InterfaceComponent implements OnInit {
     }
   }
 
-  strAsArray(str: string): number[] {
-    const arr: number[] = [];
-    for (let i = 0; i < str.length; i++) {
-      arr.push(str.charCodeAt(i));
-    }
-    return arr;
-  }
-
-  setLocalStateCommand( args ) {
-    this.print(`Setting local state: ${args[1]} ${args[2]}`);
-    this[args[1]] = args[2];
-  }
-
-  showLocalState( args ) {
+  private showLocalState( args ) {
     this.print(`State ${JSON.stringify(this.currentState)}`);
   }
 
-  advanceRound( args ) {
+  private advanceAction( args ) {
     this.colyseus.getActiveRoom().subscribe( r => {
-      r.send({type: 'ADVANCE_ROUND'});
+      r.send({type: MessageType.GAME_MESSAGE, action: GameActionType.advanceAction});
     });
   }
 
-  advanceAction( args ) {
-    this.colyseus.getActiveRoom().subscribe( r => {
-      r.send({type: 'ADVANCE_ACTION'});
-    });
-  }
-
-  advanceTurn( args ) {
-    this.colyseus.getActiveRoom().subscribe( r => {
-      r.send({type: 'ADVANCE_TURN'});
-    });
-  }
-
-  toggleFpsDisplay( args ) {
+  private toggleFpsDisplay( args ) {
     this.gameComponent.viewRef.stats.dom.hidden = !this.gameComponent.viewRef.stats.dom.hidden;
   }
 
-  start( args ) {
+  private start( args ) {
     this.colyseus.getActiveRoom().subscribe( r => {
-      r.send({type: 'SET_STARTING_CONDITIONS'});
+      r.send({type: MessageType.GAME_MESSAGE, action: GameActionType.setStartingCondition});
     });
   }
 
-  printHelpCommand( args ) {
+  private printHelpCommand( args ) {
     const commands: string[] = this.knownCommands.map( a => `${a.k} ${a.h}`);
     this.print(commands.join('\n'));
-  }
-
-  enableDebugLogCommand( scopedThis, args ) {
-    this.print('already there');
   }
 
   print(msg: string) {
     this.chatRef.postChatMessage(msg);
   }
 
-  asArray<T>(map: MapSchema<T>): T[] {
+  asArray<T>(schema: MapSchema<T>): T[] {
     const tmpArray: T[] = [];
-    for (const id in map) {
-      tmpArray.push(map[id]);
+    for (const id in schema) {
+      tmpArray.push(schema[id]);
     }
     return tmpArray;
   }

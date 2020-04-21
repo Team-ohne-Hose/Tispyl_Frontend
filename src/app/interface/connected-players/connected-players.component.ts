@@ -1,5 +1,8 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {Player} from '../../model/GameState';
+import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
+import {GameState, Player} from '../../model/GameState';
+import {ColyseusClientService} from '../../services/colyseus-client.service';
+import {MapSchema} from '@colyseus/schema';
+
 
 
 @Component({
@@ -11,12 +14,10 @@ export class ConnectedPlayersComponent implements OnInit {
 
   @Input()
   players: Player[];
+
   @Input()
   turn: string;
 
-  constructor() { }
-
   ngOnInit(): void {
   }
-
 }
