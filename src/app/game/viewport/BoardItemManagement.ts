@@ -133,12 +133,6 @@ export class BoardItemManagement {
 
     this.boardItems.push({mesh: figure, role: BoardItemRole.figure, removeBy: undefined});
     this.scene.add(figure);
-    this.physics.addMesh('test2', figure, this.gameFigureMass, undefined, undefined, undefined);
-    /* TODO: redo onDelete
-    , (obj) => {
-      this.physics.setPosition(figure.id, 0, 20, 0);
-      return true;
-    });*/
     return figure;
   }
 
@@ -149,9 +143,6 @@ export class BoardItemManagement {
     const sphere = new THREE.Mesh( geometry, material );
     sphere.position.set(x, y, z);
     this.scene.add( sphere );
-    this.physics.addMesh('', sphere, this.flummiMass, physId => {
-      this.physics.setVelocity(physId, (2 * Math.random() - 1) * 15, Math.random() * 15, (2 * Math.random() - 1) * 15);
-    });
   }
 
   addMarker(x: number, y: number, z: number, col: number): void {

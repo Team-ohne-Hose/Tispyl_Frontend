@@ -33,10 +33,10 @@ export class PhysicsCommands {
     this.colyseus = colyseus;
    this.colyseus.getActiveRoom().subscribe((activeRoom: Room<GameState>) => {
       activeRoom.state.physicsState.objects.onChange = (item: PhysicsObjectState, key: string) => {
-        const obj = ViewportComponent.getObjectByPhysId(this.scene, item.objectIDTHREE);
-        // console.log('query for physId', item.objectIDTHREE, obj);
-        obj.position.set(item.position.x, item.position.y, item.position.z);
-        obj.quaternion.set(item.quaternion.x, item.quaternion.y, item.quaternion.z, item.quaternion.w);
+        const test = ViewportComponent.getObjectByPhysId(this.scene, item.objectIDTHREE);
+        console.log('query for physId', item.objectIDTHREE, test);
+        test.position.set(item.position.x, item.position.y, item.position.z);
+        test.quaternion.set(item.quaternion.x, item.quaternion.y, item.quaternion.z, item.quaternion.w);
         // console.log('new Position: ', key, item.position.x, item.position.y, item.position.z, item.position);
         // console.log("rotation is: ", item.quaternion.x, item.quaternion.y, item.quaternion.z, item.quaternion.w);
       };
@@ -103,21 +103,6 @@ export class PhysicsCommands {
     };
     this.sendMessage(msg);
   }
-
-  addMesh(test: string, mesh: THREE.Mesh, mass: number, onCreation?: (physId: number) => void, cGroup?: CollisionGroups, cMask?: CollisionGroups, onDelete?: number) {
-    console.log('creating ', test, mesh.name);
-    // const geo = mesh.geometry.clone();
-    // const buffGeo = geo instanceof THREE.BufferGeometry ? geo : new THREE.BufferGeometry().fromGeometry(geo);
-    /*
-      mesh.userData.physId = phys;
-      console.log('setting Id to ', test, phys, mesh.name, mesh.id);
-      this.addObject(phys, buffGeo, mesh.position.x, mesh.position.y, mesh.position.z, mass, cGroup, cMask, onDelete);
-      if (onCreation !== undefined) {
-        onCreation(phys);
-      }
-    });
-    */
-  }
   removePhysics(physId: number) {
     const cmd: PhysicsCommandRemove = {
       type: MessageType.PHYSICS_MESSAGE,
@@ -131,15 +116,5 @@ export class PhysicsCommands {
         room.send(msg);
       }
     });
-  }
-}
-
-class AddMeshHelper {
-  myText = 'untitled';
-  constructor(myText: string) {
-    this.myText = String(myText);
-  }
-  onNum(num: number) {
-    console.log('setting Id to ', this.myText, num);
   }
 }

@@ -3,7 +3,7 @@ import {Client, Room, RoomAvailable} from 'colyseus.js';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {RoomMetaInfo} from '../model/RoomMetaInfo';
 import {GameState} from '../model/GameState';
-import {MessageType, PhysicsCommandGetNewId, PhysicsCommandType, WsData} from '../model/WsData';
+import {MessageType, PhysicsCommandType, WsData} from '../model/WsData';
 import {DataChange} from '@colyseus/schema';
 
 
@@ -23,6 +23,7 @@ export class ColyseusClientService {
     ['onIncrementId', this.defaultCallback],
     ['onChatMessage', this.defaultCallback]
   ]);
+  private physIdCallbackStack: ((data: WsData) => void)[] = [];
 
   private onChangeCallbacks: ((changes: DataChange<any>[]) => void)[] = [];
 
@@ -100,10 +101,19 @@ export class ColyseusClientService {
    * @param data passed on to the callbacks based on its type value.
    */
   private gatherFunctionCalls(data: WsData): void {
-    [
-      this.callbacks.get('onIncrementId'),
-      this.callbacks.get('onChatMessage')
-    ].map(f => f(data));
+    if (false /*data.type === MessageType.PHYSICS_MESSAGE && data.subType === PhysicsCommandType.getNewId*/) {
+      if (this.physIdCallbackStack.length > 0) {
+        const f = this.physIdCallbackStack.pop();
+        if (f !== undefined) {
+          f(data);
+        }
+      }
+    } else {
+      [
+        this.callbacks.get('onIncrementId'),
+        this.callbacks.get('onChatMessage')
+      ].map(f => f(data));
+    }
   }
 
   addOnChangeCallback(cb: (changes: DataChange<any>[]) => void) {

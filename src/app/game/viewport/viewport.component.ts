@@ -39,16 +39,19 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   physics: PhysicsCommands;
 
   static getObjectByPhysId(toSearch: Object3D, physId: number): THREE.Object3D {
-    // console.log('searching for ' + physId + ' in: ', toSearch.name, toSearch.userData.physId, toSearch.userData, toSearch);
+    if (toSearch.name !== undefined) console.log('searching for ' + physId + ' in: ', toSearch.name, toSearch.userData.physId, toSearch.userData.physId === physId);
     if (toSearch.userData.physId === physId) {
+      console.warn('found', toSearch);
       return toSearch;
     } else {
       toSearch.children.forEach((obj: THREE.Object3D, index: number) => {
         const res = ViewportComponent.getObjectByPhysId(obj, physId);
         if (res !== undefined) {
+          console.warn('found', res);
           return res;
         }
       });
+      console.warn('notfound');
       return undefined;
     }
   }
@@ -122,30 +125,10 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.mouseInteract = new MouseInteraction(this.scene, this.camera, this.boardItemManager, this.physics);
     this.mouseInteract.updateScreenSize(width, height);
 
-    this.physics.addMesh('test1', gameBoard, 0, physId => {
-      this.physics.setKinematic(physId, true);
-    });
-    /* await new Promise(resolve => {
-      setTimeout(resolve, 1000);
-    }); */
     this.colyseus.getActiveRoom().subscribe((room) => {
       this.boardItemManager.loadGameFigure(room.sessionId, Math.random() * 0xffffff);
     });
 
-    this.objectLoaderService.loadObject(ObjectLoaderService.LoadableObject.dice2, (model: Object3D) => {
-      model.position.set(2, 2, 0);
-      const myModel = model.children[0] as Mesh;
-      this.scene.add(myModel);
-      // this.scene.add(model.children[1]);
-      this.physics.addMesh('', myModel, 1);
-      /* TODO: redo onDelete
-      (obj) => {
-        this.physics.setPosition(myModel, 0, 10, 0);
-        return true;
-      });
-       */
-      this.boardItemManager.dice = myModel;
-    });
 
     this.audioControl.initAudio(this.camera);
     this.registerViewport.emit([this.cameraControl, this.boardItemManager, this.audioControl]);
