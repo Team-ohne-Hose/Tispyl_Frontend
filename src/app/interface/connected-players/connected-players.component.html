@@ -2,7 +2,7 @@
   <div class="player-displays">
 
     <div *ngFor="let p of players; index as i">
-      <din [ngClass]="{'display-wrap': true, 'active': turn === p.displayName}">
+      <din [ngClass]="{'display-wrap': true, 'active': this.turn === p.displayName}">
         <div class="display">
           <div class="img-container">
             <i *ngIf="p.isCurrentHost" class="fas fa-crown host"></i>
