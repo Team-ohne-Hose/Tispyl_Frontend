@@ -17,7 +17,7 @@ import {
 } from '../../model/WsData';
 import {GameState, PhysicsObjectState} from '../../model/GameState';
 import {Room} from 'colyseus.js';
-import {ObjectUserData, ViewportComponent} from './viewport.component';
+import {ObjectUserData} from './viewport.component';
 import {ObjectLoaderService} from '../../services/object-loader.service';
 import {BoardItemManagement} from './BoardItemManagement';
 import {Object3D} from 'three';
@@ -32,6 +32,8 @@ export enum CollisionGroups {
 export class PhysicsCommands {
   scene: THREE.Scene;
   colyseus: ColyseusClientService;
+
+  currentlyLoadingEntities: Map<number, boolean> = new Map<number, boolean>();
   constructor(colyseus: ColyseusClientService, private loader: ObjectLoaderService, private itemManagement: BoardItemManagement) {
     this.colyseus = colyseus;
     this.colyseus.getActiveRoom().subscribe((activeRoom: Room<GameState>) => {
@@ -45,8 +47,13 @@ export class PhysicsCommands {
           // console.log("rotation is: ", item.quaternion.x, item.quaternion.y, item.quaternion.z, item.quaternion.w);
         } else {
           if (item.entity >= 0 && this.scene.children.length < 40) { // TODO balance
-            this.generateEntity(item.entity, item.variant, item.objectIDPhysics,
-              item.position.x, item.position.y, item.position.z, item.quaternion.x, item.quaternion.y, item.quaternion.z);
+            if (this.currentlyLoadingEntities.get(item.objectIDPhysics)) {
+              // is currently getting loaded
+            } else {
+              this.currentlyLoadingEntities.set(item.objectIDPhysics, true);
+              this.generateEntity(item.entity, item.variant, item.objectIDPhysics,
+                item.position.x, item.position.y, item.position.z, item.quaternion.x, item.quaternion.y, item.quaternion.z);
+            }
           } else {
             console.error('cannot find/generate object', item.objectIDPhysics, item);
           }
@@ -102,6 +109,7 @@ export class PhysicsCommands {
           }
           break;
       }
+      this.currentlyLoadingEntities.set(physicsId, false);
     });
   }
   addEntity(data: WsData) {
