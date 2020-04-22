@@ -68,7 +68,7 @@ export class BoardItemManagement {
     if (this.physics.dice !== undefined) {
       const physIdDice = PhysicsCommands.getPhysId(this.physics.dice);
       this.physics.setPosition(physIdDice, 0, 40, 0);
-      this.physics.setRotation(physIdDice, 0, 0, 0, 1);
+      // this.physics.setRotation(physIdDice, 0, 0, 0, 1);
 
       const vel = new THREE.Vector3(Math.random() - 0.5, Math.random() / 10, Math.random() - 0.5);
       const rot = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
