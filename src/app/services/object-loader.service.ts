@@ -6,31 +6,48 @@ import {PhysicsEntity, PhysicsEntityVariation} from '../model/WsData';
 interface ResourceData {
   cname: string;
   fname: string;
+  objectCache: THREE.Object3D;
+}
+export interface DiceVariations<T> {
+  default: T;
+  dice: T;
+  dice2: T;
+}
+export interface FigureVariations<T> {
+  default: T;
+}
+export interface EntityList<T> {
+  dice: DiceVariations<T>;
+  figure: FigureVariations<T>;
 }
 @Injectable({
   providedIn: 'root'
 })
 export class ObjectLoaderService {
   private readonly resourcePath = '/assets/models/';
-  private readonly objectResourceList = {
+  private objectResourceList: EntityList<ResourceData> = {
     dice: {
       default: {
         cname: 'diceDefault',
-        fname: 'diceDefault.gltf'
+        fname: 'diceDefault.gltf',
+        objectCache: undefined
       },
       dice: {
         cname: 'diceModel',
-        fname: 'dice/scene.gltf'
+        fname: 'dice/scene.gltf',
+        objectCache: undefined
       },
       dice2: {
         cname: 'diceModel2',
-        fname: 'dice2/scene.gltf'
+        fname: 'dice2/scene.gltf',
+        objectCache: undefined
       }
     },
     figure: {
       default: {
         cname: 'figureDefault',
-        fname: 'figureDefault.gltf'
+        fname: 'figureDefault.gltf',
+        objectCache: undefined
       }
     }
   };
@@ -53,11 +70,17 @@ export class ObjectLoaderService {
     }
   }
   loadObject(obj: PhysicsEntity, variation: PhysicsEntityVariation, callback: (model: THREE.Object3D) => void) {
-    const loader = new GLTFLoader().setPath(this.resourcePath);
-    loader.load(this.getResourceData(obj, variation).fname, (gltf: GLTF) => {
-      gltf.scene.children[0].castShadow = true;
-      gltf.scene.children[0].receiveShadow = true;
-      callback( gltf.scene.children[0] );
-    });
+    const resource = this.getResourceData(obj, variation);
+    if (resource.objectCache !== undefined) {
+      callback(resource.objectCache.clone(true));
+    } else {
+      const loader = new GLTFLoader().setPath(this.resourcePath);
+      loader.load(resource.fname, (gltf: GLTF) => {
+        gltf.scene.children[0].castShadow = true;
+        gltf.scene.children[0].receiveShadow = true;
+        resource.objectCache = gltf.scene.children[0].clone(true);
+        callback( gltf.scene.children[0] );
+      });
+    }
   }
 }
