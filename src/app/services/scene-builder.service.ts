@@ -34,27 +34,6 @@ export class SceneBuilderService {
   constructor() {
   }
 
-  generateDice(): Mesh {
-    const diceGeo = new THREE.BoxBufferGeometry(1, 1, 1);
-    const diceMat = new THREE.MeshStandardMaterial({color: 0xff0000});
-    const dice = new THREE.Mesh(diceGeo, diceMat);
-    dice.position.y = 1;
-    dice.castShadow = true;
-    dice.receiveShadow = true;
-    dice.name = 'dice';
-
-    this.cubeLoader.setPath(this.diceTextureURLBase);
-    this.cubeLoader.load(['1.png', '6.png', '2.png', '5.png', '3.png', '4.png'], (texture) => {
-      texture.encoding = THREE.sRGBEncoding;
-      texture.anisotropy = 16;
-      // diceMat.map = texture;
-      diceMat.needsUpdate = true;
-    }, undefined, (error) => {
-      console.error(error);
-    });
-    return dice;
-  }
-
   generateHemisphereLight(): { hemi: THREE.HemisphereLight, hemiHelp: THREE.HemisphereLightHelper } {
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
     const hemiLightHelper = new THREE.HemisphereLightHelper(hemiLight, 10);
@@ -139,17 +118,6 @@ export class SceneBuilderService {
     orbitCtrl.update();
     return orbitCtrl;
   }
-  generateOrbitControls(cam: THREE.Camera, domElem: HTMLElement): OrbitControls {
-    const orbitCtrl = new OrbitControls(cam, domElem);
-    orbitCtrl.enableDamping = true;
-    orbitCtrl.enablePan = false;
-    orbitCtrl.mouseButtons = {
-      LEFT: undefined, // THREE.MOUSE.PAN,
-      MIDDLE: THREE.MOUSE.DOLLY,
-      RIGHT: THREE.MOUSE.ROTATE
-    };
-    return orbitCtrl;
-  }
   generateGameBoard(): THREE.Mesh {
     const gameBoardGeo = new THREE.BoxBufferGeometry(100, 1, 100);
     const gameBoardMat = new THREE.MeshStandardMaterial({color: 0xffffff});
@@ -171,6 +139,7 @@ export class SceneBuilderService {
     return gameBoard;
   }
 
+  // TODO readd functions for programmatically generating Objects
   generateGameFigure(color: number): THREE.Mesh {
     const gameFigureGeo = new THREE.CylinderBufferGeometry(1.3, 1.5, 1, 20, 1);
     const gameFigureMat = new THREE.MeshStandardMaterial({color: color});
@@ -180,5 +149,25 @@ export class SceneBuilderService {
     gameFigure.name = 'gamefigure';
 
     return gameFigure;
+  }
+  generateDice(): Mesh {
+    const diceGeo = new THREE.BoxBufferGeometry(1, 1, 1);
+    const diceMat = new THREE.MeshStandardMaterial({color: 0xff0000});
+    const dice = new THREE.Mesh(diceGeo, diceMat);
+    dice.position.y = 1;
+    dice.castShadow = true;
+    dice.receiveShadow = true;
+    dice.name = 'dice';
+
+    this.cubeLoader.setPath(this.diceTextureURLBase);
+    this.cubeLoader.load(['1.png', '6.png', '2.png', '5.png', '3.png', '4.png'], (texture) => {
+      texture.encoding = THREE.sRGBEncoding;
+      texture.anisotropy = 16;
+      // diceMat.map = texture;
+      diceMat.needsUpdate = true;
+    }, undefined, (error) => {
+      console.error(error);
+    });
+    return dice;
   }
 }

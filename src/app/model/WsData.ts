@@ -78,9 +78,7 @@ export enum PhysicsCommandType {
   position,
   quaternion,
   velocity,
-  angularVelocity,
-  getNewId,
-  create
+  angularVelocity
 }
 export type PhysicsCommand = PhysicsCommandKinematic |
   PhysicsCommandRemove    |
@@ -94,12 +92,14 @@ export enum PhysicsEntity {
   figure
 }
 export enum PhysicsEntityVariation {
-  default
+  default,
+  procedural
 }
 export interface PhysicsCommandAddEntity {
   type: MessageType.PHYSICS_MESSAGE;
   subType: PhysicsCommandType.addEntity;
-  entity: number;
+  physicsId: number;
+  entity: PhysicsEntity;
   posX: number;
   posY: number;
   posZ: number;
@@ -115,6 +115,28 @@ export interface PhysicsCommandKinematic {
   subType: PhysicsCommandType.kinematic;
   objectID: number;
   kinematic: boolean;
+}
+export interface PhysicsCommandRemove {
+  type: MessageType.PHYSICS_MESSAGE;
+  subType: PhysicsCommandType.remove;
+  objectID: number;
+}
+export interface PhysicsCommandPosition {
+  type: MessageType.PHYSICS_MESSAGE;
+  subType: PhysicsCommandType.position;
+  objectID: number;
+  positionX: number;
+  positionY: number;
+  positionZ: number;
+}
+export interface PhysicsCommandQuat {
+  type: MessageType.PHYSICS_MESSAGE;
+  subType: PhysicsCommandType.quaternion;
+  objectID: number;
+  quaternionX: number;
+  quaternionY: number;
+  quaternionZ: number;
+  quaternionW: number;
 }
 export interface PhysicsCommandRemove {
   type: MessageType.PHYSICS_MESSAGE;
@@ -163,8 +185,3 @@ export interface ListPhysics {
   type: MessageType.DEBUG_COMMAND;
   subType: DebugCommandType.listPhysics;
 }
-
-
-
-
-

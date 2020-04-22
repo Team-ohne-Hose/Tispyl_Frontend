@@ -30,19 +30,16 @@ export class InterfaceComponent implements OnInit {
   knownCommands: any[] = [
     {k: '/help', f: this.printHelpCommand.bind(this), h: ''},
     {k: '/ourAnthem', f: this.playAnthem.bind(this), h: ''},
-    {k: '/addFigure', f: this.addGamefigure.bind(this), h: ''},
-    {k: '/diceRoll', f: this.printDice.bind(this), h: ''},
+    // k: '/addFigure', f: this.addGamefigure.bind(this), h: ''}, TODO readd this feature
     {k: '/showLocalState', f: this.showLocalState.bind(this), h: ''},
     {k: '/start', f: this.start.bind(this), h: ''},
     {k: '/next', f: this.advanceAction.bind(this), h: ''},
-    {k: '/fps', f: this.toggleFpsDisplay.bind(this), h: ''},
-    {k: '/physics', f: this.listPhysics.bind(this), h: ''},
+    {k: '/fps', f: this.toggleFpsDisplay.bind(this), h: ''}
   ];
 
   ngOnInit(): void {
     this.colyseus.addOnChangeCallback((changes: DataChange[]) => {
       changes.forEach(change => {
-        // console.log('ON_CHANGE', change);
         switch (change.field) {
           case 'round': { this.currentState.round = change.value; break; }
           case 'turn': { this.currentState.turn = change.value; break; }
@@ -65,12 +62,6 @@ export class InterfaceComponent implements OnInit {
 
   private playAnthem() {
     this.gameComponent.audioCtrl.playAudio.bind(this.gameComponent.audioCtrl)();
-  }
-  private addGamefigure() {
-    this.gameComponent.boardItemControl.addGameFigure();
-  }
-  private printDice() {
-    this.print('Rolled ' + this.gameComponent.boardItemControl.getDiceNumber.bind(this.gameComponent.boardItemControl)());
   }
 
   executeChatCommand( args ) {
@@ -116,10 +107,10 @@ export class InterfaceComponent implements OnInit {
   asArray<T>(schema: MapSchema<T>): T[] {
     const tmpArray: T[] = [];
     for (const id in schema) {
-      tmpArray.push(schema[id]);
+      if (id in schema) {
+        tmpArray.push(schema[id]);
+      }
     }
     return tmpArray;
   }
-
-
 }

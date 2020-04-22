@@ -1,12 +1,8 @@
-import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
-import {Quaternion, Vector3} from 'three';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {BoardItemManagement} from './viewport/BoardItemManagement';
 import {AudioControl} from './viewport/AudioControl';
 import {CameraControl} from './viewport/CameraControl';
-import {BoardCoordConversion} from './viewport/BoardCoordConversion';
-import {filter, map} from 'rxjs/operators';
-import {Observable} from 'rxjs';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Router} from '@angular/router';
 import {ColyseusClientService} from '../services/colyseus-client.service';
 import {ViewportComponent} from './viewport/viewport.component';
 
@@ -36,36 +32,6 @@ export class GameComponent implements OnInit {
         console.log('ErrorRoom is', errRoom);
         this.router.navigateByUrl('/lobby');
       });
-  }
-
-  @HostListener('window:keydown', ['$event'])
-  handleKeyDown(event: KeyboardEvent) {
-    switch (event.key) {
-      case '0':
-      case '1':
-      case '2':
-      case '3':
-      case '4':
-      case '5':
-      case '6':
-      case '7':
-      case '8':
-      case '9':
-        let param = Number(event.key);
-        if (param === 0) {
-          param = 10;
-        }
-        param--;
-        break;
-      case 'ArrowLeft':
-      case 'ArrowRight':
-      case 'ArrowUp':
-      case 'ArrowDown':
-        break;
-      case 'o':
-        // this.audioCtrl.playAudio();
-        break;
-    }
   }
 
   registerViewport(tuple: [CameraControl, BoardItemManagement, AudioControl]) {

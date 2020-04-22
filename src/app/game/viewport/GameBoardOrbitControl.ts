@@ -1,5 +1,4 @@
 import {EventDispatcher, MOUSE, PerspectiveCamera, Quaternion, Spherical, TOUCH, Vector2, Vector3} from 'three';
-import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 
 
 export class GameBoardOrbitControl extends EventDispatcher {
@@ -170,7 +169,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
       this.updateState.targetOffsetVec = this.updateState.offset.clone();
       this.updateState.targetOffsetVec.y = 0;
       this.updateState.targetOffsetVec.normalize().multiplyScalar(this.targetOffset);
-      //console.log('offsetting from Target by', this.targetOffset, this.updateState.targetOffsetVec);
+      // console.log('offsetting from Target by', this.targetOffset, this.updateState.targetOffsetVec);
       this.updateState.offset.add(this.updateState.targetOffsetVec);
     } else {
       this.updateState.targetOffsetVec = new Vector3();

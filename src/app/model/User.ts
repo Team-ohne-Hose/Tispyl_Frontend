@@ -1,4 +1,3 @@
-
 import * as hash from 'object-hash';
 
 export class User {
