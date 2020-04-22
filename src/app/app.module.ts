@@ -33,6 +33,7 @@ import { StateDisplayComponent } from './interface/state-display/state-display.c
 import { ConnectedPlayersComponent } from './interface/connected-players/connected-players.component';
 import { PregameBannerComponent } from './interface/pregame-banner/pregame-banner.component';
 import { DebugdummyComponent } from './debugdummy/debugdummy.component';
+import { IngameRuleBookComponent } from './interface/ingame-rule-book/ingame-rule-book.component';
 
 const appRoutes: Routes = [
   { path: 'lobby', component: LobbyComponent},
@@ -63,7 +64,8 @@ const appRoutes: Routes = [
     StateDisplayComponent,
     ConnectedPlayersComponent,
     PregameBannerComponent,
-    DebugdummyComponent
+    DebugdummyComponent,
+    IngameRuleBookComponent
   ],
   imports: [
     RouterModule.forRoot(

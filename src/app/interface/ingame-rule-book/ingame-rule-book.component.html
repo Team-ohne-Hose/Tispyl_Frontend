@@ -1,0 +1,29 @@
+
+<div [ngClass]="{'tray-wrapper': true, 'hidden': this.hidden}">
+
+  <div class="tray-handle" (click)="toggleMove($event)">
+    <i [ngClass]="hidden ? 'fas fa-rotate-180 fa-arrow-right' : 'fas fa-arrow-right'"></i>
+  </div>
+
+  <div class="tray">
+    <div class="gold-border">
+      <div class="paper-body">
+        <div class="content-head">
+          <div class="headline-text">
+            Special Rules
+          </div>
+        </div>
+        <div *ngFor="let r of rules" class="rule-list">
+          <div class="rule">
+            <div>
+              <i class="fas fa-minus"></i>
+            </div>
+            <div>{{r}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+

@@ -4,4 +4,5 @@
   <app-chat-window (chatCommand)="executeChatCommand($event)" #chat></app-chat-window>
   <app-pregame-banner *ngIf="!currentState.hasStarted" [players]="asArray(currentState.playerList)"></app-pregame-banner>
   <app-connected-players [players]="asArray(currentState.playerList)" [turn]="currentState.turn"></app-connected-players>
+  <app-ingame-rule-book [rules]="currentState.rules"></app-ingame-rule-book>
 </div>
