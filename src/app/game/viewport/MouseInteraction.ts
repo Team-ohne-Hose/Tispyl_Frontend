@@ -1,11 +1,9 @@
 import * as THREE from 'three';
+import {Camera, Object3D, Scene, Vector3} from 'three';
 import {BoardItemManagement} from './BoardItemManagement';
-import {Camera, Scene, Vector3} from 'three';
 import {BoardCoordConversion} from './BoardCoordConversion';
 import {Board} from '../../model/Board';
-import {PhysicsCommands} from './PhysicsCommands';
-import {ViewportComponent} from './viewport.component';
-
+import {ClickedTarget, PhysicsCommands} from './PhysicsCommands';
 
 export class MouseInteraction {
 
@@ -17,6 +15,7 @@ export class MouseInteraction {
   boardItemManager: BoardItemManagement;
   camera: Camera;
   scene: Scene;
+  interactable: Object3D[] = [];
 
   currentlySelected: {obj: THREE.Object3D, oldPos: Vector3};
 
@@ -24,6 +23,11 @@ export class MouseInteraction {
     this.boardItemManager = boardItemManager;
     this.camera = camera;
     this.scene = scene;
+    this.physics.addInteractable = this.addInteractable.bind(this);
+  }
+  addInteractable(obj: Object3D) {
+    // console.error('pushing obj', obj);
+    this.interactable.push(obj);
   }
 
   updateScreenSize(width: number, height: number) {
@@ -63,10 +67,11 @@ export class MouseInteraction {
       travelled.distance = Math.sqrt((travelled.x * travelled.x) + (travelled.y * travelled.y));
 
       if (travelled.distance < 10) {
-        this.clickToCoords(this.lastMouseLeftDownCoords.x, this.lastMouseLeftDownCoords.y);
+        this.clickCoords(this.lastMouseLeftDownCoords.x, this.lastMouseLeftDownCoords.y);
       } else {
-        console.log('dragDropRecognised: ', travelled.x, travelled.y, travelled.distance);
-        console.error('scene:', this.boardItemManager.scene);
+        this.dragCoords(this.lastMouseLeftDownCoords.x, this.lastMouseLeftDownCoords.y,
+          event.clientX, event.clientY,
+          travelled.x, travelled.y, travelled.distance);
       }
       this.lastMouseLeftDownCoords = {
         x: 0,
@@ -76,29 +81,38 @@ export class MouseInteraction {
       };
     }
   }
-  clickToCoords(x: number, y: number) {
+  dragCoords(x: number, y: number, x2: number, y2: number, distX: number, distY: number, dist: number) {
+    console.log('dragDropRecognised: ', dist, x, y);
+    console.error('scene:', this.boardItemManager.scene, this.interactable);
+  }
+  clickCoords(x: number, y: number) {
     const normX = (x / this.currentSize.width) * 2 - 1;
     const normY = - (y / this.currentSize.height) * 2 + 1;
     this.raycaster.setFromCamera({x: normX, y: normY}, this.camera);
-    const intersects = this.raycaster.intersectObjects(this.scene.children);
+    const intersects = this.raycaster.intersectObjects(this.interactable);
 
     // TODO what if figure already selected?
     if (intersects.length > 0) {
       const point = intersects[0].point;
-      // console.log('Intersecting:', intersects[0].object.name);
-      if (intersects[0].object.name === 'gameboard') {
+      const type = this.getClickedType(intersects[0].object);
+      console.log('Intersecting:', intersects[0].object.name, type);
+      if (type === ClickedTarget.board) {
         if (!this.handleBoardTileClick(point)) {
           this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 30, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
         }
         this.currentlySelected = undefined;
-      } else if (intersects[0].object.name === 'gamefigure') {
+      } else if (type === ClickedTarget.figure) {
         const obj = intersects[0].object;
-        this.physics.setKinematic(PhysicsCommands.getPhysId(obj), true);
-        this.currentlySelected = {obj: obj, oldPos: obj.position.clone()};
-        console.log('selected Object');
-      } else if (intersects[0].object.name === 'Cube' ||
-        intersects[0].object.name === 'Cube_0' ||
-        intersects[0].object.name === 'Cube_1') {
+        if (this.currentlySelected !== undefined) {
+          console.log('clicked on other figure');
+          this.handleBoardTileClick(point);
+        } else {
+          this.currentlySelected = {obj: obj, oldPos: obj.position.clone()};
+          this.physics.setKinematic(PhysicsCommands.getPhysId(obj), true);
+          this.boardItemManager.hoverGameFigure(this.currentlySelected.obj, point.x, point.z);
+          console.log('selected Object');
+        }
+      } else if (type === ClickedTarget.dice) {
         this.boardItemManager.throwDice();
       }
     }
@@ -121,5 +135,12 @@ export class MouseInteraction {
       this.physics.setKinematic(PhysicsCommands.getPhysId(this.currentlySelected.obj), false);
     }
     return false;
+  }
+  private getClickedType(o: Object3D): ClickedTarget {
+    if (o.name === 'gameboard') {
+      return ClickedTarget.board;
+    } else {
+      return o.userData.clickRole || ClickedTarget.other;
+    }
   }
 }

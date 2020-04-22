@@ -7,6 +7,7 @@ import {GameComponent} from '../game/game.component';
 import {GameState} from '../model/GameState';
 import {Schema, MapSchema, type} from '@colyseus/schema';
 import {GameActionType, MessageType} from '../model/WsData';
+import {ObjectLoaderService} from '../services/object-loader.service';
 
 
 
@@ -17,12 +18,12 @@ import {GameActionType, MessageType} from '../model/WsData';
 })
 export class InterfaceComponent implements OnInit {
 
-  constructor(private router: Router, private colyseus: ColyseusClientService) {
+  constructor(private router: Router, private colyseus: ColyseusClientService, private loader: ObjectLoaderService) {
     this.routes = router.config.filter( route => route.path !== '**' && route.path.length > 0);
   }
 
   routes;
-  currentState: GameState;
+  currentState: GameState = new GameState();
 
   @Input() gameComponent: GameComponent;
   @ViewChild('chat') chatRef: ChatWindowComponent;
@@ -34,8 +35,15 @@ export class InterfaceComponent implements OnInit {
     {k: '/showLocalState', f: this.showLocalState.bind(this), h: ''},
     {k: '/start', f: this.start.bind(this), h: ''},
     {k: '/next', f: this.advanceAction.bind(this), h: ''},
-    {k: '/fps', f: this.toggleFpsDisplay.bind(this), h: ''}
+    {k: '/fps', f: this.toggleFpsDisplay.bind(this), h: ''},
+    {k: '/switchTex', f: this.switchTex.bind(this), h: ''}
   ];
+
+  switchTex(args) {
+    const obj = this.gameComponent.boardItemControl.scene.getObjectById(Number(args[1]));
+    console.log('changing Tex of: ', Number(args[1]), obj);
+    this.loader.switchTex(obj, args[2]);
+  }
 
   ngOnInit(): void {
     this.colyseus.addOnChangeCallback((changes: DataChange[]) => {
@@ -50,7 +58,7 @@ export class InterfaceComponent implements OnInit {
     });
 
     this.colyseus.getActiveRoom().subscribe( room => {
-      this.currentState = room.state;
+      this.currentState = room.state || new GameState();
     });
   }
 

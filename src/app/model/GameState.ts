@@ -68,7 +68,7 @@ export class GameState extends Schema {
   hostSession = '';
 
   @type('boolean')
-  hasStarted: boolean = false;
+  hasStarted = false;
 
   @type(PhysicsState)
   physicsState = new PhysicsState();

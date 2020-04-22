@@ -22,7 +22,6 @@ export class BoardItemManagement {
 
   boardItems: BoardItem[];
   board: THREE.Mesh;
-  dice: THREE.Object3D;
   scene: THREE.Scene;
   markerGeo = new THREE.ConeBufferGeometry(1, 10, 15, 1, false, 0, 2 * Math.PI);
 
@@ -36,11 +35,11 @@ export class BoardItemManagement {
 
   // returns rolled dice number, -1 for not stable/initialized, -2 for even more unstable
   getDiceNumber(): number {
-    if (this.dice !== undefined) {
+    if (this.physics.dice !== undefined) {
       if (true) { // TODO: check for moving dice
-        const diceOrientationUp = new THREE.Vector3(0, 1, 0).normalize().applyQuaternion(this.dice.quaternion);
-        const diceOrientationLeft = new THREE.Vector3(1, 0, 0).normalize().applyQuaternion(this.dice.quaternion);
-        const diceOrientationFwd = new THREE.Vector3(0, 0, 1).normalize().applyQuaternion(this.dice.quaternion);
+        const diceOrientationUp = new THREE.Vector3(0, 1, 0).normalize().applyQuaternion(this.physics.dice.quaternion);
+        const diceOrientationLeft = new THREE.Vector3(1, 0, 0).normalize().applyQuaternion(this.physics.dice.quaternion);
+        const diceOrientationFwd = new THREE.Vector3(0, 0, 1).normalize().applyQuaternion(this.physics.dice.quaternion);
         let diceNumber = -1;
         if (diceOrientationUp.y >= this.sqrtHalf) {
           diceNumber = 4;
@@ -65,23 +64,23 @@ export class BoardItemManagement {
     return -1;
   }
   throwDice() {
-    console.log('throwing Dice');
-    if (this.dice !== undefined) {
-      this.physics.setPosition(PhysicsCommands.getPhysId(this.dice), 0, 40, 0);
-      this.physics.setRotation(PhysicsCommands.getPhysId(this.dice), 0, 0, 0, 1);
+    console.log('throwing Dice', this.physics.dice, PhysicsCommands.getPhysId(this.physics.dice));
+    if (this.physics.dice !== undefined) {
+      const physIdDice = PhysicsCommands.getPhysId(this.physics.dice);
+      this.physics.setPosition(physIdDice, 0, 40, 0);
+      this.physics.setRotation(physIdDice, 0, 0, 0, 1);
 
       const vel = new THREE.Vector3(Math.random() - 0.5, Math.random() / 10, Math.random() - 0.5);
       const rot = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
       vel.normalize().multiplyScalar(Math.random() * 35);
       rot.multiplyScalar(Math.PI);
-      this.physics.setVelocity(PhysicsCommands.getPhysId(this.dice), vel.x, vel.y, vel.z);
-      this.physics.setAngularVelocity(PhysicsCommands.getPhysId(this.dice), rot.x, rot.y, rot.z);
+      this.physics.setVelocity(physIdDice, vel.x, vel.y, vel.z);
+      this.physics.setAngularVelocity(physIdDice, rot.x, rot.y, rot.z);
     }
   }
 
   hoverGameFigure(object: THREE.Object3D, x: number, y: number) {
-    this.physics.setKinematic(PhysicsCommands.getPhysId(object), true);
-    this.physics.setRotation(PhysicsCommands.getPhysId(object), 0, 0, 0, 1);
+    // this.physics.setRotation(PhysicsCommands.getPhysId(object), 0, 0, 0, 1);
     this.physics.setPosition(PhysicsCommands.getPhysId(object), x, 10, y);
   }
   moveGameFigure(object: THREE.Object3D, fieldID: number) {

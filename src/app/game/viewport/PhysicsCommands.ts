@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {Object3D} from 'three';
 import {ColyseusClientService} from '../../services/colyseus-client.service';
 import {
   MessageType,
@@ -19,9 +20,13 @@ import {GameState, PhysicsObjectState} from '../../model/GameState';
 import {Room} from 'colyseus.js';
 import {ObjectUserData} from './viewport.component';
 import {ObjectLoaderService} from '../../services/object-loader.service';
-import {BoardItemManagement} from './BoardItemManagement';
-import {Object3D} from 'three';
 
+export enum ClickedTarget {
+  other,
+  board,
+  dice,
+  figure
+}
 export enum CollisionGroups {
   All = 15,
   Other = 1,
@@ -33,8 +38,13 @@ export class PhysicsCommands {
   scene: THREE.Scene;
   colyseus: ColyseusClientService;
 
+  dice: Object3D;
   currentlyLoadingEntities: Map<number, boolean> = new Map<number, boolean>();
-  constructor(colyseus: ColyseusClientService, private loader: ObjectLoaderService, private itemManagement: BoardItemManagement) {
+
+  addInteractable: ((obj: THREE.Object3D) => void);
+
+  constructor(colyseus: ColyseusClientService,
+              private loader: ObjectLoaderService) {
     this.colyseus = colyseus;
     this.colyseus.getActiveRoom().subscribe((activeRoom: Room<GameState>) => {
       activeRoom.state.physicsState.objects.onChange = (item: PhysicsObjectState, key: string) => {
@@ -68,7 +78,7 @@ export class PhysicsCommands {
 
   static getObjectByPhysId(toSearch: Object3D, physId: number): THREE.Object3D {
     if (toSearch.name !== undefined) {
-      // console.log('searching for ' + physId + ' in: ', toSearch.name, toSearch.userData.physicsId, toSearch.userData.physicsId === physId);
+    // console.log('searching for ' + physId + ' in: ', toSearch.name, toSearch.userData.physicsId, toSearch.userData.physicsId === physId);
     }
     if (toSearch.userData.physicsId === physId) {
       // console.warn('found', toSearch);
@@ -95,22 +105,30 @@ export class PhysicsCommands {
     this.loader.loadObject(entity, variant, (model: THREE.Object3D) => {
       model.quaternion.set(rotX, rotY, rotZ, rotW);
       model.position.set(posX, posY, posZ);
-      const userData: ObjectUserData = {physicsId: physicsId, entityType: entity, variation: variant};
+      const userData: ObjectUserData = {physicsId: physicsId, entityType: entity, variation: variant, clickRole: undefined};
       model.userData = userData;
       console.warn('Adding', model.userData.physicsId, model, physicsId);
       this.scene.add(model);
       // set the various references in other classes
       switch (entity) {
         case PhysicsEntity.dice:
-          if (this.itemManagement !== undefined) {
-            this.itemManagement.dice = model;
-          } else {
-            // console.log('cannot set dice');
-          }
+          this.setClickRole(ClickedTarget.dice, model);
+          this.dice = model;
+          console.log('set dice');
+          break;
+        case PhysicsEntity.figure:
+          this.setClickRole(ClickedTarget.figure, model);
           break;
       }
       this.currentlyLoadingEntities.set(physicsId, false);
     });
+  }
+  setClickRole(clickRole: ClickedTarget, obj: THREE.Object3D) {
+    if (obj !== undefined) {
+      obj.userData.clickRole = clickRole;
+      this.addInteractable(obj);
+      obj.children.forEach((value => this.setClickRole(clickRole, value)));
+    }
   }
   addEntity(data: WsData) {
     console.error('recieve Adding Call');
@@ -146,7 +164,6 @@ export class PhysicsCommands {
     });
   }
   setKinematic(physId: number, enabled: boolean) {
-    console.log('setting kinematic ', physId, enabled);
     const msg: PhysicsCommandKinematic = {
       type: MessageType.PHYSICS_MESSAGE,
       subType: PhysicsCommandType.kinematic,

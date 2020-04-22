@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
 import * as THREE from 'three';
-import {Object3D, PerspectiveCamera, Renderer, Scene} from 'three';
+import {PerspectiveCamera, Renderer, Scene} from 'three';
 import {MouseInteraction} from './MouseInteraction';
 import {AudioControl} from './AudioControl';
 import {BoardItemManagement} from './BoardItemManagement';
@@ -10,15 +10,15 @@ import {GameBoardOrbitControl} from './GameBoardOrbitControl';
 import {BoardCoordConversion} from './BoardCoordConversion';
 import {ObjectLoaderService} from '../../services/object-loader.service';
 import Stats from 'THREE/examples/jsm/libs/stats.module.js';
-import {PhysicsCommands} from './PhysicsCommands';
+import {ClickedTarget, PhysicsCommands} from './PhysicsCommands';
 import {ColyseusClientService} from '../../services/colyseus-client.service';
 import {PhysicsEntity, PhysicsEntityVariation} from '../../model/WsData';
-
 
 export class ObjectUserData {
   physicsId: number;
   entityType: PhysicsEntity;
   variation: PhysicsEntityVariation;
+  clickRole: ClickedTarget;
 }
 @Component({
   selector: 'app-viewport',
@@ -104,7 +104,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.controls.update();
 
     // initialize Physics
-    this.physics = new PhysicsCommands(this.colyseus, this.objectLoaderService, this.boardItemManager);
+    this.physics = new PhysicsCommands(this.colyseus, this.objectLoaderService);
     this.physics.scene = this.scene;
 
     // initialize BoardItemManagement
@@ -114,6 +114,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     // initialize Mouse
     this.mouseInteract = new MouseInteraction(this.scene, this.camera, this.boardItemManager, this.physics);
     this.mouseInteract.updateScreenSize(width, height);
+    this.mouseInteract.addInteractable(gameBoard);
 
     // initialize Audio/Camera Control
     this.audioControl = new AudioControl();

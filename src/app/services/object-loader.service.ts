@@ -87,6 +87,13 @@ export class ObjectLoaderService {
       });
     }
   }
+  switchTex(obj: THREE.Object3D, fname?: string) {
+    fname = fname || 'kronkorken1';
+    const texture = new THREE.TextureLoader().load( '/assets/models/otherTex/' + fname + '.png' );
+
+    const mesh: THREE.Mesh = obj as THREE.Mesh;
+    mesh.material['map'] = texture;
+  }
 
   async loadAllObjects(): Promise<void> {
     const myPromise: Promise<void> = new Promise<void>((resolve, reject) => {
