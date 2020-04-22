@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {GLTF, GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
 import {PhysicsEntity, PhysicsEntityVariation} from '../model/WsData';
@@ -25,6 +25,10 @@ export interface EntityList<T> {
 })
 export class ObjectLoaderService {
   private readonly resourcePath = '/assets/models/';
+  private readonly entities: ([PhysicsEntity, PhysicsEntityVariation])[] = [
+    [PhysicsEntity.dice, PhysicsEntityVariation.default],
+    [PhysicsEntity.figure, PhysicsEntityVariation.default],
+  ];
   private objectResourceList: EntityList<ResourceData> = {
     dice: {
       default: {
@@ -82,5 +86,21 @@ export class ObjectLoaderService {
         callback( gltf.scene.children[0] );
       });
     }
+  }
+
+  async loadAllObjects(): Promise<void> {
+    const myPromise: Promise<void> = new Promise<void>((resolve, reject) => {
+      let i = this.entities.length;
+      this.entities.forEach((value: [PhysicsEntity, PhysicsEntityVariation], index: number) => {
+        this.loadObject(value[0], value[1], () => {
+          i--;
+          if (i <= 0) {
+            resolve();
+          }
+        });
+      });
+    });
+
+    return myPromise;
   }
 }
