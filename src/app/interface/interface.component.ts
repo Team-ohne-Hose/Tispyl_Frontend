@@ -2,13 +2,11 @@ import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import {ChatWindowComponent} from './chat-window/chat-window.component';
 import {ColyseusClientService} from '../services/colyseus-client.service';
-import {DataChange} from '@colyseus/schema';
+import {DataChange, MapSchema} from '@colyseus/schema';
 import {GameComponent} from '../game/game.component';
 import {GameState} from '../model/GameState';
-import {Schema, MapSchema, type} from '@colyseus/schema';
-import {GameActionType, MessageType} from '../model/WsData';
+import {GameActionType, MessageType, PlayerMessageType, SetFigure} from '../model/WsData';
 import {ObjectLoaderService} from '../services/object-loader.service';
-
 
 
 @Component({
@@ -36,8 +34,20 @@ export class InterfaceComponent implements OnInit {
     {k: '/start', f: this.start.bind(this), h: ''},
     {k: '/next', f: this.advanceAction.bind(this), h: ''},
     {k: '/fps', f: this.toggleFpsDisplay.bind(this), h: ''},
+    {k: '/myTex', f: this.switchMyTex.bind(this), h: ''},
     {k: '/switchTex', f: this.switchTex.bind(this), h: ''}
   ];
+
+  switchMyTex(args) {
+    args[1] = Math.max(0, Math.min(Number(args[1]), 9));
+    this.colyseus.getActiveRoom().subscribe( room => {
+      const msg: SetFigure = {type: MessageType.PLAYER_MESSAGE,
+        subType: PlayerMessageType.setFigure,
+        playerId: this.colyseus.sessionId,
+        playerModel: args[1]};
+      room.send(msg);
+    });
+  }
 
   switchTex(args) {
     const obj = this.gameComponent.boardItemControl.scene.getObjectById(Number(args[1]));

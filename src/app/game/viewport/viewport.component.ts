@@ -108,7 +108,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.physics.scene = this.scene;
 
     // initialize BoardItemManagement
-    this.boardItemManager = new BoardItemManagement(this.scene, this.sceneBuilder, this.physics, this.colyseus);
+    this.boardItemManager = new BoardItemManagement(this.scene, this.sceneBuilder, this.physics, this.colyseus, this.objectLoaderService);
     this.boardItemManager.board = gameBoard;
 
     // initialize Mouse

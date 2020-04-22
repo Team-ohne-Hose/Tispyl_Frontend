@@ -91,7 +91,6 @@ export class MouseInteraction {
     this.raycaster.setFromCamera({x: normX, y: normY}, this.camera);
     const intersects = this.raycaster.intersectObjects(this.interactable);
 
-    // TODO what if figure already selected?
     if (intersects.length > 0) {
       const point = intersects[0].point;
       const type = this.getClickedType(intersects[0].object);
@@ -106,6 +105,7 @@ export class MouseInteraction {
         if (this.currentlySelected !== undefined) {
           console.log('clicked on other figure');
           this.handleBoardTileClick(point);
+          this.currentlySelected = undefined;
         } else {
           this.currentlySelected = {obj: obj, oldPos: obj.position.clone()};
           this.physics.setKinematic(PhysicsCommands.getPhysId(obj), true);

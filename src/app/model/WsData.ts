@@ -26,22 +26,20 @@ export interface LeftMessage {
   type: MessageType.LEFT_MESSAGE;
   message: string;
 }
-
 export enum GameActionType {
   none,
   advanceRound,
   advanceAction,
   advanceTurn,
-  readyPopertyChange,
+  readyPropertyChange,
   setStartingCondition,
   setTile
 }
-export type GameMessage = GameAction | GameSetTile;
+export type GameMessage = GameAction | GameSetTile | GameReadyProperty;
 type actionTypes = GameActionType.none |
   GameActionType.advanceRound |
   GameActionType.advanceAction |
   GameActionType.advanceTurn |
-  GameActionType.readyPopertyChange |
   GameActionType.setStartingCondition;
 export interface GameAction {
   type: MessageType.GAME_MESSAGE;
@@ -49,7 +47,7 @@ export interface GameAction {
 }
 export interface GameReadyProperty {
   type: MessageType.GAME_MESSAGE;
-  action: GameActionType.readyPopertyChange;
+  action: GameActionType.readyPropertyChange;
   isReady: boolean;
 }
 export interface GameSetTile {
@@ -63,12 +61,22 @@ export type PlayerMessage = SetFigure;
 export enum PlayerMessageType {
   setFigure
 }
+export enum PlayerModel {
+  bcap_NukaCola = 1,
+  bcap_CocaCola,
+  bcap_Tiddies1,
+  bcap_Schmucker,
+  bcap_Jagermeister,
+  bcap_OurAnthem,
+  bcap_Murica,
+  bcap_Developer,
+  bcap_hb
+}
 export interface SetFigure {
   type: MessageType.PLAYER_MESSAGE;
   subType: PlayerMessageType.setFigure;
   playerId: string;
-  figureId: number;
-  color: number;
+  playerModel: PlayerModel;
 }
 
 export enum PhysicsCommandType {
@@ -78,7 +86,9 @@ export enum PhysicsCommandType {
   position,
   quaternion,
   velocity,
-  angularVelocity
+  angularVelocity,
+  getNewId,
+  create
 }
 export type PhysicsCommand = PhysicsCommandKinematic |
   PhysicsCommandRemove    |
@@ -99,7 +109,7 @@ export interface PhysicsCommandAddEntity {
   type: MessageType.PHYSICS_MESSAGE;
   subType: PhysicsCommandType.addEntity;
   physicsId: number;
-  entity: PhysicsEntity;
+  entity: number;
   posX: number;
   posY: number;
   posZ: number;
@@ -115,28 +125,6 @@ export interface PhysicsCommandKinematic {
   subType: PhysicsCommandType.kinematic;
   objectID: number;
   kinematic: boolean;
-}
-export interface PhysicsCommandRemove {
-  type: MessageType.PHYSICS_MESSAGE;
-  subType: PhysicsCommandType.remove;
-  objectID: number;
-}
-export interface PhysicsCommandPosition {
-  type: MessageType.PHYSICS_MESSAGE;
-  subType: PhysicsCommandType.position;
-  objectID: number;
-  positionX: number;
-  positionY: number;
-  positionZ: number;
-}
-export interface PhysicsCommandQuat {
-  type: MessageType.PHYSICS_MESSAGE;
-  subType: PhysicsCommandType.quaternion;
-  objectID: number;
-  quaternionX: number;
-  quaternionY: number;
-  quaternionZ: number;
-  quaternionW: number;
 }
 export interface PhysicsCommandRemove {
   type: MessageType.PHYSICS_MESSAGE;

@@ -20,7 +20,7 @@ export class PregameBannerComponent {
   readyEvent() {
     this.isReady = !this.isReady;
     this.colyseus.getActiveRoom().subscribe( r => {
-      r.send( {type: MessageType.GAME_MESSAGE, action: GameActionType.readyPopertyChange, isReady: this.isReady} );
+      r.send( {type: MessageType.GAME_MESSAGE, action: GameActionType.readyPropertyChange, isReady: this.isReady} );
     });
   }
 

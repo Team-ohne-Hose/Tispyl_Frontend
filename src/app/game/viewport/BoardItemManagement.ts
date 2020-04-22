@@ -2,8 +2,11 @@ import {ViewportComponent} from './viewport.component';
 import * as THREE from 'three';
 import {SceneBuilderService} from '../../services/scene-builder.service';
 import {PhysicsCommands} from './PhysicsCommands';
-import {GameActionType, GameSetTile, MessageType} from '../../model/WsData';
+import {GameActionType, GameSetTile, MessageType, WsData} from '../../model/WsData';
 import {ColyseusClientService} from '../../services/colyseus-client.service';
+import {Room} from 'colyseus.js';
+import {GameState, Player} from '../../model/GameState';
+import {ObjectLoaderService} from '../../services/object-loader.service';
 
 export enum BoardItemRole {
   Dice = 1,
@@ -28,10 +31,24 @@ export class BoardItemManagement {
   constructor(scene: THREE.Scene,
               private sceneBuilder: SceneBuilderService,
               private physics: PhysicsCommands,
-              private colyseus: ColyseusClientService) {
+              private colyseus: ColyseusClientService,
+              private loader: ObjectLoaderService) {
+    console.error('loader is', this.loader);
     this.scene = scene;
     this.boardItems = [];
+    this.colyseus.getActiveRoom().subscribe((activeRoom: Room<GameState>) => {
+      activeRoom.state.playerList.onChange = ((item: Player, key: string) => {
+        const obj = PhysicsCommands.getObjectByPhysId(this.scene, item.figureId);
+        if (obj !== undefined) {
+          if (item.figureModel !== undefined) {
+            this.loader.switchTex(obj, item.figureModel);
+          }
+          obj.userData.displayName = item.displayName;
+        }
+      }).bind(this);
+    });
   }
+
 
   // returns rolled dice number, -1 for not stable/initialized, -2 for even more unstable
   getDiceNumber(): number {
@@ -105,6 +122,10 @@ export class BoardItemManagement {
         }
       }
     }
+  }
+
+  onPlayerMessage(data: WsData) {
+
   }
 
   addFlummi(x: number, y: number, z: number, color: number) {

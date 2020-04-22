@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {GLTF, GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
-import {PhysicsEntity, PhysicsEntityVariation} from '../model/WsData';
+import {PhysicsEntity, PhysicsEntityVariation, PlayerModel} from '../model/WsData';
 
 interface ResourceData {
   cname: string;
@@ -20,11 +20,28 @@ export interface EntityList<T> {
   dice: DiceVariations<T>;
   figure: FigureVariations<T>;
 }
+interface PlayerModelData {
+  texFName: string;
+  specFName: string;
+  tex: THREE.Texture;
+  spec: THREE.Texture;
+}
 @Injectable({
   providedIn: 'root'
 })
 export class ObjectLoaderService {
   private readonly resourcePath = '/assets/models/';
+  private texList: Map<PlayerModel, PlayerModelData> = new Map<PlayerModel, PlayerModelData>([
+    [PlayerModel.bcap_NukaCola, {texFName: 'default', specFName: 'default_spec', tex: undefined, spec: undefined}],
+    [PlayerModel.bcap_CocaCola, {texFName: 'cocaCola', specFName: 'default_spec', tex: undefined, spec: undefined}],
+    [PlayerModel.bcap_Developer, {texFName: 'dev', specFName: 'default_spec', tex: undefined, spec: undefined}],
+    [PlayerModel.bcap_Jagermeister, {texFName: 'jagermeister', specFName: 'default_spec', tex: undefined, spec: undefined}],
+    [PlayerModel.bcap_Murica, {texFName: 'murica', specFName: 'default_spec', tex: undefined, spec: undefined}],
+    [PlayerModel.bcap_hb, {texFName: 'hb', specFName: 'default_spec', tex: undefined, spec: undefined}],
+    [PlayerModel.bcap_OurAnthem, {texFName: 'ourAnthem', specFName: 'default_spec', tex: undefined, spec: undefined}],
+    [PlayerModel.bcap_Schmucker, {texFName: 'schmucker', specFName: 'default_spec', tex: undefined, spec: undefined}],
+    [PlayerModel.bcap_Tiddies1, {texFName: 'kronkorken1', specFName: 'default_spec', tex: undefined, spec: undefined}],
+  ]);
   private readonly entities: ([PhysicsEntity, PhysicsEntityVariation])[] = [
     [PhysicsEntity.dice, PhysicsEntityVariation.default],
     [PhysicsEntity.figure, PhysicsEntityVariation.default],
@@ -87,12 +104,25 @@ export class ObjectLoaderService {
       });
     }
   }
-  switchTex(obj: THREE.Object3D, fname?: string) {
-    fname = fname || 'kronkorken1';
-    const texture = new THREE.TextureLoader().load( '/assets/models/otherTex/' + fname + '.png' );
+  switchTex(obj: THREE.Object3D, model: PlayerModel) {
+    const texData = this.texList.get(model);
+    if (texData.tex === undefined || texData.spec === undefined) {
+      const fname = texData.texFName || 'kronkorken1';
+      const fnameSpec = texData.specFName || 'kronkorken1';
+      const texture = new THREE.TextureLoader().load( '/assets/models/otherTex/' + fname + '.png' );
+      texture.encoding = THREE.sRGBEncoding;
+      texture.anisotropy = 16;
+      texData.tex = texture;
+      const gloss = new THREE.TextureLoader().load( '/assets/models/otherTex/' + fnameSpec + '.png' );
+      gloss.encoding = THREE.LinearEncoding;
+      texData.spec = gloss;
+    }
 
     const mesh: THREE.Mesh = obj as THREE.Mesh;
-    mesh.material['map'] = texture;
+    if (mesh.material instanceof THREE.Material) {
+      mesh.material = mesh.material.clone();
+      mesh.material['map'] = texData.tex;
+    }
   }
 
   async loadAllObjects(): Promise<void> {

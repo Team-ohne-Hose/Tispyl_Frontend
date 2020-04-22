@@ -1,10 +1,12 @@
 
 import {Schema, MapSchema, type} from '@colyseus/schema';
-import {PhysicsEntity, PhysicsEntityVariation} from './WsData';
+import {PhysicsEntity, PhysicsEntityVariation, PlayerModel} from './WsData';
 
 export class Player extends Schema {
   @type('string')
   displayName: string;
+  @type('string')
+  playerId: string;
   @type('boolean')
   isCurrentHost: boolean;
   @type('boolean')
@@ -12,7 +14,7 @@ export class Player extends Schema {
   @type('number')
   figureId: number;
   @type('number')
-  figureColor: number;
+  figureModel: PlayerModel;
   @type('number')
   currentTile: number;
 }
