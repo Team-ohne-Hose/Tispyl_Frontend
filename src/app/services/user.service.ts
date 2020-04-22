@@ -2,9 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, Observable, pipe} from 'rxjs';
 import {User} from '../model/User';
-import {query} from '@angular/animations';
 import {map} from 'rxjs/operators';
-import * as queryString from 'querystring';
 import {APIResponse} from '../model/APIResponse';
 
 @Injectable({

@@ -92,11 +92,13 @@ export enum PhysicsEntity {
   figure
 }
 export enum PhysicsEntityVariation {
-  default
+  default,
+  procedural
 }
 export interface PhysicsCommandAddEntity {
   type: MessageType.PHYSICS_MESSAGE;
   subType: PhysicsCommandType.addEntity;
+  physicsId: number;
   entity: PhysicsEntity;
   posX: number;
   posY: number;

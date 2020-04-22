@@ -1,4 +1,4 @@
-export class TextContainer {
+export interface TextContainer {
   ruleTitle: String;
   rule0: String;
   rule1: String;

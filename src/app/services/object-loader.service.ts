@@ -1,53 +1,63 @@
 import { Injectable } from '@angular/core';
 import {GLTF, GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
+import {PhysicsEntity, PhysicsEntityVariation} from '../model/WsData';
 
-
-enum LoadableObject {
-  dice = 'dice',
-  dice2 = 'dice2'
+interface ResourceData {
+  cname: string;
+  fname: string;
 }
-
 @Injectable({
   providedIn: 'root'
 })
 export class ObjectLoaderService {
-  static readonly LoadableObject = LoadableObject;
-
-  private objectResourceList = {
+  private readonly resourcePath = '/assets/models/';
+  private readonly objectResourceList = {
     dice: {
-      cname: 'diceModel',
-      resourcePath: '/assets/models/dice/',
-      fname: 'scene.gltf',
-      rootObj: 'pCube22'
+      default: {
+        cname: 'diceDefault',
+        fname: 'diceDefault.gltf'
+      },
+      dice: {
+        cname: 'diceModel',
+        fname: 'dice/scene.gltf'
+      },
+      dice2: {
+        cname: 'diceModel2',
+        fname: 'dice2/scene.gltf'
+      }
     },
-    dice2: {
-      cname: 'diceModel2',
-      resourcePath: '/assets/models/dice2/',
-      fname: 'scene.gltf',
-      rootObj: 'Cube'
+    figure: {
+      default: {
+        cname: 'figureDefault',
+        fname: 'figureDefault.gltf'
+      }
     }
   };
   constructor() { }
 
-  loadObject(toLoad: LoadableObject, callback: (model: THREE.Object3D) => void) {
-    const loader = new GLTFLoader().setPath(this.objectResourceList[toLoad].resourcePath);
-    loader.load(this.objectResourceList[toLoad].fname, (gltf: GLTF) => {
+  private getResourceData(obj: PhysicsEntity, variation: PhysicsEntityVariation): ResourceData {
+    switch (obj) {
+      case PhysicsEntity.dice:
+        switch (variation) {
+          case PhysicsEntityVariation.default:
+            return this.objectResourceList.dice.default;
+        }
+        break;
+      case PhysicsEntity.figure:
+        switch (variation) {
+          case PhysicsEntityVariation.default:
+            return this.objectResourceList.figure.default;
+        }
+        break;
+    }
+  }
+  loadObject(obj: PhysicsEntity, variation: PhysicsEntityVariation, callback: (model: THREE.Object3D) => void) {
+    const loader = new GLTFLoader().setPath(this.resourcePath);
+    loader.load(this.getResourceData(obj, variation).fname, (gltf: GLTF) => {
       gltf.scene.children[0].castShadow = true;
       gltf.scene.children[0].receiveShadow = true;
-      let toScan = gltf.scene.children;
-      while (true) {
-        if (toScan.length === 0) {
-          break;
-        }
-        for (const c in toScan) {
-          if (c in toScan && toScan[c].name === this.objectResourceList[toLoad].rootObj) {
-            callback( toScan[c] );
-            return;
-          }
-        }
-        toScan = toScan[0].children;
-      }
+      callback( gltf.scene.children[0] );
     });
   }
 }

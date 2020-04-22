@@ -1,6 +1,6 @@
 import {Component, ElementRef, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
 import {ColyseusClientService} from '../../services/colyseus-client.service';
-import {ChatMessage, MessageType} from '../../model/WsData';
+import {ChatMessage, MessageType, WsData} from '../../model/WsData';
 
 @Component({
   selector: 'app-chat-window',
@@ -22,9 +22,13 @@ export class ChatWindowComponent implements OnInit {
   @ViewChild('chat') chatRef: ElementRef;
 
   ngOnInit(): void {
-    this.colyseus.registerCallBack('onChatMessage',  (cm: ChatMessage) => {
-      this.postChatMessage(cm.message);
-      this.chatRef.nativeElement.scrollTop = this.chatRef.nativeElement.scrollHeight;
+    this.colyseus.registerMessageCallback(MessageType.CHAT_MESSAGE, {
+      filterSubType: 0,
+      f: (data: WsData) => {
+        if (data.type === MessageType.CHAT_MESSAGE) {
+          this.postChatMessage(data.message);
+        }
+      }
     });
   }
 
@@ -65,6 +69,7 @@ export class ChatWindowComponent implements OnInit {
 
   postChatMessage( msg: string ) {
     this.chatContent =  this.chatContent + '\n' + msg.trim();
+    this.chatRef.nativeElement.scrollTop = this.chatRef.nativeElement.scrollHeight;
   }
 
   executeChatCommand() {

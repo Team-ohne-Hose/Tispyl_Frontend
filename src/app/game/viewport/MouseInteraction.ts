@@ -66,6 +66,7 @@ export class MouseInteraction {
         this.clickToCoords(this.lastMouseLeftDownCoords.x, this.lastMouseLeftDownCoords.y);
       } else {
         console.log('dragDropRecognised: ', travelled.x, travelled.y, travelled.distance);
+        console.error('scene:', this.boardItemManager.scene);
       }
       this.lastMouseLeftDownCoords = {
         x: 0,
@@ -78,22 +79,21 @@ export class MouseInteraction {
   clickToCoords(x: number, y: number) {
     const normX = (x / this.currentSize.width) * 2 - 1;
     const normY = - (y / this.currentSize.height) * 2 + 1;
-    // console.log('clicking on: ', normX, normY);
     this.raycaster.setFromCamera({x: normX, y: normY}, this.camera);
     const intersects = this.raycaster.intersectObjects(this.scene.children);
 
+    // TODO what if figure already selected?
     if (intersects.length > 0) {
       const point = intersects[0].point;
       // console.log('Intersecting:', intersects[0].object.name);
       if (intersects[0].object.name === 'gameboard') {
         if (!this.handleBoardTileClick(point)) {
-          // this.boardItemManager.addMarker(point.x, point.y, point.z, 0x0000ff);
           this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 30, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
         }
         this.currentlySelected = undefined;
       } else if (intersects[0].object.name === 'gamefigure') {
         const obj = intersects[0].object;
-        this.physics.setKinematic(ViewportComponent.getPhysId(obj), true);
+        this.physics.setKinematic(PhysicsCommands.getPhysId(obj), true);
         this.currentlySelected = {obj: obj, oldPos: obj.position.clone()};
         console.log('selected Object');
       } else if (intersects[0].object.name === 'Cube' ||
@@ -111,14 +111,14 @@ export class MouseInteraction {
       console.log('clicked on Tile: ', tile.translationKey, coords.x, coords.y);
       if (this.currentlySelected !== undefined) {
         this.boardItemManager.moveGameFigure(this.currentlySelected.obj, tileId);
-        this.physics.setKinematic(ViewportComponent.getPhysId(this.currentlySelected.obj), false);
+        this.physics.setKinematic(PhysicsCommands.getPhysId(this.currentlySelected.obj), false);
         return true;
       }
     } else {
       console.log('clicked outside of playing field');
       const oldPos = this.currentlySelected.oldPos;
-      this.physics.setPosition(ViewportComponent.getPhysId(this.currentlySelected.obj), oldPos.x, oldPos.y, oldPos.z);
-      this.physics.setKinematic(ViewportComponent.getPhysId(this.currentlySelected.obj), false);
+      this.physics.setPosition(PhysicsCommands.getPhysId(this.currentlySelected.obj), oldPos.x, oldPos.y, oldPos.z);
+      this.physics.setKinematic(PhysicsCommands.getPhysId(this.currentlySelected.obj), false);
     }
     return false;
   }
