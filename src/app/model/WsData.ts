@@ -28,6 +28,8 @@ export interface LeftMessage {
 }
 export enum GameActionType {
   none,
+  addRule,
+  deleteRule,
   advanceRound,
   advanceAction,
   advanceTurn,
@@ -35,7 +37,7 @@ export enum GameActionType {
   setStartingCondition,
   setTile
 }
-export type GameMessage = GameAction | GameSetTile | GameReadyProperty;
+export type GameMessage = GameAction | GameSetTile | GameAddRule | GameDeleteRule;
 type actionTypes = GameActionType.none |
   GameActionType.advanceRound |
   GameActionType.advanceAction |
@@ -44,6 +46,16 @@ type actionTypes = GameActionType.none |
 export interface GameAction {
   type: MessageType.GAME_MESSAGE;
   action: actionTypes;
+}
+export interface GameAddRule {
+  type: MessageType.GAME_MESSAGE;
+  action: GameActionType.addRule;
+  text: string;
+}
+export interface GameDeleteRule {
+  type: MessageType.GAME_MESSAGE;
+  action: GameActionType.deleteRule;
+  id: number;
 }
 export interface GameReadyProperty {
   type: MessageType.GAME_MESSAGE;
