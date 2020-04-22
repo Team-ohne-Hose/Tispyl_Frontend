@@ -16,7 +16,7 @@ import {
   PhysicsEntityVariation,
   WsData
 } from '../../model/WsData';
-import {GameState, PhysicsObjectState} from '../../model/GameState';
+import {GameState, PhysicsObjectState, Player} from '../../model/GameState';
 import {Room} from 'colyseus.js';
 import {ObjectUserData} from './viewport.component';
 import {ObjectLoaderService} from '../../services/object-loader.service';
@@ -118,6 +118,18 @@ export class PhysicsCommands {
           break;
         case PhysicsEntity.figure:
           this.setClickRole(ClickedTarget.figure, model);
+
+          // Load other playermodels
+          this.colyseus.getActiveRoom().subscribe((room: Room<GameState>) => {
+            for (const p in room.state.playerList) {
+              if (p in room.state.playerList) {
+                const player: Player = room.state.playerList[p];
+                if (player.figureId === physicsId) {
+                  this.loader.switchTex(model, player.figureModel);
+                }
+              }
+            }
+          })
           break;
       }
       this.currentlyLoadingEntities.set(physicsId, false);

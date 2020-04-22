@@ -7,6 +7,7 @@ import {ColyseusClientService} from '../../services/colyseus-client.service';
 import {Room} from 'colyseus.js';
 import {GameState, Player} from '../../model/GameState';
 import {ObjectLoaderService} from '../../services/object-loader.service';
+import {MapSchema} from '@colyseus/schema';
 
 export enum BoardItemRole {
   Dice = 1,
@@ -39,14 +40,35 @@ export class BoardItemManagement {
     this.colyseus.getActiveRoom().subscribe((activeRoom: Room<GameState>) => {
       activeRoom.state.playerList.onChange = ((item: Player, key: string) => {
         const obj = PhysicsCommands.getObjectByPhysId(this.scene, item.figureId);
+        console.error('onchange', item);
         if (obj !== undefined) {
           if (item.figureModel !== undefined) {
+            console.error('loading new Model');
             this.loader.switchTex(obj, item.figureModel);
           }
           obj.userData.displayName = item.displayName;
         }
       }).bind(this);
+      this.loadModels(activeRoom.state.playerList);
     });
+  }
+
+  loadModels(list: MapSchema<Player>) {
+    console.log('loading for ', list);
+    for (const p in list) {
+      if (p in list) {
+        const player: Player = list[p];
+        const obj = PhysicsCommands.getObjectByPhysId(this.scene, player.figureId);
+        console.error('onLoad', player);
+        if (obj !== undefined) {
+          if (player.figureModel !== undefined) {
+            console.error('loading new Model');
+            this.loader.switchTex(obj, player.figureModel);
+          }
+          obj.userData.displayName = player.displayName;
+        }
+      }
+    }
   }
 
 

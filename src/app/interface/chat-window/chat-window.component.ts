@@ -54,10 +54,10 @@ export class ChatWindowComponent implements OnInit {
 
     } else if (keyEvent.key === 'ArrowUp') {
 
-      console.log(this.messageHistory.length - 1, this.historyIndex);
+      // console.log(this.messageHistory.length - 1, this.historyIndex);
 
       if (this.historyIndex <= this.messageHistory.length - 1) {
-        console.log(this.currentMessage[this.historyIndex]);
+        // console.log(this.currentMessage[this.historyIndex]);
         this.currentMessage = this.messageHistory[this.historyIndex] || '';
         this.historyIndex = this.historyIndex + 1;
       } else {

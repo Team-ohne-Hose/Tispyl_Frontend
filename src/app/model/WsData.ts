@@ -35,13 +35,15 @@ export enum GameActionType {
   advanceTurn,
   readyPropertyChange,
   setStartingCondition,
-  setTile
+  setTile,
+  refreshData
 }
 export type GameMessage = GameAction | GameSetTile | GameAddRule | GameDeleteRule;
 type actionTypes = GameActionType.none |
   GameActionType.advanceRound |
   GameActionType.advanceAction |
   GameActionType.advanceTurn |
+  GameActionType.refreshData |
   GameActionType.setStartingCondition;
 export interface GameAction {
   type: MessageType.GAME_MESSAGE;
