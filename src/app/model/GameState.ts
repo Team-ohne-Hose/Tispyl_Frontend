@@ -1,5 +1,5 @@
 
-import {Schema, MapSchema, type} from '@colyseus/schema';
+import {Schema, ArraySchema, MapSchema, type} from '@colyseus/schema';
 import {PhysicsEntity, PhysicsEntityVariation} from './WsData';
 
 export class Player extends Schema {
@@ -72,6 +72,9 @@ export class GameState extends Schema {
 
   @type(PhysicsState)
   physicsState = new PhysicsState();
+
+  @type([ 'string' ])
+  rules = new ArraySchema<string>();
 
   nextRound() {
     this.round += 1;

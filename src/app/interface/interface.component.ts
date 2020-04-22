@@ -36,7 +36,9 @@ export class InterfaceComponent implements OnInit {
     {k: '/start', f: this.start.bind(this), h: ''},
     {k: '/next', f: this.advanceAction.bind(this), h: ''},
     {k: '/fps', f: this.toggleFpsDisplay.bind(this), h: ''},
-    {k: '/switchTex', f: this.switchTex.bind(this), h: ''}
+    {k: '/switchTex', f: this.switchTex.bind(this), h: ''},
+    {k: '/addRule', f: this.addRule.bind(this), h: ''},
+    {k: '/deleteRule', f: this.deleteRule.bind(this), h: ''}
   ];
 
   switchTex(args) {
@@ -81,6 +83,20 @@ export class InterfaceComponent implements OnInit {
     } else {
       console.log('Unknown command: ', args);
     }
+  }
+
+  private addRule( args ) {
+    console.log(args);
+    const msgArray: any[] = args.slice(1);
+    this.colyseus.getActiveRoom().subscribe( r => {
+      r.send({type: MessageType.GAME_MESSAGE, action: GameActionType.addRule, text: msgArray.join(' ')});
+    });
+  }
+
+  private deleteRule( args ) {
+    this.colyseus.getActiveRoom().subscribe( r => {
+      r.send({type: MessageType.GAME_MESSAGE, action: GameActionType.deleteRule, id: args[1]});
+    });
   }
 
   private showLocalState( args ) {
