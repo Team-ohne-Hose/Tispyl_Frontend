@@ -4,13 +4,16 @@ import {BehaviorSubject, Observable, pipe} from 'rxjs';
 import {User} from '../model/User';
 import {map} from 'rxjs/operators';
 import {APIResponse} from '../model/APIResponse';
+import {environment} from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
 
-  private userEndpoint = 'http://localhost:2567/api/users';
+  private readonly prodUserEndpoint = 'https://tispyl.uber.space:41920/api/users';
+  private readonly devUserEndpoint = 'http://localhost:2567/api/users';
+  private userEndpoint = environment.production ? this.prodUserEndpoint : this.devUserEndpoint;
   activeUser: BehaviorSubject<User>;
 
   constructor(private httpClient: HttpClient) {

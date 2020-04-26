@@ -138,36 +138,4 @@ export class SceneBuilderService {
     });
     return gameBoard;
   }
-
-  // TODO readd functions for programmatically generating Objects
-  generateGameFigure(color: number): THREE.Mesh {
-    const gameFigureGeo = new THREE.CylinderBufferGeometry(1.3, 1.5, 1, 20, 1);
-    const gameFigureMat = new THREE.MeshStandardMaterial({color: color});
-    const gameFigure = new THREE.Mesh(gameFigureGeo, gameFigureMat);
-    gameFigure.receiveShadow = true;
-    gameFigure.castShadow = true;
-    gameFigure.name = 'gamefigure';
-
-    return gameFigure;
-  }
-  generateDice(): Mesh {
-    const diceGeo = new THREE.BoxBufferGeometry(1, 1, 1);
-    const diceMat = new THREE.MeshStandardMaterial({color: 0xff0000});
-    const dice = new THREE.Mesh(diceGeo, diceMat);
-    dice.position.y = 1;
-    dice.castShadow = true;
-    dice.receiveShadow = true;
-    dice.name = 'dice';
-
-    this.cubeLoader.setPath(this.diceTextureURLBase);
-    this.cubeLoader.load(['1.png', '6.png', '2.png', '5.png', '3.png', '4.png'], (texture) => {
-      texture.encoding = THREE.sRGBEncoding;
-      texture.anisotropy = 16;
-      // diceMat.map = texture;
-      diceMat.needsUpdate = true;
-    }, undefined, (error) => {
-      console.error(error);
-    });
-    return dice;
-  }
 }

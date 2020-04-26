@@ -94,7 +94,7 @@ export class MouseInteraction {
     if (intersects.length > 0) {
       const point = intersects[0].point;
       const type = this.getClickedType(intersects[0].object);
-      console.log('Intersecting:', intersects[0].object.name, type);
+      // console.log('Intersecting:', intersects[0].object.name, type);
       if (type === ClickedTarget.board) {
         if (!this.handleBoardTileClick(point)) {
           this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 30, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
@@ -122,16 +122,16 @@ export class MouseInteraction {
     if (coords.x >= 0 && coords.x < 8 && coords.y >= 0 && coords.y < 8) {
       const tileId = Board.getId(coords.x, coords.y);
       const tile = Board.getTile(tileId);
-      console.log('clicked on Tile: ', tile.translationKey, coords.x, coords.y);
+      // console.log('clicked on Tile: ', tile.translationKey, coords.x, coords.y);
       if (this.currentlySelected !== undefined) {
         this.boardItemManager.moveGameFigure(this.currentlySelected.obj, tileId);
         this.physics.setKinematic(PhysicsCommands.getPhysId(this.currentlySelected.obj), false);
         return true;
       }
     } else {
-      console.log('clicked outside of playing field');
-      const oldPos = this.currentlySelected.oldPos;
-      this.physics.setPosition(PhysicsCommands.getPhysId(this.currentlySelected.obj), oldPos.x, oldPos.y, oldPos.z);
+      // console.log('clicked outside of playing field');
+      // const oldPos = this.currentlySelected.oldPos;
+      // this.physics.setPosition(PhysicsCommands.getPhysId(this.currentlySelected.obj), oldPos.x, oldPos.y, oldPos.z);
       this.physics.setKinematic(PhysicsCommands.getPhysId(this.currentlySelected.obj), false);
     }
     return false;

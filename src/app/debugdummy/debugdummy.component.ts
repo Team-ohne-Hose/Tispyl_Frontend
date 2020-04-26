@@ -1,7 +1,7 @@
 import {AfterContentInit, Component, OnInit, ViewChild} from '@angular/core';
 import {ColyseusClientService} from '../services/colyseus-client.service';
 import {InterfaceComponent} from '../interface/interface.component';
-import {GameState} from '../model/GameState';
+import {GameState} from '../model/state/GameState';
 
 @Component({
   selector: 'app-debugdummy',

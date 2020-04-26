@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Player} from '../../model/GameState';
 import {ColyseusClientService} from '../../services/colyseus-client.service';
 import {GameActionType, MessageType} from '../../model/WsData';
+import {Player} from '../../model/state/Player';
 
 @Component({
   selector: 'app-pregame-banner',

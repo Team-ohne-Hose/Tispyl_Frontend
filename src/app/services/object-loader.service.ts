@@ -105,7 +105,10 @@ export class ObjectLoaderService {
     }
   }
   switchTex(obj: THREE.Object3D, model: PlayerModel) {
-    const texData = this.texList.get(model);
+    let texData: PlayerModelData = this.texList.get(model);
+    if (texData === undefined) {
+      texData = this.texList.get(PlayerModel.bcap_NukaCola);
+    }
     if (texData.tex === undefined || texData.spec === undefined) {
       const fname = texData.texFName || 'kronkorken1';
       const fnameSpec = texData.specFName || 'kronkorken1';

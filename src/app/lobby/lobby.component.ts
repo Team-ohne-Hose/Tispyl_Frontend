@@ -11,7 +11,7 @@ import { Router} from '@angular/router';
 import {UserService} from '../services/user.service';
 import {RoomMetaInfo} from '../model/RoomMetaInfo';
 import {JoinGameComponent} from './dialogs/join-game/join-game.component';
-import {GameState} from '../model/GameState';
+import {GameState} from '../model/state/GameState';
 
 @Component({
   selector: 'app-lobby',
@@ -59,11 +59,9 @@ export class LobbyComponent implements OnInit {
       panelClass: 'modalbox-base'
     });
 
-    dialogRef.afterClosed().subscribe(s => {
-      if (s !== undefined) {
-        this.colyseus.hostGame({name: s, author: this.currentUser.display_name, displayName: this.currentUser.display_name});
-        this.colyseus.updateAvailableRooms();
-      }});
+    dialogRef.afterClosed().subscribe(roomName => {
+      this.colyseus.createRoom(roomName, this.currentUser.display_name, this.currentUser.login_name, this.currentUser.display_name);
+    });
   }
 
   onLeaveLobby() {
@@ -85,7 +83,7 @@ export class LobbyComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(s => console.log('closed dialog'));
-    this.colyseus.joinActiveRoom(lobby, {displayName: this.currentUser.display_name});
+    this.colyseus.joinActiveRoom(lobby, this.currentUser.login_name, this.currentUser.display_name);
   }
 
   changeLanguage(lang: string) {

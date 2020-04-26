@@ -5,6 +5,7 @@ import {CameraControl} from './viewport/CameraControl';
 import {Router} from '@angular/router';
 import {ColyseusClientService} from '../services/colyseus-client.service';
 import {ViewportComponent} from './viewport/viewport.component';
+import {GameAction, GameActionType, MessageType} from '../model/WsData';
 
 @Component({
   selector: 'app-game',
@@ -24,9 +25,15 @@ export class GameComponent implements OnInit {
 
   ngOnInit(): void {
       this.colyseus.getActiveRoom().subscribe((myRoom) => {
-        console.log('Room is', myRoom);
+        console.log('connected to Room:', myRoom);
         if (myRoom === undefined) {
           this.router.navigateByUrl('/lobby');
+        } else {
+          const msg: GameAction = {
+            type: MessageType.GAME_MESSAGE,
+            action: GameActionType.refreshData
+          };
+          myRoom.send(msg);
         }
       }, (errRoom) => {
         console.log('ErrorRoom is', errRoom);

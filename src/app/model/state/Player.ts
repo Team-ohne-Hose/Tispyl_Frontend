@@ -1,0 +1,23 @@
+import {Schema, type} from '@colyseus/schema';
+import {PlayerModel} from '../WsData';
+
+export class Player extends Schema {
+  @type('string')
+  displayName: string;
+  @type('string')
+  clientId: string;
+  @type('string')
+  loginName: string;
+  @type('boolean')
+  isCurrentHost: boolean;
+  @type('boolean')
+  isReady: boolean;
+  @type('number')
+  figureId: number;
+  @type('number')
+  figureModel: PlayerModel;
+  @type('number')
+  currentTile: number;
+  @type('boolean')
+  isConnected: boolean;
+}

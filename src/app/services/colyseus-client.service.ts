@@ -2,9 +2,10 @@ import {Injectable} from '@angular/core';
 import {Client, Room, RoomAvailable} from 'colyseus.js';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {RoomMetaInfo} from '../model/RoomMetaInfo';
-import {GameState} from '../model/GameState';
+import {GameState} from '../model/state/GameState';
 import {MessageType, PhysicsCommandType, WsData} from '../model/WsData';
 import {DataChange} from '@colyseus/schema';
+import {environment} from '../../environments/environment';
 
 export interface MessageCallback {
   filterSubType: number; // -1/undefined for no filter, otherwise the subtype to filter for
@@ -15,9 +16,10 @@ export interface MessageCallback {
 })
 export class ColyseusClientService {
 
-  sessionId: string = undefined;
-  private port = '2567';
-  private backendWStarget = 'ws://localhost:' + this.port;
+  myLoginName: string = undefined;
+  private readonly prodBackendWStarget = 'wss://tispyl.uber.space:41920';
+  private readonly devBackendWStarget = 'ws://localhost:2567';
+  private backendWStarget = environment.production ? this.prodBackendWStarget : this.devBackendWStarget;
 
   private client: Client = new Client(this.backendWStarget);
   private activeRoom: BehaviorSubject<Room<GameState>>;
@@ -46,14 +48,36 @@ export class ColyseusClientService {
   setActiveRoom(newRoom?: Room): void {
     if (newRoom !== undefined) {
       this.updateRoomCallbacks(newRoom);
-      this.sessionId = newRoom.sessionId;
     }
     this.activeRoom.next(newRoom);
   }
 
-  joinActiveRoom(roomAva: RoomAvailable<RoomMetaInfo>, options?: any) {
+  createRoom(roomName: string, author: string, loginName: string, displayName: string) {
+    const options = {
+      name: roomName,
+      author: author,
+      login: loginName,
+      displayName: displayName
+    };
+
+    if (roomName !== undefined) {
+      this.client.create('game', options).then( suc => {
+        this.setActiveRoom(suc);
+        this.updateAvailableRooms();
+        this.myLoginName = loginName;
+      });
+    }
+  }
+  joinActiveRoom(roomAva: RoomAvailable<RoomMetaInfo>, loginName: string, displayName: string) {
+    const options = {
+      name: undefined,
+      author: undefined,
+      login: loginName,
+      displayName: displayName
+    };
     this.client.joinById(roomAva.roomId, options).then((myRoom: Room) => {
       this.setActiveRoom(myRoom);
+      this.myLoginName = loginName;
     });
   }
 
@@ -64,12 +88,6 @@ export class ColyseusClientService {
   updateAvailableRooms(): void {
     this.client.getAvailableRooms('game').then( rooms => {
       this.availableRooms.next(rooms);
-    });
-  }
-
-  hostGame(opt): void {
-    this.client.create('game', opt).then( suc => {
-      this.setActiveRoom(suc);
     });
   }
 

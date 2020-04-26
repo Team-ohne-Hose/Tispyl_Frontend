@@ -9,7 +9,7 @@ import {key} from 'colyseus.js/lib/sync/helpers';
 export class StateDisplayComponent implements OnInit {
 
   @Input() round: number;
-  @Input() turn: string;
+  @Input() currentPlayerDisplayName: string;
   @Input() action: string;
   @Input() rules: string[];
 

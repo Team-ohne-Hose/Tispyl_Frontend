@@ -16,10 +16,12 @@ import {
   PhysicsEntityVariation,
   WsData
 } from '../../model/WsData';
-import {GameState, PhysicsObjectState, Player} from '../../model/GameState';
+import {GameState} from '../../model/state/GameState';
 import {Room} from 'colyseus.js';
 import {ObjectUserData} from './viewport.component';
 import {ObjectLoaderService} from '../../services/object-loader.service';
+import {PhysicsObjectState} from '../../model/state/PhysicsState';
+import {Player} from '../../model/state/Player';
 
 export enum ClickedTarget {
   other,
@@ -107,14 +109,14 @@ export class PhysicsCommands {
       model.position.set(posX, posY, posZ);
       const userData: ObjectUserData = {physicsId: physicsId, entityType: entity, variation: variant, clickRole: undefined};
       model.userData = userData;
-      console.warn('Adding', model.userData.physicsId, model, physicsId);
+      console.log('Adding', model.userData.physicsId, model.name, entity, variant);
       this.scene.add(model);
       // set the various references in other classes
       switch (entity) {
         case PhysicsEntity.dice:
           this.setClickRole(ClickedTarget.dice, model);
           this.dice = model;
-          console.log('set dice');
+          // console.log('set dice');
           break;
         case PhysicsEntity.figure:
           this.setClickRole(ClickedTarget.figure, model);
@@ -129,7 +131,7 @@ export class PhysicsCommands {
                 }
               }
             }
-          })
+          });
           break;
       }
       this.currentlyLoadingEntities.set(physicsId, false);
@@ -143,13 +145,14 @@ export class PhysicsCommands {
     }
   }
   addEntity(data: WsData) {
-    console.error('recieve Adding Call');
     if (data.type === MessageType.PHYSICS_MESSAGE && data.subType === PhysicsCommandType.addEntity) {
-      if (data.variant === PhysicsEntityVariation.procedural) {
-        // TODO enable procedural generation
-      } else {
-        this.generateEntity(data.entity, data.variant, data.physicsId,
-          data.posX, data.posY, data.posZ, data.rotX, data.rotY, data.rotZ, data.rotW);
+      const obj = PhysicsCommands.getObjectByPhysId(this.scene, data.physicsId);
+      if (obj === undefined && this.currentlyLoadingEntities.get(data.physicsId) === undefined) {
+        if (data.variant === PhysicsEntityVariation.procedural) {
+        } else {
+          this.generateEntity(data.entity, data.variant, data.physicsId,
+            data.posX, data.posY, data.posZ, data.rotX, data.rotY, data.rotZ, data.rotW);
+        }
       }
     }
   }

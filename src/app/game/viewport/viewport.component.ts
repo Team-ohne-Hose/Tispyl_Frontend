@@ -14,7 +14,7 @@ import {ClickedTarget, PhysicsCommands} from './PhysicsCommands';
 import {ColyseusClientService} from '../../services/colyseus-client.service';
 import {GameAction, GameActionType, MessageType, PhysicsEntity, PhysicsEntityVariation} from '../../model/WsData';
 import {Room} from 'colyseus.js';
-import {GameState} from '../../model/GameState';
+import {GameState} from '../../model/state/GameState';
 
 export class ObjectUserData {
   physicsId: number;
@@ -125,14 +125,6 @@ export class ViewportComponent implements AfterViewInit, OnInit {
 
     // register at Game Component
     this.registerViewport.emit([this.cameraControl, this.boardItemManager, this.audioControl]);
-
-    this.colyseus.getActiveRoom().subscribe((room: Room<GameState>) => {
-      const msg: GameAction = {
-        type: MessageType.GAME_MESSAGE,
-        action: GameActionType.refreshData
-      };
-      room.send(msg);
-    });
 
     this.animate();
   }

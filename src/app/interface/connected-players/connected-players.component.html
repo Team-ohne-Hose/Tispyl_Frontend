@@ -2,10 +2,11 @@
   <div class="player-displays">
 
     <div *ngFor="let p of players; index as i">
-      <din [ngClass]="{'display-wrap': true, 'active': this.turn === p.displayName}">
+      <din [ngClass]="{'display-wrap': true, 'active': this.currentPlayerDisplayName === p.displayName}">
         <div class="display">
           <div class="img-container">
             <i *ngIf="p.isCurrentHost" class="fas fa-crown host"></i>
+            <i *ngIf="!p.isConnected" class="fas fa-times disconnected"></i>
             <img class="avatar-img" src="https://www.kindernetz.de/-/id=474688/property=smallPano/width=752/height=423/pubVersion=2/a2v40z/Star.jpg">
           </div>
           <span class="name">

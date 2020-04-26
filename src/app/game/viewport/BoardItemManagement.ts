@@ -5,9 +5,10 @@ import {PhysicsCommands} from './PhysicsCommands';
 import {GameActionType, GameSetTile, MessageType, WsData} from '../../model/WsData';
 import {ColyseusClientService} from '../../services/colyseus-client.service';
 import {Room} from 'colyseus.js';
-import {GameState, Player} from '../../model/GameState';
+import {GameState} from '../../model/state/GameState';
 import {ObjectLoaderService} from '../../services/object-loader.service';
 import {MapSchema} from '@colyseus/schema';
+import {Player} from '../../model/state/Player';
 
 export enum BoardItemRole {
   Dice = 1,
@@ -34,16 +35,14 @@ export class BoardItemManagement {
               private physics: PhysicsCommands,
               private colyseus: ColyseusClientService,
               private loader: ObjectLoaderService) {
-    console.error('loader is', this.loader);
     this.scene = scene;
     this.boardItems = [];
     this.colyseus.getActiveRoom().subscribe((activeRoom: Room<GameState>) => {
       activeRoom.state.playerList.onChange = ((item: Player, key: string) => {
         const obj = PhysicsCommands.getObjectByPhysId(this.scene, item.figureId);
-        console.error('onchange', item);
         if (obj !== undefined) {
           if (item.figureModel !== undefined) {
-            console.error('loading new Model');
+            console.log('loading new playerTex', item.figureModel);
             this.loader.switchTex(obj, item.figureModel);
           }
           obj.userData.displayName = item.displayName;
@@ -54,12 +53,10 @@ export class BoardItemManagement {
   }
 
   loadModels(list: MapSchema<Player>) {
-    console.log('loading for ', list);
     for (const p in list) {
       if (p in list) {
         const player: Player = list[p];
         const obj = PhysicsCommands.getObjectByPhysId(this.scene, player.figureId);
-        console.error('onLoad', player);
         if (obj !== undefined) {
           if (player.figureModel !== undefined) {
             console.error('loading new Model');
@@ -129,7 +126,7 @@ export class BoardItemManagement {
         type: MessageType.GAME_MESSAGE,
         action: GameActionType.setTile,
         figureId: object.id,
-        playerId: room.sessionId,
+        playerId: this.colyseus.myLoginName,
         tileId: fieldID};
       room.send(msg);
     });

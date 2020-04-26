@@ -4,9 +4,10 @@ import {ChatWindowComponent} from './chat-window/chat-window.component';
 import {ColyseusClientService} from '../services/colyseus-client.service';
 import {DataChange, MapSchema} from '@colyseus/schema';
 import {GameComponent} from '../game/game.component';
-import {GameState} from '../model/GameState';
+import {GameState} from '../model/state/GameState';
 import {GameActionType, MessageType, PlayerMessageType, SetFigure} from '../model/WsData';
 import {ObjectLoaderService} from '../services/object-loader.service';
+import {Player} from '../model/state/Player';
 
 
 @Component({
@@ -29,13 +30,12 @@ export class InterfaceComponent implements OnInit {
   knownCommands: any[] = [
     {k: '/help', f: this.printHelpCommand.bind(this), h: ''},
     {k: '/ourAnthem', f: this.playAnthem.bind(this), h: ''},
-    // k: '/addFigure', f: this.addGamefigure.bind(this), h: ''}, TODO readd this feature
+    // {k: '/addFigure', f: this.addGamefigure.bind(this), h: ''}, TODO readd a feature alike this one. But add a new Player for this client instead
     {k: '/showLocalState', f: this.showLocalState.bind(this), h: ''},
     {k: '/start', f: this.start.bind(this), h: ''},
     {k: '/next', f: this.advanceAction.bind(this), h: ''},
     {k: '/fps', f: this.toggleFpsDisplay.bind(this), h: ''},
     {k: '/myTex', f: this.switchMyTex.bind(this), h: ''},
-    {k: '/switchTex', f: this.switchTex.bind(this), h: ''},
     {k: '/addRule', f: this.addRule.bind(this), h: ''},
     {k: '/deleteRule', f: this.deleteRule.bind(this), h: ''}
   ];
@@ -45,7 +45,7 @@ export class InterfaceComponent implements OnInit {
     this.colyseus.getActiveRoom().subscribe( room => {
       const msg: SetFigure = {type: MessageType.PLAYER_MESSAGE,
         subType: PlayerMessageType.setFigure,
-        playerId: this.colyseus.sessionId,
+        playerId: this.colyseus.myLoginName,
         playerModel: args[1]};
       room.send(msg);
     });
@@ -62,7 +62,7 @@ export class InterfaceComponent implements OnInit {
       changes.forEach(change => {
         switch (change.field) {
           case 'round': { this.currentState.round = change.value; break; }
-          case 'turn': { this.currentState.turn = change.value; break; }
+          case 'currentPlayerLogin': { this.currentState.currentPlayerLogin = change.value; break; }
           case 'action': { this.currentState.action = change.value; break; }
           case 'playerList': {this.currentState.playerList = change.value; break; }
         }
@@ -70,7 +70,7 @@ export class InterfaceComponent implements OnInit {
     });
 
     this.colyseus.getActiveRoom().subscribe( room => {
-      this.currentState = room.state || new GameState();
+      this.currentState = room === undefined ? new GameState() : room.state || new GameState();
     });
   }
 
@@ -146,5 +146,16 @@ export class InterfaceComponent implements OnInit {
       }
     }
     return tmpArray;
+  }
+  getDisplayName(login: string): string {
+    for (const key in this.currentState.playerList) {
+      if (key in this.currentState.playerList) {
+        const p: Player = this.currentState.playerList[key];
+        if (p.loginName === login) {
+          return p.displayName;
+        }
+      }
+    }
+    return 'Login:' + login;
   }
 }
