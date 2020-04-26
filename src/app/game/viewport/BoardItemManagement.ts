@@ -16,10 +16,6 @@ export interface FigureItem {
 }
 export class BoardItemManagement {
 
-  private diceStillOffset = 0.1; // max Velocity for dice to be recognised as still
-  private sqrtHalf = Math.sqrt(.5);
-  private checkDiceTriggered = false;
-
   allFigures: FigureItem[];
   board: THREE.Mesh;
   scene: THREE.Scene;
@@ -84,37 +80,6 @@ export class BoardItemManagement {
     }
   }
 
-
-  // returns rolled dice number, -1 for not stable/initialized, -2 for even more unstable
-  getDiceNumber(): number {
-    if (this.physics.dice !== undefined) {
-      if (true) { // TODO: check for moving dice
-        const diceOrientationUp = new THREE.Vector3(0, 1, 0).normalize().applyQuaternion(this.physics.dice.quaternion);
-        const diceOrientationLeft = new THREE.Vector3(1, 0, 0).normalize().applyQuaternion(this.physics.dice.quaternion);
-        const diceOrientationFwd = new THREE.Vector3(0, 0, 1).normalize().applyQuaternion(this.physics.dice.quaternion);
-        let diceNumber = -1;
-        if (diceOrientationUp.y >= this.sqrtHalf) {
-          diceNumber = 4;
-        } else if (diceOrientationUp.y <= -this.sqrtHalf) {
-          diceNumber = 3;
-        } else if (diceOrientationLeft.y >= this.sqrtHalf) {
-          diceNumber = 5;
-        } else if (diceOrientationLeft.y <= -this.sqrtHalf) {
-          diceNumber = 2;
-        } else if (diceOrientationFwd.y >= this.sqrtHalf) {
-          diceNumber = 1;
-        } else if (diceOrientationFwd.y <= -this.sqrtHalf) {
-          diceNumber = 6;
-        }
-        return diceNumber;
-      } else {
-        // console.log('dice too fast', PhysicsEngine.getPhys(this.dice).physicsBody.getLinearVelocity().length());
-        return -1;
-      }
-    }
-    // console.log('dice too undefined');
-    return -1;
-  }
   throwDice() {
     if (this.colyseus.myLoginName === this.colyseus.activePlayerLogin) {
       console.log('throwing Dice', this.physics.dice, PhysicsCommands.getPhysId(this.physics.dice));
