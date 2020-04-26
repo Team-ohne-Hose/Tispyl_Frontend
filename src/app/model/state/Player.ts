@@ -20,4 +20,6 @@ export class Player extends Schema {
   currentTile: number;
   @type('boolean')
   isConnected: boolean;
+  @type('boolean')
+  hasLeft: boolean;
 }

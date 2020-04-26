@@ -44,30 +44,34 @@ export class PhysicsCommands {
   currentlyLoadingEntities: Map<number, boolean> = new Map<number, boolean>();
 
   addInteractable: ((obj: THREE.Object3D) => void);
+  addPlayer: (mesh: THREE.Object3D) => void;
+  isPlayerCached: (physId: number) => boolean;
 
   constructor(colyseus: ColyseusClientService,
               private loader: ObjectLoaderService) {
     this.colyseus = colyseus;
     this.colyseus.getActiveRoom().subscribe((activeRoom: Room<GameState>) => {
       activeRoom.state.physicsState.objects.onChange = (item: PhysicsObjectState, key: string) => {
-        const obj = PhysicsCommands.getObjectByPhysId(this.scene, item.objectIDPhysics);
-        // console.log('query for physId', item.objectIDPhysics, obj);
-        if (obj !== undefined) {
-          obj.position.set(item.position.x, item.position.y, item.position.z);
-          obj.quaternion.set(item.quaternion.x, item.quaternion.y, item.quaternion.z, item.quaternion.w);
-          // console.log('new Position: ', key, item.position.x, item.position.y, item.position.z, item.position);
-          // console.log("rotation is: ", item.quaternion.x, item.quaternion.y, item.quaternion.z, item.quaternion.w);
-        } else {
-          if (item.entity >= 0 && this.scene.children.length < 40) { // TODO balance
-            if (this.currentlyLoadingEntities.get(item.objectIDPhysics)) {
-              // is currently getting loaded
-            } else {
-              this.currentlyLoadingEntities.set(item.objectIDPhysics, true);
-              this.generateEntity(item.entity, item.variant, item.objectIDPhysics,
-                item.position.x, item.position.y, item.position.z, item.quaternion.x, item.quaternion.y, item.quaternion.z);
-            }
+        if (!item.disabled) {
+          const obj = PhysicsCommands.getObjectByPhysId(this.scene, item.objectIDPhysics);
+          // console.log('query for physId', item.objectIDPhysics, obj);
+          if (obj !== undefined) {
+            obj.position.set(item.position.x, item.position.y, item.position.z);
+            obj.quaternion.set(item.quaternion.x, item.quaternion.y, item.quaternion.z, item.quaternion.w);
+            // console.log('new Position: ', key, item.position.x, item.position.y, item.position.z, item.position);
+            // console.log("rotation is: ", item.quaternion.x, item.quaternion.y, item.quaternion.z, item.quaternion.w);
           } else {
-            console.error('cannot find/generate object', item.objectIDPhysics, item);
+            if (item.entity >= 0 && this.scene.children.length < 40) { // TODO balance
+              if (this.currentlyLoadingEntities.get(item.objectIDPhysics)) {
+                // is currently getting loaded
+              } else {
+                this.currentlyLoadingEntities.set(item.objectIDPhysics, true);
+                this.generateEntity(item.entity, item.variant, item.objectIDPhysics,
+                  item.position.x, item.position.y, item.position.z, item.quaternion.x, item.quaternion.y, item.quaternion.z);
+              }
+            } else {
+              console.error('cannot find/generate object', item.objectIDPhysics, item);
+            }
           }
         }
       };
@@ -104,7 +108,12 @@ export class PhysicsCommands {
   private generateEntity(entity: PhysicsEntity, variant: PhysicsEntityVariation, physicsId: number,
                          posX?: number, posY?: number, posZ?: number, rotX?: number, rotY?: number, rotZ?: number, rotW?: number) {
 
+    if (entity === PhysicsEntity.figure && this.isPlayerCached(physicsId)) {
+      // if playerfigure was already cached dont load it
+      return;
+    }
     this.loader.loadObject(entity, variant, (model: THREE.Object3D) => {
+
       model.quaternion.set(rotX, rotY, rotZ, rotW);
       model.position.set(posX, posY, posZ);
       const userData: ObjectUserData = {physicsId: physicsId, entityType: entity, variation: variant, clickRole: undefined};
@@ -120,6 +129,8 @@ export class PhysicsCommands {
           break;
         case PhysicsEntity.figure:
           this.setClickRole(ClickedTarget.figure, model);
+
+          this.addPlayer(model);
 
           // Load other playermodels
           this.colyseus.getActiveRoom().subscribe((room: Room<GameState>) => {

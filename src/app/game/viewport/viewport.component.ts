@@ -12,9 +12,7 @@ import {ObjectLoaderService} from '../../services/object-loader.service';
 import Stats from 'THREE/examples/jsm/libs/stats.module.js';
 import {ClickedTarget, PhysicsCommands} from './PhysicsCommands';
 import {ColyseusClientService} from '../../services/colyseus-client.service';
-import {GameAction, GameActionType, MessageType, PhysicsEntity, PhysicsEntityVariation} from '../../model/WsData';
-import {Room} from 'colyseus.js';
-import {GameState} from '../../model/state/GameState';
+import {PhysicsEntity, PhysicsEntityVariation} from '../../model/WsData';
 
 export class ObjectUserData {
   physicsId: number;

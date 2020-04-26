@@ -1,4 +1,4 @@
-import {ViewportComponent} from './viewport.component';
+import {ObjectUserData, ViewportComponent} from './viewport.component';
 import * as THREE from 'three';
 import {SceneBuilderService} from '../../services/scene-builder.service';
 import {PhysicsCommands} from './PhysicsCommands';
@@ -10,14 +10,9 @@ import {ObjectLoaderService} from '../../services/object-loader.service';
 import {MapSchema} from '@colyseus/schema';
 import {Player} from '../../model/state/Player';
 
-export enum BoardItemRole {
-  Dice = 1,
-  figure,
-  marker
-}
-export interface BoardItem {
-  mesh: THREE.Mesh;
-  role: BoardItemRole;
+export interface FigureItem {
+  mesh: THREE.Object3D;
+  isHidden: boolean;
 }
 export class BoardItemManagement {
 
@@ -25,7 +20,7 @@ export class BoardItemManagement {
   private sqrtHalf = Math.sqrt(.5);
   private checkDiceTriggered = false;
 
-  boardItems: BoardItem[];
+  allFigures: FigureItem[];
   board: THREE.Mesh;
   scene: THREE.Scene;
   markerGeo = new THREE.ConeBufferGeometry(1, 10, 15, 1, false, 0, 2 * Math.PI);
@@ -36,7 +31,15 @@ export class BoardItemManagement {
               private colyseus: ColyseusClientService,
               private loader: ObjectLoaderService) {
     this.scene = scene;
-    this.boardItems = [];
+    this.allFigures = [];
+    this.physics.addPlayer = ((mesh: THREE.Object3D) => {
+      this.allFigures.push({mesh: mesh, isHidden: false});
+    }).bind(this);
+    this.physics.isPlayerCached = ((physId: number) => {
+      return this.allFigures.some((val: FigureItem, index: number) => {
+        return val.mesh.userData.physicsId === physId;
+      });
+    }).bind(this);
     this.colyseus.getActiveRoom().subscribe((activeRoom: Room<GameState>) => {
       activeRoom.state.playerList.onChange = ((item: Player, key: string) => {
         const obj = PhysicsCommands.getObjectByPhysId(this.scene, item.figureId);
@@ -46,6 +49,19 @@ export class BoardItemManagement {
             this.loader.switchTex(obj, item.figureModel);
           }
           obj.userData.displayName = item.displayName;
+        }
+        const figureItem = this.allFigures.find((val: FigureItem, index: number) => {
+          return val.mesh.userData.physicsId === item.figureId;
+        });
+        if (item.hasLeft !== figureItem.isHidden) {
+          console.error('changing hiddenState', item.hasLeft, figureItem.isHidden, this.allFigures);
+          if (figureItem.isHidden) {
+            this.scene.add(figureItem.mesh);
+            figureItem.isHidden = false;
+          } else {
+            this.scene.remove(figureItem.mesh);
+            figureItem.isHidden = true;
+          }
         }
       }).bind(this);
       this.loadModels(activeRoom.state.playerList);
@@ -130,17 +146,6 @@ export class BoardItemManagement {
         tileId: fieldID};
       room.send(msg);
     });
-
-    for (const itemKey in this.boardItems) {
-      if (this.boardItems[itemKey].mesh === object) {
-        console.log('found Item, role is: ', this.boardItems[itemKey].role);
-        // const newField = BoardCoordConversion.getFieldCenter(fieldID);
-        // this.boardItems[itemKey].mesh.position.set(newField.x, 10, newField.y);
-        if (object !== undefined) {
-          this.physics.setKinematic(PhysicsCommands.getPhysId(object), false);
-        }
-      }
-    }
   }
 
   onPlayerMessage(data: WsData) {

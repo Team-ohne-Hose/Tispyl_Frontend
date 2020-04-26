@@ -30,6 +30,8 @@ export class PhysicsObjectState extends Schema {
   entity: PhysicsEntity;
   @type('number')
   variant: PhysicsEntityVariation;
+  @type('boolean')
+  disabled = false;
 }
 export class PhysicsState extends Schema {
   @type({ map: PhysicsObjectState})
