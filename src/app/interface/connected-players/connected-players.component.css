@@ -27,10 +27,10 @@
 
 .img-container .disconnected{
   color: rgb(217, 0, 0);
-  font-size: xx-large;
+  font-size: large;
   position: absolute;
-  bottom: -22%;
-  right: -15%;
+  bottom: -13%;
+  right: -21%;
 }
 
 .player-displays {

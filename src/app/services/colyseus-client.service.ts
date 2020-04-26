@@ -113,6 +113,7 @@ export class ColyseusClientService {
   private gatherFunctionCalls(data: WsData): void {
     const type: MessageType = data.type;
     const list: MessageCallback[] = this.messageCallbacks.get(type);
+    console.log('distributing: ', type, data, list);
     if (list !== undefined && list.length > 0) {
       list.forEach((value: MessageCallback, index: number) => {
         if (value.filterSubType >= 0) {

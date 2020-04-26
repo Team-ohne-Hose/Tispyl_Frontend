@@ -23,7 +23,7 @@ export class ChatWindowComponent implements OnInit {
 
   ngOnInit(): void {
     this.colyseus.registerMessageCallback(MessageType.CHAT_MESSAGE, {
-      filterSubType: 0,
+      filterSubType: -1,
       f: (data: WsData) => {
         if (data.type === MessageType.CHAT_MESSAGE) {
           this.postChatMessage(data.message);
