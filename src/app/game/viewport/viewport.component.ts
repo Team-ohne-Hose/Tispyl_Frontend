@@ -112,7 +112,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.boardItemManager.board = gameBoard;
 
     // initialize Mouse
-    this.mouseInteract = new MouseInteraction(this.scene, this.camera, this.boardItemManager, this.physics);
+    this.mouseInteract = new MouseInteraction(this.scene, this.camera, this.boardItemManager, this.physics, this.colyseus);
     this.mouseInteract.updateScreenSize(width, height);
     this.mouseInteract.addInteractable(gameBoard);
 

@@ -4,6 +4,7 @@ import {BoardItemManagement} from './BoardItemManagement';
 import {BoardCoordConversion} from './BoardCoordConversion';
 import {Board} from '../../model/Board';
 import {ClickedTarget, PhysicsCommands} from './PhysicsCommands';
+import {ColyseusClientService} from '../../services/colyseus-client.service';
 
 export class MouseInteraction {
 
@@ -19,7 +20,7 @@ export class MouseInteraction {
 
   currentlySelected: {obj: THREE.Object3D, oldPos: Vector3};
 
-  constructor(scene: Scene, camera: Camera, boardItemManager: BoardItemManagement, private physics: PhysicsCommands) {
+  constructor(scene: Scene, camera: Camera, boardItemManager: BoardItemManagement, private physics: PhysicsCommands, private colyseus: ColyseusClientService) {
     this.boardItemManager = boardItemManager;
     this.camera = camera;
     this.scene = scene;
@@ -107,10 +108,14 @@ export class MouseInteraction {
           this.handleBoardTileClick(point);
           this.currentlySelected = undefined;
         } else {
-          this.currentlySelected = {obj: obj, oldPos: obj.position.clone()};
-          this.physics.setKinematic(PhysicsCommands.getPhysId(obj), true);
-          this.boardItemManager.hoverGameFigure(this.currentlySelected.obj, point.x, point.z);
-          console.log('selected Object');
+          if (this.colyseus.myFigureId === obj.userData.physicsId) {
+            this.currentlySelected = {obj: obj, oldPos: obj.position.clone()};
+            this.physics.setKinematic(PhysicsCommands.getPhysId(obj), true);
+            this.boardItemManager.hoverGameFigure(this.currentlySelected.obj, point.x, point.z);
+            console.log('selected Object');
+          } else {
+            console.log('This is not your figure');
+          }
         }
       } else if (type === ClickedTarget.dice) {
         this.boardItemManager.throwDice();

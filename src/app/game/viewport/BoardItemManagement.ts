@@ -116,18 +116,22 @@ export class BoardItemManagement {
     return -1;
   }
   throwDice() {
-    console.log('throwing Dice', this.physics.dice, PhysicsCommands.getPhysId(this.physics.dice));
-    if (this.physics.dice !== undefined) {
-      const physIdDice = PhysicsCommands.getPhysId(this.physics.dice);
-      this.physics.setPosition(physIdDice, 0, 40, 0);
-      // this.physics.setRotation(physIdDice, 0, 0, 0, 1);
+    if (this.colyseus.myLoginName === this.colyseus.activePlayerLogin) {
+      console.log('throwing Dice', this.physics.dice, PhysicsCommands.getPhysId(this.physics.dice));
+      if (this.physics.dice !== undefined) {
+        const physIdDice = PhysicsCommands.getPhysId(this.physics.dice);
+        this.physics.setPosition(physIdDice, 0, 40, 0);
+        // this.physics.setRotation(physIdDice, 0, 0, 0, 1);
 
-      const vel = new THREE.Vector3(Math.random() - 0.5, Math.random() / 10, Math.random() - 0.5);
-      const rot = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
-      vel.normalize().multiplyScalar(Math.random() * 35);
-      rot.multiplyScalar(Math.PI);
-      this.physics.setVelocity(physIdDice, vel.x, vel.y, vel.z);
-      this.physics.setAngularVelocity(physIdDice, rot.x, rot.y, rot.z);
+        const vel = new THREE.Vector3(Math.random() - 0.5, Math.random() / 10, Math.random() - 0.5);
+        const rot = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
+        vel.normalize().multiplyScalar(Math.random() * 35);
+        rot.multiplyScalar(Math.PI);
+        this.physics.setVelocity(physIdDice, vel.x, vel.y, vel.z);
+        this.physics.setAngularVelocity(physIdDice, rot.x, rot.y, rot.z);
+      }
+    } else {
+      console.log('You are not the active Player!');
     }
   }
 
@@ -138,18 +142,25 @@ export class BoardItemManagement {
   moveGameFigure(object: THREE.Object3D, fieldID: number) {
     console.log('move Figure to ', fieldID);
     this.colyseus.getActiveRoom().subscribe( room => {
+      const userData = object.userData;
+      let playerId: string;
+      for (const key in room.state.playerList) {
+        if (key in room.state.playerList) {
+          const p: Player = room.state.playerList[key];
+          if (p.figureId === userData.physicsId) {
+            playerId = p.loginName;
+            break;
+          }
+        }
+      }
       const msg: GameSetTile = {
         type: MessageType.GAME_MESSAGE,
         action: GameActionType.setTile,
-        figureId: object.id,
-        playerId: this.colyseus.myLoginName,
+        figureId: userData.physicsId,
+        playerId: playerId,
         tileId: fieldID};
       room.send(msg);
     });
-  }
-
-  onPlayerMessage(data: WsData) {
-
   }
 
   addFlummi(x: number, y: number, z: number, color: number) {

@@ -6,6 +6,7 @@ import {GameState} from '../model/state/GameState';
 import {MessageType, PhysicsCommandType, WsData} from '../model/WsData';
 import {DataChange} from '@colyseus/schema';
 import {environment} from '../../environments/environment';
+import {Player} from '../model/state/Player';
 
 export interface MessageCallback {
   filterSubType: number; // -1/undefined for no filter, otherwise the subtype to filter for
@@ -17,6 +18,7 @@ export interface MessageCallback {
 export class ColyseusClientService {
 
   myLoginName: string = undefined;
+  myFigureId: number;
   private readonly prodBackendWStarget = 'wss://tispyl.uber.space:41920';
   private readonly devBackendWStarget = 'ws://localhost:2567';
   private backendWStarget = environment.production ? this.prodBackendWStarget : this.devBackendWStarget;
@@ -29,12 +31,35 @@ export class ColyseusClientService {
     [MessageType.CHAT_MESSAGE, [{filterSubType: undefined, f: this.defaultCallback}]],
     [MessageType.PHYSICS_MESSAGE, [{filterSubType: PhysicsCommandType.addEntity, f: this.defaultCallback}]]
     ]);
-  private onChangeCallbacks: ((changes: DataChange<any>[]) => void)[] = [];
+  private onChangeCallbacks: ((changes: DataChange<any>[]) => void)[] = [
+    this.onDataChange.bind(this)
+  ];
 
+  activePlayerLogin = '';
+  activeAction = '';
 
   constructor() {
     this.activeRoom = new BehaviorSubject<Room<GameState>>(undefined);
     this.availableRooms = new BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>([]);
+  }
+
+  onDataChange(changes: DataChange<any>[]) {
+    changes.forEach(change => {
+      switch (change.field) {
+        case 'currentPlayerLogin':
+          this.activePlayerLogin = change.value;
+          break;
+        case 'action':
+          this.activeAction = change.value;
+          break;
+        case 'playerList':
+          console.error('Playerlist update', change.value);
+          const myPlayer: Player = change.value[this.myLoginName];
+          if (myPlayer !== undefined) {
+            this.myFigureId = myPlayer.figureId;
+          }
+      }
+    });
   }
 
   getClient(): Client {
