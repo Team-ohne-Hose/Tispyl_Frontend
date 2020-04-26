@@ -5,6 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build prod": "ng build --prod",
+    "deploy": "deployment.cmd deployment_rsa",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -28,6 +30,7 @@
     "rxjs": "~6.5.5",
     "three": "^0.115.0",
     "tslib": "^1.10.0",
+    "uberspace": "^0.1.2",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
