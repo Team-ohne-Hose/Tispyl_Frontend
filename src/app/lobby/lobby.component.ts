@@ -42,6 +42,7 @@ export class LobbyComponent implements OnInit {
     this.translation = TranslationService.getTranslations('en');
 
     this.userManagement.getActiveUser().subscribe( u => {
+      console.log('USER: ', u);
       this.currentUser = u;
       if (this.currentUser !== undefined) { this.refresh(); }
     });

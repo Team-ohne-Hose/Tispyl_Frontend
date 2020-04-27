@@ -34,6 +34,7 @@ import { ConnectedPlayersComponent } from './interface/connected-players/connect
 import { PregameBannerComponent } from './interface/pregame-banner/pregame-banner.component';
 import { DebugdummyComponent } from './debugdummy/debugdummy.component';
 import { IngameRuleBookComponent } from './interface/ingame-rule-book/ingame-rule-book.component';
+import { TurnOverlayComponent } from './interface/turn-overlay/turn-overlay.component';
 
 const appRoutes: Routes = [
   { path: 'lobby', component: LobbyComponent},
@@ -65,7 +66,8 @@ const appRoutes: Routes = [
     ConnectedPlayersComponent,
     PregameBannerComponent,
     DebugdummyComponent,
-    IngameRuleBookComponent
+    IngameRuleBookComponent,
+    TurnOverlayComponent
   ],
   imports: [
     RouterModule.forRoot(
