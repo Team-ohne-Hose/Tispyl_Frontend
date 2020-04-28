@@ -24,7 +24,7 @@ import {SoundService} from '../../services/sound.service';
 })
 export class TurnOverlayComponent {
 
-  private state = 'faded';
+  state = 'faded';
 
   @Input()
   ownTurn = true;
