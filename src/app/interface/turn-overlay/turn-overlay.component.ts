@@ -1,5 +1,6 @@
-import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {trigger, state, style, animate, transition} from '@angular/animations';
+import {SoundService} from '../../services/sound.service';
 
 @Component({
   selector: 'app-turn-overlay',
@@ -21,37 +22,24 @@ import {trigger, state, style, animate, transition} from '@angular/animations';
     ])
   ]
 })
-export class TurnOverlayComponent implements AfterViewInit {
+export class TurnOverlayComponent {
 
-  turnChime: HTMLAudioElement = new Audio();
-  state = 'faded';
+  private state = 'faded';
 
   @Input()
   ownTurn = true;
-
   @Input()
   currentPlayerName = '';
 
-  constructor() {
-    this.turnChime.
-  }
-
-  ngAfterViewInit(): void {
-  }
+  constructor( private sounds: SoundService) {}
 
   triggerChime() {
-    console.log('ownTurn:', this.ownTurn, 'state:', this.state);
     if (this.state === 'active') {
-      console.log('INNER -> SEEMS ACTIVE');
       if ( this.ownTurn ) {
-        console.log('BIMMEL OWN!°!',  this.turnChime);
-        this.turnChime.src = '../../../assets/sounds/234564__foolboymedia__notification-up-i.wav';
+        this.sounds.play('own_turn');
       } else {
-        console.log('others',  this.turnChime);
-        this.turnChime.src = '../../../assets/sounds/414437__inspectorj__dropping-metal-pin-on-wood-a.wav';
+        this.sounds.play('others_turn');
       }
-      this.turnChime.load();
-      this.turnChime.play().then( e => {} );
     }
   }
 
@@ -61,5 +49,4 @@ export class TurnOverlayComponent implements AfterViewInit {
       this.state = 'faded';
     }, 4000);
   }
-
 }
