@@ -1,0 +1,53 @@
+
+.banner-style {
+  background-color: rgba(87, 87, 87, 0.2);
+  position: fixed;
+  width: 100vw;
+  top: 20%;
+  display: flex;
+  justify-content: center;
+}
+
+.others-turn {
+  font-size: x-large;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: 4px 32px;
+}
+
+.faded-line {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(148,148,148,1) 20%, rgba(148,148,148,1) 80%, rgba(255,255,255,0) 100%);
+}
+
+.own-turn {
+  font-size: xx-large;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: 6px 32px;
+}
+
+.golden-faded-line {
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(244,220,110,1) 20%, rgb(242, 217, 156) 44%, rgba(218,172,61,1) 80%, rgba(255,255,255,0) 100%);
+}
+
+.background-line {
+  width: 30%;
+  height: 1px;
+  position: fixed;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+}
+
+.left {
+  left: 5%;
+}
+
+.right {
+  right: 5%;
+}
+
