@@ -34,6 +34,7 @@ export class ColyseusClientService {
   private onChangeCallbacks: ((changes: DataChange<any>[]) => void)[] = [
     this.onDataChange.bind(this)
   ];
+  onRoundChangeCallback: ((activePlayerLogin: string) => void)[] = [];
 
   activePlayerLogin = '';
   activeAction = '';
@@ -47,7 +48,15 @@ export class ColyseusClientService {
     changes.forEach(change => {
       switch (change.field) {
         case 'currentPlayerLogin':
-          this.activePlayerLogin = change.value;
+          if (this.activePlayerLogin !== change.value) {
+            this.activePlayerLogin = change.value;
+            console.log('nextRound. pushing to cbs');
+            for (const cb in this.onRoundChangeCallback ) {
+              if (cb in this.onRoundChangeCallback) {
+                this.onRoundChangeCallback[cb](this.activePlayerLogin);
+              }
+            }
+          }
           break;
         case 'action':
           this.activeAction = change.value;

@@ -33,7 +33,8 @@ export class InterfaceComponent implements OnInit {
     // {k: '/addFigure', f: this.addGamefigure.bind(this), h: ''}, TODO readd a feature alike this one. But add a new Player for this client instead
     {k: '/showLocalState', f: this.showLocalState.bind(this), h: ''},
     {k: '/start', f: this.start.bind(this), h: ''},
-    {k: '/next', f: this.advanceAction.bind(this), h: ''},
+    {k: '/nextAction', f: this.advanceAction.bind(this), h: ''},
+    {k: '/next', f: this.advanceTurn.bind(this), h: ''},
     {k: '/fps', f: this.toggleFpsDisplay.bind(this), h: ''},
     {k: '/myTex', f: this.switchMyTex.bind(this), h: ''},
     {k: '/addRule', f: this.addRule.bind(this), h: ''},
@@ -116,6 +117,11 @@ export class InterfaceComponent implements OnInit {
   private advanceAction( args ) {
     this.colyseus.getActiveRoom().subscribe( r => {
       r.send({type: MessageType.GAME_MESSAGE, action: GameActionType.advanceAction});
+    });
+  }
+  private advanceTurn( args ) {
+    this.colyseus.getActiveRoom().subscribe( r => {
+      r.send({type: MessageType.GAME_MESSAGE, action: GameActionType.advanceTurn});
     });
   }
 
