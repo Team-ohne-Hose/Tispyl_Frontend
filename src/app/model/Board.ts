@@ -5,6 +5,7 @@ export interface Tile {
   id: number;
   x: number;
   y: number;
+  description: string;
   translationKey: string;
   imageUrl: string;
 }
@@ -28,7 +29,7 @@ export class Board {
 
   static getTile(fieldId: number): Tile {
     if (fieldId < 0 || fieldId > 63) {
-      return {id: 0, x: 7, y: 0, translationKey: 'untitled', imageUrl: '/assets/board/default.png'};
+      return {id: 0, x: 7, y: 0, description: '', translationKey: 'untitled', imageUrl: '/assets/board/default.png'};
     }
     return boardTiles.base[fieldId];
   }

@@ -36,6 +36,7 @@ import { DebugdummyComponent } from './debugdummy/debugdummy.component';
 import { IngameRuleBookComponent } from './interface/ingame-rule-book/ingame-rule-book.component';
 import { NextTurnButtonComponent } from './interface/next-turn-button/next-turn-button.component';
 import { TurnOverlayComponent } from './interface/turn-overlay/turn-overlay.component';
+import { TileOverlayComponent } from './interface/tile-overlay/tile-overlay.component';
 
 const appRoutes: Routes = [
   { path: 'lobby', component: LobbyComponent},
@@ -69,7 +70,8 @@ const appRoutes: Routes = [
     DebugdummyComponent,
     IngameRuleBookComponent,
     NextTurnButtonComponent,
-    TurnOverlayComponent
+    TurnOverlayComponent,
+    TileOverlayComponent
   ],
   imports: [
     RouterModule.forRoot(

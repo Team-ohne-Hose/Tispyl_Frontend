@@ -151,7 +151,10 @@ export class ColyseusClientService {
     if (list !== undefined && list.length > 0) {
       list.forEach((value: MessageCallback, index: number) => {
         if (value.filterSubType >= 0) {
-          if (data['subType'] === value.filterSubType) {
+          if (
+            (data['subType'] === value.filterSubType) ||
+            (data['action'] === value.filterSubType)
+          ) {
             value.f(data);
           }
         } else {

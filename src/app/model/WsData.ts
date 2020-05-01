@@ -35,11 +35,12 @@ export enum GameActionType {
   advanceTurn,
   readyPropertyChange,
   setStartingCondition,
+  showTile,
   setTile,
   refreshData,
   diceRolled
 }
-export type GameMessage = GameAction | GameSetTile | GameReadyProperty | GameAddRule | GameDeleteRule | GameDiceRoll;
+export type GameMessage = GameAction | GameSetTile | GameShowTile | GameReadyProperty | GameAddRule | GameDeleteRule | GameDiceRoll;
 type actionTypes = GameActionType.none |
   GameActionType.advanceRound |
   GameActionType.advanceAction |
@@ -49,6 +50,11 @@ type actionTypes = GameActionType.none |
 export interface GameAction {
   type: MessageType.GAME_MESSAGE;
   action: actionTypes;
+}
+export interface GameShowTile {
+  type: MessageType.GAME_MESSAGE;
+  action: GameActionType.showTile;
+  tile: number;
 }
 export interface GameDiceRoll {
   type: MessageType.GAME_MESSAGE;
