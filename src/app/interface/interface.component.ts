@@ -42,7 +42,7 @@ export class InterfaceComponent implements OnInit {
   ];
 
   switchMyTex(args) {
-    args[1] = Math.max(0, Math.min(Number(args[1]), 9));
+    args[1] = Math.max(0, Math.min(Number(args[1]), 11));
     this.colyseus.getActiveRoom().subscribe( room => {
       const msg: SetFigure = {type: MessageType.PLAYER_MESSAGE,
         subType: PlayerMessageType.setFigure,

@@ -41,6 +41,8 @@ export class ObjectLoaderService {
     [PlayerModel.bcap_OurAnthem, {texFName: 'ourAnthem', specFName: 'default_spec', tex: undefined, spec: undefined}],
     [PlayerModel.bcap_Schmucker, {texFName: 'schmucker', specFName: 'default_spec', tex: undefined, spec: undefined}],
     [PlayerModel.bcap_Tiddies1, {texFName: 'kronkorken1', specFName: 'default_spec', tex: undefined, spec: undefined}],
+    [PlayerModel.bcap_cat, {texFName: 'catGoblin', specFName: 'default_spec', tex: undefined, spec: undefined}],
+    [PlayerModel.bcap_yoshi, {texFName: 'yoshi', specFName: 'default_spec', tex: undefined, spec: undefined}],
   ]);
   private readonly entities: ([PhysicsEntity, PhysicsEntityVariation])[] = [
     [PhysicsEntity.dice, PhysicsEntityVariation.default],

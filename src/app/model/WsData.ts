@@ -90,7 +90,9 @@ export enum PlayerModel {
   bcap_OurAnthem,
   bcap_Murica,
   bcap_Developer,
-  bcap_hb
+  bcap_hb,
+  bcap_cat,
+  bcap_yoshi
 }
 export interface SetFigure {
   type: MessageType.PLAYER_MESSAGE;

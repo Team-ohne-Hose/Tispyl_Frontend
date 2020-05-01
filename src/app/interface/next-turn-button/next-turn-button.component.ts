@@ -14,6 +14,7 @@ export class NextTurnButtonComponent implements OnInit {
 
   ngOnInit(): void {
     this.colyseus.onRoundChangeCallback.push(this.checkTurn.bind(this));
+    this.checkTurn(this.colyseus.activePlayerLogin);
   }
 
   checkTurn(activePlayerLogin: string) {
