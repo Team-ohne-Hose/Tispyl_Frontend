@@ -14,4 +14,5 @@
   <app-ingame-rule-book [rules]="currentState.rules"></app-ingame-rule-book>
   <app-next-turn-button *ngIf="currentState.hasStarted" ></app-next-turn-button>
   <app-turn-overlay [ownTurn]="currentState.currentPlayerLogin === myName" [currentPlayerName]="getDisplayName(currentState.currentPlayerLogin)" #turnOverlay></app-turn-overlay>
+  <app-tile-overlay (printer)="print($event)" [playerName]="getDisplayName(currentState.currentPlayerLogin)"></app-tile-overlay>
 </div>
