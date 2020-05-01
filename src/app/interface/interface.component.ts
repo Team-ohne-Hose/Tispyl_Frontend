@@ -8,6 +8,7 @@ import {GameState} from '../model/state/GameState';
 import {GameActionType, MessageType, PlayerMessageType, SetFigure} from '../model/WsData';
 import {ObjectLoaderService} from '../services/object-loader.service';
 import {Player} from '../model/state/Player';
+import {TurnOverlayComponent} from './turn-overlay/turn-overlay.component';
 
 
 @Component({
@@ -24,8 +25,11 @@ export class InterfaceComponent implements OnInit {
   routes;
   currentState: GameState = new GameState();
 
+  myName = this.colyseus.myLoginName;
+
   @Input() gameComponent: GameComponent;
   @ViewChild('chat') chatRef: ChatWindowComponent;
+  @ViewChild('turnOverlay') turnOverlayRef: TurnOverlayComponent;
 
   knownCommands: any[] = [
     {k: '/help', f: this.printHelpCommand.bind(this), h: ''},
@@ -63,7 +67,12 @@ export class InterfaceComponent implements OnInit {
       changes.forEach(change => {
         switch (change.field) {
           case 'round': { this.currentState.round = change.value; break; }
-          case 'currentPlayerLogin': { this.currentState.currentPlayerLogin = change.value; break; }
+          case 'currentPlayerLogin': {
+            this.currentState.currentPlayerLogin = change.value;
+            console.log("TRIGGER SHOW !", change);
+            this.turnOverlayRef.show();
+            break;
+          }
           case 'action': { this.currentState.action = change.value; break; }
           case 'playerList': {this.currentState.playerList = change.value; break; }
         }

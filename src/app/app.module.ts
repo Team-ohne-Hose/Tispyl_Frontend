@@ -35,6 +35,7 @@ import { PregameBannerComponent } from './interface/pregame-banner/pregame-banne
 import { DebugdummyComponent } from './debugdummy/debugdummy.component';
 import { IngameRuleBookComponent } from './interface/ingame-rule-book/ingame-rule-book.component';
 import { NextTurnButtonComponent } from './interface/next-turn-button/next-turn-button.component';
+import { TurnOverlayComponent } from './interface/turn-overlay/turn-overlay.component';
 
 const appRoutes: Routes = [
   { path: 'lobby', component: LobbyComponent},
@@ -67,7 +68,8 @@ const appRoutes: Routes = [
     PregameBannerComponent,
     DebugdummyComponent,
     IngameRuleBookComponent,
-    NextTurnButtonComponent
+    NextTurnButtonComponent,
+    TurnOverlayComponent
   ],
   imports: [
     RouterModule.forRoot(

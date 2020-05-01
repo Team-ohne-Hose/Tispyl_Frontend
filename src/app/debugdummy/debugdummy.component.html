@@ -1,12 +1,11 @@
 
 <div class="debug-buttons">
-  <button>1</button>
-  <button>2</button>
-  <button>3</button>
-  <button>4</button>
+  <button (click)="setName( 'Petter' )"> Petter </button>
+  <button (click)="setName( 'KackWilli' )"> KackWilli </button>
+  <button (click)="setName( 'Lurch' )"> Lurch </button>
+  <button (click)="turnOverlay.show()">show</button>
   <button>5</button>
   <button>6</button>
-  <button>7</button>
+  <button (click)="ownTurn = !ownTurn">ownTurn: {{ownTurn}}</button>
 </div>
 
-<app-ingame-rule-book></app-ingame-rule-book>
