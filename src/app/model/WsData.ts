@@ -1,4 +1,4 @@
-export type WsData = OtherMessage | ChatMessage | JoinMessage | GameMessage | PlayerMessage | PhysicsCommand | DebugCommand;
+export type WsData = OtherMessage | ChatMessage | JoinMessage | LeftMessage | GameMessage | PlayerMessage | PhysicsCommand | DebugCommand;
 export enum MessageType {
   OTHER,
   CHAT_MESSAGE,
