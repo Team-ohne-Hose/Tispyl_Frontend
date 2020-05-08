@@ -30,6 +30,24 @@ export class ChatWindowComponent implements OnInit {
         }
       }
     });
+
+    this.colyseus.registerMessageCallback(MessageType.JOIN_MESSAGE, {
+      filterSubType: -1,
+      f: (data: WsData) => {
+        if (data.type === MessageType.JOIN_MESSAGE) {
+          this.postChatMessage(data.message);
+        }
+      }
+    });
+
+    this.colyseus.registerMessageCallback(MessageType.LEFT_MESSAGE, {
+      filterSubType: -1,
+      f: (data: WsData) => {
+        if (data.type === MessageType.LEFT_MESSAGE) {
+          this.postChatMessage(data.message);
+        }
+      }
+    });
   }
 
   submitMessage() {
