@@ -16,14 +16,18 @@ export class ProfileDisplayComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  getDate() {
+    return new Date(this.user.user_creation);
+  }
+
   logout() {
     this.userManagement.setActiveUser(undefined);
     this.userManagement.getActiveUser().subscribe( u => console.log('LOGGED OUT, USER NOW:', u));
   }
 
   onFileChanged(event) {
-    const file = event.target.files[0]
-    console.log(file)
+    const file = event.target.files[0];
+    console.log(file);
   }
 
 }

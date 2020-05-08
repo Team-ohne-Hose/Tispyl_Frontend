@@ -6,11 +6,15 @@ export class User {
       this.login_name = login;
       this.display_name = display;
       this.password_hash = hash.MD5(password);
-      this.creationDate = Date.now();
   }
 
   login_name: string;
   display_name: string;
   password_hash: string;
-  creationDate: number;
+  user_creation: string;
+  time_played: number;
+  profile_picture: string;
+  last_figure: string;
+  is_connected: boolean;
+  is_dev: boolean;
 }
