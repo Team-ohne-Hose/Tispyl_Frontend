@@ -132,13 +132,34 @@ export class BoardTilesService {
       const tileMesh = this.objectLoader.loadGameTile('/assets/board/default.png');
       tileMesh.position.set(this.centerCoords.x[this.tileCoords[tileId].x], 0.01, this.centerCoords.y[this.tileCoords[tileId].y]);
 
-      // tileMesh.scale.setX(0.9);
-      // tileMesh.scale.setZ(0.9);
-
       tileMesh.rotation.setFromQuaternion(this.getTileRotation(Number(tileId)));
       group.add(tileMesh);
       this.tileMeshes[tileId] = tileMesh;
     }
+    const landscapeBoundary = (x1: number, x2: number, y: number) => {
+      const len = this.borderCoords.x[x2] - this.borderCoords.x[x1];
+      const vec = new THREE.Vector2((this.borderCoords.x[x2] + this.borderCoords.x[x1]) / 2, this.borderCoords.y[y]);
+      group.add(this.objectLoader.createBoundary(len, true, vec));
+    };
+    const portraitBoundary = (x: number, y1: number, y2: number) => {
+      const len = this.borderCoords.y[y2] - this.borderCoords.y[y1];
+      const vec = new THREE.Vector2(this.borderCoords.x[x], (this.borderCoords.y[y2] + this.borderCoords.y[y1]) / 2);
+      group.add(this.objectLoader.createBoundary(len, false, vec));
+    };
+    landscapeBoundary(1, 8, 1);
+    portraitBoundary(1, 1, 7);
+    landscapeBoundary(1, 7, 7);
+    portraitBoundary(7, 2, 7);
+    landscapeBoundary(2, 7, 2);
+    portraitBoundary(2, 2, 6);
+    landscapeBoundary(2, 6, 6);
+    portraitBoundary(6, 3, 6);
+    landscapeBoundary(3, 6, 3);
+    portraitBoundary(3, 3, 5);
+    landscapeBoundary(3, 5, 5);
+    portraitBoundary(5, 4, 5);
+    landscapeBoundary(4, 5, 4);
+
     return group;
   }
 

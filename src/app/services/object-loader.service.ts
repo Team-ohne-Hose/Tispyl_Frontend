@@ -279,6 +279,25 @@ export class ObjectLoaderService {
     });
     return gameTile;
   }
+  createBoundary(length: number, rotatedLandscape: boolean, center: THREE.Vector2) {
+    let w = .3, d = .3;
+    if (rotatedLandscape) {
+      w = length + .3;
+    } else {
+      d = length + .3;
+    }
+
+    const gameBoundaryGeo = new THREE.BoxBufferGeometry(w, .3, d);
+    const gameBoundaryMat = new THREE.MeshStandardMaterial({color: 0xFADD12});
+    gameBoundaryMat.metalness = 1;
+    gameBoundaryMat.roughness = .3;
+    const gameBoundary = new THREE.Mesh(gameBoundaryGeo, gameBoundaryMat);
+    gameBoundary.castShadow = true;
+    gameBoundary.receiveShadow = true;
+    gameBoundary.position.set(center.x, 0.7, center.y);
+    return gameBoundary;
+
+  }
 
   async loadAllObjects(): Promise<void> {
     const myPromise: Promise<void> = new Promise<void>((resolve, reject) => {
