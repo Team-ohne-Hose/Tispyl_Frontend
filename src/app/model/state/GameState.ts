@@ -1,6 +1,7 @@
 import {Schema, ArraySchema, MapSchema, type} from '@colyseus/schema';
 import {PhysicsState} from './PhysicsState';
 import {Player} from './Player';
+import {BoardLayoutState} from './BoardLayoutState';
 
 enum Actions {
   ROLL,
@@ -32,4 +33,7 @@ export class GameState extends Schema {
 
   @type('string')
   currentPlayerLogin: string;
+
+  @type(BoardLayoutState)
+  boardLayout: BoardLayoutState;
 }

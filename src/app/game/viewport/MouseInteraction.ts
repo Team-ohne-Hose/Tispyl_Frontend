@@ -1,10 +1,9 @@
 import * as THREE from 'three';
 import {Camera, Object3D, Scene, Vector3} from 'three';
 import {BoardItemManagement} from './BoardItemManagement';
-import {BoardCoordConversion} from './BoardCoordConversion';
-import {Board} from '../../model/Board';
 import {ClickedTarget, PhysicsCommands} from './PhysicsCommands';
 import {ColyseusClientService} from '../../services/colyseus-client.service';
+import {BoardTilesService} from '../../services/board-tiles.service';
 
 export class MouseInteraction {
 
@@ -20,7 +19,10 @@ export class MouseInteraction {
 
   currentlySelected: {obj: THREE.Object3D, oldPos: Vector3};
 
-  constructor(scene: Scene, camera: Camera, boardItemManager: BoardItemManagement, private physics: PhysicsCommands, private colyseus: ColyseusClientService) {
+  constructor(scene: Scene, camera: Camera, boardItemManager: BoardItemManagement,
+              private physics: PhysicsCommands,
+              private colyseus: ColyseusClientService,
+              private boardTiles: BoardTilesService) {
     this.boardItemManager = boardItemManager;
     this.camera = camera;
     this.scene = scene;
@@ -123,10 +125,10 @@ export class MouseInteraction {
     }
   }
   handleBoardTileClick(intersection: THREE.Vector3): boolean {
-    const coords = BoardCoordConversion.coordsToFieldCoords(intersection);
+    const coords = this.boardTiles.coordsToFieldCoords(intersection);
     if (coords.x >= 0 && coords.x < 8 && coords.y >= 0 && coords.y < 8) {
-      const tileId = Board.getId(coords.x, coords.y);
-      const tile = Board.getTile(tileId);
+      const tileId = this.boardTiles.getId(coords.x, coords.y);
+      const tile = this.boardTiles.getTile(tileId);
       // console.log('clicked on Tile: ', tile.translationKey, coords.x, coords.y);
       if (this.currentlySelected !== undefined) {
         this.boardItemManager.moveGameFigure(this.currentlySelected.obj, tileId);

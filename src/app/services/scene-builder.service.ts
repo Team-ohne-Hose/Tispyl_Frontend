@@ -27,7 +27,6 @@ export class SceneBuilderService {
     }`;
 
   tLoader = new THREE.TextureLoader();
-  cubeLoader = new THREE.CubeTextureLoader();
 
   constructor() {
   }
@@ -120,11 +119,11 @@ export class SceneBuilderService {
     const gameBoardGeo = new THREE.BoxBufferGeometry(100, 1, 100);
     const gameBoardMat = new THREE.MeshStandardMaterial({color: 0xffffff});
     const gameBoard = new THREE.Mesh(gameBoardGeo, gameBoardMat);
-    gameBoard.position.y = -0.5;
+    gameBoard.position.y = 0;
     gameBoard.castShadow = true;
     gameBoard.receiveShadow = true;
     gameBoard.name = 'gameboard';
-    gameBoard.matrixAutoUpdate = false;
+    // gameBoard.matrixAutoUpdate = false;
 
     this.tLoader.load(this.gameBoardTextureURL, (texture) => {
       texture.encoding = THREE.sRGBEncoding;

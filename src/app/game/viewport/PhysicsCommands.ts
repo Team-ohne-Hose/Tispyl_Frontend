@@ -61,7 +61,7 @@ export class PhysicsCommands {
             // console.log('new Position: ', key, item.position.x, item.position.y, item.position.z, item.position);
             // console.log("rotation is: ", item.quaternion.x, item.quaternion.y, item.quaternion.z, item.quaternion.w);
           } else {
-            if (item.entity >= 0 && this.scene.children.length < 40) { // TODO balance
+            if (item.entity >= 0 && this.scene.children.length < 120) { // TODO balance
               if (this.currentlyLoadingEntities.get(item.objectIDPhysics)) {
                 // is currently getting loaded
               } else {

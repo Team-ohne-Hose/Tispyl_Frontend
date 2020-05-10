@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {GLTF, GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
 import {PhysicsEntity, PhysicsEntityVariation, PlayerModel} from '../model/WsData';
+import {Observable} from 'rxjs';
 
 interface ResourceData {
   cname: string;
@@ -90,7 +91,20 @@ export class ObjectLoaderService {
       }
     }
   };
-  constructor() { }
+  gameTileGeo = new THREE.BoxBufferGeometry(10, 1, 10);
+  tLoader = new THREE.TextureLoader();
+  defaultTileTexture: THREE.Texture;
+  defaultTileTexturePath = '/assets/board/default.png';
+
+  constructor() {
+    this.tLoader.load(this.defaultTileTexturePath, (texture) => {
+      texture.encoding = THREE.sRGBEncoding;
+      texture.anisotropy = 16;
+      this.defaultTileTexture = texture;
+    }, undefined, (error) => {
+      console.error(error);
+    });
+  }
 
   private getResourceData(obj: PhysicsEntity, variation: PhysicsEntityVariation): ResourceData {
     switch (obj) {
@@ -241,6 +255,29 @@ export class ObjectLoaderService {
     sprite.userData.borderThickness = borderThickness;
     sprite.userData.radius = radius;
     return sprite;
+  }
+  loadGameTileTexture(texUrl: string, onLoad: (tex: THREE.Texture) => void) {
+    this.tLoader.load(texUrl, (texture) => {
+      texture.encoding = THREE.sRGBEncoding;
+      texture.anisotropy = 16;
+      onLoad(texture);
+    }, undefined, (error) => {
+      console.error(error);
+      onLoad(this.defaultTileTexture);
+    });
+  }
+  loadGameTile(texUrl: string): THREE.Mesh {
+    const gameTileMat = new THREE.MeshStandardMaterial({color: 0xffffff});
+    const gameTile = new THREE.Mesh(this.gameTileGeo.clone(), gameTileMat);
+    gameTile.castShadow = true;
+    gameTile.receiveShadow = true;
+    gameTile.name = 'gametile';
+
+    this.loadGameTileTexture(texUrl, (tex: THREE.Texture) => {
+      gameTileMat.map = tex;
+      gameTileMat.needsUpdate = true;
+    });
+    return gameTile;
   }
 
   async loadAllObjects(): Promise<void> {

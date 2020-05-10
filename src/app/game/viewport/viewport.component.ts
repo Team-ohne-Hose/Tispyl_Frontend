@@ -7,12 +7,12 @@ import {BoardItemManagement} from './BoardItemManagement';
 import {CameraControl} from './CameraControl';
 import {SceneBuilderService} from '../../services/scene-builder.service';
 import {GameBoardOrbitControl} from './GameBoardOrbitControl';
-import {BoardCoordConversion} from './BoardCoordConversion';
 import {ObjectLoaderService} from '../../services/object-loader.service';
 import Stats from 'THREE/examples/jsm/libs/stats.module.js';
 import {ClickedTarget, PhysicsCommands} from './PhysicsCommands';
 import {ColyseusClientService} from '../../services/colyseus-client.service';
 import {PhysicsEntity, PhysicsEntityVariation} from '../../model/WsData';
+import {BoardTilesService} from '../../services/board-tiles.service';
 
 export class ObjectUserData {
   physicsId: number;
@@ -37,7 +37,8 @@ export class ViewportComponent implements AfterViewInit, OnInit {
 
   constructor(private sceneBuilder: SceneBuilderService,
               private objectLoaderService: ObjectLoaderService,
-              private colyseus: ColyseusClientService) {
+              private colyseus: ColyseusClientService,
+              private boardTiles: BoardTilesService) {
 
   }
 
@@ -101,9 +102,13 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     const gameBoard = this.sceneBuilder.generateGameBoard();
     this.scene.add(gameBoard);
 
+    // const gameTiles: THREE.Group = this.boardTiles.generateField();
+    // this.scene.add(gameTiles);
+    this.boardTiles.initialize((grp: THREE.Group) => this.scene.add(grp));
+
     // initialize Controls
     this.controls = this.sceneBuilder.generateGameBoardOrbitControls(this.camera, this.renderer.domElement);
-    this.controls.target = new THREE.Vector3(BoardCoordConversion.borderCoords.x[4], 5, BoardCoordConversion.borderCoords.y[4]);
+    this.controls.target = new THREE.Vector3(this.boardTiles.borderCoords.x[4], 5, this.boardTiles.borderCoords.y[4]);
     this.controls.update();
 
     // initialize Physics
@@ -115,7 +120,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.boardItemManager.board = gameBoard;
 
     // initialize Mouse
-    this.mouseInteract = new MouseInteraction(this.scene, this.camera, this.boardItemManager, this.physics, this.colyseus);
+    this.mouseInteract = new MouseInteraction(this.scene, this.camera, this.boardItemManager, this.physics, this.colyseus, this.boardTiles);
     this.mouseInteract.updateScreenSize(width, height);
     this.mouseInteract.addInteractable(gameBoard);
 
