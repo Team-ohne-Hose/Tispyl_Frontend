@@ -6,7 +6,7 @@ import {GameBoardOrbitControl} from '../game/viewport/GameBoardOrbitControl';
   providedIn: 'root'
 })
 export class SceneBuilderService {
-  gameBoardTextureURL = '/assets/tischspiel.png';
+  gameBoardTextureURL = '/assets/tischspiel_clear.png';
   diceTextureURLBase = '/assets/dice/';
 
   vertexShader = `varying vec3 vWorldPosition;

@@ -16,13 +16,22 @@ export class BoardTilesService {
   constructor(private objectLoader: ObjectLoaderService, private colyseus: ColyseusClientService) { }
 
   centerCoords = {
+    x: [-30, -20, -10, 0, 10, 20, 30, 40],
+    y: [-35, -25, -15, -5, 5, 15, 25, 35]
+  };
+  borderCoords = {
+    x: [-35, -25, -15, -5, 5, 15, 25, 35, 45],
+    y: [-40, -30, -20, -10, 0, 10, 20, 30, 40]
+  };
+  /*
+  centerCoords = {
     x: [-25.725, -16.664, -7.259, 1.793, 11.009, 20.208, 29.398, 38.708],
     y: [-36.776, -26.210, -15.565, -4.940, 5.853, 16.498, 27.153, 37.331]
   };
   borderCoords = {
     x: [-29.973, -21.478, -11.850, -2.669, 6.244, 15.763, 24.652, 34.143, 43.273],
     y: [-42.004, -31.548, -20.873, -10.258, 0.377, 11.329, 21.667, 32.639, 42.024]
-  };
+  };*/
   private tileCoords = [
     {x: 7, y: 0, r: 2},
     {x: 6, y: 0, r: 2},
@@ -123,8 +132,8 @@ export class BoardTilesService {
       const tileMesh = this.objectLoader.loadGameTile('/assets/board/default.png');
       tileMesh.position.set(this.centerCoords.x[this.tileCoords[tileId].x], 0.01, this.centerCoords.y[this.tileCoords[tileId].y]);
 
-      tileMesh.scale.setX(0.9);
-      tileMesh.scale.setZ(0.9);
+      // tileMesh.scale.setX(0.9);
+      // tileMesh.scale.setZ(0.9);
 
       tileMesh.rotation.setFromQuaternion(this.getTileRotation(Number(tileId)));
       group.add(tileMesh);
