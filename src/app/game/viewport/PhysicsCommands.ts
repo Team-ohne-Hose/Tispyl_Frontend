@@ -44,7 +44,7 @@ export class PhysicsCommands {
   currentlyLoadingEntities: Map<number, boolean> = new Map<number, boolean>();
 
   addInteractable: ((obj: THREE.Object3D) => void);
-  addPlayer: (mesh: THREE.Object3D) => void;
+  addPlayer: (mesh: THREE.Object3D, name: string) => void;
   isPlayerCached: (physId: number) => boolean;
 
   constructor(colyseus: ColyseusClientService,
@@ -130,7 +130,6 @@ export class PhysicsCommands {
         case PhysicsEntity.figure:
           this.setClickRole(ClickedTarget.figure, model);
 
-          this.addPlayer(model);
 
           // Load other playermodels
           this.colyseus.getActiveRoom().subscribe((room: Room<GameState>) => {
@@ -139,6 +138,7 @@ export class PhysicsCommands {
                 const player: Player = room.state.playerList[p];
                 if (player.figureId === physicsId) {
                   this.loader.switchTex(model, player.figureModel);
+                  this.addPlayer(model, player.displayName);
                 }
               }
             }

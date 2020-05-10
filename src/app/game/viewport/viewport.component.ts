@@ -33,6 +33,8 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   audioControl: AudioControl;
   stats: Stats;
 
+  labelSpritesHidden = true;
+
   constructor(private sceneBuilder: SceneBuilderService,
               private objectLoaderService: ObjectLoaderService,
               private colyseus: ColyseusClientService) {
@@ -52,6 +54,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   animate() {
     requestAnimationFrame(this.animate.bind(this));
     // this.controls.update();
+    this.boardItemManager.updateSprites(this.labelSpritesHidden);
     this.renderer.render(this.scene, this.camera);
     this.stats.update();
   }
@@ -125,6 +128,18 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.registerViewport.emit([this.cameraControl, this.boardItemManager, this.audioControl]);
 
     this.animate();
+  }
+  keyDown(event) {
+    if (event.key === 'Tab') {
+      this.labelSpritesHidden = false;
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }
+  keyUp(event) {
+    if (event.key === 'Tab') {
+      this.labelSpritesHidden = true;
+    }
   }
 
   onWindowResize(event) {

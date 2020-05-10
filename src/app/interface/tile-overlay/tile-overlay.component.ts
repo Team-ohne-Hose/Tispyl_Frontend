@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ColyseusClientService} from '../../services/colyseus-client.service';
 import {GameActionType, GameShowTile, MessageType} from '../../model/WsData';
+// @ts-ignore
 import boardTiles from '../../resources/boardTiles.json';
 import {Tile} from '../../model/Board';
 

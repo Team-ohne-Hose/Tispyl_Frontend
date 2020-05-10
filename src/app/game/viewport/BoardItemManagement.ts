@@ -6,13 +6,16 @@ import {GameActionType, GameSetTile, MessageType, WsData} from '../../model/WsDa
 import {ColyseusClientService} from '../../services/colyseus-client.service';
 import {Room} from 'colyseus.js';
 import {GameState} from '../../model/state/GameState';
-import {ObjectLoaderService} from '../../services/object-loader.service';
+import {Color, ObjectLoaderService} from '../../services/object-loader.service';
 import {MapSchema} from '@colyseus/schema';
 import {Player} from '../../model/state/Player';
 
 export interface FigureItem {
   mesh: THREE.Object3D;
+  labelSprite: THREE.Sprite;
+  name: string;
   isHidden: boolean;
+  labelInScene: boolean;
 }
 export class BoardItemManagement {
 
@@ -28,8 +31,8 @@ export class BoardItemManagement {
               private loader: ObjectLoaderService) {
     this.scene = scene;
     this.allFigures = [];
-    this.physics.addPlayer = ((mesh: THREE.Object3D) => {
-      this.allFigures.push({mesh: mesh, isHidden: false});
+    this.physics.addPlayer = ((mesh: THREE.Object3D, name: string) => {
+      this.allFigures.push({mesh: mesh, labelSprite: undefined, name: name, isHidden: false, labelInScene: false});
     }).bind(this);
     this.physics.isPlayerCached = ((physId: number) => {
       return this.allFigures.some((val: FigureItem, index: number) => {
@@ -97,6 +100,27 @@ export class BoardItemManagement {
       }
     } else {
       console.log('You are not the active Player!');
+    }
+  }
+
+  updateSprites(hidden: boolean) {
+    for (const f of this.allFigures) {
+      if (f.labelSprite === undefined) {
+        f.labelSprite = this.loader.createLabelSprite(f.name, 70, 'Roboto',
+          new Color(1, 1, 1, 1),
+          new Color(.24, .24, .24, .9),
+          new Color(.1, .1, .1, 0), 0, 4);
+      }
+      f.labelSprite.position.set(f.mesh.position.x, f.mesh.position.y + 5, f.mesh.position.z);
+      if (f.labelInScene !== !hidden) {
+        if (hidden) {
+          this.scene.remove(f.labelSprite);
+          f.labelInScene = false;
+        } else {
+          this.scene.add(f.labelSprite);
+          f.labelInScene = true;
+        }
+      }
     }
   }
 

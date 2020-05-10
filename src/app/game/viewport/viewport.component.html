@@ -1,3 +1,8 @@
-<div #view id="viewport-container" (window:resize)="onWindowResize($event)" (mousedown)="mouseInteract.mouseDown($event)" (mouseup)="mouseInteract.mouseUp($event)" (mousemove)="mouseInteract.mouseMoved($event)">
+<div #view id="viewport-container" (window:resize)="onWindowResize($event)"
+     (mousedown)="mouseInteract.mouseDown($event)"
+     (mouseup)="mouseInteract.mouseUp($event)"
+     (mousemove)="mouseInteract.mouseMoved($event)"
+     (keydown)="keyDown($event)"
+     (keyup)="keyUp($event)">
 
 </div>
