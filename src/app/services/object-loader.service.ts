@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {GLTF, GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
 import {PhysicsEntity, PhysicsEntityVariation, PlayerModel} from '../model/WsData';
-import {Observable} from 'rxjs';
+import {SceneBuilderService} from './scene-builder.service';
 
 interface ResourceData {
   cname: string;
@@ -43,10 +43,36 @@ export class Color {
     return `rgba(${Math.round(this.r * 255)},${Math.round(this.g * 255)},${Math.round(this.b * 255)},${this.a})`;
   }
 }
+export interface CubeMap {
+  name: string;
+  tex: THREE.CubeTexture;
+  path: string;
+  px: string;
+  py: string;
+  pz: string;
+  nx: string;
+  ny: string;
+  nz: string;
+}
 @Injectable({
   providedIn: 'root'
 })
 export class ObjectLoaderService {
+  cubeMaps: CubeMap[] = [
+    {name: 'Ryfjallet', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Ryfjallet/',
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
+    {name: 'Maskonaive1', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Maskonaive/',
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
+    {name: 'Maskonaive2', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Maskonaive2/',
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
+    {name: 'Maskonaive3', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Maskonaive3/',
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
+    {name: 'Nalovardo', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Nalovardo/',
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg/', ny: 'negy.jpg', nz: 'negz.jpg'},
+    {name: 'Teide', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Teide',
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg/', ny: 'negy.jpg', nz: 'negz.jpg'},
+  ];
+  currentCubeMap = 0;
   private readonly resourcePath = '/assets/models/';
   private texList: Map<PlayerModel, PlayerModelData> = new Map<PlayerModel, PlayerModelData>([
     [PlayerModel.bcap_NukaCola, {texFName: 'default', specFName: 'default_spec', tex: undefined, spec: undefined}],
@@ -91,12 +117,14 @@ export class ObjectLoaderService {
       }
     }
   };
-  gameTileGeo = new THREE.BoxBufferGeometry(10, 1, 10);
   tLoader = new THREE.TextureLoader();
   defaultTileTexture: THREE.Texture;
   defaultTileTexturePath = '/assets/board/default.png';
 
-  constructor() {
+  gameTileGeo = new THREE.BoxBufferGeometry(10, 1, 10);
+  private gameBoundaryMat = new THREE.MeshStandardMaterial({color: 0xFADD12});
+
+  constructor(private sceneBuilder: SceneBuilderService) {
     this.tLoader.load(this.defaultTileTexturePath, (texture) => {
       texture.encoding = THREE.sRGBEncoding;
       texture.anisotropy = 16;
@@ -104,6 +132,33 @@ export class ObjectLoaderService {
     }, undefined, (error) => {
       console.error(error);
     });
+  }
+
+  setCurrentCubeMap(cubeMapId: number) {
+    if (cubeMapId >= 0) {
+      const cubemap = this.getCubeMap(cubeMapId);
+      this.currentCubeMap = cubeMapId;
+
+      this.gameBoundaryMat.envMap = cubemap;
+      this.gameBoundaryMat.needsUpdate = true;
+
+      this.sceneBuilder.setEnvMaps(cubemap);
+    }
+  }
+  getCubeMap(cubeMapId?: number): THREE.CubeTexture {
+    cubeMapId = cubeMapId || this.currentCubeMap;
+    if (this.cubeMaps[cubeMapId].tex === undefined) {
+      const tex = new THREE.CubeTextureLoader()
+        .setPath(this.cubeMaps[cubeMapId].path)
+        .load( [ this.cubeMaps[cubeMapId].px,
+          this.cubeMaps[cubeMapId].nx,
+          this.cubeMaps[cubeMapId].py,
+          this.cubeMaps[cubeMapId].ny,
+          this.cubeMaps[cubeMapId].pz,
+          this.cubeMaps[cubeMapId].nz ]);
+      this.cubeMaps[cubeMapId].tex = tex;
+    }
+    return this.cubeMaps[cubeMapId].tex;
   }
 
   private getResourceData(obj: PhysicsEntity, variation: PhysicsEntityVariation): ResourceData {
@@ -266,17 +321,17 @@ export class ObjectLoaderService {
       onLoad(this.defaultTileTexture);
     });
   }
-  loadGameTile(texUrl: string): THREE.Mesh {
+  loadGameTile(): THREE.Mesh {
     const gameTileMat = new THREE.MeshStandardMaterial({color: 0xffffff});
-    const gameTile = new THREE.Mesh(this.gameTileGeo.clone(), gameTileMat);
+    gameTileMat.roughness = .8;
+    const gameTile = new THREE.Mesh(this.gameTileGeo, gameTileMat);
     gameTile.castShadow = true;
     gameTile.receiveShadow = true;
     gameTile.name = 'gametile';
 
-    this.loadGameTileTexture(texUrl, (tex: THREE.Texture) => {
-      gameTileMat.map = tex;
-      gameTileMat.needsUpdate = true;
-    });
+    gameTileMat.map = this.defaultTileTexture;
+    gameTileMat.needsUpdate = true;
+    console.log('adding DefaultTex');
     return gameTile;
   }
   createBoundary(length: number, rotatedLandscape: boolean, center: THREE.Vector2) {
@@ -288,10 +343,9 @@ export class ObjectLoaderService {
     }
 
     const gameBoundaryGeo = new THREE.BoxBufferGeometry(w, .3, d);
-    const gameBoundaryMat = new THREE.MeshStandardMaterial({color: 0xFADD12});
-    gameBoundaryMat.metalness = 1;
-    gameBoundaryMat.roughness = .3;
-    const gameBoundary = new THREE.Mesh(gameBoundaryGeo, gameBoundaryMat);
+    this.gameBoundaryMat.metalness = 1;
+    this.gameBoundaryMat.roughness = .06;
+    const gameBoundary = new THREE.Mesh(gameBoundaryGeo, this.gameBoundaryMat);
     gameBoundary.castShadow = true;
     gameBoundary.receiveShadow = true;
     gameBoundary.position.set(center.x, 0.7, center.y);

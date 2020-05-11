@@ -71,13 +71,14 @@ export class ViewportComponent implements AfterViewInit, OnInit {
 
     // initialize Scene
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color().setHSL( 0.6, 0, 1 );
-    this.scene.fog = new THREE.Fog( this.scene.background.getHex(), 0.1, 5000 );
+    this.objectLoaderService.setCurrentCubeMap(2);
+    this.scene.background = this.objectLoaderService.getCubeMap();
+    // this.scene.fog = new THREE.Fog( this.scene.background.getHex(), 0.1, 5000 );
 
     // initialize Camera & Renderer
-    this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 5000);
+    this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 5000);
     this.camera.position.set( 0, 70, -30 );
-    this.renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance' });
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     this.renderer.setSize(width, height);
     const viewPortRenderer: HTMLCanvasElement = this.renderer.domElement;
     viewPortRenderer.setAttribute('style', viewPortRenderer.getAttribute('style') + 'display_name: block;');
@@ -88,17 +89,20 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     document.getElementById('viewport-container').appendChild(this.stats.dom);
 
     // add Lighting to Scene
-    const hemi = this.sceneBuilder.generateHemisphereLight();
-    this.scene.add( hemi.hemi );
+    // const hemi = this.sceneBuilder.generateHemisphereLight();
+    // this.scene.add( hemi.hemi );
     // this.scene.add( hemi.hemiHelp );
 
-    const dir = this.sceneBuilder.generateDirectionalLight();
-    this.scene.add( dir.dir );
+    // const dir = this.sceneBuilder.generateDirectionalLight();
+    // this.scene.add( dir.dir );
     // this.scene.add( dir.dirHelp );
 
+    const spotlight = this.sceneBuilder.generateSpotLight();
+    this.scene.add(spotlight);
+
     // Add environment(Sky, Ground, Gameboard) into Scene
-    this.scene.add(this.sceneBuilder.generateGround());
-    this.scene.add(this.sceneBuilder.generateSkyDome(hemi.hemi.color, this.scene.fog));
+    // this.scene.add(this.sceneBuilder.generateGround());
+    // this.scene.add(this.sceneBuilder.generateSkyDome(hemi.hemi.color, this.scene.fog));
     const gameBoard = this.sceneBuilder.generateGameBoard();
     this.scene.add(gameBoard);
 

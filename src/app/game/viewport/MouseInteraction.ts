@@ -84,6 +84,7 @@ export class MouseInteraction {
       };
     }
   }
+
   dragCoords(x: number, y: number, x2: number, y2: number, distX: number, distY: number, dist: number) {
     console.log('dragDropRecognised: ', dist, x, y);
     console.error('scene:', this.boardItemManager.scene, this.interactable);

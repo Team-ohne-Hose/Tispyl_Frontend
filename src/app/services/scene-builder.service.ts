@@ -7,7 +7,6 @@ import {GameBoardOrbitControl} from '../game/viewport/GameBoardOrbitControl';
 })
 export class SceneBuilderService {
   gameBoardTextureURL = '/assets/tischspiel_clear.png';
-  diceTextureURLBase = '/assets/dice/';
 
   vertexShader = `varying vec3 vWorldPosition;
     void main() {
@@ -28,69 +27,25 @@ export class SceneBuilderService {
 
   tLoader = new THREE.TextureLoader();
 
+
+  private gameBoardGeo = new THREE.BoxBufferGeometry(100, 1, 100);
+
+  private gameBoardMat = new THREE.MeshStandardMaterial({color: 0xffffff});
+
   constructor() {
   }
 
-  generateHemisphereLight(): { hemi: THREE.HemisphereLight, hemiHelp: THREE.HemisphereLightHelper } {
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
-    const hemiLightHelper = new THREE.HemisphereLightHelper(hemiLight, 10);
-    hemiLight.color.setHSL(0.6, 1, 0.6);
-    hemiLight.groundColor.setHSL(0.095, 1, 0.75);
-    hemiLight.position.set(0, 50, 0);
-    return {hemi: hemiLight, hemiHelp: hemiLightHelper};
+  setEnvMaps(envMap: THREE.CubeTexture) {
+    this.gameBoardMat.envMap = envMap;
+    this.gameBoardMat.needsUpdate = true;
   }
-  generateDirectionalLight(): { dir: THREE.DirectionalLight, dirHelp: THREE.DirectionalLightHelper } {
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-    const dirLightHeper = new THREE.DirectionalLightHelper(dirLight, 10);
-    dirLight.color.setHSL(0.1, 1, 0.95);
-    dirLight.position.set(-1, 1.75, 1);
-    dirLight.position.multiplyScalar(30);
 
-    dirLight.castShadow = true;
-    dirLight.shadow.mapSize.width = 2048;
-    dirLight.shadow.mapSize.height = 2048;
+  generateSpotLight(): THREE.SpotLight {
+    const light = new THREE.SpotLight(0xffffff, 9, 0, 0.7, 0.45, 0.02);
+    light.position.set(-60, 50, -90);
 
-    const d = 50;
-    dirLight.shadow.camera.left = -d;
-    dirLight.shadow.camera.right = d;
-    dirLight.shadow.camera.top = d;
-    dirLight.shadow.camera.bottom = -d;
 
-    dirLight.shadow.camera.far = 2500;
-    dirLight.shadow.bias = -0.0001;
-
-    return {dir: dirLight, dirHelp: dirLightHeper};
-  }
-  generateGround(): THREE.Mesh {
-    const groundGeo = new THREE.PlaneBufferGeometry(10000, 10000);
-    const groundMat = new THREE.MeshLambertMaterial({color: 0xffffff});
-    const ground = new THREE.Mesh(groundGeo, groundMat);
-
-    groundMat.color.setHSL(0.095, 1, 0.75);
-    ground.position.y = -33;
-    ground.rotation.x = -Math.PI / 2;
-    ground.receiveShadow = true;
-    return ground;
-  }
-  generateSkyDome(topCol: THREE.Color, fog: THREE.IFog): THREE.Mesh {
-    const uniforms = {
-      'topColor': {value: new THREE.Color(0x0077ff)},
-      'bottomColor': {value: new THREE.Color(0xffffff)},
-      'offset': {value: 33},
-      'exponent': {value: 0.6}
-    };
-    const skyGeo = new THREE.SphereBufferGeometry(4000, 32, 15);
-    const skyMat = new THREE.ShaderMaterial({
-      uniforms: uniforms,
-      vertexShader: this.vertexShader,
-      fragmentShader: this.fragmentShader,
-      side: THREE.BackSide
-    });
-    const sky = new THREE.Mesh(skyGeo, skyMat);
-    uniforms['topColor'].value.copy(topCol);
-    fog.color.copy(uniforms['bottomColor'].value);
-
-    return sky;
+    return light;
   }
   generateGameBoardOrbitControls(cam: THREE.PerspectiveCamera, domElem: HTMLElement): GameBoardOrbitControl {
     const orbitCtrl = new GameBoardOrbitControl(cam, domElem);
@@ -116,20 +71,18 @@ export class SceneBuilderService {
     return orbitCtrl;
   }
   generateGameBoard(): THREE.Mesh {
-    const gameBoardGeo = new THREE.BoxBufferGeometry(100, 1, 100);
-    const gameBoardMat = new THREE.MeshStandardMaterial({color: 0xffffff});
-    const gameBoard = new THREE.Mesh(gameBoardGeo, gameBoardMat);
-    gameBoard.position.y = 0;
-    gameBoard.castShadow = true;
+    const gameBoard = new THREE.Mesh(this.gameBoardGeo, this.gameBoardMat);
+    gameBoard.position.y = -.1;
+    gameBoard.castShadow = false;
     gameBoard.receiveShadow = true;
     gameBoard.name = 'gameboard';
-    // gameBoard.matrixAutoUpdate = false;
+    this.gameBoardMat.roughness = .4;
 
     this.tLoader.load(this.gameBoardTextureURL, (texture) => {
       texture.encoding = THREE.sRGBEncoding;
       texture.anisotropy = 16;
-      gameBoardMat.map = texture;
-      gameBoardMat.needsUpdate = true;
+      this.gameBoardMat.map = texture;
+      this.gameBoardMat.needsUpdate = true;
     }, undefined, (error) => {
       console.error(error);
     });

@@ -9,6 +9,7 @@ import {GameActionType, MessageType, PlayerMessageType, SetFigure} from '../mode
 import {ObjectLoaderService} from '../services/object-loader.service';
 import {Player} from '../model/state/Player';
 import {TurnOverlayComponent} from './turn-overlay/turn-overlay.component';
+import {GLTFExporter} from 'three/examples/jsm/exporters/GLTFExporter';
 
 
 @Component({
@@ -32,18 +33,49 @@ export class InterfaceComponent implements OnInit {
   @ViewChild('turnOverlay') turnOverlayRef: TurnOverlayComponent;
 
   knownCommands: any[] = [
-    {k: '/help', f: this.printHelpCommand.bind(this), h: ''},
-    {k: '/ourAnthem', f: this.playAnthem.bind(this), h: ''},
-    // {k: '/addFigure', f: this.addGamefigure.bind(this), h: ''}, TODO readd a feature alike this one. But add a new Player for this client instead
-    {k: '/showLocalState', f: this.showLocalState.bind(this), h: ''},
-    {k: '/start', f: this.start.bind(this), h: ''},
-    {k: '/nextAction', f: this.advanceAction.bind(this), h: ''},
-    {k: '/next', f: this.advanceTurn.bind(this), h: ''},
-    {k: '/fps', f: this.toggleFpsDisplay.bind(this), h: ''},
-    {k: '/myTex', f: this.switchMyTex.bind(this), h: ''},
-    {k: '/addRule', f: this.addRule.bind(this), h: ''},
-    {k: '/deleteRule', f: this.deleteRule.bind(this), h: ''}
+    {k: '/help', f: this.printHelpCommand.bind(this), h: 'displays this help'},
+    {k: '/ourAnthem', f: this.playAnthem.bind(this), h: 'play our anthem'},
+    {k: '/showLocalState', f: this.showLocalState.bind(this), h: 'show the local state'},
+    {k: '/start', f: this.start.bind(this), h: 'force the start of the game. also resets the game'},
+    {k: '/nextAction', f: this.advanceAction.bind(this), h: 'advance to the next action manually'},
+    {k: '/next', f: this.advanceTurn.bind(this), h: 'advance the turn manually'},
+    {k: '/fps', f: this.toggleFpsDisplay.bind(this), h: 'toggle the FPS display'},
+    {k: '/myTex', f: this.switchMyTex.bind(this), h: ' <id> sets the skin to skin <id> (0-11)'},
+    {k: '/addRule', f: this.addRule.bind(this), h: 'adds a Rule to the Ruleboard'},
+    {k: '/deleteRule', f: this.deleteRule.bind(this), h: ' <id> deletes the rule with id'},
+    {k: '/dlScene', f: this.dlScene.bind(this), h: 'download the Scene as GLTF'}
+
+    // {k: '/addFigure', f: this.addGamefigure.bind(this), h: ''},
+    // TODO readd a feature alike this one. But add a new Player for this client instead
   ];
+
+
+  private dlScene() {
+    const exporter = new GLTFExporter();
+
+    const link = document.createElement( 'a' );
+    link.style.display = 'none';
+    document.body.appendChild( link ); // Firefox workaround, see #6594
+    const save = ( blob, filename ) => {
+      link.href = URL.createObjectURL( blob );
+      link.download = filename;
+      link.click();
+      // URL.revokeObjectURL( url ); breaks Firefox...
+    };
+
+    // Parse the input and generate the glTF output
+    exporter.parse( this.gameComponent.boardItemControl.scene, function ( result ) {
+      console.log( result );
+      if ( result instanceof ArrayBuffer ) {
+        save( new Blob( [ result ], { type: 'application/octet-stream' } ), 'scene.glb' );
+      } else {
+        const output = JSON.stringify( result, null, 2 );
+        console.log( output );
+        save( new Blob( [ output ], { type: 'text/plain' } ), 'scene.gltf' );
+
+      }
+    }, {});
+  }
 
   switchMyTex(args) {
     args[1] = Math.max(0, Math.min(Number(args[1]), 11));

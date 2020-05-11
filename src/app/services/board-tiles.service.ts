@@ -105,15 +105,20 @@ export class BoardTilesService {
     this.colyseus.getActiveRoom().subscribe((room: Room<GameState>) => {
       const grp: THREE.Group = this.generateField();
       addToScene(grp);
-      this.tiles = this.fromSchema(room.state.boardLayout);
-      console.log('Tiles are:', this.tiles, room.state.boardLayout);
-      this.updateField();
 
       room.state.boardLayout.onChange = (changes: DataChange<any>[]) => {
         this.tiles = this.fromSchema(room.state.boardLayout);
-        console.log('Tiles are:', this.tiles, room.state.boardLayout);
+        console.log('Tiles are updated:', this.tiles, room.state.boardLayout);
         this.updateField();
+        console.log('loaded updated');
       };
+
+      this.tiles = this.fromSchema(room.state.boardLayout);
+      console.log('Tiles are:', this.tiles, room.state.boardLayout);
+      this.updateField();
+      console.log('loaded initial');
+
+      console.log('loaded completed');
     });
   }
   private fromSchema(schema: BoardLayoutState): Tile[] {
@@ -129,7 +134,7 @@ export class BoardTilesService {
   generateField(): THREE.Group {
     const group = new THREE.Group();
     for (let tileId = 0; tileId < 64; tileId++) {
-      const tileMesh = this.objectLoader.loadGameTile('/assets/board/default.png');
+      const tileMesh = this.objectLoader.loadGameTile();
       tileMesh.position.set(this.centerCoords.x[this.tileCoords[tileId].x], 0.01, this.centerCoords.y[this.tileCoords[tileId].y]);
 
       tileMesh.rotation.setFromQuaternion(this.getTileRotation(Number(tileId)));
@@ -219,6 +224,7 @@ export class BoardTilesService {
         this.objectLoader.loadGameTileTexture(this.tiles[tileId].imageUrl, (tex: THREE.Texture) => {
           mat['map'] = tex;
           mat['needsUpdate'] = true;
+          console.log('adding newTex');
         });
       }
     }
