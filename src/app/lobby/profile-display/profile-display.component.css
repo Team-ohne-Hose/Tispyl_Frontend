@@ -1,13 +1,20 @@
 
 .round-avatar {
-  height: 100px;
-  width: 100px;
+  height: 150px;
+  width: 150px;
   display:flex;
   align-content: center;
   justify-content: center;
   text-align: center;
   border-radius: 50%;
-  border: whitesmoke solid 5px;
+}
+
+.golden-border {
+  border-radius: 50%;
+  padding: 5px;
+  background:
+    radial-gradient(ellipse farthest-corner at left bottom, #FEDB37 0%, #FDB931 8%, #9f7928 30%, #8A6E2F 40%, transparent 80%),
+    radial-gradient(ellipse farthest-corner at right top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%);
 }
 
 .outer-box {
@@ -28,8 +35,8 @@
 
 .round-avatar:hover {
   transition: all 0.2s ease-out;
-  filter: drop-shadow(5px 5px 5px black);
-  transform: scale(1.02);
+  filter: drop-shadow(2px 5px 5px black);
+  transform: scale(1.01);
 }
 
 .round-avatar:active {
@@ -41,5 +48,13 @@
 .round-avatar i {
   font-size: 50px;
   padding-top: 25px;
+}
+
+.round-avatar img {
+  border: #4b4b4b solid 1px;
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  object-fit: cover;
 }
 

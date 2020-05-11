@@ -3,6 +3,8 @@ import {GameState} from '../../model/state/GameState';
 import {ColyseusClientService} from '../../services/colyseus-client.service';
 import {MapSchema} from '@colyseus/schema';
 import {Player} from '../../model/state/Player';
+import {UserService} from '../../services/user.service';
+import {FileService} from '../../services/file.service';
 
 
 
@@ -11,7 +13,7 @@ import {Player} from '../../model/state/Player';
   templateUrl: './connected-players.component.html',
   styleUrls: ['./connected-players.component.css']
 })
-export class ConnectedPlayersComponent implements OnInit {
+export class ConnectedPlayersComponent {
 
   @Input()
   players: Player[];
@@ -19,6 +21,11 @@ export class ConnectedPlayersComponent implements OnInit {
   @Input()
   currentPlayerDisplayName: string;
 
-  ngOnInit(): void {
+  imageSource = '';
+
+  constructor(private userManagement: UserService, private fileManagement: FileService) {
+    this.userManagement.getActiveUser().subscribe( u => {
+      this.imageSource = this.fileManagement.profilePictureSource(u);
+    });
   }
 }
