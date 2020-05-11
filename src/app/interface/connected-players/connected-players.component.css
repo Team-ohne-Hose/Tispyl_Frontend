@@ -42,6 +42,7 @@
   width: 2em;
   border-radius: 50%;
   object-fit: cover;
+  border: gold solid 1px;
 }
 
 .display {

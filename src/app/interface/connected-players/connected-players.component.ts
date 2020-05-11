@@ -1,12 +1,6 @@
-import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
-import {GameState} from '../../model/state/GameState';
-import {ColyseusClientService} from '../../services/colyseus-client.service';
-import {MapSchema} from '@colyseus/schema';
+import {Component, Input} from '@angular/core';
 import {Player} from '../../model/state/Player';
-import {UserService} from '../../services/user.service';
 import {FileService} from '../../services/file.service';
-
-
 
 @Component({
   selector: 'app-connected-players',
@@ -21,11 +15,10 @@ export class ConnectedPlayersComponent {
   @Input()
   currentPlayerDisplayName: string;
 
-  imageSource = '';
+  constructor(private fileManagement: FileService) {}
 
-  constructor(private userManagement: UserService, private fileManagement: FileService) {
-    this.userManagement.getActiveUser().subscribe( u => {
-      this.imageSource = this.fileManagement.profilePictureSource(u);
-    });
+  getProfilePic(name) {
+    // HACK !
+    return this.fileManagement.tameProfilePictureSource(name);
   }
 }
