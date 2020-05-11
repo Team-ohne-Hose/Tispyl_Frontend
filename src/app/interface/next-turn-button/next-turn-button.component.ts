@@ -9,6 +9,7 @@ import {GameActionType, MessageType} from '../../model/WsData';
 })
 export class NextTurnButtonComponent implements OnInit {
   hidden = true;
+  private lastClick = 0;
 
   constructor(private colyseus: ColyseusClientService) { }
 
@@ -29,11 +30,14 @@ export class NextTurnButtonComponent implements OnInit {
   nextTurn( event ) {
     console.log('clicked Next');
     this.colyseus.getActiveRoom().subscribe( r => {
-      if (r.state.action !== 'EXECUTE') {
-        console.log('skipping actions..');
+      if (this.colyseus.myLoginName === r.state.currentPlayerLogin && (new Date().getTime() - this.lastClick) > 500) {
+        this.lastClick = new Date().getTime();
+        if (r.state.action !== 'EXECUTE') {
+          console.log('skipping actions..');
+        }
+        console.log('next Turn');
+        r.send({type: MessageType.GAME_MESSAGE, action: GameActionType.advanceTurn});
       }
-      console.log('next Turn');
-      r.send({type: MessageType.GAME_MESSAGE, action: GameActionType.advanceTurn});
     });
   }
 
