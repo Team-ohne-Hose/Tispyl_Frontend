@@ -33,6 +33,7 @@ export enum GameActionType {
   advanceRound,
   advanceAction,
   advanceTurn,
+  reverseTurnOrder,
   readyPropertyChange,
   setStartingCondition,
   showTile,
@@ -45,6 +46,7 @@ type actionTypes = GameActionType.none |
   GameActionType.advanceRound |
   GameActionType.advanceAction |
   GameActionType.advanceTurn |
+  GameActionType.reverseTurnOrder |
   GameActionType.refreshData |
   GameActionType.setStartingCondition;
 export interface GameAction {

@@ -43,7 +43,8 @@ export class InterfaceComponent implements OnInit {
     {k: '/myTex', f: this.switchMyTex.bind(this), h: ' <id> sets the skin to skin <id> (0-11)'},
     {k: '/addRule', f: this.addRule.bind(this), h: 'adds a Rule to the Ruleboard'},
     {k: '/deleteRule', f: this.deleteRule.bind(this), h: ' <id> deletes the rule with id'},
-    {k: '/dlScene', f: this.dlScene.bind(this), h: 'download the Scene as GLTF'}
+    {k: '/dlScene', f: this.dlScene.bind(this), h: 'download the Scene as GLTF'},
+    {k: '/perspectiveChange', f: this.reverseTurnOrder.bind(this), h: 'Reverses the turn order'}
 
     // {k: '/addFigure', f: this.addGamefigure.bind(this), h: ''},
     // TODO readd a feature alike this one. But add a new Player for this client instead
@@ -163,6 +164,13 @@ export class InterfaceComponent implements OnInit {
   private advanceTurn( args ) {
     this.colyseus.getActiveRoom().subscribe( r => {
       r.send({type: MessageType.GAME_MESSAGE, action: GameActionType.advanceTurn});
+    });
+  }
+
+  private reverseTurnOrder( args ) {
+    this.colyseus.getActiveRoom().subscribe( r => {
+      this.print('The Turn-Order was reversed!');
+      r.send({type: MessageType.GAME_MESSAGE, action: GameActionType.reverseTurnOrder});
     });
   }
 
