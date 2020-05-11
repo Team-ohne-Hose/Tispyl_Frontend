@@ -86,7 +86,7 @@ export class ChatWindowComponent implements OnInit {
   }
 
   postChatMessage( msg: string ) {
-    this.chatContent =  this.chatContent + '\n' + msg.trim();
+    this.chatRef.nativeElement.value += msg.trim() + '\n';
     this.chatRef.nativeElement.scrollTop = this.chatRef.nativeElement.scrollHeight;
   }
 

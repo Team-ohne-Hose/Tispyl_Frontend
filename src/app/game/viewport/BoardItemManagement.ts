@@ -1,4 +1,3 @@
-import {ObjectUserData, ViewportComponent} from './viewport.component';
 import * as THREE from 'three';
 import {SceneBuilderService} from '../../services/scene-builder.service';
 import {PhysicsCommands} from './PhysicsCommands';

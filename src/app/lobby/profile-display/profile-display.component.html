@@ -4,6 +4,7 @@
       <img [src]="profileSource" alt="'Profile'" #profilePic>
   </div>
   <div class="text">Name: {{user.display_name}}<span class="user-name"> #{{user.login_name}}</span></div>
+  <div class="text">Played: {{getTimePlayed()}} </div>
   <div class="text">Since: {{(getDate() | date:'medium' )|| "undefined"}}</div>
   <div class="text">
     <button (click)="logout()"><i class="fas fa-door-open"></i> Logout</button>

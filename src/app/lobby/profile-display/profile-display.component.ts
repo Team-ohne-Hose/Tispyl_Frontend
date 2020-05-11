@@ -15,7 +15,7 @@ export class ProfileDisplayComponent {
 
   constructor(private userManagement: UserService, private fileManagement: FileService) {
     this.userManagement.getActiveUser().subscribe( u => {
-      console.log("USER CHANGED TO: ", u)
+      console.log('USER CHANGED TO: ', u);
       if ( u !== undefined ) {
         this.profileSource = this.fileManagement.profilePictureSource(u)
       }
@@ -24,6 +24,10 @@ export class ProfileDisplayComponent {
 
   getDate() {
     return new Date(this.user.user_creation);
+  }
+  getTimePlayed() {
+    const min = this.user.time_played;
+    return `${Math.floor(min / 60)} hours ${Math.floor(min % 60)} minutes`;
   }
 
   logout() {
