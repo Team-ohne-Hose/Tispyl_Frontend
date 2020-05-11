@@ -55,4 +55,16 @@ export class UserService {
     return this.httpClient.post<APIResponse<User[]>>(this.userEndpoint + '/login', {login_name: login_name, password_hash: password_hash});
   }
 
+  syncUserData(user: User): void {
+    this.httpClient
+      .post<APIResponse<User[]>>(this.userEndpoint + '/login', {login_name: user.login_name, password_hash: user.password_hash})
+      .subscribe( response => {
+        if ( response.payload[0] !== undefined ) {
+          this.setActiveUser(response.payload[0]);
+        } else {
+          console.error('Failed to update user: ', response);
+        }
+      });
+  }
+
 }

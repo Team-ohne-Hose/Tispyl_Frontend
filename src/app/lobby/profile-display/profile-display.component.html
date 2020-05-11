@@ -1,7 +1,7 @@
 
 <div class="outer-box">
-  <div class="round-avatar" (click)="fileInput.click()">
-    <div><i class="fas fa-camera-retro"></i></div>
+  <div *ngIf="user !== undefined" class="round-avatar golden-border" (click)="fileInput.click()">
+      <img [src]="profileSource" alt="'Profile'" #profilePic>
   </div>
   <div class="text">Name: {{user.display_name}}<span class="user-name"> #{{user.login_name}}</span></div>
   <div class="text">Since: {{(getDate() | date:'medium' )|| "undefined"}}</div>

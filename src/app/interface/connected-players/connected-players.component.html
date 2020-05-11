@@ -8,7 +8,7 @@
             <div class="img-container">
               <i *ngIf="p.isCurrentHost" class="fas fa-crown host"></i>
               <i *ngIf="!p.isConnected" class="fas fa-wifi disconnected"></i>
-              <img class="avatar-img" src="https://www.kindernetz.de/-/id=474688/property=smallPano/width=752/height=423/pubVersion=2/a2v40z/Star.jpg">
+              <img class="avatar-img" [src]="imageSource">
             </div>
             <span class="name">
             <span class="index">{{i+1}}.</span>
