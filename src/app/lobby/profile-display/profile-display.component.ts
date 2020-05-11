@@ -1,19 +1,25 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild} from '@angular/core';
 import {User} from '../../model/User';
 import {UserService} from '../../services/user.service';
+import {FileService} from '../../services/file.service';
 
 @Component({
   selector: 'app-profile-display',
   templateUrl: './profile-display.component.html',
   styleUrls: ['./profile-display.component.css']
 })
-export class ProfileDisplayComponent implements OnInit {
+export class ProfileDisplayComponent {
 
   @Input() user: User;
+  profileSource;
 
-  constructor(private userManagement: UserService) { }
-
-  ngOnInit(): void {
+  constructor(private userManagement: UserService, private fileManagement: FileService) {
+    this.userManagement.getActiveUser().subscribe( u => {
+      console.log("USER CHANGED TO: ", u)
+      if ( u !== undefined ) {
+        this.profileSource = this.fileManagement.profilePictureSource(u)
+      }
+    });
   }
 
   getDate() {
@@ -22,12 +28,21 @@ export class ProfileDisplayComponent implements OnInit {
 
   logout() {
     this.userManagement.setActiveUser(undefined);
-    this.userManagement.getActiveUser().subscribe( u => console.log('LOGGED OUT, USER NOW:', u));
   }
 
   onFileChanged(event) {
     const file = event.target.files[0];
-    console.log(file);
+    this.fileManagement.uploadProfilePicture(file, this.user).subscribe(suc => {
+      console.log(suc)
+      this.userManagement.syncUserData(this.user)
+    })
+  }
+
+  removeProfilePic(event) {
+    this.fileManagement.removeProfilePicture(this.user).subscribe( suc => {
+      console.log(suc)
+      this.userManagement.syncUserData(this.user)
+    })
   }
 
 }
