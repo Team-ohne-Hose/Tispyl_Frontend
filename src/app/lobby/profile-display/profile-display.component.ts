@@ -17,7 +17,7 @@ export class ProfileDisplayComponent {
     this.userManagement.getActiveUser().subscribe( u => {
       console.log('USER CHANGED TO: ', u);
       if ( u !== undefined ) {
-        this.profileSource = this.fileManagement.profilePictureSource(u)
+        this.profileSource = this.fileManagement.profilePictureSource(u.login_name)
       }
     });
   }

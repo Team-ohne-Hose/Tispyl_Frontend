@@ -8,7 +8,7 @@
             <div class="img-container">
               <i *ngIf="p.isCurrentHost" class="fas fa-crown host"></i>
               <i *ngIf="!p.isConnected" class="fas fa-wifi disconnected"></i>
-              <img class="avatar-img" [src]="imageSource">
+              <img class="avatar-img" [src]="getProfilePic(p.loginName)">
             </div>
             <span class="name">
             <span class="index">{{i+1}}.</span>

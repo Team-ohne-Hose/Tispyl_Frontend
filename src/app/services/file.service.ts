@@ -28,7 +28,13 @@ export class FileService {
     return this.httpClient.delete(this.profilePictureEndpoint + `?login_name=${user.login_name}&hash=${user.password_hash}`);
   }
 
-  profilePictureSource(user: User): string {
-      return this.profilePictureEndpoint + `?login_name=${user.login_name}&hash=${user.password_hash}&x_rng=${Math.random()}`;
+  profilePictureSource(name: string): string {
+      return this.profilePictureEndpoint + `?login_name=${name}&x_rng=${Math.random()}`; // &hash=${user.password_hash}
+  }
+
+
+  // DELETE THIS!!
+  tameProfilePictureSource(name: string): string {
+    return this.profilePictureEndpoint + `?login_name=${name}`;
   }
 }
