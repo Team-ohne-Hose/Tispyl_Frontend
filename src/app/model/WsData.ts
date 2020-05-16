@@ -110,45 +110,25 @@ export interface SetFigure {
 }
 
 export enum PhysicsCommandType {
-  addEntity,
   remove,
   kinematic,
   position,
   quaternion,
   velocity,
-  angularVelocity,
-  getNewId,
-  create
+  angularVelocity
 }
 export type PhysicsCommand = PhysicsCommandKinematic |
   PhysicsCommandRemove    |
   PhysicsCommandPosition  |
   PhysicsCommandQuat      |
   PhysicsCommandVelocity  |
-  PhysicsCommandAngular   |
-  PhysicsCommandAddEntity;
+  PhysicsCommandAngular;
 export enum PhysicsEntity {
   dice,
   figure
 }
 export enum PhysicsEntityVariation {
-  default,
-  procedural
-}
-export interface PhysicsCommandAddEntity {
-  type: MessageType.PHYSICS_MESSAGE;
-  subType: PhysicsCommandType.addEntity;
-  physicsId: number;
-  entity: number;
-  posX: number;
-  posY: number;
-  posZ: number;
-  rotX: number;
-  rotY: number;
-  rotZ: number;
-  rotW: number;
-  color: number;
-  variant: PhysicsEntityVariation;
+  default
 }
 export interface PhysicsCommandKinematic {
   type: MessageType.PHYSICS_MESSAGE;

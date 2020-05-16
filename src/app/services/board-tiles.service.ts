@@ -1,19 +1,16 @@
 import * as THREE from 'three';
 import { Injectable } from '@angular/core';
 import {ObjectLoaderService} from './object-loader.service';
-import {ColyseusClientService} from './colyseus-client.service';
-import {GameState} from '../model/state/GameState';
-import {Room} from 'colyseus.js';
-import {DataChange} from '@colyseus/schema';
 import {BoardLayoutState, Tile} from '../model/state/BoardLayoutState';
-import {Data} from '@angular/router';
+import {GameStateService} from './game-state.service';
+import {ColyseusNotifyable} from './game-initialisation.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class BoardTilesService {
+export class BoardTilesService implements ColyseusNotifyable {
 
-  constructor(private objectLoader: ObjectLoaderService, private colyseus: ColyseusClientService) { }
+  constructor(private objectLoader: ObjectLoaderService, private gameState: GameStateService) { }
 
   centerCoords = {
     x: [-30, -20, -10, 0, 10, 20, 30, 40],
@@ -101,25 +98,20 @@ export class BoardTilesService {
   tiles: Tile[] = [];
   tileMeshes: THREE.Mesh[] = [];
 
-  initialize(addToScene: (grp: THREE.Group) => void) {
-    this.colyseus.getActiveRoom().subscribe((room: Room<GameState>) => {
+  initialize(addToScene: (grp: THREE.Group) => void, onProgressCallback: () => void) {
+    const state = this.gameState.getState();
+    if (state !== undefined) {
       const grp: THREE.Group = this.generateField();
       addToScene(grp);
 
-      room.state.boardLayout.onChange = (changes: DataChange<any>[]) => {
-        this.tiles = this.fromSchema(room.state.boardLayout);
-        console.log('Tiles are updated:', this.tiles, room.state.boardLayout);
-        this.updateField();
-        console.log('loaded updated');
-      };
-
-      this.tiles = this.fromSchema(room.state.boardLayout);
-      console.log('Tiles are:', this.tiles, room.state.boardLayout);
-      this.updateField();
-      console.log('loaded initial');
-
-      console.log('loaded completed');
-    });
+      this.tiles = this.fromSchema(state.boardLayout);
+      const tileReadable = [];
+      this.tiles.forEach((tile: Tile) => {
+        tileReadable[tile.tileId] = tile.translationKey;
+      });
+      console.log('Tiles are:', tileReadable);
+      this.updateField(onProgressCallback);
+    }
   }
   private fromSchema(schema: BoardLayoutState): Tile[] {
     const ret: Tile[] = [];
@@ -128,6 +120,14 @@ export class BoardTilesService {
     }
     return ret;
   }
+  attachColyseusStateCallbacks(): void {
+    this.gameState.addBoardLayoutCallback(((layout: BoardLayoutState) => {
+      this.tiles = this.fromSchema(layout);
+      console.log('Tiles are updated:', this.tiles, layout);
+      this.updateField(() => {});
+    }).bind(this));
+  }
+  attachColyseusMessageCallbacks(): void {}
   getTileRotation(tileID: number): THREE.Quaternion {
     return new THREE.Quaternion().setFromEuler(new THREE.Euler(0, (this.tileCoords[tileID].r / 2) * Math.PI, 0));
   }
@@ -216,7 +216,7 @@ export class BoardTilesService {
     return this.tiles[fieldId];
   }
 
-  updateField() {
+  updateField(onProgress: () => void) {
     for (const tileId in this.tiles) {
       if (tileId in this.tiles) {
         const mesh: THREE.Mesh = this.tileMeshes[tileId];
@@ -225,6 +225,7 @@ export class BoardTilesService {
           mat['map'] = tex;
           mat['needsUpdate'] = true;
           console.log('adding newTex');
+          onProgress();
         });
       }
     }

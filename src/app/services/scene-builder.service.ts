@@ -6,38 +6,7 @@ import {GameBoardOrbitControl} from '../game/viewport/GameBoardOrbitControl';
   providedIn: 'root'
 })
 export class SceneBuilderService {
-  gameBoardTextureURL = '/assets/tischspiel_clear.png';
-
-  vertexShader = `varying vec3 vWorldPosition;
-    void main() {
-      vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
-      vWorldPosition = worldPosition.xyz;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-    }`;
-  fragmentShader = `uniform vec3 topColor;
-    uniform vec3 bottomColor;
-    uniform float offset;
-    uniform float exponent;
-    varying vec3 vWorldPosition;
-
-    void main() {
-      float h = normalize( vWorldPosition + offset ).y;
-      gl_FragColor = vec4( mix( bottomColor, topColor, max( pow( max( h , 0.0), exponent ), 0.0 ) ), 1.0 );
-    }`;
-
-  tLoader = new THREE.TextureLoader();
-
-
-  private gameBoardGeo = new THREE.BoxBufferGeometry(100, 1, 100);
-
-  private gameBoardMat = new THREE.MeshStandardMaterial({color: 0xffffff});
-
   constructor() {
-  }
-
-  setEnvMaps(envMap: THREE.CubeTexture) {
-    this.gameBoardMat.envMap = envMap;
-    this.gameBoardMat.needsUpdate = true;
   }
 
   generateSpotLight(): THREE.SpotLight {
@@ -69,23 +38,5 @@ export class SceneBuilderService {
 
     orbitCtrl.update();
     return orbitCtrl;
-  }
-  generateGameBoard(): THREE.Mesh {
-    const gameBoard = new THREE.Mesh(this.gameBoardGeo, this.gameBoardMat);
-    gameBoard.position.y = -.1;
-    gameBoard.castShadow = false;
-    gameBoard.receiveShadow = true;
-    gameBoard.name = 'gameboard';
-    this.gameBoardMat.roughness = .4;
-
-    this.tLoader.load(this.gameBoardTextureURL, (texture) => {
-      texture.encoding = THREE.sRGBEncoding;
-      texture.anisotropy = 16;
-      this.gameBoardMat.map = texture;
-      this.gameBoardMat.needsUpdate = true;
-    }, undefined, (error) => {
-      console.error(error);
-    });
-    return gameBoard;
   }
 }

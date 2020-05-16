@@ -10,9 +10,9 @@ import {GameBoardOrbitControl} from './GameBoardOrbitControl';
 import {ObjectLoaderService} from '../../services/object-loader.service';
 import Stats from 'THREE/examples/jsm/libs/stats.module.js';
 import {ClickedTarget, PhysicsCommands} from './PhysicsCommands';
-import {ColyseusClientService} from '../../services/colyseus-client.service';
 import {PhysicsEntity, PhysicsEntityVariation} from '../../model/WsData';
 import {BoardTilesService} from '../../services/board-tiles.service';
+import {GameStateService} from '../../services/game-state.service';
 
 export class ObjectUserData {
   physicsId: number;
@@ -37,7 +37,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
 
   constructor(private sceneBuilder: SceneBuilderService,
               private objectLoaderService: ObjectLoaderService,
-              private colyseus: ColyseusClientService,
+              private gameState: GameStateService,
               private boardTiles: BoardTilesService) {
 
   }
@@ -54,8 +54,8 @@ export class ViewportComponent implements AfterViewInit, OnInit {
 
   animate() {
     requestAnimationFrame(this.animate.bind(this));
-    // this.controls.update();
-    this.boardItemManager.updateSprites(this.labelSpritesHidden);
+
+    this.boardItemManager.updateSprites(this.labelSpritesHidden, this.scene);
     this.renderer.render(this.scene, this.camera);
     this.stats.update();
   }
@@ -71,8 +71,6 @@ export class ViewportComponent implements AfterViewInit, OnInit {
 
     // initialize Scene
     this.scene = new THREE.Scene();
-    this.objectLoaderService.setCurrentCubeMap(2);
-    this.scene.background = this.objectLoaderService.getCubeMap();
     // this.scene.fog = new THREE.Fog( this.scene.background.getHex(), 0.1, 5000 );
 
     // initialize Camera & Renderer
@@ -88,27 +86,9 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.stats = Stats();
     document.getElementById('viewport-container').appendChild(this.stats.dom);
 
-    // add Lighting to Scene
-    // const hemi = this.sceneBuilder.generateHemisphereLight();
-    // this.scene.add( hemi.hemi );
-    // this.scene.add( hemi.hemiHelp );
-
-    // const dir = this.sceneBuilder.generateDirectionalLight();
-    // this.scene.add( dir.dir );
-    // this.scene.add( dir.dirHelp );
 
     const spotlight = this.sceneBuilder.generateSpotLight();
     this.scene.add(spotlight);
-
-    // Add environment(Sky, Ground, Gameboard) into Scene
-    // this.scene.add(this.sceneBuilder.generateGround());
-    // this.scene.add(this.sceneBuilder.generateSkyDome(hemi.hemi.color, this.scene.fog));
-    const gameBoard = this.sceneBuilder.generateGameBoard();
-    this.scene.add(gameBoard);
-
-    // const gameTiles: THREE.Group = this.boardTiles.generateField();
-    // this.scene.add(gameTiles);
-    this.boardTiles.initialize((grp: THREE.Group) => this.scene.add(grp));
 
     // initialize Controls
     this.controls = this.sceneBuilder.generateGameBoardOrbitControls(this.camera, this.renderer.domElement);
@@ -116,17 +96,15 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.controls.update();
 
     // initialize Physics
-    this.physics = new PhysicsCommands(this.colyseus, this.objectLoaderService);
+    this.physics = new PhysicsCommands(this.objectLoaderService, this.gameState);
     this.physics.scene = this.scene;
 
     // initialize BoardItemManagement
-    this.boardItemManager = new BoardItemManagement(this.scene, this.sceneBuilder, this.physics, this.colyseus, this.objectLoaderService);
-    this.boardItemManager.board = gameBoard;
+    this.boardItemManager = new BoardItemManagement(this.scene, this.sceneBuilder, this.physics, this.gameState, this.objectLoaderService);
 
     // initialize Mouse
-    this.mouseInteract = new MouseInteraction(this.scene, this.camera, this.boardItemManager, this.physics, this.colyseus, this.boardTiles);
+    this.mouseInteract = new MouseInteraction(this.camera, this.boardItemManager, this.physics, this.gameState, this.boardTiles);
     this.mouseInteract.updateScreenSize(width, height);
-    this.mouseInteract.addInteractable(gameBoard);
 
     // initialize Audio/Camera Control
     this.audioControl = new AudioControl();
@@ -136,8 +114,25 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     // register at Game Component
     this.registerViewport.emit([this.cameraControl, this.boardItemManager, this.audioControl]);
 
-    this.animate();
+    console.warn('THREE.js Viewport initialised');
   }
+  initialiseScene() {
+    // load stuff which is dependend on loading textures
+    this.objectLoaderService.setCurrentCubeMap(2);
+    this.scene.background = this.objectLoaderService.getCubeMap();
+
+    // Add environment(Gameboard) into Scene
+    const gameBoard = this.objectLoaderService.generateGameBoard();
+    this.scene.add(gameBoard);
+
+    this.boardItemManager.board = gameBoard;
+    this.mouseInteract.addInteractable(gameBoard);
+  }
+  startRendering() {
+    this.animate();
+    console.warn('THREE.js rendering started');
+  }
+
   keyDown(event) {
     if (event.key === 'Tab') {
       this.labelSpritesHidden = false;

@@ -1,10 +1,8 @@
 import * as THREE from 'three';
 import {Object3D} from 'three';
-import {ColyseusClientService} from '../../services/colyseus-client.service';
 import {
   MessageType,
   PhysicsCommand,
-  PhysicsCommandAddEntity,
   PhysicsCommandAngular,
   PhysicsCommandKinematic,
   PhysicsCommandPosition,
@@ -14,14 +12,15 @@ import {
   PhysicsCommandVelocity,
   PhysicsEntity,
   PhysicsEntityVariation,
-  WsData
 } from '../../model/WsData';
-import {GameState} from '../../model/state/GameState';
-import {Room} from 'colyseus.js';
 import {ObjectUserData} from './viewport.component';
 import {ObjectLoaderService} from '../../services/object-loader.service';
-import {PhysicsObjectState} from '../../model/state/PhysicsState';
+import {PhysicsObjectState, PhysicsState} from '../../model/state/PhysicsState';
 import {Player} from '../../model/state/Player';
+import {GameStateService} from '../../services/game-state.service';
+import {ColyseusNotifyable} from '../../services/game-initialisation.service';
+import {NodeLib} from 'three/examples/jsm/nodes/core/NodeLib';
+import add = NodeLib.add;
 
 export enum ClickedTarget {
   other,
@@ -36,9 +35,8 @@ export enum CollisionGroups {
   Figures = 4,
   Dice = 8
 }
-export class PhysicsCommands {
+export class PhysicsCommands implements ColyseusNotifyable {
   scene: THREE.Scene;
-  colyseus: ColyseusClientService;
 
   dice: Object3D;
   currentlyLoadingEntities: Map<number, boolean> = new Map<number, boolean>();
@@ -47,40 +45,8 @@ export class PhysicsCommands {
   addPlayer: (mesh: THREE.Object3D, name: string) => void;
   isPlayerCached: (physId: number) => boolean;
 
-  constructor(colyseus: ColyseusClientService,
-              private loader: ObjectLoaderService) {
-    this.colyseus = colyseus;
-    this.colyseus.getActiveRoom().subscribe((activeRoom: Room<GameState>) => {
-      activeRoom.state.physicsState.objects.onChange = (item: PhysicsObjectState, key: string) => {
-        if (!item.disabled) {
-          const obj = PhysicsCommands.getObjectByPhysId(this.scene, item.objectIDPhysics);
-          // console.log('query for physId', item.objectIDPhysics, obj);
-          if (obj !== undefined) {
-            obj.position.set(item.position.x, item.position.y, item.position.z);
-            obj.quaternion.set(item.quaternion.x, item.quaternion.y, item.quaternion.z, item.quaternion.w);
-            // console.log('new Position: ', key, item.position.x, item.position.y, item.position.z, item.position);
-            // console.log("rotation is: ", item.quaternion.x, item.quaternion.y, item.quaternion.z, item.quaternion.w);
-          } else {
-            if (item.entity >= 0 && this.scene.children.length < 120) { // TODO balance
-              if (this.currentlyLoadingEntities.get(item.objectIDPhysics)) {
-                // is currently getting loaded
-              } else {
-                this.currentlyLoadingEntities.set(item.objectIDPhysics, true);
-                this.generateEntity(item.entity, item.variant, item.objectIDPhysics,
-                  item.position.x, item.position.y, item.position.z, item.quaternion.x, item.quaternion.y, item.quaternion.z);
-              }
-            } else {
-              console.error('cannot find/generate object', item.objectIDPhysics, item);
-            }
-          }
-        }
-      };
-    });
-    this.colyseus.registerMessageCallback(MessageType.PHYSICS_MESSAGE, {
-      filterSubType: PhysicsCommandType.addEntity,
-      f: this.addEntity.bind(this)
-    });
-  }
+  constructor(private loader: ObjectLoaderService,
+              private gameState: GameStateService) {}
 
   static getObjectByPhysId(toSearch: Object3D, physId: number): THREE.Object3D {
     if (toSearch.name !== undefined) {
@@ -105,11 +71,84 @@ export class PhysicsCommands {
     return obj.userData.physicsId;
   }
 
-  private generateEntity(entity: PhysicsEntity, variant: PhysicsEntityVariation, physicsId: number,
+  attachColyseusStateCallbacks(): void {
+    this.gameState.addPhysicsCallback((item: PhysicsObjectState) => {
+      this.updateFromState(item, () => {});
+    });
+  }
+  attachColyseusMessageCallbacks(): void {}
+
+  getInitializePending(): number {
+    const gameState = this.gameState.getState();
+    if (gameState !== undefined) {
+      const physState = gameState.physicsState;
+      if (physState !== undefined) {
+        return Object.keys(physState.objects).length;
+      }
+    }
+  }
+  initializeFromState(progressCallback: () => void): void {
+    const gameState = this.gameState.getState();
+    if (gameState !== undefined) {
+      const physState = gameState.physicsState;
+      if (physState !== undefined) {
+        for (const key in physState.objects) {
+          if (key in physState) {
+            const item: PhysicsObjectState = physState.objects[key];
+            if (item !== undefined) {
+              this.updateFromState(item, progressCallback);
+            } else {
+              console.warn('initializing from State: Object in PhysicsList was undefined');
+              progressCallback();
+            }
+          } else {
+            progressCallback();
+          }
+        }
+      } else {
+        console.error('PhysicsState is not accessible');
+      }
+    } else {
+      console.error('GameState is not accessible');
+    }
+  }
+  updateFromState(item: PhysicsObjectState, onDone: () => void): void {
+    if (!item.disabled) {
+      const obj = PhysicsCommands.getObjectByPhysId(this.scene, item.objectIDPhysics);
+      // console.log('query for physId', item.objectIDPhysics, obj);
+      if (obj !== undefined) {
+        obj.position.set(item.position.x, item.position.y, item.position.z);
+        obj.quaternion.set(item.quaternion.x, item.quaternion.y, item.quaternion.z, item.quaternion.w);
+        // console.log('new Position: ', key, item.position.x, item.position.y, item.position.z, item.position);
+        // console.log("rotation is: ", item.quaternion.x, item.quaternion.y, item.quaternion.z, item.quaternion.w);
+        onDone();
+      } else {
+        if (item.entity >= 0 && this.scene.children.length < 120) { // TODO balance
+          if (this.currentlyLoadingEntities.get(item.objectIDPhysics)) {
+            // is currently getting loaded
+            onDone();
+          } else {
+            console.log('adding via State', item.objectIDPhysics);
+            this.currentlyLoadingEntities.set(item.objectIDPhysics, true);
+            this.generateEntity(onDone, item.entity, item.variant, item.objectIDPhysics,
+              item.position.x, item.position.y, item.position.z, item.quaternion.x, item.quaternion.y, item.quaternion.z);
+          }
+        } else {
+          console.error('cannot find/generate object', item.objectIDPhysics, item);
+          onDone();
+        }
+      }
+    } else {
+      onDone();
+    }
+  }
+
+  private generateEntity(onDone: () => void, entity: PhysicsEntity, variant: PhysicsEntityVariation, physicsId: number,
                          posX?: number, posY?: number, posZ?: number, rotX?: number, rotY?: number, rotZ?: number, rotW?: number) {
 
     if (entity === PhysicsEntity.figure && this.isPlayerCached(physicsId)) {
       // if playerfigure was already cached dont load it
+      onDone();
       return;
     }
     this.loader.loadObject(entity, variant, (model: THREE.Object3D) => {
@@ -129,23 +168,26 @@ export class PhysicsCommands {
           break;
         case PhysicsEntity.figure:
           this.setClickRole(ClickedTarget.figure, model);
-
+          console.log('Added Figure', physicsId);
 
           // Load other playermodels
-          this.colyseus.getActiveRoom().subscribe((room: Room<GameState>) => {
+          const room = this.gameState.getRoom();
+          if (room !== undefined) {
             for (const p in room.state.playerList) {
               if (p in room.state.playerList) {
                 const player: Player = room.state.playerList[p];
                 if (player.figureId === physicsId) {
                   this.loader.switchTex(model, player.figureModel);
                   this.addPlayer(model, player.displayName);
+                  model.userData.displayName = player.displayName;
                 }
               }
             }
-          });
+          }
           break;
       }
       this.currentlyLoadingEntities.set(physicsId, false);
+      onDone();
     });
   }
   setClickRole(clickRole: ClickedTarget, obj: THREE.Object3D) {
@@ -154,40 +196,6 @@ export class PhysicsCommands {
       this.addInteractable(obj);
       obj.children.forEach((value => this.setClickRole(clickRole, value)));
     }
-  }
-  addEntity(data: WsData) {
-    if (data.type === MessageType.PHYSICS_MESSAGE && data.subType === PhysicsCommandType.addEntity) {
-      const obj = PhysicsCommands.getObjectByPhysId(this.scene, data.physicsId);
-      if (obj === undefined && this.currentlyLoadingEntities.get(data.physicsId) === undefined) {
-        if (data.variant === PhysicsEntityVariation.procedural) {
-        } else {
-          this.generateEntity(data.entity, data.variant, data.physicsId,
-            data.posX, data.posY, data.posZ, data.rotX, data.rotY, data.rotZ, data.rotW);
-        }
-      }
-    }
-  }
-  orderEntity(entity: PhysicsEntity, variation?: PhysicsEntityVariation, pos?: THREE.Vector3, quat?: THREE.Quaternion) {
-    const data: PhysicsCommandAddEntity = {
-      type: MessageType.PHYSICS_MESSAGE,
-      subType: PhysicsCommandType.addEntity,
-      physicsId: undefined,
-      entity: entity,
-      variant: variation,
-      posX: pos ? pos.x : undefined,
-      posY: pos ? pos.y : undefined,
-      posZ: pos ? pos.z : undefined,
-      rotW: quat ? quat.x : undefined,
-      rotX: quat ? quat.y : undefined,
-      rotY: quat ? quat.z : undefined,
-      rotZ: quat ? quat.w : undefined,
-      color: 0,
-    };
-    this.colyseus.getActiveRoom().subscribe( room => {
-      if (data !== undefined) {
-        room.send(data);
-      }
-    });
   }
   setKinematic(physId: number, enabled: boolean) {
     const msg: PhysicsCommandKinematic = {
@@ -257,10 +265,9 @@ export class PhysicsCommands {
     };
   }
   private sendMessage(msg: PhysicsCommand) {
-    this.colyseus.getActiveRoom().subscribe( room => {
-      if (msg !== undefined) {
-        room.send(msg);
-      }
-    });
+    const room = this.gameState.getRoom();
+    if (msg !== undefined && room !== undefined) {
+      room.send(msg);
+    }
   }
 }

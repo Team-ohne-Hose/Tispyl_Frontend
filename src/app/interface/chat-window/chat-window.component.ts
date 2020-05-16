@@ -1,15 +1,16 @@
-import {Component, ElementRef, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
-import {ColyseusClientService} from '../../services/colyseus-client.service';
-import {ChatMessage, MessageType, WsData} from '../../model/WsData';
+import {Component, ElementRef, EventEmitter, Output, ViewChild} from '@angular/core';
+import {MessageType, WsData} from '../../model/WsData';
+import {GameStateService} from '../../services/game-state.service';
+import {ColyseusNotifyable} from '../../services/game-initialisation.service';
 
 @Component({
   selector: 'app-chat-window',
   templateUrl: './chat-window.component.html',
   styleUrls: ['./chat-window.component.css']
 })
-export class ChatWindowComponent implements OnInit {
+export class ChatWindowComponent implements ColyseusNotifyable {
 
-  constructor( private colyseus: ColyseusClientService) { }
+  constructor(private gameState: GameStateService) { }
 
   messageHistory: string[] = [];
   historyIndex = 0;
@@ -18,11 +19,11 @@ export class ChatWindowComponent implements OnInit {
   chatContent = '';
 
   @Output() chatCommand = new EventEmitter<string[]>();
-
   @ViewChild('chat') chatRef: ElementRef;
 
-  ngOnInit(): void {
-    this.colyseus.registerMessageCallback(MessageType.CHAT_MESSAGE, {
+  attachColyseusStateCallbacks(): void {}
+  attachColyseusMessageCallbacks(): void {
+    this.gameState.registerMessageCallback(MessageType.CHAT_MESSAGE, {
       filterSubType: -1,
       f: (data: WsData) => {
         if (data.type === MessageType.CHAT_MESSAGE) {
@@ -31,7 +32,7 @@ export class ChatWindowComponent implements OnInit {
       }
     });
 
-    this.colyseus.registerMessageCallback(MessageType.JOIN_MESSAGE, {
+    this.gameState.registerMessageCallback(MessageType.JOIN_MESSAGE, {
       filterSubType: -1,
       f: (data: WsData) => {
         if (data.type === MessageType.JOIN_MESSAGE) {
@@ -40,7 +41,7 @@ export class ChatWindowComponent implements OnInit {
       }
     });
 
-    this.colyseus.registerMessageCallback(MessageType.LEFT_MESSAGE, {
+    this.gameState.registerMessageCallback(MessageType.LEFT_MESSAGE, {
       filterSubType: -1,
       f: (data: WsData) => {
         if (data.type === MessageType.LEFT_MESSAGE) {
@@ -51,19 +52,17 @@ export class ChatWindowComponent implements OnInit {
   }
 
   submitMessage() {
-    this.colyseus.getActiveRoom().subscribe( room => {
-      if (this.currentMessage.length > 0) {
-        this.messageHistory.unshift(this.currentMessage);
-        this.historyIndex = 0;
+    if (this.currentMessage.length > 0) {
+      this.messageHistory.unshift(this.currentMessage);
+      this.historyIndex = 0;
 
-        if (this.currentMessage[0] === '/') {
-          this.executeChatCommand();
-        } else {
-          room.send({type: MessageType.CHAT_MESSAGE, message: this.currentMessage });
-          this.currentMessage = '';
-        }
+      if (this.currentMessage[0] === '/') {
+        this.executeChatCommand();
+      } else {
+        this.gameState.sendMessage({type: MessageType.CHAT_MESSAGE, message: this.currentMessage });
+        this.currentMessage = '';
       }
-    });
+    }
   }
 
   enter(keyEvent) {

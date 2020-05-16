@@ -1,15 +1,14 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import {ChatWindowComponent} from './chat-window/chat-window.component';
-import {ColyseusClientService} from '../services/colyseus-client.service';
-import {DataChange, MapSchema} from '@colyseus/schema';
+import {MapSchema} from '@colyseus/schema';
 import {GameComponent} from '../game/game.component';
-import {GameState} from '../model/state/GameState';
 import {GameActionType, MessageType, PlayerMessageType, SetFigure} from '../model/WsData';
-import {ObjectLoaderService} from '../services/object-loader.service';
 import {Player} from '../model/state/Player';
-import {TurnOverlayComponent} from './turn-overlay/turn-overlay.component';
 import {GLTFExporter} from 'three/examples/jsm/exporters/GLTFExporter';
+import {GameStateService} from '../services/game-state.service';
+import {NextTurnButtonComponent} from './next-turn-button/next-turn-button.component';
+import {TileOverlayComponent} from './tile-overlay/tile-overlay.component';
 
 
 @Component({
@@ -19,18 +18,16 @@ import {GLTFExporter} from 'three/examples/jsm/exporters/GLTFExporter';
 })
 export class InterfaceComponent implements OnInit {
 
-  constructor(private router: Router, private colyseus: ColyseusClientService, private loader: ObjectLoaderService) {
+  constructor(private router: Router, public gameState: GameStateService) {
     this.routes = router.config.filter( route => route.path !== '**' && route.path.length > 0);
   }
 
   routes;
-  currentState: GameState = new GameState();
+  gameComponent: GameComponent;
 
-  myName = this.colyseus.myLoginName;
-
-  @Input() gameComponent: GameComponent;
   @ViewChild('chat') chatRef: ChatWindowComponent;
-  @ViewChild('turnOverlay') turnOverlayRef: TurnOverlayComponent;
+  @ViewChild('nextTurn') nextTurnRef: NextTurnButtonComponent;
+  @ViewChild('tileOverlay') tileOverlayRef: TileOverlayComponent;
 
   knownCommands: any[] = [
     {k: '/help', f: this.printHelpCommand.bind(this), h: 'displays this help'},
@@ -52,79 +49,54 @@ export class InterfaceComponent implements OnInit {
 
 
   private dlScene() {
-    const exporter = new GLTFExporter();
+    if (this.gameComponent !== undefined) {
+      const exporter = new GLTFExporter();
 
-    const link = document.createElement( 'a' );
-    link.style.display = 'none';
-    document.body.appendChild( link ); // Firefox workaround, see #6594
-    const save = ( blob, filename ) => {
-      link.href = URL.createObjectURL( blob );
-      link.download = filename;
-      link.click();
-      // URL.revokeObjectURL( url ); breaks Firefox...
-    };
+      const link = document.createElement( 'a' );
+      link.style.display = 'none';
+      document.body.appendChild( link ); // Firefox workaround, see #6594
+      const save = ( blob, filename ) => {
+        link.href = URL.createObjectURL( blob );
+        link.download = filename;
+        link.click();
+        // URL.revokeObjectURL( url ); breaks Firefox...
+      };
 
-    // Parse the input and generate the glTF output
-    exporter.parse( this.gameComponent.boardItemControl.scene, function ( result ) {
-      console.log( result );
-      if ( result instanceof ArrayBuffer ) {
-        save( new Blob( [ result ], { type: 'application/octet-stream' } ), 'scene.glb' );
-      } else {
-        const output = JSON.stringify( result, null, 2 );
-        console.log( output );
-        save( new Blob( [ output ], { type: 'text/plain' } ), 'scene.gltf' );
+      // Parse the input and generate the glTF output
+      exporter.parse( this.gameComponent.boardItemControl.scene, function ( result ) {
+        console.log( result );
+        if ( result instanceof ArrayBuffer ) {
+          save( new Blob( [ result ], { type: 'application/octet-stream' } ), 'scene.glb' );
+        } else {
+          const output = JSON.stringify( result, null, 2 );
+          console.log( output );
+          save( new Blob( [ output ], { type: 'text/plain' } ), 'scene.gltf' );
 
-      }
-    }, {});
+        }
+      }, {});
+    }
   }
 
   switchMyTex(args) {
-    args[1] = Math.max(0, Math.min(Number(args[1]), 11));
-    this.colyseus.getActiveRoom().subscribe( room => {
-      const msg: SetFigure = {type: MessageType.PLAYER_MESSAGE,
-        subType: PlayerMessageType.setFigure,
-        playerId: this.colyseus.myLoginName,
-        playerModel: args[1]};
-      room.send(msg);
-    });
-  }
-
-  switchTex(args) {
-    const obj = this.gameComponent.boardItemControl.scene.getObjectById(Number(args[1]));
-    console.log('changing Tex of: ', Number(args[1]), obj);
-    this.loader.switchTex(obj, args[2]);
+    args[1] = Math.max(0, Math.min(Number(args[1]), 11)); // TODO make dynamic
+    const msg: SetFigure = {type: MessageType.PLAYER_MESSAGE,
+      subType: PlayerMessageType.setFigure,
+      playerId: this.gameState.getMyLoginName(),
+      playerModel: args[1]};
+    this.gameState.sendMessage(msg);
   }
 
   ngOnInit(): void {
-    this.colyseus.addOnChangeCallback((changes: DataChange[]) => {
-      changes.forEach(change => {
-        switch (change.field) {
-          case 'round': { this.currentState.round = change.value; break; }
-          case 'currentPlayerLogin': {
-            this.currentState.currentPlayerLogin = change.value;
-            console.log("TRIGGER SHOW !", change);
-            this.turnOverlayRef.show();
-            break;
-          }
-          case 'action': { this.currentState.action = change.value; break; }
-          case 'playerList': {this.currentState.playerList = change.value; break; }
-        }
-      });
-    });
-
-    this.colyseus.getActiveRoom().subscribe( room => {
-      this.currentState = room === undefined ? new GameState() : room.state || new GameState();
-    });
   }
 
   private listPhysics() {
-    this.colyseus.getActiveRoom().subscribe( room => {
-      room.send({type: 'SERVER_COMMAND', content: {subType: 'listphysics'}});
-    });
+    this.gameState.sendMessage({type: 'SERVER_COMMAND', content: {subType: 'listphysics'}});
   }
 
   private playAnthem() {
-    this.gameComponent.audioCtrl.playAudio.bind(this.gameComponent.audioCtrl)();
+    if (this.gameComponent !== undefined) {
+      this.gameComponent.audioCtrl.playAudio();
+    }
   }
 
   executeChatCommand( args ) {
@@ -141,47 +113,37 @@ export class InterfaceComponent implements OnInit {
   private addRule( args ) {
     console.log(args);
     const msgArray: any[] = args.slice(1);
-    this.colyseus.getActiveRoom().subscribe( r => {
-      r.send({type: MessageType.GAME_MESSAGE, action: GameActionType.addRule, text: msgArray.join(' ')});
-    });
+    this.gameState.sendMessage({type: MessageType.GAME_MESSAGE, action: GameActionType.addRule, text: msgArray.join(' ')});
   }
 
   private deleteRule( args ) {
-    this.colyseus.getActiveRoom().subscribe( r => {
-      r.send({type: MessageType.GAME_MESSAGE, action: GameActionType.deleteRule, id: args[1]});
-    });
+    this.gameState.sendMessage({type: MessageType.GAME_MESSAGE, action: GameActionType.deleteRule, id: args[1]});
   }
 
   private showLocalState( args ) {
-    this.print(`State ${JSON.stringify(this.currentState)}`);
+    this.print(`State ${this.gameState.getState() === undefined ? '' : JSON.stringify(this.gameState.getState())}`);
   }
 
   private advanceAction( args ) {
-    this.colyseus.getActiveRoom().subscribe( r => {
-      r.send({type: MessageType.GAME_MESSAGE, action: GameActionType.advanceAction});
-    });
+    this.gameState.sendMessage({type: MessageType.GAME_MESSAGE, action: GameActionType.advanceAction});
   }
   private advanceTurn( args ) {
-    this.colyseus.getActiveRoom().subscribe( r => {
-      r.send({type: MessageType.GAME_MESSAGE, action: GameActionType.advanceTurn});
-    });
+    this.gameState.sendMessage({type: MessageType.GAME_MESSAGE, action: GameActionType.advanceTurn});
   }
 
   private reverseTurnOrder( args ) {
-    this.colyseus.getActiveRoom().subscribe( r => {
-      this.print('The Turn-Order was reversed!');
-      r.send({type: MessageType.GAME_MESSAGE, action: GameActionType.reverseTurnOrder});
-    });
+    this.print('The Turn-Order was reversed!');
+    this.gameState.sendMessage({type: MessageType.GAME_MESSAGE, action: GameActionType.reverseTurnOrder});
   }
 
   private toggleFpsDisplay( args ) {
-    this.gameComponent.viewRef.stats.dom.hidden = !this.gameComponent.viewRef.stats.dom.hidden;
+    if (this.gameComponent !== undefined) {
+      this.gameComponent.viewRef.stats.dom.hidden = !this.gameComponent.viewRef.stats.dom.hidden;
+    }
   }
 
   private start( args ) {
-    this.colyseus.getActiveRoom().subscribe( r => {
-      r.send({type: MessageType.GAME_MESSAGE, action: GameActionType.setStartingCondition});
-    });
+    this.gameState.sendMessage({type: MessageType.GAME_MESSAGE, action: GameActionType.setStartingCondition});
   }
 
   private printHelpCommand( args ) {
@@ -203,9 +165,10 @@ export class InterfaceComponent implements OnInit {
     return tmpArray;
   }
   getDisplayName(login: string): string {
-    for (const key in this.currentState.playerList) {
-      if (key in this.currentState.playerList) {
-        const p: Player = this.currentState.playerList[key];
+    const playerlist = this.gameState.getState() === undefined ? [] : this.gameState.getState().playerList;
+    for (const key in playerlist) {
+      if (key in playerlist) {
+        const p: Player = playerlist[key];
         if (p.loginName === login) {
           return p.displayName;
         }

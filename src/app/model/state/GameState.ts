@@ -3,7 +3,7 @@ import {PhysicsState} from './PhysicsState';
 import {Player} from './Player';
 import {BoardLayoutState} from './BoardLayoutState';
 
-enum Actions {
+export enum Actions {
   ROLL,
   MOVE,
   EXECUTE

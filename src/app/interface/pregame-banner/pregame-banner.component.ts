@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {ColyseusClientService} from '../../services/colyseus-client.service';
 import {GameActionType, MessageType} from '../../model/WsData';
 import {Player} from '../../model/state/Player';
+import {GameStateService} from '../../services/game-state.service';
 
 @Component({
   selector: 'app-pregame-banner',
@@ -15,13 +15,11 @@ export class PregameBannerComponent {
   @Input()
   players: Player[];
 
-  constructor( private colyseus: ColyseusClientService) {}
+  constructor( private gameState: GameStateService) {}
 
   readyEvent() {
     this.isReady = !this.isReady;
-    this.colyseus.getActiveRoom().subscribe( r => {
-      r.send( {type: MessageType.GAME_MESSAGE, action: GameActionType.readyPropertyChange, isReady: this.isReady} );
-    });
+    this.gameState.sendMessage( {type: MessageType.GAME_MESSAGE, action: GameActionType.readyPropertyChange, isReady: this.isReady} );
   }
 
   countReadyPlayers() {

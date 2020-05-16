@@ -17,8 +17,6 @@ export interface MessageCallback {
 })
 export class ColyseusClientService {
 
-  myLoginName: string = undefined;
-  myFigureId: number;
   private readonly prodBackendWStarget = 'wss://tispyl.uber.space:41920';
   private readonly devBackendWStarget = 'ws://localhost:2567';
   private backendWStarget = environment.production ? this.prodBackendWStarget : this.devBackendWStarget;
@@ -27,17 +25,13 @@ export class ColyseusClientService {
   private activeRoom: BehaviorSubject<Room<GameState>>;
   private availableRooms: BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>;
 
-  private messageCallbacks: Map<MessageType, MessageCallback[]> = new Map<MessageType, MessageCallback[]>([
-    [MessageType.CHAT_MESSAGE, [{filterSubType: undefined, f: this.defaultCallback}]],
-    [MessageType.PHYSICS_MESSAGE, [{filterSubType: PhysicsCommandType.addEntity, f: this.defaultCallback}]]
-    ]);
+  private messageCallbacks: Map<MessageType, MessageCallback[]> = new Map<MessageType, MessageCallback[]>([]);
   private onChangeCallbacks: ((changes: DataChange<any>[]) => void)[] = [
     this.onDataChange.bind(this)
   ];
-  onRoundChangeCallback: ((activePlayerLogin: string) => void)[] = [];
 
-  activePlayerLogin = '';
-  activeAction = '';
+  myLoginName: string;
+  myFigureId: number;
 
   constructor() {
     this.activeRoom = new BehaviorSubject<Room<GameState>>(undefined);
@@ -47,30 +41,18 @@ export class ColyseusClientService {
   onDataChange(changes: DataChange<any>[]) {
     changes.forEach(change => {
       switch (change.field) {
-        case 'currentPlayerLogin':
-          if (this.activePlayerLogin !== change.value) {
-            this.activePlayerLogin = change.value;
-            console.log('nextRound. pushing to cbs');
-            for (const cb in this.onRoundChangeCallback ) {
-              if (cb in this.onRoundChangeCallback) {
-                this.onRoundChangeCallback[cb](this.activePlayerLogin);
-              }
-            }
-          }
-          break;
-        case 'action':
-          this.activeAction = change.value;
-          break;
         case 'playerList':
-          console.error('Playerlist update', change.value);
-          const myPlayer: Player = change.value[this.myLoginName];
-          if (myPlayer !== undefined) {
-            this.myFigureId = myPlayer.figureId;
-          }
+        // console.log('Playerlist update', change.value);
+        const myPlayer: Player = change.value[this.myLoginName];
+        if (myPlayer !== undefined) {
+          this.myFigureId = myPlayer.figureId;
+        }
+        break;
+        case 'action':
+          break;
       }
     });
   }
-
   getClient(): Client {
     return this.client;
   }
@@ -83,6 +65,7 @@ export class ColyseusClientService {
     if (newRoom !== undefined) {
       this.updateRoomCallbacks(newRoom);
     }
+    console.log('connected to new new active Room', newRoom);
     this.activeRoom.next(newRoom);
   }
 
@@ -125,10 +108,6 @@ export class ColyseusClientService {
     });
   }
 
-  private defaultCallback(data: WsData) {
-    console.warn('A server message was not addressed. Call back was undefined', data.type, data);
-  }
-
   registerMessageCallback(type: MessageType, cb: MessageCallback) {
     let cbList: MessageCallback[] = this.messageCallbacks.get(type);
     if (cbList === undefined) {
@@ -147,7 +126,7 @@ export class ColyseusClientService {
   private gatherFunctionCalls(data: WsData): void {
     const type: MessageType = data.type;
     const list: MessageCallback[] = this.messageCallbacks.get(type);
-    console.log('distributing: ', type, data, list);
+    // console.log('distributing: ', type, data, list);
     if (list !== undefined && list.length > 0) {
       list.forEach((value: MessageCallback, index: number) => {
         if (value.filterSubType >= 0) {
@@ -161,6 +140,8 @@ export class ColyseusClientService {
           value.f(data);
         }
       });
+    } else {
+      console.warn('A server message was not addressed. Call back was undefined', data.type, data);
     }
   }
 

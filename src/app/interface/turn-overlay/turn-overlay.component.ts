@@ -31,7 +31,8 @@ export class TurnOverlayComponent {
   @Input()
   currentPlayerName = '';
 
-  constructor( private sounds: SoundService) {}
+  constructor( private sounds: SoundService) {
+  }
 
   triggerChime() {
     if (this.state === 'active') {

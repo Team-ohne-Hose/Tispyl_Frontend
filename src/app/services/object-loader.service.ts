@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {GLTF, GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
 import {PhysicsEntity, PhysicsEntityVariation, PlayerModel} from '../model/WsData';
-import {SceneBuilderService} from './scene-builder.service';
+import {Texture} from 'three';
 
 interface ResourceData {
   cname: string;
@@ -120,11 +120,15 @@ export class ObjectLoaderService {
   tLoader = new THREE.TextureLoader();
   defaultTileTexture: THREE.Texture;
   defaultTileTexturePath = '/assets/board/default.png';
+  gameBoardTextureURL = '/assets/tischspiel_clear.png';
 
-  gameTileGeo = new THREE.BoxBufferGeometry(10, 1, 10);
+  private gameBoardGeo = new THREE.BoxBufferGeometry(100, 1, 100);
+  private gameTileGeo = new THREE.BoxBufferGeometry(10, 1, 10);
+
+  private gameBoardMat = new THREE.MeshStandardMaterial({color: 0xffffff});
   private gameBoundaryMat = new THREE.MeshStandardMaterial({color: 0xFADD12});
 
-  constructor(private sceneBuilder: SceneBuilderService) {
+  constructor() {
     this.tLoader.load(this.defaultTileTexturePath, (texture) => {
       texture.encoding = THREE.sRGBEncoding;
       texture.anisotropy = 16;
@@ -132,6 +136,32 @@ export class ObjectLoaderService {
     }, undefined, (error) => {
       console.error(error);
     });
+  }
+
+
+  async loadAllObjects(onProgressCallback: (progress: number, total: number) => void): Promise<void> {
+    const myPromise: Promise<void> = new Promise<void>((resolve, reject) => {
+      // TODO: Load all Playertextures as well
+      const toLoad = this.texList.size + this.entities.length;
+      let progress = 0;
+      const onProgress = () => {
+        progress++;
+        onProgressCallback(progress, toLoad);
+        if (progress >= toLoad) {
+          resolve();
+        }
+      };
+
+      this.texList.forEach((val: PlayerModelData, key: PlayerModel) => {
+        this.loadBcapTex(key, onProgress);
+      });
+
+      this.entities.forEach((value: [PhysicsEntity, PhysicsEntityVariation], index: number) => {
+        this.loadObject(value[0], value[1], onProgress);
+      });
+    });
+
+    return myPromise;
   }
 
   setCurrentCubeMap(cubeMapId: number) {
@@ -142,7 +172,8 @@ export class ObjectLoaderService {
       this.gameBoundaryMat.envMap = cubemap;
       this.gameBoundaryMat.needsUpdate = true;
 
-      this.sceneBuilder.setEnvMaps(cubemap);
+      this.gameBoardMat.envMap = cubemap;
+      this.gameBoardMat.needsUpdate = true;
     }
   }
   getCubeMap(cubeMapId?: number): THREE.CubeTexture {
@@ -197,6 +228,28 @@ export class ObjectLoaderService {
       texData = this.texList.get(PlayerModel.bcap_NukaCola);
     }
     if (texData.tex === undefined || texData.spec === undefined) {
+      this.loadBcapTex(model, (tex) => {
+        if (tex !== undefined) {
+          const mesh: THREE.Mesh = obj as THREE.Mesh;
+          if (mesh.material instanceof THREE.Material) {
+            mesh.material = mesh.material.clone();
+            mesh.material['map'] = tex;
+          }
+        } else {
+          console.error('Error loading bcap texture', model);
+        }
+      });
+    } else {
+      const mesh: THREE.Mesh = obj as THREE.Mesh;
+      if (mesh.material instanceof THREE.Material) {
+        mesh.material = mesh.material.clone();
+        mesh.material['map'] = texData.tex;
+      }
+    }
+  }
+  loadBcapTex(model: PlayerModel, onDone: (tex: Texture) => void): void {
+    const texData: PlayerModelData = this.texList.get(model);
+    if (texData !== undefined) {
       const fname = texData.texFName || 'kronkorken1';
       const fnameSpec = texData.specFName || 'kronkorken1';
       const texture = new THREE.TextureLoader().load( '/assets/models/otherTex/' + fname + '.png' );
@@ -206,62 +259,71 @@ export class ObjectLoaderService {
       const gloss = new THREE.TextureLoader().load( '/assets/models/otherTex/' + fnameSpec + '.png' );
       gloss.encoding = THREE.LinearEncoding;
       texData.spec = gloss;
-    }
-
-    const mesh: THREE.Mesh = obj as THREE.Mesh;
-    if (mesh.material instanceof THREE.Material) {
-      mesh.material = mesh.material.clone();
-      mesh.material['map'] = texData.tex;
+      onDone(texture);
+    } else {
+      onDone(undefined);
     }
   }
 
-  private drawCanvas(canvas: HTMLCanvasElement,
-                     text: string,
-                     fontSize: number,
-                     font: string,
-                     textColor: Color,
-                     backgroundColor: Color,
-                     borderColor: Color,
-                     borderThickness: number,
-                     radius: number) {
-    const context = canvas.getContext('2d');
-    context.font = 'Bold ' + fontSize + 'px ' + font;
+  generateGameBoard(): THREE.Mesh {
+    const gameBoard = new THREE.Mesh(this.gameBoardGeo, this.gameBoardMat);
+    gameBoard.position.y = -.1;
+    gameBoard.castShadow = false;
+    gameBoard.receiveShadow = true;
+    gameBoard.name = 'gameboard';
+    this.gameBoardMat.roughness = .4;
 
-    // get size data (height depends only on font size)
-    const metrics = context.measureText( text );
-    const textWidth = metrics.width;
-    canvas.width = textWidth + borderThickness;
-    context.font = fontSize + 'px ' + font; // 'Bold ' +
+    this.tLoader.load(this.gameBoardTextureURL, (texture) => {
+      texture.encoding = THREE.sRGBEncoding;
+      texture.anisotropy = 16;
+      this.gameBoardMat.map = texture;
+      this.gameBoardMat.needsUpdate = true;
+    }, undefined, (error) => {
+      console.error(error);
+    });
+    return gameBoard;
+  }
+  loadGameTileTexture(texUrl: string, onLoad: (tex: THREE.Texture) => void) {
+    this.tLoader.load(texUrl, (texture) => {
+      texture.encoding = THREE.sRGBEncoding;
+      texture.anisotropy = 16;
+      onLoad(texture);
+    }, undefined, (error) => {
+      console.error(error);
+      onLoad(this.defaultTileTexture);
+    });
+  }
+  loadGameTile(): THREE.Mesh {
+    const gameTileMat = new THREE.MeshStandardMaterial({color: 0xffffff});
+    gameTileMat.roughness = .8;
+    const gameTile = new THREE.Mesh(this.gameTileGeo, gameTileMat);
+    gameTile.castShadow = true;
+    gameTile.receiveShadow = true;
+    gameTile.name = 'gametile';
 
-    // background color
-    context.fillStyle   = backgroundColor.toCSStext();
-    // border color
-    context.strokeStyle = borderColor.toCSStext();
+    gameTileMat.map = this.defaultTileTexture;
+    gameTileMat.needsUpdate = true;
+    return gameTile;
+  }
+  createBoundary(length: number, rotatedLandscape: boolean, center: THREE.Vector2) {
+    let w = .3, d = .3;
+    if (rotatedLandscape) {
+      w = length + .3;
+    } else {
+      d = length + .3;
+    }
 
-    context.lineWidth = borderThickness;
-    ((ctx, x, y, w, h, r) => {
-      ctx.beginPath();
-      ctx.moveTo(x + r, y);
-      ctx.lineTo(x + w - r, y);
-      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-      ctx.lineTo(x + w, y + h - r);
-      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-      ctx.lineTo(x + r, y + h);
-      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-      ctx.lineTo(x, y + r);
-      ctx.quadraticCurveTo(x, y, x + r, y);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-    })(context, borderThickness / 2, borderThickness / 2, textWidth, fontSize * 1.4, radius);
-    // 1.4 is extra height factor for text below baseline: g,j,p,q.
-
-    // text color
-    context.fillStyle = textColor.toCSStext();
-
-    context.fillText( text, borderThickness, fontSize + borderThickness);
+    const gameBoundaryGeo = new THREE.BoxBufferGeometry(w, .3, d);
+    this.gameBoundaryMat.metalness = 1;
+    this.gameBoundaryMat.roughness = .06;
+    const gameBoundary = new THREE.Mesh(gameBoundaryGeo, this.gameBoundaryMat);
+    gameBoundary.castShadow = true;
+    gameBoundary.receiveShadow = true;
+    gameBoundary.position.set(center.x, 0.7, center.y);
+    return gameBoundary;
 
   }
+
   updateLabelSpriteText(sprite: THREE.Sprite, text: string) {
     sprite.userData.text = ' ' + text + ' ';
     this.drawCanvas(sprite.userData.canvas, sprite.userData.text, sprite.userData.fontSize, sprite.userData.font, sprite.userData.textColor,
@@ -311,61 +373,50 @@ export class ObjectLoaderService {
     sprite.userData.radius = radius;
     return sprite;
   }
-  loadGameTileTexture(texUrl: string, onLoad: (tex: THREE.Texture) => void) {
-    this.tLoader.load(texUrl, (texture) => {
-      texture.encoding = THREE.sRGBEncoding;
-      texture.anisotropy = 16;
-      onLoad(texture);
-    }, undefined, (error) => {
-      console.error(error);
-      onLoad(this.defaultTileTexture);
-    });
-  }
-  loadGameTile(): THREE.Mesh {
-    const gameTileMat = new THREE.MeshStandardMaterial({color: 0xffffff});
-    gameTileMat.roughness = .8;
-    const gameTile = new THREE.Mesh(this.gameTileGeo, gameTileMat);
-    gameTile.castShadow = true;
-    gameTile.receiveShadow = true;
-    gameTile.name = 'gametile';
+  private drawCanvas(canvas: HTMLCanvasElement,
+                     text: string,
+                     fontSize: number,
+                     font: string,
+                     textColor: Color,
+                     backgroundColor: Color,
+                     borderColor: Color,
+                     borderThickness: number,
+                     radius: number) {
+    const context = canvas.getContext('2d');
+    context.font = 'Bold ' + fontSize + 'px ' + font;
 
-    gameTileMat.map = this.defaultTileTexture;
-    gameTileMat.needsUpdate = true;
-    console.log('adding DefaultTex');
-    return gameTile;
-  }
-  createBoundary(length: number, rotatedLandscape: boolean, center: THREE.Vector2) {
-    let w = .3, d = .3;
-    if (rotatedLandscape) {
-      w = length + .3;
-    } else {
-      d = length + .3;
-    }
+    // get size data (height depends only on font size)
+    const metrics = context.measureText( text );
+    const textWidth = metrics.width;
+    canvas.width = textWidth + borderThickness;
+    context.font = fontSize + 'px ' + font; // 'Bold ' +
 
-    const gameBoundaryGeo = new THREE.BoxBufferGeometry(w, .3, d);
-    this.gameBoundaryMat.metalness = 1;
-    this.gameBoundaryMat.roughness = .06;
-    const gameBoundary = new THREE.Mesh(gameBoundaryGeo, this.gameBoundaryMat);
-    gameBoundary.castShadow = true;
-    gameBoundary.receiveShadow = true;
-    gameBoundary.position.set(center.x, 0.7, center.y);
-    return gameBoundary;
+    // background color
+    context.fillStyle   = backgroundColor.toCSStext();
+    // border color
+    context.strokeStyle = borderColor.toCSStext();
 
-  }
+    context.lineWidth = borderThickness;
+    ((ctx, x, y, w, h, r) => {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    })(context, borderThickness / 2, borderThickness / 2, textWidth, fontSize * 1.4, radius);
+    // 1.4 is extra height factor for text below baseline: g,j,p,q.
 
-  async loadAllObjects(): Promise<void> {
-    const myPromise: Promise<void> = new Promise<void>((resolve, reject) => {
-      let i = this.entities.length;
-      this.entities.forEach((value: [PhysicsEntity, PhysicsEntityVariation], index: number) => {
-        this.loadObject(value[0], value[1], () => {
-          i--;
-          if (i <= 0) {
-            resolve();
-          }
-        });
-      });
-    });
+    // text color
+    context.fillStyle = textColor.toCSStext();
 
-    return myPromise;
+    context.fillText( text, borderThickness, fontSize + borderThickness);
   }
 }

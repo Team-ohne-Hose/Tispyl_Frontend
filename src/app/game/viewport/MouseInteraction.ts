@@ -2,8 +2,8 @@ import * as THREE from 'three';
 import {Camera, Object3D, Scene, Vector3} from 'three';
 import {BoardItemManagement} from './BoardItemManagement';
 import {ClickedTarget, PhysicsCommands} from './PhysicsCommands';
-import {ColyseusClientService} from '../../services/colyseus-client.service';
 import {BoardTilesService} from '../../services/board-tiles.service';
+import {GameStateService} from '../../services/game-state.service';
 
 export class MouseInteraction {
 
@@ -14,18 +14,16 @@ export class MouseInteraction {
 
   boardItemManager: BoardItemManagement;
   camera: Camera;
-  scene: Scene;
   interactable: Object3D[] = [];
 
   currentlySelected: {obj: THREE.Object3D, oldPos: Vector3};
 
-  constructor(scene: Scene, camera: Camera, boardItemManager: BoardItemManagement,
+  constructor(camera: Camera, boardItemManager: BoardItemManagement,
               private physics: PhysicsCommands,
-              private colyseus: ColyseusClientService,
+              private gameState: GameStateService,
               private boardTiles: BoardTilesService) {
     this.boardItemManager = boardItemManager;
     this.camera = camera;
-    this.scene = scene;
     this.physics.addInteractable = this.addInteractable.bind(this);
   }
   addInteractable(obj: Object3D) {
@@ -111,7 +109,7 @@ export class MouseInteraction {
           this.handleBoardTileClick(point);
           this.currentlySelected = undefined;
         } else {
-          if (this.colyseus.myFigureId === obj.userData.physicsId) {
+          if (this.gameState.getMyFigureId() === obj.userData.physicsId) {
             this.currentlySelected = {obj: obj, oldPos: obj.position.clone()};
             this.physics.setKinematic(PhysicsCommands.getPhysId(obj), true);
             this.boardItemManager.hoverGameFigure(this.currentlySelected.obj, point.x, point.z);

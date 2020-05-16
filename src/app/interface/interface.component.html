@@ -1,18 +1,27 @@
 
 <div class="interface-bounds">
   <app-state-display
-    [round]="currentState.round"
-    [currentPlayerDisplayName]="getDisplayName(currentState.currentPlayerLogin)"
-    [action]="currentState.action">
+    [round]="gameState.getState() === undefined ? '0' : gameState.getState().round"
+    [currentPlayerDisplayName]="gameState.getState() === undefined ? '' : getDisplayName(gameState.getState().currentPlayerLogin)"
+    [action]="gameState.getState() === undefined ? 'Waiting' : gameState.getState().action">
   </app-state-display>
   <app-chat-window (chatCommand)="executeChatCommand($event)" #chat></app-chat-window>
-  <app-pregame-banner *ngIf="!currentState.hasStarted" [players]="asArray(currentState.playerList)"></app-pregame-banner>
+  <app-pregame-banner *ngIf="gameState.getState() === undefined || !gameState.getState().hasStarted"
+                      [players]="gameState.getState() === undefined ? [] : asArray(gameState.getState().playerList)">
+  </app-pregame-banner>
   <app-connected-players
-    [players]="asArray(currentState.playerList)"
-    [currentPlayerDisplayName]="getDisplayName(currentState.currentPlayerLogin)">
+    [players]="gameState.getState() === undefined ? [] : asArray(gameState.getState().playerList)"
+    [currentPlayerDisplayName]="gameState.getState() === undefined ? '' : getDisplayName(gameState.getState().currentPlayerLogin)">
   </app-connected-players>
-  <app-ingame-rule-book [rules]="currentState.rules"></app-ingame-rule-book>
-  <app-next-turn-button *ngIf="currentState.hasStarted" ></app-next-turn-button>
-  <app-turn-overlay [ownTurn]="currentState.currentPlayerLogin === myName" [currentPlayerName]="getDisplayName(currentState.currentPlayerLogin)" #turnOverlay></app-turn-overlay>
-  <app-tile-overlay (printer)="print($event)" [playerName]="getDisplayName(currentState.currentPlayerLogin)"></app-tile-overlay>
+  <app-ingame-rule-book [rules]="gameState.getState() === undefined ? '' : gameState.getState().rules">
+  </app-ingame-rule-book>
+  <app-next-turn-button [disabled]="(gameState.getState() === undefined) || !gameState.getState().hasStarted" #nextTurn>
+  </app-next-turn-button>
+  <app-turn-overlay [ownTurn]="this.gameState.isMyTurn()"
+                    [currentPlayerName]="gameState.getState() === undefined ? '' : getDisplayName(gameState.getState().currentPlayerLogin)" #turnOverlay>
+  </app-turn-overlay>
+  <app-tile-overlay (printer)="print($event)"
+                    [playerName]="gameState.getState() === undefined ? '' : getDisplayName(gameState.getState().currentPlayerLogin)"
+                    #tileOverlay>
+  </app-tile-overlay>
 </div>

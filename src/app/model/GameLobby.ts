@@ -1,4 +1,3 @@
-
 export class GameLobby {
 
   constructor(name: string, author: string, creationDate: Date, roomId: string, playerCount: number) {

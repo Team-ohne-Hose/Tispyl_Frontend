@@ -1,7 +1,6 @@
 import { Component, OnInit} from '@angular/core';
 import {TranslationService} from '../services/translation.service';
 import {User} from '../model/User';
-import {GameLobby} from '../model/GameLobby';
 import {Translation} from '../model/Translation';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {OpenGamePopupComponent} from './dialogs/open-game-popup/open-game-popup.component';
