@@ -9,6 +9,7 @@ import {GameAction, GameActionType, MessageType} from '../model/WsData';
 import {GameInitialisationService} from '../services/game-initialisation.service';
 import {InterfaceComponent} from '../interface/interface.component';
 import {BoardTilesService} from '../services/board-tiles.service';
+import {LoadingScreenComponent} from './loading-screen/loading-screen.component';
 
 @Component({
   selector: 'app-game',
@@ -25,12 +26,14 @@ export class GameComponent implements OnInit, AfterViewInit {
 
   @ViewChild('viewRef') viewRef: ViewportComponent;
   @ViewChild('interfaceRef') interfaceRef: InterfaceComponent;
+  @ViewChild('loadingRef') loadingScreenRef: LoadingScreenComponent;
 
   // might be obsolete in the future
   cameraControl: CameraControl;
   boardItemControl: BoardItemManagement;
   audioCtrl: AudioControl;
   loadGame = true;
+  loadingScreenVisible = true;
 
   ngOnInit(): void {
       this.colyseus.getActiveRoom().subscribe((myRoom) => {
@@ -53,7 +56,8 @@ export class GameComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     if (this.loadGame) {
       this.interfaceRef.gameComponent = this;
-      this.gameInit.startInitialisation(this.viewRef,
+      this.gameInit.startInitialisation(this,
+        this.viewRef,
         this.viewRef.boardItemManager,
         this.viewRef.physics,
         this.interfaceRef.chatRef,

@@ -8,6 +8,7 @@ import {NextTurnButtonComponent} from '../interface/next-turn-button/next-turn-b
 import {TileOverlayComponent} from '../interface/tile-overlay/tile-overlay.component';
 import {BoardTilesService} from './board-tiles.service';
 import * as THREE from 'three';
+import {GameComponent} from '../game/game.component';
 
 export interface ColyseusNotifyable {
   attachColyseusStateCallbacks(): void;
@@ -23,6 +24,7 @@ export class GameInitialisationService {
   private staticReady = false;
 
   private viewPort: ViewportComponent;
+  private game: GameComponent;
   private boardTilesService: BoardTilesService;
 
   private colyseusNotifyableClasses: ColyseusNotifyable[] = [];
@@ -39,7 +41,8 @@ export class GameInitialisationService {
     }
   }
 
-  async startInitialisation(viewPort: ViewportComponent,
+  async startInitialisation(game: GameComponent,
+                            viewPort: ViewportComponent,
                             boardItemManagement: BoardItemManagement,
                             physicsCommands: PhysicsCommands,
                             chatWindowComponent: ChatWindowComponent,
@@ -48,6 +51,7 @@ export class GameInitialisationService {
                             boardTilesService: BoardTilesService) {
     this.logInit('starting Initialisation');
     this.viewPort = viewPort;
+    this.game = game;
     this.boardTilesService = boardTilesService;
 
     this.colyseusNotifyableClasses = [];
@@ -61,7 +65,7 @@ export class GameInitialisationService {
     this.logInit('loading Textures');
     await this.objectLoader.loadAllObjects((progress: number, total: number) => {
       this.logInit('static load: ' + progress + '/' + total, ((progress / total) * 50) + '%');
-      // TODO: Progressbar
+      game.loadingScreenRef.setProgress((progress / total) * 50);
     });
     console.log('static done');
 
@@ -93,10 +97,12 @@ export class GameInitialisationService {
     const doneCallback = () => {
       this.logInit('loading done. Entering Game..');
       this.viewPort.startRendering();
+      this.game.loadingScreenVisible = false;
     };
     const onProgress = () => {
       progress++;
       this.logInit('dynamic load: ' + progress + '/' + queued, ((progress / queued) * 50 + 50) + '%');
+      this.game.loadingScreenRef.setProgress(((progress / queued) * 50 + 50));
       if (progress >= queued) {
         doneCallback();
       }

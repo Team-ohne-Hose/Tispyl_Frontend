@@ -37,6 +37,7 @@ import { IngameRuleBookComponent } from './interface/ingame-rule-book/ingame-rul
 import { NextTurnButtonComponent } from './interface/next-turn-button/next-turn-button.component';
 import { TurnOverlayComponent } from './interface/turn-overlay/turn-overlay.component';
 import { TileOverlayComponent } from './interface/tile-overlay/tile-overlay.component';
+import { LoadingScreenComponent } from './game/loading-screen/loading-screen.component';
 
 const appRoutes: Routes = [
   { path: 'lobby', component: LobbyComponent},
@@ -71,7 +72,8 @@ const appRoutes: Routes = [
     IngameRuleBookComponent,
     NextTurnButtonComponent,
     TurnOverlayComponent,
-    TileOverlayComponent
+    TileOverlayComponent,
+    LoadingScreenComponent
   ],
   imports: [
     RouterModule.forRoot(
