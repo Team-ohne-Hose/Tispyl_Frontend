@@ -39,6 +39,23 @@
   margin-left: -1.5vw;
 }
 
+.tips {
+  display: flex;
+  position: fixed;
+  bottom: 7vw;
+  width: 90%;
+  height: 25%;
+  justify-content: center;
+  align-items: center;
+  vertical-align: middle;
+  font-family: Isocteur;
+  font-size: 4vw;
+  letter-spacing: -.8vw;
+  word-spacing: -.7vw;
+  margin-left: 0vw;
+  text-align: center;
+}
+
 @font-face {
   font-family: 'Isocteur';
   src: url('/assets/ISOCTEUR.ttf')  format('truetype'); /* Safari, Android, iOS. Path isnt recognised, because it isnt relative to this file but rather the compiled css */

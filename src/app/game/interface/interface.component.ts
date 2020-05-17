@@ -11,6 +11,7 @@ import {NextTurnButtonComponent} from './next-turn-button/next-turn-button.compo
 import {TileOverlayComponent} from './tile-overlay/tile-overlay.component';
 import {ColyseusNotifyable} from '../../services/game-initialisation.service';
 import {TurnOverlayComponent} from './turn-overlay/turn-overlay.component';
+import {HintsService} from '../../services/hints.service';
 
 
 @Component({
@@ -20,7 +21,7 @@ import {TurnOverlayComponent} from './turn-overlay/turn-overlay.component';
 })
 export class InterfaceComponent implements OnInit, ColyseusNotifyable {
 
-  constructor(private router: Router, public gameState: GameStateService) {
+  constructor(private router: Router, public gameState: GameStateService, private hints: HintsService) {
     this.routes = router.config.filter( route => route.path !== '**' && route.path.length > 0);
   }
 
@@ -40,11 +41,12 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
     {k: '/nextAction', f: this.advanceAction.bind(this), h: 'advance to the next action manually'},
     {k: '/next', f: this.advanceTurn.bind(this), h: 'advance the turn manually'},
     {k: '/fps', f: this.toggleFpsDisplay.bind(this), h: 'toggle the FPS display'},
-    {k: '/myTex', f: this.switchMyTex.bind(this), h: ' <id> sets the skin to skin <id> (0-11)'},
+    {k: '/myTex', f: this.switchMyTex.bind(this), h: '<id> sets the skin to skin <id> (0-11)'},
     {k: '/addRule', f: this.addRule.bind(this), h: 'adds a Rule to the Ruleboard'},
-    {k: '/deleteRule', f: this.deleteRule.bind(this), h: ' <id> deletes the rule with id'},
+    {k: '/deleteRule', f: this.deleteRule.bind(this), h: '<id> deletes the rule with id'},
     {k: '/dlScene', f: this.dlScene.bind(this), h: 'download the Scene as GLTF'},
-    {k: '/perspectiveChange', f: this.reverseTurnOrder.bind(this), h: 'Reverses the turn order'}
+    {k: '/perspectiveChange', f: this.reverseTurnOrder.bind(this), h: 'Reverses the turn order'},
+    {k: '/hint', f: this.printHint.bind(this), h: 'Gives a random hint'}
 
     // {k: '/addFigure', f: this.addGamefigure.bind(this), h: ''},
     // TODO readd a feature alike this one. But add a new Player for this client instead
@@ -57,6 +59,9 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
   }
   attachColyseusMessageCallbacks(): void {}
 
+  private printHint(): void {
+    this.print('TIPP: ' + this.hints.getRandomHint());
+  }
 
   private dlScene() {
     if (this.gameComponent !== undefined) {

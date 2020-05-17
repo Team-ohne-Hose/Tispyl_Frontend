@@ -50,6 +50,7 @@ export class GameInitialisationService {
                             tileOverlayComponent: TileOverlayComponent,
                             boardTilesService: BoardTilesService) {
     this.logInit('starting Initialisation');
+    game.loadingScreenRef.startTips();
     this.viewPort = viewPort;
     this.game = game;
     this.boardTilesService = boardTilesService;
@@ -98,6 +99,7 @@ export class GameInitialisationService {
     const doneCallback = () => {
       this.logInit('loading done. Entering Game..');
       this.viewPort.startRendering();
+      this.game.loadingScreenRef.stopTips();
       this.game.loadingScreenVisible = false;
     };
     const onProgress = () => {
