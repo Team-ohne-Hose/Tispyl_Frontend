@@ -9,6 +9,8 @@ import {GLTFExporter} from 'three/examples/jsm/exporters/GLTFExporter';
 import {GameStateService} from '../../services/game-state.service';
 import {NextTurnButtonComponent} from './next-turn-button/next-turn-button.component';
 import {TileOverlayComponent} from './tile-overlay/tile-overlay.component';
+import {ColyseusNotifyable} from '../../services/game-initialisation.service';
+import {TurnOverlayComponent} from './turn-overlay/turn-overlay.component';
 
 
 @Component({
@@ -16,7 +18,7 @@ import {TileOverlayComponent} from './tile-overlay/tile-overlay.component';
   templateUrl: './interface.component.html',
   styleUrls: ['./interface.component.css']
 })
-export class InterfaceComponent implements OnInit {
+export class InterfaceComponent implements OnInit, ColyseusNotifyable {
 
   constructor(private router: Router, public gameState: GameStateService) {
     this.routes = router.config.filter( route => route.path !== '**' && route.path.length > 0);
@@ -28,6 +30,7 @@ export class InterfaceComponent implements OnInit {
   @ViewChild('chat') chatRef: ChatWindowComponent;
   @ViewChild('nextTurn') nextTurnRef: NextTurnButtonComponent;
   @ViewChild('tileOverlay') tileOverlayRef: TileOverlayComponent;
+  @ViewChild('turnOverlay') turnOverlayRef: TurnOverlayComponent;
 
   knownCommands: any[] = [
     {k: '/help', f: this.printHelpCommand.bind(this), h: 'displays this help'},
@@ -46,6 +49,13 @@ export class InterfaceComponent implements OnInit {
     // {k: '/addFigure', f: this.addGamefigure.bind(this), h: ''},
     // TODO readd a feature alike this one. But add a new Player for this client instead
   ];
+
+  attachColyseusStateCallbacks(): void {
+    this.gameState.addNextTurnCallback((activePlayerLogin: string) => {
+      this.turnOverlayRef.show();
+    });
+  }
+  attachColyseusMessageCallbacks(): void {}
 
 
   private dlScene() {
