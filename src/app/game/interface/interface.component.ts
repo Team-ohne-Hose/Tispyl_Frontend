@@ -2,11 +2,11 @@ import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import {ChatWindowComponent} from './chat-window/chat-window.component';
 import {MapSchema} from '@colyseus/schema';
-import {GameComponent} from '../game/game.component';
-import {GameActionType, MessageType, PlayerMessageType, SetFigure} from '../model/WsData';
-import {Player} from '../model/state/Player';
+import {GameComponent} from '../game.component';
+import {GameActionType, MessageType, PlayerMessageType, SetFigure} from '../../model/WsData';
+import {Player} from '../../model/state/Player';
 import {GLTFExporter} from 'three/examples/jsm/exporters/GLTFExporter';
-import {GameStateService} from '../services/game-state.service';
+import {GameStateService} from '../../services/game-state.service';
 import {NextTurnButtonComponent} from './next-turn-button/next-turn-button.component';
 import {TileOverlayComponent} from './tile-overlay/tile-overlay.component';
 

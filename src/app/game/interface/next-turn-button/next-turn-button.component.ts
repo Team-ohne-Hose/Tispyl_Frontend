@@ -1,7 +1,7 @@
 import {Component, Input} from '@angular/core';
-import {GameActionType, MessageType} from '../../model/WsData';
-import {GameStateService} from '../../services/game-state.service';
-import {ColyseusNotifyable} from '../../services/game-initialisation.service';
+import {GameActionType, MessageType} from '../../../model/WsData';
+import {GameStateService} from '../../../services/game-state.service';
+import {ColyseusNotifyable} from '../../../services/game-initialisation.service';
 
 @Component({
   selector: 'app-next-turn-button',

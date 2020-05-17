@@ -1,7 +1,7 @@
 import {Component, ElementRef, EventEmitter, Output, ViewChild} from '@angular/core';
-import {MessageType, WsData} from '../../model/WsData';
-import {GameStateService} from '../../services/game-state.service';
-import {ColyseusNotifyable} from '../../services/game-initialisation.service';
+import {MessageType, WsData} from '../../../model/WsData';
+import {GameStateService} from '../../../services/game-state.service';
+import {ColyseusNotifyable} from '../../../services/game-initialisation.service';
 
 @Component({
   selector: 'app-chat-window',

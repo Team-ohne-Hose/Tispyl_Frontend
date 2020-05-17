@@ -1,0 +1,22 @@
+<div class="connected-player-box">
+  <div class="player-displays">
+
+    <div *ngFor="let p of players.filter(filterConnectedPlayers); index as i">
+      <din [ngClass]="{'display-wrap': true, 'active': this.currentPlayerDisplayName === p.displayName}">
+        <div class="display">
+          <div class="img-container">
+            <i *ngIf="p.isCurrentHost" class="fas fa-crown host"></i>
+            <i *ngIf="!p.isConnected" class="fas fa-wifi disconnected"></i>
+            <img class="avatar-img" [src]="getProfilePic(p.loginName)">
+          </div>
+          <span class="name">
+          <span class="index">{{i+1}}.</span>
+          <span class="spacer"></span>
+          <span>{{p.displayName}}</span>
+        </span>
+        </div>
+      </din>
+    </div>
+
+  </div>
+</div>

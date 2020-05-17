@@ -7,7 +7,7 @@ import {ColyseusClientService} from '../services/colyseus-client.service';
 import {ViewportComponent} from './viewport/viewport.component';
 import {GameAction, GameActionType, MessageType} from '../model/WsData';
 import {GameInitialisationService} from '../services/game-initialisation.service';
-import {InterfaceComponent} from '../interface/interface.component';
+import {InterfaceComponent} from './interface/interface.component';
 import {BoardTilesService} from '../services/board-tiles.service';
 import {LoadingScreenComponent} from './loading-screen/loading-screen.component';
 

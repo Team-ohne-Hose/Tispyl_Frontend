@@ -1,5 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
-import {TurnOverlayComponent} from '../interface/turn-overlay/turn-overlay.component';
+import {TurnOverlayComponent} from '../game/interface/turn-overlay/turn-overlay.component';
 
 @Component({
   selector: 'app-debugdummy',

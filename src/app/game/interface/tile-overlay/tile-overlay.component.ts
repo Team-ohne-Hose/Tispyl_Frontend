@@ -1,8 +1,8 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {GameActionType, GameShowTile, MessageType} from '../../model/WsData';
-import {BoardTilesService} from '../../services/board-tiles.service';
-import {GameStateService} from '../../services/game-state.service';
-import {ColyseusNotifyable} from '../../services/game-initialisation.service';
+import {GameActionType, GameShowTile, MessageType} from '../../../model/WsData';
+import {BoardTilesService} from '../../../services/board-tiles.service';
+import {GameStateService} from '../../../services/game-state.service';
+import {ColyseusNotifyable} from '../../../services/game-initialisation.service';
 
 
 @Component({

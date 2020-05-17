@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {GameActionType, MessageType} from '../../model/WsData';
-import {Player} from '../../model/state/Player';
-import {GameStateService} from '../../services/game-state.service';
+import {GameActionType, MessageType} from '../../../model/WsData';
+import {Player} from '../../../model/state/Player';
+import {GameStateService} from '../../../services/game-state.service';
 
 @Component({
   selector: 'app-pregame-banner',

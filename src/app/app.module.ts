@@ -26,17 +26,17 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { ViewportComponent } from './game/viewport/viewport.component';
 import { OpenGamePopupComponent } from './lobby/dialogs/open-game-popup/open-game-popup.component';
 import { JoinGameComponent } from './lobby/dialogs/join-game/join-game.component';
-import { InterfaceComponent } from './interface/interface.component';
+import { InterfaceComponent } from './game/interface/interface.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
-import { ChatWindowComponent } from './interface/chat-window/chat-window.component';
-import { StateDisplayComponent } from './interface/state-display/state-display.component';
-import { ConnectedPlayersComponent } from './interface/connected-players/connected-players.component';
-import { PregameBannerComponent } from './interface/pregame-banner/pregame-banner.component';
+import { ChatWindowComponent } from './game/interface/chat-window/chat-window.component';
+import { StateDisplayComponent } from './game/interface/state-display/state-display.component';
+import { ConnectedPlayersComponent } from './game/interface/connected-players/connected-players.component';
+import { PregameBannerComponent } from './game/interface/pregame-banner/pregame-banner.component';
 import { DebugdummyComponent } from './debugdummy/debugdummy.component';
-import { IngameRuleBookComponent } from './interface/ingame-rule-book/ingame-rule-book.component';
-import { NextTurnButtonComponent } from './interface/next-turn-button/next-turn-button.component';
-import { TurnOverlayComponent } from './interface/turn-overlay/turn-overlay.component';
-import { TileOverlayComponent } from './interface/tile-overlay/tile-overlay.component';
+import { IngameRuleBookComponent } from './game/interface/ingame-rule-book/ingame-rule-book.component';
+import { NextTurnButtonComponent } from './game/interface/next-turn-button/next-turn-button.component';
+import { TurnOverlayComponent } from './game/interface/turn-overlay/turn-overlay.component';
+import { TileOverlayComponent } from './game/interface/tile-overlay/tile-overlay.component';
 import { LoadingScreenComponent } from './game/loading-screen/loading-screen.component';
 
 const appRoutes: Routes = [

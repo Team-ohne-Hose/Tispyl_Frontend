@@ -1,6 +1,6 @@
 import {Component, Input} from '@angular/core';
-import {Player} from '../../model/state/Player';
-import {FileService} from '../../services/file.service';
+import {Player} from '../../../model/state/Player';
+import {FileService} from '../../../services/file.service';
 
 @Component({
   selector: 'app-connected-players',
@@ -20,5 +20,8 @@ export class ConnectedPlayersComponent {
   getProfilePic(name) {
     // HACK !
     return this.fileManagement.tameProfilePictureSource(name);
+  }
+  filterConnectedPlayers(value: Player, index: number, list: Player[]): boolean {
+    return !value.hasLeft;
   }
 }
