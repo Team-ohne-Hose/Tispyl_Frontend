@@ -112,7 +112,7 @@ export class ObjectLoaderService {
     figure: {
       default: {
         cname: 'figureDefault',
-        fname: 'figureDefault.gltf',
+        fname: 'figureDefault.glb',
         objectCache: undefined
       }
     }
