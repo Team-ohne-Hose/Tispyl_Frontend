@@ -69,12 +69,14 @@ export class ColyseusClientService {
     this.activeRoom.next(newRoom);
   }
 
-  createRoom(roomName: string, author: string, loginName: string, displayName: string) {
+  createRoom(roomName: string, author: string, loginName: string, displayName: string, skin: string, randomizeTiles: boolean) {
     const options = {
       name: roomName,
       author: author,
       login: loginName,
-      displayName: displayName
+      displayName: displayName,
+      skin: skin,
+      randomizeTiles: randomizeTiles
     };
 
     if (roomName !== undefined) {

@@ -50,17 +50,28 @@ export class LobbyComponent implements OnInit {
   }
 
   create() { // TODO: CLEAN THIS UP !
-    const dialogRef: MatDialogRef<OpenGamePopupComponent, string> = this.dialog.open(OpenGamePopupComponent, {
+    const dialogRef: MatDialogRef<OpenGamePopupComponent, {roomName: string, skinName: string, randomizeTiles: boolean}> =
+      this.dialog.open(OpenGamePopupComponent, {
       width: '80%',
       maxWidth: '500px',
-      height: '30%',
-      maxHeight: '250px',
+      height: '70%',
+      maxHeight: '350px',
       data: { user: this.currentUser},
       panelClass: 'modalbox-base'
     });
 
-    dialogRef.afterClosed().subscribe(roomName => {
-      this.colyseus.createRoom(roomName, this.currentUser.display_name, this.currentUser.login_name, this.currentUser.display_name);
+    dialogRef.afterClosed().subscribe(results => {
+      if (results !== undefined) {
+        console.log('dialog results are: ', results);
+        this.colyseus.createRoom(results.roomName,
+          this.currentUser.display_name,
+          this.currentUser.login_name,
+          this.currentUser.display_name,
+          results.skinName,
+          results.randomizeTiles);
+      } else {
+        console.log('closed Dialog without result');
+      }
     });
   }
 

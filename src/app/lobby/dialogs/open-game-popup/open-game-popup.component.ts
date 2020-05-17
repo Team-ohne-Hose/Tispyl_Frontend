@@ -9,8 +9,11 @@ import {RegisterPopupComponent} from '../register-popup/register-popup.component
 })
 export class OpenGamePopupComponent implements OnInit {
   lobbyName;
+  skinName: string;
+  randomizeTiles;
 
-  constructor(private  dialogRef:  MatDialogRef<OpenGamePopupComponent, string>, @Inject(MAT_DIALOG_DATA) public  data:  any) {
+  constructor(private dialogRef:  MatDialogRef<OpenGamePopupComponent, {roomName: string, skinName: string, randomizeTiles: boolean}>,
+              @Inject(MAT_DIALOG_DATA) public data: any) {
   }
 
   public closeMe() {
@@ -18,7 +21,10 @@ export class OpenGamePopupComponent implements OnInit {
   }
   public createGame() {
     if (this.lobbyName !== undefined) {
-      this.dialogRef.close(this.lobbyName);
+      this.dialogRef.close({
+        roomName: this.lobbyName,
+        skinName: this.skinName !== undefined && this.skinName.length > 0 ? this.skinName : 'default',
+        randomizeTiles: this.randomizeTiles || false});
     } else {
       console.log('No lobbyName was entered.');
       this.dialogRef.close();

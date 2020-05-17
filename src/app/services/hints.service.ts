@@ -28,7 +28,8 @@ export class HintsService {
     'Halte die Fenster geschlossen, wenn die Chemtrail-Helis mit dem Desinfektionsmittel kommen!',
     'Wer das liest ist doof!',
     'Im Tischspiel kann man beim rückwärtslaufen nicht an kleinen Ecken hängenbleiben!',
-    'Nimm dich vor den russischen Hackern in acht!'
+    'Nimm dich vor den russischen Hackern in acht!',
+    'Wer das liest muss trinken!'
   ];
 
 
