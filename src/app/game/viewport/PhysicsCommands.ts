@@ -220,7 +220,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
     };
     this.sendMessage(msg);
   }
-  setRotationQuat(physId, quat: THREE.Quaternion) {
+  /*setRotationQuat(physId, quat: THREE.Quaternion) {
     this.setRotation(physId, quat.x, quat.y, quat.z, quat.w);
   }
   setRotation(physId: number, x: number, y: number, z: number, w: number) {
@@ -234,7 +234,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
       quaternionW: w
     };
     this.sendMessage(msg);
-  }
+  }*/
   setVelocity(physId: number, x: number, y: number, z: number) {
     const msg: PhysicsCommandVelocity = {
       type: MessageType.PHYSICS_MESSAGE,
@@ -267,7 +267,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
   private sendMessage(msg: PhysicsCommand) {
     const room = this.gameState.getRoom();
     if (msg !== undefined && room !== undefined) {
-      room.send(msg);
+      room.send('', msg);
     }
   }
 }

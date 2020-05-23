@@ -1,5 +1,4 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {key} from 'colyseus.js/lib/sync/helpers';
 
 @Component({
   selector: 'app-state-display',

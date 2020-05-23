@@ -47,6 +47,9 @@ import {MatStepperModule} from '@angular/material/stepper';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { VoteCreationComponent } from './customUI/vote-creation/vote-creation.component';
 import {CdkStepperModule} from '@angular/cdk/stepper';
+import { MenuBarComponent } from './menu-bar/menu-bar.component';
+import {MatExpansionModule} from '@angular/material/expansion';
+import { HomeRegisterComponent } from './home-register/home-register.component';
 
 const appRoutes: Routes = [
   { path: 'lobby', component: LobbyComponent},
@@ -84,7 +87,9 @@ const appRoutes: Routes = [
     TileOverlayComponent,
     LoadingScreenComponent,
     VoteSystemComponent,
-    VoteCreationComponent
+    VoteCreationComponent,
+    MenuBarComponent,
+    HomeRegisterComponent
   ],
   imports: [
     RouterModule.forRoot(
@@ -99,6 +104,7 @@ const appRoutes: Routes = [
     MatButtonModule,
     MatCardModule,
     MatSelectModule,
+    MatExpansionModule,
     MatFormFieldModule,
     FormsModule,
     MatIconModule,
