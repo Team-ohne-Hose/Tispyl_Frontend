@@ -1,0 +1,82 @@
+<div class="register-card-base">
+
+    <div class="user-info-box">
+
+    <div class="avatar-section">
+      <div class="round-avatar golden-border">
+        <img [src]="profileSource" alt="'Profile'">
+      </div>
+      <div class="upload-icon"><i class="fas fa-file-upload"></i></div>
+    </div>
+
+    <div class="info-section">
+      <div>
+        <div class="user-name">Victor autem Omot</div>
+        <div class="sub-script">Role: Host</div>
+        <div class="sub-script">Time played: 21h 44m</div>
+      </div>
+    </div>
+
+    <div class="bottle-cap-section">
+      <div><i class="fas fa-chevron-left"></i></div>
+      <div class="round-avatar golden-border bottle-cap">
+        <img [src]="bottleCapSource" alt="'Profile'">
+      </div>
+      <div><i class="fas fa-chevron-right"></i></div>
+    </div>
+
+  </div>
+
+    <div class="seperator"></div>
+
+    <div class="another">
+    Trinkbuddy display !
+    Trinkbuddy display !
+    Trinkbuddy display !Trinkbuddy display !
+    Trinkbuddy display !
+    Trinkbuddy display !
+    Trinkbuddy display !
+    Trinkbuddy display !
+    Trinkbuddy display !Trinkbuddy display !
+    Trinkbuddy display !
+    Trinkbuddy display !
+    Trinkbuddy display !Trinkbuddy display !
+    Trinkbuddy display !
+    Trinkbuddy display !
+    Trinkbuddy display !
+    Trinkbuddy display !
+    Trinkbuddy display !Trinkbuddy display !
+    </div>
+
+    <div class="seperator"></div>
+
+    <div class="chat-box">
+
+        <div class="text-section">
+          <div *ngFor="let msg of chatMessages" [ngClass]="{'move-right': msg.sender === 'tiz'}">
+            <div class="chat-message">
+              <div class="head-row">
+                <div class="sender"><i class="fas fa-user"></i>{{msg.sender}}</div>
+                <div class="time">{{msg.timestamp | date: 'shortTime'}}</div>
+              </div>
+              <div class="body">
+                {{msg.text}}
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+      <div class="seperator"></div>
+
+      <div class="input-section">
+        <div class="command-hint"><i class="fas fa-terminal"></i></div>
+        <div class="text-input-container" (keyup)="sendChatMessageByKey($event, chatInput)">
+          <input type="text" placeholder="Type here ..." #chatInput>
+        </div>
+        <div class="post-button" (click)="sendChatMessage(chatInput)"><i class="fas fa-share"></i></div>
+      </div>
+
+    </div>
+
+</div>

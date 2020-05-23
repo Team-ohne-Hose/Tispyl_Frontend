@@ -1,0 +1,33 @@
+
+<div class="outer-register-bounds">
+
+  <div class="register-tab-container">
+    <div class="register-tab" (click)="toggleTab($event)">
+      <div class="register-icon-box"><i class="fas fa-home avoid-clicks"></i></div>
+      <div class="corner"></div>
+    </div>
+
+    <div class="register-tab" (click)="toggleTab($event)">
+      <div class="register-icon-box"><i class="fas fa-clipboard avoid-clicks"></i></div>
+      <div class="corner selected"></div>
+    </div>
+
+    <div class="register-tab" (click)="toggleTab($event)">
+      <div class="register-icon-box"><i class="fas fa-person-booth avoid-clicks"></i></div>
+      <div class="corner"></div>
+    </div>
+
+    <div class="register-tab-footer" #registerFooter>
+      <div class="reverse-corner"></div>
+      <div class="footer-box"></div>
+    </div>
+
+  </div>
+
+  <div class="register-edge" #tabEdge></div>
+
+  <div class="register-content">
+    <app-home-register *ngIf="tabIndex === 0">KACKE PIMMEL !</app-home-register>
+  </div>
+</div>
+
