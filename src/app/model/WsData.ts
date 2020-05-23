@@ -39,9 +39,25 @@ export enum GameActionType {
   showTile,
   setTile,
   refreshData,
-  diceRolled
+  diceRolled,
+  startCreateVote,
+  createVote,
+  openVote,
+  playerVote,
+  closeVote
 }
-export type GameMessage = GameAction | GameSetTile | GameShowTile | GameReadyProperty | GameAddRule | GameDeleteRule | GameDiceRoll;
+export type GameMessage = GameAction |
+  GameSetTile |
+  GameShowTile |
+  GameReadyProperty |
+  GameAddRule |
+  GameDeleteRule |
+  GameDiceRoll |
+  GameStartCreatingVote |
+  GameCreateVote |
+  GameOpenVote |
+  GamePlayerVote |
+  GameCloseVote;
 type actionTypes = GameActionType.none |
   GameActionType.advanceRound |
   GameActionType.advanceAction |
@@ -85,6 +101,34 @@ export interface GameSetTile {
   playerId: string;
   tileId: number;
 }
+export interface GameStartCreatingVote {
+  type: MessageType.GAME_MESSAGE;
+  action: GameActionType.startCreateVote;
+}
+export interface GameCreateVote {
+  type: MessageType.GAME_MESSAGE;
+  action: GameActionType.createVote;
+  authorId: string;
+  eligible: string[];
+  customVote: boolean;
+  options: string[];
+}
+export interface GameOpenVote {
+  type: MessageType.GAME_MESSAGE;
+  action: GameActionType.openVote;
+}
+export interface GamePlayerVote {
+  type: MessageType.GAME_MESSAGE;
+  action: GameActionType.playerVote;
+  vote: string;
+}
+export interface GameCloseVote {
+  type: MessageType.GAME_MESSAGE;
+  action: GameActionType.closeVote;
+}
+
+
+
 export type PlayerMessage = SetFigure;
 export enum PlayerMessageType {
   setFigure

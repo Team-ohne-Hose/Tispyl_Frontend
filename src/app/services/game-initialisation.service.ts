@@ -45,9 +45,6 @@ export class GameInitialisationService {
                             viewPort: ViewportComponent,
                             boardItemManagement: BoardItemManagement,
                             physicsCommands: PhysicsCommands,
-                            chatWindowComponent: ChatWindowComponent,
-                            nextTurnButtonComponent: NextTurnButtonComponent,
-                            tileOverlayComponent: TileOverlayComponent,
                             boardTilesService: BoardTilesService) {
     this.logInit('starting Initialisation');
     game.loadingScreenRef.startTips();
@@ -59,9 +56,10 @@ export class GameInitialisationService {
     this.colyseusNotifyableClasses.push(this.boardTilesService);
     this.colyseusNotifyableClasses.push(boardItemManagement);
     this.colyseusNotifyableClasses.push(physicsCommands);
-    this.colyseusNotifyableClasses.push(chatWindowComponent);
-    this.colyseusNotifyableClasses.push(nextTurnButtonComponent);
-    this.colyseusNotifyableClasses.push(tileOverlayComponent);
+    this.colyseusNotifyableClasses.push(game.interfaceRef.chatRef);
+    this.colyseusNotifyableClasses.push(game.interfaceRef.nextTurnRef);
+    this.colyseusNotifyableClasses.push(game.interfaceRef.tileOverlayRef);
+    this.colyseusNotifyableClasses.push(game.interfaceRef.voteSystemRef);
     this.colyseusNotifyableClasses.push(game.interfaceRef);
 
     this.logInit('loading Textures');

@@ -85,3 +85,34 @@ html, body { height: 100%; }
   color: whitesmoke;
   padding: 0;
 }
+.mat-chip-list .mat-standard-chip {
+  min-height: 18px;
+  max-height: 18px;
+  height: 18px;
+  border-radius: 3px;
+  padding: 0px 0px 0px 6px;
+  /* background-color: rgba(192, 192, 192, 1);*/
+  background: radial-gradient(ellipse farthest-corner at right top, #e0e0e0c0 0%, #c0c0c0c0 8%, #959595c0 25%, #7f7f7fc0 97%, #727272c0 100%);
+  color: #ffffff;
+  /*background: radial-gradient(ellipse farthest-corner at right top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 97%, #5d4a1f 100%);*/
+}
+.playerList .mat-chip-list .mat-chip-list-wrapper .mat-standard-chip {
+  min-height: 18px;
+  max-height: 18px;
+  min-width: 100px;
+  width: 70%;
+  height: 18px;
+  border-radius: 3px;
+  padding: 0px 0px 0px 6px;
+  background-color: rgba(192, 192, 192, 1);
+  margin-top: 2px;
+  margin-bottom: 2px;
+  flex-direction: row;
+}
+.playerList .mat-chip-list .mat-chip-list-wrapper {
+  flex-direction: column;
+  justify-items: start;
+  align-items: start;
+  padding: 3px 5px 3px;
+  margin: 0px;
+}

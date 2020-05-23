@@ -1,0 +1,156 @@
+
+<div [ngClass]="{'tray-wrapper': true, 'hidden': this.hidden}">
+
+  <div class="tray-handle" (click)="toggleMove($event)">
+    <i [ngClass]="hidden ? 'fas fa-rotate-180 fa-arrow-right' : 'fas fa-arrow-right'"></i>
+  </div>
+
+  <div class="tray">
+    <div class="gold-border">
+      <div class="paper-body">
+        <div class="content-head">
+          <div class="headline-text">
+            {{getTitle()}}
+          </div>
+        </div>
+        <mat-card *ngIf="showState === VoteState.default" class="votingContainer"><!-- Starting default -->
+          <mat-card-content style="display: flex;  height: 100%">
+            <button mat-raised-button style="position:fixed; width: 80%; bottom: 10%; left: 10%; right: 10%; height: 10%" (click)="createNewVoting()">Create new Voting</button>
+          </mat-card-content>
+        </mat-card>
+        <mat-card *ngIf="showState === VoteState.waiting" class="votingContainer"><!-- wait for creation -->
+          <mat-card-title>Test is creating a new Game</mat-card-title>
+          <mat-card-content style="margin-top: 20%; display: flex; justify-content: center; align-content: center; height: 100%">
+            <mat-progress-spinner class="progressSpinner" mode="indeterminate"></mat-progress-spinner>
+          </mat-card-content>
+        </mat-card>
+        <mat-card *ngIf="showState === VoteState.creating" class="votingContainerCreate"><!-- creation -->
+          <app-vote-creation style="width: 100%; height: 90%">
+            <cdk-step label="Who should vote">
+              <div class="playerList">
+                <mat-chip-list style="display: flex; flex-direction: column;" aria-label="Options">
+                  <mat-chip *ngFor="let p of players" [selectable]="false" [removable]="false" [ngClass]="{deselected: playerDeselected.get(p.loginName)}">
+                    {{p.displayName}}
+                    <svg class="clearIcon" height="18" width="22" (click)="togglePlayer(p)">
+                      <defs>
+                        <radialGradient id="copperGradient" cx="85%" cy="10%" r="100%">
+                          <stop offset="20%" style="stop-color:#d44300;stop-opacity:1" />
+                          <stop offset="100%" style="stop-color:#662000;stop-opacity:1" />
+                        </radialGradient>
+                        <radialGradient id="greenGradient" cx="85%" cy="10%" r="100%">
+                          <stop offset="20%" style="stop-color:#1fd000;stop-opacity:.7" />
+                          <stop offset="100%" style="stop-color:#14471a;stop-opacity:.6" />
+                        </radialGradient>
+                      </defs>
+                      <path [ngClass]="{playerAdded: !playerDeselected.get(p.loginName), playerRemoved: playerDeselected.get(p.loginName)}" d="M0 0
+                      L19 0
+                      A3 3 0 0 1 22 3
+                      L22 15
+                      A3 3 0 0 1 19 18
+                      L3 18
+                      C 3 8 0 10 0 0
+                      Z"/>
+                      <line x1="10" y1="6" x2="16" y2="12" style="stroke:white;stroke-width:2" [ngClass]="{transformationX: true, rotatedX: playerDeselected.get(p.loginName)}" #line11/>
+                      <line x1="16" y1="6" x2="10" y2="12" style="stroke:white;stroke-width:2" [ngClass]="{transformationX: true, rotatedX: playerDeselected.get(p.loginName)}"#line12/>
+                    </svg>
+                  </mat-chip>
+                </mat-chip-list>
+              </div>
+            </cdk-step>
+            <cdk-step label="What to vote">
+              <mat-chip-list class="actionButtons">
+                <mat-chip (click)="addPlayerOptions()" style="padding-right: 5px">add all Players</mat-chip>
+                <mat-chip (click)="clearOptions()" style="padding-right: 5px">clear List</mat-chip>
+              </mat-chip-list>
+              <mat-form-field class="example-chip-list">
+                <mat-chip-list #chipList aria-label="Options">
+                  <mat-chip *ngFor="let opt of options" [selectable]="true"
+                            [removable]="true" (removed)="removeOption(opt)">
+                    {{opt.name}}
+                    <svg class="clearIcon matChipRemove" height="18" width="22" (click)="removeOption(opt)">
+                      <defs>
+                        <radialGradient id="copperGradient" cx="85%" cy="10%" r="100%">
+                          <stop offset="20%" style="stop-color:#d44300;stop-opacity:1" />
+                          <stop offset="100%" style="stop-color:#662000;stop-opacity:1" />
+                        </radialGradient>
+                      </defs>
+                      <path d="M0 0
+                      L19 0
+                      A3 3 0 0 1 22 3
+                      L22 15
+                      A3 3 0 0 1 19 18
+                      L3 18
+                      C 3 8 0 10 0 0
+                      Z" fill="url(#copperGradient)"/>
+                      <line x1="10" y1="6" x2="16" y2="12" style="stroke:white;stroke-width:2" />
+                      <line x1="16" y1="6" x2="10" y2="12" style="stroke:white;stroke-width:2" />
+                      Sorry, your browser does not support inline SVG.
+                    </svg>
+                  </mat-chip>
+                  <input placeholder="Options"
+                         [matChipInputFor]="chipList"
+                         [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                         [matChipInputAddOnBlur]="true"
+                         (matChipInputTokenEnd)="addOption($event)">
+                </mat-chip-list>
+              </mat-form-field>
+            </cdk-step>
+          </app-vote-creation>
+          <div class="completeButtonContainer">
+            <button mat-fab color="primary" aria-label="StartSurvey" (click)="startNewVote()">
+              <mat-icon>send</mat-icon>
+            </button>
+          </div>
+        </mat-card>
+        <mat-card *ngIf="showState === VoteState.voting" class="votingContainer"><!-- vote -->
+          <mat-list>
+            <div mat-subheader class="cardTitle">Voting</div>
+            <mat-list-item *ngFor="let p of players">
+              <img mat-list-icon [src]="fileService.tameProfilePictureSource(p.loginName)" />
+              <mat-list-item class="playerName">{{p.displayName}}</mat-list-item>
+              <mat-chip-list style="justify-self: right">
+                <mat-chip (click)="vote(p.loginName)">Vote</mat-chip>
+              </mat-chip-list>
+            </mat-list-item>
+          </mat-list>
+          <button mat-raised-button (click)="closeVoting()">close Voting</button>
+        </mat-card>
+        <mat-card *ngIf="showState === VoteState.results" class="votingContainer"><!-- results -->
+          <mat-list>
+            <div mat-subheader class="cardTitle">Results</div>
+            <mat-list-item *ngFor="let p of players">
+              <img mat-list-icon [src]="fileService.tameProfilePictureSource(p.loginName)" />
+              <mat-list-item class="playerName">{{p.displayName}}</mat-list-item>
+              <mat-chip-list style="justify-self: right">
+                <mat-chip disabled>{{getVotes()[p.loginName] || 0}}</mat-chip>
+              </mat-chip-list>
+            </mat-list-item>
+          </mat-list>
+          <button mat-raised-button (click)="createNewVoting()">create new Voting</button>
+        </mat-card>
+        <!--
+      <div class="votingContainer">
+        <div class="voteGridContainer" *ngIf="(!showResults)">
+          <ng-container *ngFor="let p of players">
+            <div class="playerTag">
+              {{p.displayName}}
+            </div>
+            <button class="voteButton" (click)="vote(p.loginName)">Vote!</button>
+          </ng-container>
+        </div>
+        <div class="resultGridContainer" *ngIf="showResults">
+          <ng-container *ngFor="let p of players">
+            <div class="playerTag">
+              {{p.displayName}}
+            </div>
+            <div class="voteCountTag">
+              {{getVotes()[p.loginName] || 0}}
+            </div>
+          </ng-container>
+          <button class="newVoteButton" (click)="newVote()">Start New Vote</button>
+        </div>
+        </div>-->
+      </div>
+    </div>
+  </div>
+</div>

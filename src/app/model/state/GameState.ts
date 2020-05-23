@@ -2,6 +2,7 @@ import {Schema, ArraySchema, MapSchema, type} from '@colyseus/schema';
 import {PhysicsState} from './PhysicsState';
 import {Player} from './Player';
 import {BoardLayoutState} from './BoardLayoutState';
+import {VoteState} from './VoteState';
 
 export enum Actions {
   ROLL,
@@ -36,4 +37,10 @@ export class GameState extends Schema {
 
   @type(BoardLayoutState)
   boardLayout: BoardLayoutState;
+
+  @type('boolean')
+  reversed = false;
+
+  @type(VoteState)
+  voteState: VoteState = new VoteState();
 }

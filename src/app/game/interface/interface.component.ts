@@ -12,6 +12,7 @@ import {TileOverlayComponent} from './tile-overlay/tile-overlay.component';
 import {ColyseusNotifyable} from '../../services/game-initialisation.service';
 import {TurnOverlayComponent} from './turn-overlay/turn-overlay.component';
 import {HintsService} from '../../services/hints.service';
+import {VoteSystemComponent} from './vote-system/vote-system.component';
 
 
 @Component({
@@ -32,6 +33,7 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
   @ViewChild('nextTurn') nextTurnRef: NextTurnButtonComponent;
   @ViewChild('tileOverlay') tileOverlayRef: TileOverlayComponent;
   @ViewChild('turnOverlay') turnOverlayRef: TurnOverlayComponent;
+  @ViewChild('voteSystem') voteSystemRef: VoteSystemComponent;
 
   knownCommands: any[] = [
     {k: '/help', f: this.printHelpCommand.bind(this), h: 'displays this help'},
@@ -136,7 +138,7 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
   }
 
   private showLocalState( args ) {
-    this.print(`State ${this.gameState.getState() === undefined ? '' : JSON.stringify(this.gameState.getState())}`);
+    console.log(`State`, this.gameState.getState() === undefined ? '' : this.gameState.getState());
   }
 
   private advanceAction( args ) {

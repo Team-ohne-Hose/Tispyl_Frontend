@@ -1,18 +1,37 @@
 
-.debug-buttons {
+
+.tray-wrapper {
+  pointer-events: visibleFill;
+
+  transition-property: transform;
+  transition-duration: 1.5s;
+  transition-timing-function: cubic-bezier(.63,-0.34,.36,1.22);
+
+  filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, 0.6));
+  background-color: transparent;
   position: fixed;
-  bottom: 0;
+  display: inline-flex;
+  margin: auto;
+  height: 40vh;
+  padding-right: 2em;
+  top: 57%;
+  right: 0;
 }
 
-.debug-buttons button {
-  margin-left: 1em;
+.tray-handle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 3em;
+  width: 2.5em;
+  height: 3em;
+  background-color: rgba(61, 61, 61, 0.8);
 }
 
 .tray {
   padding: 0.75em;
   background-color: rgba(61, 61, 61, 0.8);
   width: 25em;
-  height: 20em;
   display: flex;
 
 }
@@ -29,9 +48,10 @@
 
 .paper-body {
   color: #4b4b4b;
-  background: url("../../assets/old-paper-texture-background.jpg");
+  background: url("../../../../assets/old-paper-texture-background.jpg");
   box-shadow: inset 0 0 0.2em 0.15em rgba(0, 0, 0, 0.6);
   flex-grow: 1;
+  padding-top: 8px;
   display: flex;
   flex-direction: column;
 }
@@ -47,6 +67,24 @@
 }
 
 .votingContainer {
+  overflow-y: auto;
+  margin: 15px;
+  padding: 5px 5px 15px;
+  background-color: rgba(16, 16, 16, 0.4);
+  color: whitesmoke;
+  height: 100%;
+}
+.playerName {
+  color: white;
+}
+.cardTitle {
+  color: whitesmoke;
+}
+
+.hidden {
+  transform: translateX(28.5em);
+}
+.votingContainerCreate {
   margin: 10px;
   padding: 5px 5px 5px;
   background-color: rgba(16, 16, 16, 0);

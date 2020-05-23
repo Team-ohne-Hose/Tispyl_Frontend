@@ -38,6 +38,15 @@ import { NextTurnButtonComponent } from './game/interface/next-turn-button/next-
 import { TurnOverlayComponent } from './game/interface/turn-overlay/turn-overlay.component';
 import { TileOverlayComponent } from './game/interface/tile-overlay/tile-overlay.component';
 import { LoadingScreenComponent } from './game/loading-screen/loading-screen.component';
+import { VoteSystemComponent } from './game/interface/vote-system/vote-system.component';
+import {MatIconModule} from '@angular/material/icon';
+import {MatListModule} from '@angular/material/list';
+import {MatChipsModule} from '@angular/material/chips';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatStepperModule} from '@angular/material/stepper';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { VoteCreationComponent } from './customUI/vote-creation/vote-creation.component';
+import {CdkStepperModule} from '@angular/cdk/stepper';
 
 const appRoutes: Routes = [
   { path: 'lobby', component: LobbyComponent},
@@ -73,7 +82,9 @@ const appRoutes: Routes = [
     NextTurnButtonComponent,
     TurnOverlayComponent,
     TileOverlayComponent,
-    LoadingScreenComponent
+    LoadingScreenComponent,
+    VoteSystemComponent,
+    VoteCreationComponent
   ],
   imports: [
     RouterModule.forRoot(
@@ -89,7 +100,14 @@ const appRoutes: Routes = [
     MatCardModule,
     MatSelectModule,
     MatFormFieldModule,
-    FormsModule
+    FormsModule,
+    MatIconModule,
+    MatListModule,
+    MatChipsModule,
+    MatProgressSpinnerModule,
+    MatStepperModule,
+    MatSlideToggleModule,
+    CdkStepperModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -60,9 +60,6 @@ export class GameComponent implements OnInit, AfterViewInit {
         this.viewRef,
         this.viewRef.boardItemManager,
         this.viewRef.physics,
-        this.interfaceRef.chatRef,
-        this.interfaceRef.nextTurnRef,
-        this.interfaceRef.tileOverlayRef,
         this.boardTilesService);
     }
   }

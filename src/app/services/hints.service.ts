@@ -29,7 +29,10 @@ export class HintsService {
     'Wer das liest ist doof!',
     'Im Tischspiel kann man beim rückwärtslaufen nicht an kleinen Ecken hängenbleiben!',
     'Nimm dich vor den russischen Hackern in acht!',
-    'Wer das liest muss trinken!'
+    'Wer das liest muss trinken!',
+    'Man kann Äpfel und Birnen vergleichen, da beides zu den Rosaceaen gehören',
+    'Domi ist in Dörfen!',
+    'Triggerwarnung! Es gibt nur ein Feld dass CC anwendet!'
   ];
 
 
