@@ -104,6 +104,7 @@ export interface GameSetTile {
 export interface GameStartCreatingVote {
   type: MessageType.GAME_MESSAGE;
   action: GameActionType.startCreateVote;
+  authorLogin: string;
 }
 export interface GameCreateVote {
   type: MessageType.GAME_MESSAGE;

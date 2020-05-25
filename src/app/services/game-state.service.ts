@@ -9,6 +9,7 @@ import {PhysicsObjectState, PhysicsState} from '../model/state/PhysicsState';
 import {BoardLayoutState} from '../model/state/BoardLayoutState';
 import {MessageType} from '../model/WsData';
 import {GameInitialisationService} from './game-initialisation.service';
+import {VoteState} from '../model/state/VoteState';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,7 @@ export class GameStateService {
   private playerListUpdateCallbacks: ((player: Player, key: string, players: MapSchema<Player>) => void)[] = [];
   private physicsCallbacks: ((item: PhysicsObjectState, key: string, state: PhysicsState) => void)[] = [];
   private boardLayoutCallbacks: ((layout: BoardLayoutState) => void)[] = [];
+  private voteSystemCallbacks: ((changes: DataChange<any>[]) => void)[] = [];
 
 
   activePlayerLogin = '';
@@ -83,6 +85,11 @@ export class GameStateService {
       } else {
         room.state.boardLayout.onChange = this.callBoardLayoutUpdate.bind(this);
       }
+      if (room.state.voteState === undefined) {
+        console.warn('GameStateService Callbacks couldnt be attached, voteState was undefined');
+      } else {
+        room.state.voteState.onChange = this.callVoteSystemUpdate.bind(this);
+      }
       console.log('attached GameStateServiceCallbacks');
     }
   }
@@ -133,6 +140,9 @@ export class GameStateService {
   addBoardLayoutCallback(f: ((layout: BoardLayoutState) => void)): void {
     this.boardLayoutCallbacks.push(f);
   }
+  addVoteSystemCallback(f: ((changes: DataChange<any>[]) => void)): void {
+    this.voteSystemCallbacks.push(f);
+  }
   registerMessageCallback(type: MessageType, cb: MessageCallback): void {
     this.colyseus.registerMessageCallback(type, cb);
   }
@@ -151,5 +161,8 @@ export class GameStateService {
   }
   private callBoardLayoutUpdate() {
     this.boardLayoutCallbacks.forEach(f => f(this.room.state.boardLayout));
+  }
+  private callVoteSystemUpdate(changes: DataChange<any>[]) {
+    this.voteSystemCallbacks.forEach(f => f(changes));
   }
 }

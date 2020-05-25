@@ -13,18 +13,18 @@
             {{getTitle()}}
           </div>
         </div>
-        <mat-card *ngIf="showState === VoteState.default" class="votingContainer"><!-- Starting default -->
+        <div *ngIf="showState === VoteState.default" class="votingContainer"><!-- Starting default -->
           <mat-card-content style="display: flex;  height: 100%">
             <button mat-raised-button style="position:fixed; width: 80%; bottom: 10%; left: 10%; right: 10%; height: 10%" (click)="createNewVoting()">Create new Voting</button>
           </mat-card-content>
-        </mat-card>
-        <mat-card *ngIf="showState === VoteState.waiting" class="votingContainer"><!-- wait for creation -->
+        </div>
+        <div *ngIf="showState === VoteState.waiting" class="votingContainer"><!-- wait for creation -->
           <mat-card-title>Test is creating a new Game</mat-card-title>
           <mat-card-content style="margin-top: 20%; display: flex; justify-content: center; align-content: center; height: 100%">
             <mat-progress-spinner class="progressSpinner" mode="indeterminate"></mat-progress-spinner>
           </mat-card-content>
-        </mat-card>
-        <mat-card *ngIf="showState === VoteState.creating" class="votingContainerCreate"><!-- creation -->
+        </div>
+        <div *ngIf="showState === VoteState.creating" class="votingContainerCreate"><!-- creation -->
           <app-vote-creation style="width: 100%; height: 90%">
             <cdk-step label="Who should vote">
               <div class="playerList">
@@ -101,8 +101,8 @@
               <mat-icon>send</mat-icon>
             </button>
           </div>
-        </mat-card>
-        <mat-card *ngIf="showState === VoteState.voting" class="votingContainer"><!-- vote -->
+        </div>
+        <div *ngIf="showState === VoteState.voting" class="votingContainer"><!-- vote -->
           <mat-list>
             <div mat-subheader class="cardTitle">Voting</div>
             <mat-list-item *ngFor="let p of players">
@@ -113,9 +113,9 @@
               </mat-chip-list>
             </mat-list-item>
           </mat-list>
-          <button mat-raised-button (click)="closeVoting()">close Voting</button>
-        </mat-card>
-        <mat-card *ngIf="showState === VoteState.results" class="votingContainer"><!-- results -->
+          <button mat-raised-button *ngIf="gameState.getState().voteState.author === gameState.getMyLoginName()" (click)="closeVoting()">close Voting</button>
+        </div>
+        <div *ngIf="showState === VoteState.results" class="votingContainer"><!-- results -->
           <mat-list>
             <div mat-subheader class="cardTitle">Results</div>
             <mat-list-item *ngFor="let p of players">
@@ -127,29 +127,7 @@
             </mat-list-item>
           </mat-list>
           <button mat-raised-button (click)="createNewVoting()">create new Voting</button>
-        </mat-card>
-        <!--
-      <div class="votingContainer">
-        <div class="voteGridContainer" *ngIf="(!showResults)">
-          <ng-container *ngFor="let p of players">
-            <div class="playerTag">
-              {{p.displayName}}
-            </div>
-            <button class="voteButton" (click)="vote(p.loginName)">Vote!</button>
-          </ng-container>
         </div>
-        <div class="resultGridContainer" *ngIf="showResults">
-          <ng-container *ngFor="let p of players">
-            <div class="playerTag">
-              {{p.displayName}}
-            </div>
-            <div class="voteCountTag">
-              {{getVotes()[p.loginName] || 0}}
-            </div>
-          </ng-container>
-          <button class="newVoteButton" (click)="newVote()">Start New Vote</button>
-        </div>
-        </div>-->
       </div>
     </div>
   </div>

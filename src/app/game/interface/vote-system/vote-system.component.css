@@ -70,8 +70,8 @@
   overflow-y: auto;
   margin: 15px;
   padding: 5px 5px 15px;
-  background-color: rgba(16, 16, 16, 0.4);
-  color: whitesmoke;
+  background-color: rgba(16, 16, 16, 0);
+  color: black;
   height: 100%;
 }
 .playerName {

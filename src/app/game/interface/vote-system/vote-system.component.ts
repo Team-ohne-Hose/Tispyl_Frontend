@@ -7,6 +7,7 @@ import {FileService} from '../../../services/file.service';
 import {MatChipInputEvent} from '@angular/material/chips';
 import {Option} from '../../../debugdummy/debugdummy.component';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
+import {DataChange} from '@colyseus/schema';
 
 enum VoteState {
   default,
@@ -43,13 +44,12 @@ export class VoteSystemComponent implements ColyseusNotifyable {
         if (data !== undefined && data.type === MessageType.GAME_MESSAGE) {
           switch (data.action) {
             case GameActionType.startCreateVote:
-              const state = this.gameState.getState();
-              if (state !== undefined && state.voteState.author !== this.gameState.getMyLoginName()) {
-                this.showState = VoteState.waiting;
-                console.log('vote is being created');
-              } else {
+              if (data.authorLogin === this.gameState.getMyLoginName()) {
                 this.showState = VoteState.creating;
                 console.log('create a vote!');
+              } else {
+                this.showState = VoteState.waiting;
+                console.log('vote is being created');
               }
               break;
             case GameActionType.openVote:
@@ -66,20 +66,17 @@ export class VoteSystemComponent implements ColyseusNotifyable {
   }
 
   attachColyseusStateCallbacks(): void {
-    const state = this.gameState.getState();
-    if (state !== undefined) {
-      state.voteState.onChange((changes: DataChange[]) => {
-        changes.forEach((change: DataChange) => {
-          switch (change.field) {
-            case 'author':
-              if (change.value === undefined || change.value === '') {
+    this.gameState.addVoteSystemCallback(((changes: DataChange<any>[]) => {
+      changes.forEach((change: DataChange) => {
+        switch (change.field) {
+          case 'author':
+            if (change.value !== undefined && change.value !== '') {
 
-              }
-              break;
-          }
-        });
-      });+
-    }
+            }
+            break;
+        }
+      });
+    }).bind(this));
   }
 
   toggleMove( ev ) {
@@ -97,7 +94,8 @@ export class VoteSystemComponent implements ColyseusNotifyable {
   createNewVoting(): void {
     this.gameState.sendMessage({
       type: MessageType.GAME_MESSAGE,
-      action: GameActionType.startCreateVote
+      action: GameActionType.startCreateVote,
+      authorLogin: this.gameState.getMyLoginName()
     });
     this.options = [];
     this.playerDeselected.forEach((val: boolean, key: string) => {
