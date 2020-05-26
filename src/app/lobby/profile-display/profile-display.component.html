@@ -6,22 +6,27 @@
   <div class="text">Name: {{user.display_name}}<span class="user-name"> #{{user.login_name}}</span></div>
   <div class="text">Played: {{getTimePlayed()}} </div>
   <div class="text">Since: {{(getDate() | date:'medium' )|| "undefined"}}</div>
-  <mat-form-field>
-    <mat-label>Select default figure</mat-label>
-    <mat-select [(value)]="selectedFigure">
-      <mat-option *ngFor="let figure of figureList" [value]="figure.value">
-        {{figure.name}}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-  <mat-form-field>
-    <mat-label>Environment</mat-label>
-    <mat-select [(value)]="selectedEnv">
-      <mat-option *ngFor="let env of envList" [value]="env.value">
-        {{env.name}}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
+  <div class="selectionDiv">
+    <mat-form-field>
+      <mat-label>Select default figure(currently not working)</mat-label>
+      <mat-select [(value)]="selectedFigure" disabled>
+        <mat-option *ngFor="let figure of figureList" [value]="figure.value">
+          {{figure.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Environment</mat-label>
+      <mat-select [(value)]="selectedEnv">
+        <mat-option *ngFor="let env of envList" [value]="env.value">
+          <div class="envListEntry">
+            <img height="44" width="44" [src]="'/assets' + env.thumb" />
+            {{env.name}}
+          </div>
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
   <div class="text">
     <button (click)="logout()"><i class="fas fa-door-open"></i> Logout</button>
   </div>

@@ -38,14 +38,22 @@ export class ProfileDisplayComponent {
     {name: 'Cat', value: PlayerModel.bcap_cat},
     {name: 'Yoshi', value: PlayerModel.bcap_yoshi}
     ];
-  envList = [{name: 'Ryfjallet (4k)', resolution: Resolution.res_4k, value: 0},
-    {name: 'Maskonaive1 (4k)', resolution: Resolution.res_4k, value: 1},
-    {name: 'Maskonaive2 (4k)', resolution: Resolution.res_4k, value: 2},
-    {name: 'Maskonaive3 (4k)', resolution: Resolution.res_4k, value: 3},
-    {name: 'Nalovardo (4k)', resolution: Resolution.res_4k, value: 4},
-    {name: 'Teide (4k)', resolution: Resolution.res_4k, value: 5},
-    {name: 'undefined', resolution: Resolution.res_4k, value: 6},
-    {name: 'undefined2', resolution: Resolution.res_4k, value: 7}, ];
+  envList = [{name: 'Ryfjallet (2k)', resolution: Resolution.res_2k, thumb: '/cubemaps/thumbs/mountain-ryfjallet.jpg', value: 0},
+    {name: 'Maskonaive1 (2k)', resolution: Resolution.res_2k, thumb: '/cubemaps/thumbs/mountain-maskonaive.jpg', value: 1},
+    {name: 'Maskonaive2 (2k)', resolution: Resolution.res_2k, thumb: '/cubemaps/thumbs/mountain-maskonaive2.jpg', value: 2},
+    {name: 'Maskonaive3 (2k)', resolution: Resolution.res_2k, thumb: '/cubemaps/thumbs/mountain-maskonaive3.jpg', value: 3},
+    {name: 'Nalovardo (1k)', resolution: Resolution.res_1k, thumb: '/cubemaps/thumbs/mountain-nalovardo.jpg', value: 4},
+    {name: 'Teide (2k)', resolution: Resolution.res_2k, thumb: '/cubemaps/thumbs/mountain-teide.jpg', value: 5},
+    {name: 'ForbiddenCity (2k)', resolution: Resolution.res_2k, thumb: '/cubemaps/thumbs/urban-forbiddenCity.jpg', value: 6},
+    {name: 'GamlaStan (2k)', resolution: Resolution.res_2k, thumb: '/cubemaps/thumbs/urban-gamlaStan.jpg', value: 7},
+    {name: 'Medborgarplatsen (2k)', resolution: Resolution.res_2k, thumb: '/cubemaps/thumbs/urban-medborgarplatsen.jpg', value: 8},
+    {name: 'Roundabout (2k)', resolution: Resolution.res_2k, thumb: '/cubemaps/thumbs/urban-roundabout.jpg', value: 9},
+    {name: 'SaintLazarusChurch (2k)', resolution: Resolution.res_2k, thumb: '/cubemaps/thumbs/urban-stLazarus.jpg', value: 10},
+    {name: 'SaintLazarusChurch2 (2k)', resolution: Resolution.res_2k, thumb: '/cubemaps/thumbs/urban-stLazarus2.jpg', value: 11},
+    {name: 'SaintLazarusChurch3 (2k)', resolution: Resolution.res_2k, thumb: '/cubemaps/thumbs/urban-stLazarus3.jpg', value: 12},
+    {name: 'UnionSquare (1k)', resolution: Resolution.res_1k, thumb: '/cubemaps/thumbs/urban-unionSquare.jpg', value: 13},
+    {name: 'Bridge (2k)', resolution: Resolution.res_2k, thumb: '/cubemaps/thumbs/bridge-bridge.jpg', value: 14},
+    {name: 'Bridge2 (2k)', resolution: Resolution.res_2k, thumb: '/cubemaps/thumbs/bridge-bridge2.jpg', value: 15}];
 
   constructor(private userManagement: UserService, private fileManagement: FileService, private objectLoaderService: ObjectLoaderService) {
     this.userManagement.getActiveUser().subscribe( u => {
