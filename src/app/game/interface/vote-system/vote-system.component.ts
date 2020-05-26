@@ -16,6 +16,12 @@ enum VoteState {
   voting,
   results
 }
+interface VoteEntry {
+  label: string;
+  count: number;
+  isPlayer: boolean;
+  login: string;
+}
 @Component({
   selector: 'app-vote-system',
   templateUrl: './vote-system.component.html',
@@ -29,6 +35,10 @@ export class VoteSystemComponent implements ColyseusNotifyable {
   players: Player[];
   hidden = true;
   showState: VoteState = VoteState.default;
+  voteResults: VoteEntry[] = [];
+  voteOptions: VoteEntry[] = [];
+
+  votedFor = '';
 
   // for creation of vote
   playerDeselected: Map<string, boolean> = new Map<string, boolean>();
@@ -53,18 +63,21 @@ export class VoteSystemComponent implements ColyseusNotifyable {
               }
               break;
             case GameActionType.openVote:
-              console.log('start voting');
+              this.voteOptions = this.getOptions();
+              console.log('start voting', this.voteOptions);
+              this.votedFor = '';
               this.showState = VoteState.voting;
+              this.hidden = false;
               break;
             case GameActionType.closeVote:
-              console.log('showing Results');
+              this.voteResults = this.getVotes();
+              console.log('showing Results', this.voteResults);
               this.showState = VoteState.results;
               break;
           }
         }
       }).bind(this), filterSubType: undefined});
   }
-
   attachColyseusStateCallbacks(): void {
     this.gameState.addVoteSystemCallback(((changes: DataChange<any>[]) => {
       changes.forEach((change: DataChange) => {
@@ -82,8 +95,9 @@ export class VoteSystemComponent implements ColyseusNotifyable {
   toggleMove( ev ) {
     this.hidden = !this.hidden;
   }
-  vote(loginName: string): void {
-    this.gameState.sendMessage({type: MessageType.GAME_MESSAGE, action: GameActionType.playerVote, vote: loginName});
+  vote(option: string): void {
+    this.gameState.sendMessage({type: MessageType.GAME_MESSAGE, action: GameActionType.playerVote, vote: option});
+    this.votedFor = option;
   }
   closeVoting(): void {
     this.gameState.sendMessage({
@@ -127,17 +141,85 @@ export class VoteSystemComponent implements ColyseusNotifyable {
     }
   }
 
-  getVotes(): number[] {
-    const votes = [];
-    const allVotes = this.gameState.getState().voteState.votes;
-    for (const key in allVotes) {
-      if (key in allVotes) {
-        votes[allVotes[key].vote] = (votes[allVotes[key].vote] || 0) + 1;
+  getOptions(): VoteEntry[] {
+    const state = this.gameState.getState();
+    if (state !== undefined) {
+      if (state.voteState.isCustom) {
+        console.log('customVote', state.voteState.isCustom, state.voteState.customOptions);
+        const options: VoteEntry[] = [];
+        state.voteState.customOptions.forEach((value: string) => {
+          const playerEntry = this.players.find((value2: Player) => {
+            return value2.displayName === value;
+          });
+          if (playerEntry === undefined) {
+            options.push({label: value, count: 0, isPlayer: false, login: ''});
+          } else {
+            options.push({label: value, count: 0, isPlayer: true, login: playerEntry.loginName});
+          }
+        });
+        return options;
+      } else {
+        console.log('defaultVote', state.voteState.isCustom, this.players);
+        return this.players.map<VoteEntry>((p: Player) => {
+          return {label: p.displayName, count: 0, isPlayer: true, login: p.loginName};
+        });
       }
+    } else {
+      return [];
     }
-    return votes;
   }
-
+  getVotes(): VoteEntry[] {
+    const votes: VoteEntry[] = [];
+    const state = this.gameState.getState();
+    if (state !== undefined) {
+      if (state.voteState.isCustom) {
+        state.voteState.customOptions.forEach((value: string) => {
+          const playerEntry = this.players.find((value2: Player) => {
+            return value2.displayName === value;
+          });
+          if (playerEntry === undefined) {
+            votes.push({label: value, count: 0, isPlayer: false, login: ''});
+          } else {
+            votes.push({label: value, count: 0, isPlayer: true, login: playerEntry.loginName});
+          }
+        });
+      } else {
+        this.players.forEach((value: Player) => {
+          votes.push({label: value.displayName, count: 0, isPlayer: true, login: value.loginName});
+        });
+      }
+      const allVotes = state.voteState.votes;
+      for (const key in allVotes) {
+        if (key in allVotes) {
+          const voteEntry: VoteEntry = votes.find((value: VoteEntry) => {
+            return (value.label === allVotes[key].vote);
+          });
+          if (voteEntry !== undefined) {
+            voteEntry.count++;
+          } else {
+            console.warn('couldnt find entry!', allVotes[key].vote, votes);
+          }
+        }
+      }
+      const results = votes.sort((a: VoteEntry, b: VoteEntry) => {
+        return -(a.count - b.count);
+      });
+      console.log('returning Results', results, this.players, state.voteState.customOptions);
+      return results;
+    } else {
+      return [];
+    }
+  }
+  eligibleToVote(): boolean {
+    const state = this.gameState.getState();
+    if (state !== undefined) {
+      const eligible = (state.voteState.eligibleLoginNames.find((value: string) => {
+        return value === this.gameState.getMyLoginName();
+      }));
+      return eligible !== undefined;
+    }
+    return false;
+  }
   getTitle(): string {
     const state = this.gameState.getState();
     if (state !== undefined) {
@@ -160,9 +242,13 @@ export class VoteSystemComponent implements ColyseusNotifyable {
     const input = event.input;
     const value = event.value;
 
-    // Add our fruit
+    // Add our option
     if ((value || '').trim()) {
-      this.options.push({name: value.trim()});
+      if (this.options.find((opt: Option) => {
+        return opt.name === value.trim();
+      }) === undefined) {
+        this.options.push({name: value.trim()});
+      }
     }
 
     // Reset the input value
@@ -170,7 +256,6 @@ export class VoteSystemComponent implements ColyseusNotifyable {
       input.value = '';
     }
   }
-
   removeOption(option: Option): void {
     const index = this.options.indexOf(option);
     if (index >= 0) {
@@ -178,7 +263,7 @@ export class VoteSystemComponent implements ColyseusNotifyable {
     }
   }
   togglePlayer(p: Player) {
-    console.log('toggle Player', p.loginName);
+    // console.log('toggle Player', p.loginName);
     const selected = this.playerDeselected.get(p.loginName);
     if (selected) {
       this.playerDeselected.set(p.loginName, false);

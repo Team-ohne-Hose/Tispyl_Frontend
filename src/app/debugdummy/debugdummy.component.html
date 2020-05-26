@@ -1,84 +1,8 @@
 <div class="tray">
   <div class="gold-border">
     <div class="paper-body">
-      <div *ngIf="true" class="votingContainer"><!-- results -->
-        <app-vote-creation style="width: 100%; height: 90%">
-          <cdk-step label="Who should vote">
-            <div class="playerList">
-              <mat-chip-list style="display: flex; flex-direction: column;" aria-label="Options">
-                <mat-chip *ngFor="let p of players" [selectable]="false" [removable]="false" [ngClass]="{deselected: playerDeselected.get(p.loginName)}">
-                  {{p.displayName}}
-                  <svg class="clearIcon" height="18" width="22" (click)="togglePlayer(p)">
-                    <defs>
-                      <radialGradient id="copperGradient" cx="85%" cy="10%" r="100%">
-                        <stop offset="20%" style="stop-color:#d44300;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#662000;stop-opacity:1" />
-                      </radialGradient>
-                      <radialGradient id="greenGradient" cx="85%" cy="10%" r="100%">
-                        <stop offset="20%" style="stop-color:#1fd000;stop-opacity:.7" />
-                        <stop offset="100%" style="stop-color:#14471a;stop-opacity:.6" />
-                      </radialGradient>
-                    </defs>
-                    <path [ngClass]="{playerAdded: !playerDeselected.get(p.loginName), playerRemoved: playerDeselected.get(p.loginName)}" d="M0 0
-                      L19 0
-                      A3 3 0 0 1 22 3
-                      L22 15
-                      A3 3 0 0 1 19 18
-                      L3 18
-                      C 3 8 0 10 0 0
-                      Z"/>
-                    <line x1="10" y1="6" x2="16" y2="12" style="stroke:white;stroke-width:2" [ngClass]="{transformationX: true, rotatedX: playerDeselected.get(p.loginName)}" #line11/>
-                    <line x1="16" y1="6" x2="10" y2="12" style="stroke:white;stroke-width:2" [ngClass]="{transformationX: true, rotatedX: playerDeselected.get(p.loginName)}"#line12/>
-                  </svg>
-                </mat-chip>
-              </mat-chip-list>
-            </div>
-          </cdk-step>
-          <cdk-step label="What to vote">
-            <mat-chip-list class="actionButtons">
-              <mat-chip (click)="addPlayerOptions()" style="padding-right: 5px">add all Players</mat-chip>
-              <mat-chip (click)="clearOptions()" style="padding-right: 5px">clear List</mat-chip>
-            </mat-chip-list>
-            <mat-form-field class="example-chip-list">
-              <mat-chip-list #chipList aria-label="Options">
-                <mat-chip *ngFor="let opt of options" [selectable]="true"
-                          [removable]="true" (removed)="removeOption(opt)">
-                  {{opt.name}}
-                  <svg class="clearIcon matChipRemove" height="18" width="22" (click)="removeOption(opt)">
-                    <defs>
-                      <radialGradient id="copperGradient" cx="85%" cy="10%" r="100%">
-                        <stop offset="20%" style="stop-color:#d44300;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#662000;stop-opacity:1" />
-                      </radialGradient>
-                    </defs>
-                    <path d="M0 0
-                      L19 0
-                      A3 3 0 0 1 22 3
-                      L22 15
-                      A3 3 0 0 1 19 18
-                      L3 18
-                      C 3 8 0 10 0 0
-                      Z" fill="url(#copperGradient)"/>
-                    <line x1="10" y1="6" x2="16" y2="12" style="stroke:white;stroke-width:2" />
-                    <line x1="16" y1="6" x2="10" y2="12" style="stroke:white;stroke-width:2" />
-                    Sorry, your browser does not support inline SVG.
-                  </svg>
-                </mat-chip>
-                <input placeholder="Options"
-                       [matChipInputFor]="chipList"
-                       [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                       [matChipInputAddOnBlur]="true"
-                       (matChipInputTokenEnd)="addOption($event)">
-              </mat-chip-list>
-            </mat-form-field>
-          </cdk-step>
-        </app-vote-creation>
-        <div class="completeButtonContainer">
-          <button mat-fab color="primary" aria-label="StartSurvey">
-            <mat-icon>send</mat-icon>
-          </button>
-        </div>
-      </div>
+      <img mat-list-icon src="http://localhost:2567/api/profilePic?login_name=x" />
+      <mat-icon mat-list-icon>edit</mat-icon>
     </div>
   </div>
 </div>

@@ -14,15 +14,15 @@
           </div>
         </div>
         <div *ngIf="showState === VoteState.default" class="votingContainer"><!-- Starting default -->
-          <mat-card-content style="display: flex;  height: 100%">
+          <div style="display: flex;  height: 100%">
             <button mat-raised-button style="position:fixed; width: 80%; bottom: 10%; left: 10%; right: 10%; height: 10%" (click)="createNewVoting()">Create new Voting</button>
-          </mat-card-content>
+          </div>
         </div>
         <div *ngIf="showState === VoteState.waiting" class="votingContainer"><!-- wait for creation -->
-          <mat-card-title>Test is creating a new Game</mat-card-title>
-          <mat-card-content style="margin-top: 20%; display: flex; justify-content: center; align-content: center; height: 100%">
+          <div id="waitCreationHeader">Test is creating a new Game</div>
+          <div style="margin-top: 20%; display: flex; justify-content: center; align-content: center; height: 100%">
             <mat-progress-spinner class="progressSpinner" mode="indeterminate"></mat-progress-spinner>
-          </mat-card-content>
+          </div>
         </div>
         <div *ngIf="showState === VoteState.creating" class="votingContainerCreate"><!-- creation -->
           <app-vote-creation style="width: 100%; height: 90%">
@@ -62,7 +62,7 @@
                 <mat-chip (click)="addPlayerOptions()" style="padding-right: 5px">add all Players</mat-chip>
                 <mat-chip (click)="clearOptions()" style="padding-right: 5px">clear List</mat-chip>
               </mat-chip-list>
-              <mat-form-field class="example-chip-list">
+              <mat-form-field class="optionsList">
                 <mat-chip-list #chipList aria-label="Options">
                   <mat-chip *ngFor="let opt of options" [selectable]="true"
                             [removable]="true" (removed)="removeOption(opt)">
@@ -104,12 +104,12 @@
         </div>
         <div *ngIf="showState === VoteState.voting" class="votingContainer"><!-- vote -->
           <mat-list>
-            <div mat-subheader class="cardTitle">Voting</div>
-            <mat-list-item *ngFor="let p of players">
-              <img mat-list-icon [src]="fileService.tameProfilePictureSource(p.loginName)" />
-              <mat-list-item class="playerName">{{p.displayName}}</mat-list-item>
+            <mat-list-item *ngFor="let res of this.voteOptions">
+              <img mat-list-icon *ngIf="res.isPlayer" [src]="fileService.tameProfilePictureSource(res.login)" />
+              <mat-icon mat-list-icon *ngIf="!res.isPlayer">edit</mat-icon>
+              <mat-list-item class="playerName">{{res.label}}</mat-list-item>
               <mat-chip-list style="justify-self: right">
-                <mat-chip (click)="vote(p.loginName)">Vote</mat-chip>
+                <mat-chip (click)="vote(res.label)" [disabled]="!eligibleToVote()" [class.votedFor]="votedFor === res.label">Vote</mat-chip>
               </mat-chip-list>
             </mat-list-item>
           </mat-list>
@@ -117,12 +117,12 @@
         </div>
         <div *ngIf="showState === VoteState.results" class="votingContainer"><!-- results -->
           <mat-list>
-            <div mat-subheader class="cardTitle">Results</div>
-            <mat-list-item *ngFor="let p of players">
-              <img mat-list-icon [src]="fileService.tameProfilePictureSource(p.loginName)" />
-              <mat-list-item class="playerName">{{p.displayName}}</mat-list-item>
+            <mat-list-item *ngFor="let res of voteResults">
+              <img mat-list-icon *ngIf="res.isPlayer" [src]="fileService.tameProfilePictureSource(res.login)" />
+              <mat-icon mat-list-icon *ngIf="!res.isPlayer">edit</mat-icon>
+              <mat-list-item class="playerName">{{res.label}}</mat-list-item>
               <mat-chip-list style="justify-self: right">
-                <mat-chip disabled>{{getVotes()[p.loginName] || 0}}</mat-chip>
+                <mat-chip [class.winnerCount]="voteResults[0] === res">{{res.count}}</mat-chip>
               </mat-chip-list>
             </mat-list-item>
           </mat-list>
