@@ -68,29 +68,29 @@ export class ObjectLoaderService {
     {name: 'Maskonaive3', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Maskonaive3/',
       px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
     {name: 'Nalovardo', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Nalovardo/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg/', ny: 'negy.jpg', nz: 'negz.jpg'},
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
     {name: 'Teide', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Teide/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg/', ny: 'negy.jpg', nz: 'negz.jpg'},
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
     {name: 'ForbiddenCity', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/ForbiddenCity/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg/', ny: 'negy.jpg', nz: 'negz.jpg'},
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
     {name: 'GamlaStan', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/GamlaStan/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg/', ny: 'negy.jpg', nz: 'negz.jpg'},
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
     {name: 'Medborgarplatsen', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/Medborgarplatsen/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg/', ny: 'negy.jpg', nz: 'negz.jpg'},
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
     {name: 'Roundabout', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/Roundabout/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg/', ny: 'negy.jpg', nz: 'negz.jpg'},
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
     {name: 'SaintLazarusChurch', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/SaintLazarusChurch/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg/', ny: 'negy.jpg', nz: 'negz.jpg'},
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
     {name: 'SaintLazarusChurch2', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/SaintLazarusChurch2/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg/', ny: 'negy.jpg', nz: 'negz.jpg'},
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
     {name: 'SaintLazarusChurch3', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/SaintLazarusChurch3/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg/', ny: 'negy.jpg', nz: 'negz.jpg'},
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
     {name: 'UnionSquare', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/UnionSquare/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg/', ny: 'negy.jpg', nz: 'negz.jpg'},
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
     {name: 'Bridge', tex: undefined, path: '/assets/cubemaps/bridge-skyboxes/Bridge/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg/', ny: 'negy.jpg', nz: 'negz.jpg'},
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
     {name: 'Bridge2', tex: undefined, path: '/assets/cubemaps/bridge-skyboxes/Bridge2/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg/', ny: 'negy.jpg', nz: 'negz.jpg'},
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
   ];
   currentCubeMap = 2;
   private readonly resourcePath = '/assets/models/';
@@ -187,7 +187,7 @@ export class ObjectLoaderService {
   setCurrentCubeMap(cubeMapId: number) {
     if (cubeMapId >= 0) {
       const cubemap = this.getCubeMap(cubeMapId);
-      console.log('Using now cubemap', this.cubeMaps[cubeMapId].name, cubeMapId);
+      console.log('Using now cubemap', this.cubeMaps[cubeMapId].name, cubeMapId, this.cubeMaps[cubeMapId]);
       this.currentCubeMap = cubeMapId;
 
       this.gameBoundaryMat.envMap = cubemap;
