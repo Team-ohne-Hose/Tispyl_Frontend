@@ -96,8 +96,10 @@ export class VoteSystemComponent implements ColyseusNotifyable {
     this.hidden = !this.hidden;
   }
   vote(option: string): void {
-    this.gameState.sendMessage({type: MessageType.GAME_MESSAGE, action: GameActionType.playerVote, vote: option});
-    this.votedFor = option;
+    if (this.eligibleToVote()) {
+      this.gameState.sendMessage({type: MessageType.GAME_MESSAGE, action: GameActionType.playerVote, vote: option});
+      this.votedFor = option;
+    }
   }
   closeVoting(): void {
     this.gameState.sendMessage({
