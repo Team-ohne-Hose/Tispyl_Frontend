@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, EventEmitter, Inject, OnInit, Output} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Router} from '@angular/router';
 
@@ -20,6 +20,7 @@ export class JoinGameComponent {
   }
 
   public join() {
+    this.data.lobbyComponent.onEnterGame();
     this.router.navigateByUrl('/game').then( e => this.dialogRef.close());
   }
 }

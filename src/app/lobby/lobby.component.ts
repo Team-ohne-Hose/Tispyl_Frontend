@@ -1,4 +1,4 @@
-import { Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {TranslationService} from '../services/translation.service';
 import {User} from '../model/User';
 import {Translation} from '../model/Translation';
@@ -11,6 +11,7 @@ import {UserService} from '../services/user.service';
 import {RoomMetaInfo} from '../model/RoomMetaInfo';
 import {JoinGameComponent} from './dialogs/join-game/join-game.component';
 import {GameState} from '../model/state/GameState';
+import {ProfileDisplayComponent} from './profile-display/profile-display.component';
 
 @Component({
   selector: 'app-lobby',
@@ -26,6 +27,8 @@ export class LobbyComponent implements OnInit {
   availableLobbies: RoomAvailable<RoomMetaInfo>[] = [];
 
   translation: Translation;
+
+  @ViewChild('profileDisplay') profileDisplay: ProfileDisplayComponent;
 
   constructor(
     private dialog: MatDialog,
@@ -89,7 +92,7 @@ export class LobbyComponent implements OnInit {
     const dialogRef: MatDialogRef<JoinGameComponent, void> = this.dialog.open(JoinGameComponent, {
       width: '60%',
       maxWidth: '400px',
-      data: {lobby: lobby},
+      data: {lobby: lobby, lobbyComponent: this},
       panelClass: 'modalbox-base'
     });
 
@@ -103,5 +106,9 @@ export class LobbyComponent implements OnInit {
 
   refresh() {
     this.colyseus.updateAvailableRooms();
+  }
+
+  onEnterGame() {
+    this.profileDisplay.setGameSettings();
   }
 }

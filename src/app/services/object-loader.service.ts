@@ -69,10 +69,10 @@ export class ObjectLoaderService {
       px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
     {name: 'Nalovardo', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Nalovardo/',
       px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg/', ny: 'negy.jpg', nz: 'negz.jpg'},
-    {name: 'Teide', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Teide',
+    {name: 'Teide', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Teide/',
       px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg/', ny: 'negy.jpg', nz: 'negz.jpg'},
   ];
-  currentCubeMap = 0;
+  currentCubeMap = 2;
   private readonly resourcePath = '/assets/models/';
   private texList: Map<PlayerModel, PlayerModelData> = new Map<PlayerModel, PlayerModelData>([
     [PlayerModel.bcap_NukaCola, {texFName: 'default', specFName: 'default_spec', tex: undefined, spec: undefined}],
@@ -167,6 +167,7 @@ export class ObjectLoaderService {
   setCurrentCubeMap(cubeMapId: number) {
     if (cubeMapId >= 0) {
       const cubemap = this.getCubeMap(cubeMapId);
+      console.log('Using now cubemap', this.cubeMaps[cubeMapId].name, cubeMapId);
       this.currentCubeMap = cubeMapId;
 
       this.gameBoundaryMat.envMap = cubemap;

@@ -118,7 +118,6 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   }
   initialiseScene() {
     // load stuff which is dependend on loading textures
-    this.objectLoaderService.setCurrentCubeMap(2);
     this.scene.background = this.objectLoaderService.getCubeMap();
 
     // Add environment(Gameboard) into Scene
