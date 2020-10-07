@@ -133,6 +133,9 @@
 #waitCreationHeader {
 
 }
+#notEligibleHeader {
+
+}
 .votedFor {
   background: radial-gradient(ellipse farthest-corner at right top, #fffefa 0%, #ffeb66 8%, #d5ad58 30%, #c19d49 40%, #5d4a1f 100%);
 }

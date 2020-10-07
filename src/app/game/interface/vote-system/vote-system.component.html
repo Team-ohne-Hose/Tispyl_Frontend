@@ -19,8 +19,8 @@
           </div>
         </div>
         <div *ngIf="showState === VoteState.waiting" class="votingContainer"><!-- wait for creation -->
-          <div id="waitCreationHeader">Test is creating a new Game</div>
-          <div style="margin-top: 20%; display: flex; justify-content: center; align-content: center; height: 100%">
+          <div id="waitCreationHeader">{{getDisplayName(voteOwner)}} is creating a new Vote</div>
+          <div style="margin-top: 20%; margin-bottom: 10%; display: flex; justify-content: center; align-content: center">
             <mat-progress-spinner class="progressSpinner" mode="indeterminate"></mat-progress-spinner>
           </div>
         </div>
@@ -109,11 +109,30 @@
               <mat-icon mat-list-icon *ngIf="!res.isPlayer">edit</mat-icon>
               <mat-list-item class="playerName">{{res.label}}</mat-list-item>
               <mat-chip-list style="justify-self: right">
-                <mat-chip (click)="vote(res.label)" [disabled]="!eligibleToVote()" [class.votedFor]="votedFor === res.label">Vote</mat-chip>
+                <mat-chip (click)="vote(res.label)" [disabled]="!amIEligible" [class.votedFor]="votedFor === res.label">Vote</mat-chip>
               </mat-chip-list>
             </mat-list-item>
           </mat-list>
-          <button mat-raised-button *ngIf="gameState.getState().voteState.author === gameState.getMyLoginName()" (click)="closeVoting()">close Voting</button>
+          <div *ngIf="timeSinceClosingAnnounced !== 0">
+            Vote is being closed in {{getTimeRemaining()}}!
+          </div>
+          <button mat-raised-button *ngIf="gameState.getState().voteState.author === gameState.getMyLoginName()" (click)="closeVoting()">
+            close Voting
+            ( {{getVoteCount()}} voted )
+          </button>
+        </div>
+        <div *ngIf="showState === VoteState.notEligible" class="votingContainer"><!-- wait for creation -->
+          <div id="notEligibleHeader">You are not allowed to Vote</div>
+          <div style="margin-top: 20%; margin-bottom: 10%; display: flex; justify-content: center; align-content: center">
+            <mat-progress-spinner class="progressSpinner" mode="indeterminate"></mat-progress-spinner>
+          </div>
+          <div *ngIf="timeSinceClosingAnnounced !== 0">
+            Vote is being closed in {{getTimeRemaining()}}!
+          </div>
+          <button mat-raised-button *ngIf="gameState.getState().voteState.author === gameState.getMyLoginName()" (click)="closeVoting()">
+            close Voting
+            ( {{getVoteCount()}} voted )
+          </button>
         </div>
         <div *ngIf="showState === VoteState.results" class="votingContainer"><!-- results -->
           <mat-list>

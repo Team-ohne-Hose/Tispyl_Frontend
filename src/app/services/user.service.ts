@@ -12,7 +12,7 @@ import {environment} from '../../environments/environment';
 export class UserService {
 
   private readonly prodUserEndpoint = 'https://tispyl.uber.space:41920/api/users';
-  private readonly devUserEndpoint = 'http://localhost:2567/api/users';
+  private readonly devUserEndpoint = 'http://localhost:25670/api/users';
   private userEndpoint = environment.production ? this.prodUserEndpoint : this.devUserEndpoint;
   activeUser: BehaviorSubject<User>;
 

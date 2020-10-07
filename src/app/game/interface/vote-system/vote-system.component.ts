@@ -14,7 +14,8 @@ enum VoteState {
   waiting,
   creating,
   voting,
-  results
+  results,
+  notEligible
 }
 interface VoteEntry {
   label: string;
@@ -30,6 +31,9 @@ interface VoteEntry {
 export class VoteSystemComponent implements ColyseusNotifyable {
 
   VoteState = VoteState;
+  voteOwner: String = 'Untitled';
+  timeSinceClosingAnnounced = 0;
+  amIEligible = false;
 
   @Input()
   players: Player[];
@@ -58,21 +62,34 @@ export class VoteSystemComponent implements ColyseusNotifyable {
                 this.showState = VoteState.creating;
                 console.log('create a vote!');
               } else {
+                this.voteOwner = data.authorLogin || 'Untitled';
                 this.showState = VoteState.waiting;
                 console.log('vote is being created');
               }
               break;
             case GameActionType.openVote:
+              this.timeSinceClosingAnnounced = 0;
               this.voteOptions = this.getOptions();
-              console.log('start voting', this.voteOptions);
               this.votedFor = '';
-              this.showState = VoteState.voting;
-              this.hidden = false;
+              if (this.eligibleToVote()) {
+                this.amIEligible = true;
+                this.showState = VoteState.voting;
+                console.log('start voting', this.voteOptions);
+                this.hidden = false;
+              } else {
+                this.amIEligible = false;
+                this.showState = VoteState.notEligible;
+                console.log('not eligible for voting this round');
+              }
               break;
             case GameActionType.closeVote:
-              this.voteResults = this.getVotes();
-              console.log('showing Results', this.voteResults);
-              this.showState = VoteState.results;
+              if (data.withCooldown) {
+                this.timeSinceClosingAnnounced = (new Date()).getTime();
+              } else {
+                this.voteResults = this.getVotes();
+                console.log('showing Results', this.voteResults);
+                this.showState = VoteState.results;
+              }
               break;
           }
         }
@@ -104,7 +121,8 @@ export class VoteSystemComponent implements ColyseusNotifyable {
   closeVoting(): void {
     this.gameState.sendMessage({
       type: MessageType.GAME_MESSAGE,
-      action: GameActionType.closeVote
+      action: GameActionType.closeVote,
+      withCooldown: true,
     });
   }
   createNewVoting(): void {
@@ -170,6 +188,13 @@ export class VoteSystemComponent implements ColyseusNotifyable {
       return [];
     }
   }
+  getVoteCount(): number {
+    const state = this.gameState.getState();
+    if (state !== undefined) {
+      return Object.keys(state.voteState.votes).length;
+    }
+    return 0;
+  }
   getVotes(): VoteEntry[] {
     const votes: VoteEntry[] = [];
     const state = this.gameState.getState();
@@ -215,6 +240,7 @@ export class VoteSystemComponent implements ColyseusNotifyable {
   eligibleToVote(): boolean {
     const state = this.gameState.getState();
     if (state !== undefined) {
+      console.log('eligible:', state.voteState.eligibleLoginNames);
       const eligible = (state.voteState.eligibleLoginNames.find((value: string) => {
         return value === this.gameState.getMyLoginName();
       }));
@@ -238,6 +264,21 @@ export class VoteSystemComponent implements ColyseusNotifyable {
     } else {
       return 'Vote System';
     }
+  }
+  getDisplayName(loginName: string): string {
+    const result: Player = this.players.find((value: Player) => {
+      return value.loginName === loginName;
+    });
+    if (result !== undefined) {
+      return result.displayName;
+    }
+    return 'Undefined';
+  }
+  getTimeRemaining(): number {
+    if (this.timeSinceClosingAnnounced === 0) {
+      return 0;
+    }
+    return 5 - Math.floor(((new Date()).getTime() - this.timeSinceClosingAnnounced) / 1000);
   }
 
   addOption(event: MatChipInputEvent): void {

@@ -18,7 +18,7 @@ export interface MessageCallback {
 export class ColyseusClientService {
 
   private readonly prodBackendWStarget = 'wss://tispyl.uber.space:41920';
-  private readonly devBackendWStarget = 'ws://localhost:2567';
+  private readonly devBackendWStarget = 'ws://localhost:25670';
   private backendWStarget = environment.production ? this.prodBackendWStarget : this.devBackendWStarget;
 
   private client: Client = new Client(this.backendWStarget);

@@ -106,6 +106,8 @@ export class ObjectLoaderService {
     [PlayerModel.bcap_Tiddies1, {texFName: 'kronkorken1', specFName: 'default_spec', tex: undefined, spec: undefined}],
     [PlayerModel.bcap_cat, {texFName: 'catGoblin', specFName: 'default_spec', tex: undefined, spec: undefined}],
     [PlayerModel.bcap_yoshi, {texFName: 'yoshi', specFName: 'default_spec', tex: undefined, spec: undefined}],
+    [PlayerModel.bcap_niclas, {texFName: 'Niclas_Kronkorken', specFName: 'default_spec', tex: undefined, spec: undefined}],
+    [PlayerModel.bcap_adi, {texFName: 'Adis_kronkorken', specFName: 'default_spec', tex: undefined, spec: undefined}],
   ]);
   private readonly entities: ([PhysicsEntity, PhysicsEntityVariation])[] = [
     [PhysicsEntity.dice, PhysicsEntityVariation.default],

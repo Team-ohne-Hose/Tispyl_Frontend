@@ -126,6 +126,7 @@ export interface GamePlayerVote {
 export interface GameCloseVote {
   type: MessageType.GAME_MESSAGE;
   action: GameActionType.closeVote;
+  withCooldown: boolean;
 }
 
 
@@ -145,7 +146,9 @@ export enum PlayerModel {
   bcap_Developer,
   bcap_hb,
   bcap_cat,
-  bcap_yoshi
+  bcap_yoshi,
+  bcap_niclas,
+  bcap_adi
 }
 export interface SetFigure {
   type: MessageType.PLAYER_MESSAGE;

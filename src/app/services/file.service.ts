@@ -10,7 +10,7 @@ import {Observable} from 'rxjs';
 export class FileService {
 
   private readonly prodProfilePictureEndpoint = 'https://tispyl.uber.space:41920/api/profilePic';
-  private readonly devProfilePictureEndpoint = 'http://localhost:2567/api/profilePic';
+  private readonly devProfilePictureEndpoint = 'http://localhost:25670/api/profilePic';
   private profilePictureEndpoint = environment.production ? this.prodProfilePictureEndpoint : this.devProfilePictureEndpoint;
 
   constructor(private httpClient: HttpClient) { }
