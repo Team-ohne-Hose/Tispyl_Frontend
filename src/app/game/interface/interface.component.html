@@ -16,7 +16,9 @@
   <app-ingame-rule-book [rules]="gameState.getState() === undefined ? '' : gameState.getState().rules">
   </app-ingame-rule-book>
   <app-vote-system [players]="gameState.getState() === undefined ? [] : asArray(gameState.getState().playerList)" #voteSystem></app-vote-system>
-  <app-next-turn-button [disabled]="(gameState.getState() === undefined) || !gameState.getState().hasStarted" #nextTurn>
+  <app-next-turn-button [disabled]="(gameState.getState() === undefined) || !gameState.getState().hasStarted"
+                        [action]="gameState.getState() === undefined ? 'Waiting' : gameState.getState().action"
+                        #nextTurn>
   </app-next-turn-button>
   <app-turn-overlay [ownTurn]="this.gameState.isMyTurn()"
                     [currentPlayerName]="gameState.getState() === undefined ? '' : getDisplayName(gameState.getState().currentPlayerLogin)" #turnOverlay>

@@ -10,6 +10,7 @@ import {ColyseusNotifyable} from '../../../services/game-initialisation.service'
 })
 export class NextTurnButtonComponent implements ColyseusNotifyable {
   @Input() disabled: boolean;
+  @Input() action: string;
 
   hidden = true;
   private lastClick = 0;

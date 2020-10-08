@@ -13,6 +13,7 @@ import {ColyseusNotifyable} from '../../services/game-initialisation.service';
 import {TurnOverlayComponent} from './turn-overlay/turn-overlay.component';
 import {HintsService} from '../../services/hints.service';
 import {VoteSystemComponent} from './vote-system/vote-system.component';
+import {ObjectLoaderService} from '../../services/object-loader.service';
 
 
 @Component({
@@ -22,7 +23,10 @@ import {VoteSystemComponent} from './vote-system/vote-system.component';
 })
 export class InterfaceComponent implements OnInit, ColyseusNotifyable {
 
-  constructor(private router: Router, public gameState: GameStateService, private hints: HintsService) {
+  constructor(private router: Router,
+              public gameState: GameStateService,
+              private hints: HintsService,
+              private loader: ObjectLoaderService) {
     this.routes = router.config.filter( route => route.path !== '**' && route.path.length > 0);
   }
 
@@ -95,7 +99,7 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
   }
 
   switchMyTex(args) {
-    args[1] = Math.max(0, Math.min(Number(args[1]), 13)); // TODO make dynamic
+    args[1] = Math.max(0, Math.min(Number(args[1]), this.loader.getBCapCount()));
     const msg: SetFigure = {type: MessageType.PLAYER_MESSAGE,
       subType: PlayerMessageType.setFigure,
       playerId: this.gameState.getMyLoginName(),

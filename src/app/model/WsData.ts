@@ -143,12 +143,15 @@ export enum PlayerModel {
   bcap_Jagermeister,
   bcap_OurAnthem,
   bcap_Murica,
-  bcap_Developer,
+  bcap_countcount,
   bcap_hb,
   bcap_cat,
   bcap_yoshi,
   bcap_niclas,
-  bcap_adi
+  bcap_adi,
+  bcap_lordHelmchen,
+  bcap_gude,
+  bcap_Developer,
 }
 export interface SetFigure {
   type: MessageType.PLAYER_MESSAGE;

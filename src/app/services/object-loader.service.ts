@@ -108,6 +108,9 @@ export class ObjectLoaderService {
     [PlayerModel.bcap_yoshi, {texFName: 'yoshi', specFName: 'default_spec', tex: undefined, spec: undefined}],
     [PlayerModel.bcap_niclas, {texFName: 'Niclas_Kronkorken', specFName: 'default_spec', tex: undefined, spec: undefined}],
     [PlayerModel.bcap_adi, {texFName: 'Adis_kronkorken', specFName: 'default_spec', tex: undefined, spec: undefined}],
+    [PlayerModel.bcap_countcount, {texFName: 'countcount', specFName: 'default_spec', tex: undefined, spec: undefined}],
+    [PlayerModel.bcap_gude, {texFName: 'gude', specFName: 'default_spec', tex: undefined, spec: undefined}],
+    [PlayerModel.bcap_lordHelmchen, {texFName: 'lord_helmchen', specFName: 'default_spec', tex: undefined, spec: undefined}],
   ]);
   private readonly entities: ([PhysicsEntity, PhysicsEntityVariation])[] = [
     [PhysicsEntity.dice, PhysicsEntityVariation.default],
@@ -213,6 +216,9 @@ export class ObjectLoaderService {
       this.cubeMaps[cubeMapId].tex = tex;
     }
     return this.cubeMaps[cubeMapId].tex;
+  }
+  getBCapCount(): number {
+    return this.texList.size;
   }
 
   private getResourceData(obj: PhysicsEntity, variation: PhysicsEntityVariation): ResourceData {
