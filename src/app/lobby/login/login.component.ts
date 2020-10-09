@@ -39,6 +39,7 @@ export class LoginComponent {
         this.errorMessage = 'Failed to login. Check your credentials.';
       } else {
         console.log('Unexpected error: ', err);
+        this.errorMessage = 'Failed to reach Server. <a href="https://stats.uptimerobot.com/ZpvXzhMyG8">More information</a>';
       }
     });
   }

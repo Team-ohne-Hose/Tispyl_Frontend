@@ -18,5 +18,5 @@
     <span></span>
     <span (click)="openRegisterDialog()" class="register-link">{{languageObjects.logInRegister}} <i class="fas fa-angle-double-right"></i></span>
   </div>
-  <div class="error-text"><i *ngIf="errorMessage.length > 0" class="fas fa-exclamation-triangle"></i><span *ngIf="errorMessage.length > 0">{{errorMessage}}</span></div>
+  <div class="error-text"><i *ngIf="errorMessage.length > 0" class="fas fa-exclamation-triangle"></i><span *ngIf="errorMessage.length > 0" [innerHTML]="errorMessage"></span></div>
 </div>
