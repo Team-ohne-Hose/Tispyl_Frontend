@@ -10,8 +10,10 @@
   min-width: 16rem;
   width: 50vw;
   max-width: 24rem;
+
   display: flex;
   flex-flow: column;
+
   height: 100%;
   max-height: 100%;
   min-height: 0;
@@ -98,17 +100,16 @@
   padding: var(--base-padding);
   display: flex;
   flex-flow: column;
-  margin-top: auto;
+  flex-grow: 1;
   margin-bottom: 0;
   min-height: 0;
 }
 
 .text-section {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
+  flex-grow: 1;
+  flex-flow: column;
   align-items: flex-start;
-
   min-height: 0;
   overflow-y: auto;
 }

@@ -1,7 +1,7 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {UserService} from '../services/user.service';
 import {FileService} from '../services/file.service';
-import {ChatMessage} from '../home-register/ChatMessage';
+import {ChatMessage} from './ChatMessage';
 
 @Component({
   selector: 'app-home-register',
@@ -13,6 +13,7 @@ export class HomeRegisterComponent implements OnInit {
   profileSource = '../assets/defaultImage.jpg';
   bottleCapSource = '../assets/models/otherTex/cocaCola.png';
 
+  @ViewChild('textSection') textSection: ElementRef;
   chatMessages: ChatMessage[] = [];
 
   constructor(private userManagement: UserService, private fileManagement: FileService) {
@@ -43,8 +44,9 @@ export class HomeRegisterComponent implements OnInit {
     inputField.value = '';
     if (userInput !== '') {
       this.chatMessages.push(new ChatMessage(String(userInput), 'tiz'));
+      const htmlNode = this.textSection.nativeElement;
+      setTimeout( () => { htmlNode.scrollTop = htmlNode.scrollHeight; }, 20);
     }
   }
-
 
 }
