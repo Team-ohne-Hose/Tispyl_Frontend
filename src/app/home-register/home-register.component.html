@@ -31,28 +31,13 @@
 
     <div class="another">
     Trinkbuddy display !
-    Trinkbuddy display !
-    Trinkbuddy display !Trinkbuddy display !
-    Trinkbuddy display !
-    Trinkbuddy display !
-    Trinkbuddy display !
-    Trinkbuddy display !
-    Trinkbuddy display !Trinkbuddy display !
-    Trinkbuddy display !
-    Trinkbuddy display !
-    Trinkbuddy display !Trinkbuddy display !
-    Trinkbuddy display !
-    Trinkbuddy display !
-    Trinkbuddy display !
-    Trinkbuddy display !
-    Trinkbuddy display !Trinkbuddy display !
     </div>
 
     <div class="seperator"></div>
 
     <div class="chat-box">
 
-        <div class="text-section">
+        <div class="text-section" #textSection>
           <div *ngFor="let msg of chatMessages" [ngClass]="{'move-right': msg.sender === 'tiz'}">
             <div class="chat-message">
               <div class="head-row">
@@ -78,5 +63,4 @@
       </div>
 
     </div>
-
 </div>
