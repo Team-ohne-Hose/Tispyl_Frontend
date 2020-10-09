@@ -114,19 +114,19 @@ export class VoteSystemComponent implements ColyseusNotifyable {
   }
   vote(option: string): void {
     if (this.eligibleToVote()) {
-      this.gameState.sendMessage({type: MessageType.GAME_MESSAGE, action: GameActionType.playerVote, vote: option});
+      this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.playerVote, vote: option});
       this.votedFor = option;
     }
   }
   closeVoting(): void {
-    this.gameState.sendMessage({
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
       type: MessageType.GAME_MESSAGE,
       action: GameActionType.closeVote,
       withCooldown: true,
     });
   }
   createNewVoting(): void {
-    this.gameState.sendMessage({
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
       type: MessageType.GAME_MESSAGE,
       action: GameActionType.startCreateVote,
       authorLogin: this.gameState.getMyLoginName()
@@ -143,7 +143,7 @@ export class VoteSystemComponent implements ColyseusNotifyable {
       return val.loginName;
     });
     if (this.options !== undefined && this.options.length > 0) {
-      this.gameState.sendMessage({type: MessageType.GAME_MESSAGE,
+      this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE,
         action: GameActionType.createVote,
         authorId: this.gameState.getMyLoginName(),
         eligible: eligible,
@@ -152,7 +152,7 @@ export class VoteSystemComponent implements ColyseusNotifyable {
           return val.name;
         })});
     } else {
-      this.gameState.sendMessage({type: MessageType.GAME_MESSAGE,
+      this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE,
         action: GameActionType.createVote,
         authorId: this.gameState.getMyLoginName(),
         eligible: eligible,

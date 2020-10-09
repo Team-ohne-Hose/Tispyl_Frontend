@@ -59,7 +59,7 @@ export class ChatWindowComponent implements ColyseusNotifyable {
       if (this.currentMessage[0] === '/') {
         this.executeChatCommand();
       } else {
-        this.gameState.sendMessage({type: MessageType.CHAT_MESSAGE, message: this.currentMessage });
+        this.gameState.sendMessage(MessageType.CHAT_MESSAGE, {type: MessageType.CHAT_MESSAGE, message: this.currentMessage });
         this.currentMessage = '';
       }
     }

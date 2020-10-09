@@ -104,14 +104,14 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
       subType: PlayerMessageType.setFigure,
       playerId: this.gameState.getMyLoginName(),
       playerModel: args[1]};
-    this.gameState.sendMessage(msg);
+    this.gameState.sendMessage(MessageType.PLAYER_MESSAGE, msg);
   }
 
   ngOnInit(): void {
   }
 
   private listPhysics() {
-    this.gameState.sendMessage({type: 'SERVER_COMMAND', content: {subType: 'listphysics'}});
+    this.gameState.sendMessage('SERVER_COMMAND', {type: 'SERVER_COMMAND', content: {subType: 'listphysics'}});
   }
 
   private playAnthem() {
@@ -134,11 +134,11 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
   private addRule( args ) {
     console.log(args);
     const msgArray: any[] = args.slice(1);
-    this.gameState.sendMessage({type: MessageType.GAME_MESSAGE, action: GameActionType.addRule, text: msgArray.join(' ')});
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.addRule, text: msgArray.join(' ')});
   }
 
   private deleteRule( args ) {
-    this.gameState.sendMessage({type: MessageType.GAME_MESSAGE, action: GameActionType.deleteRule, id: args[1]});
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.deleteRule, id: args[1]});
   }
 
   private showLocalState( args ) {
@@ -146,15 +146,15 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
   }
 
   private advanceAction( args ) {
-    this.gameState.sendMessage({type: MessageType.GAME_MESSAGE, action: GameActionType.advanceAction});
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.advanceAction});
   }
   private advanceTurn( args ) {
-    this.gameState.sendMessage({type: MessageType.GAME_MESSAGE, action: GameActionType.advanceTurn});
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.advanceTurn});
   }
 
   private reverseTurnOrder( args ) {
     this.print('The Turn-Order was reversed!');
-    this.gameState.sendMessage({type: MessageType.GAME_MESSAGE, action: GameActionType.reverseTurnOrder});
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.reverseTurnOrder});
   }
 
   private toggleFpsDisplay( args ) {
@@ -164,7 +164,7 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
   }
 
   private start( args ) {
-    this.gameState.sendMessage({type: MessageType.GAME_MESSAGE, action: GameActionType.setStartingCondition});
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.setStartingCondition});
   }
 
   private printHelpCommand( args ) {

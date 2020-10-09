@@ -46,7 +46,7 @@ export class NextTurnButtonComponent implements ColyseusNotifyable {
           console.log('skipping actions..');
         }
         console.log('next Turn');
-        this.gameState.sendMessage({type: MessageType.GAME_MESSAGE, action: GameActionType.advanceTurn});
+        this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.advanceTurn});
       }
     }
   }
