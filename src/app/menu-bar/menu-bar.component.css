@@ -1,5 +1,8 @@
 
 .outer-register-bounds {
+
+  pointer-events: visibleFill;
+
   --register-background: rgba(60,60,60,0.8);
   --register-unselected-background: rgba(30,30,30,0.6);
   --register-hover-background: rgba(45,45,45,0.7);
