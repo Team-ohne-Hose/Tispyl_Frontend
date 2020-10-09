@@ -111,13 +111,12 @@ export class ColyseusClientService {
   }
 
   registerMessageCallback(type: MessageType, cb: MessageCallback) {
-    let cbList: MessageCallback[] = this.messageCallbacks.get(type);
-    if (cbList === undefined) {
-      cbList = [cb];
-      this.messageCallbacks.set(type, cbList);
-    } else {
-      cbList.push(cb);
-    }
+    this.getActiveRoom().subscribe((activeRoom) => {
+      if (activeRoom !== undefined) {
+        activeRoom.onMessage(type, cb.f);
+        activeRoom.state.onChange = this.distributeOnChange.bind(this);
+      }
+    });
   }
 
   /**
@@ -154,17 +153,17 @@ export class ColyseusClientService {
     this.onChangeCallbacks.map(f => f(changes));
   }
 
-  updateRoomCallbacks(currentRoom?: Room<GameState>) {
+  private updateRoomCallbacks(currentRoom?: Room<GameState>) {
     const onMsg = this.gatherFunctionCalls.bind(this);
     if ( currentRoom === undefined ) {
       this.getActiveRoom().subscribe((activeRoom) => {
         if (activeRoom !== undefined) {
-          activeRoom.onMessage('', onMsg);
+          // activeRoom.onMessage('', onMsg);
           activeRoom.state.onChange = this.distributeOnChange.bind(this);
         }
       });
     } else {
-      currentRoom.onMessage('', onMsg);
+      // currentRoom.onMessage('', onMsg);
       currentRoom.state.onChange = this.distributeOnChange.bind(this);
     }
   }
