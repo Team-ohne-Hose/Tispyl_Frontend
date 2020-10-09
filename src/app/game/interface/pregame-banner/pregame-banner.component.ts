@@ -19,7 +19,7 @@ export class PregameBannerComponent {
 
   readyEvent() {
     this.isReady = !this.isReady;
-    this.gameState.sendMessage( {type: MessageType.GAME_MESSAGE, action: GameActionType.readyPropertyChange, isReady: this.isReady} );
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.readyPropertyChange, isReady: this.isReady} );
   }
 
   countReadyPlayers() {

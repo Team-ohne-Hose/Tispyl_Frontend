@@ -118,10 +118,10 @@ export class GameStateService {
     return this.colyseus.myFigureId;
   }
 
-  sendMessage(data: any): void {
+  sendMessage(type: number, data: any): void {
     const room = this.getRoom();
     if (room !== undefined) {
-      room.send(data);
+      room.send(type, data);
     }
   }
 
