@@ -267,7 +267,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
   private sendMessage(msg: PhysicsCommand) {
     const room = this.gameState.getRoom();
     if (msg !== undefined && room !== undefined) {
-      room.send('', msg);
+      room.send(msg.type, msg);
     }
   }
 }

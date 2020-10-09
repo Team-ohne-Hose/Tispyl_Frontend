@@ -48,7 +48,7 @@ export class GameComponent implements OnInit, AfterViewInit {
             type: MessageType.GAME_MESSAGE,
             action: GameActionType.refreshData
           };
-          myRoom.send('', msg);
+          myRoom.send(MessageType.GAME_MESSAGE, msg);
         }
       }, (errRoom) => {
         console.log('ErrorRoom is', errRoom);
