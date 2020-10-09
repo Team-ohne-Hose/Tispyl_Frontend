@@ -10,6 +10,8 @@ import {GameInitialisationService} from '../services/game-initialisation.service
 import {InterfaceComponent} from './interface/interface.component';
 import {BoardTilesService} from '../services/board-tiles.service';
 import {LoadingScreenComponent} from './loading-screen/loading-screen.component';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {ShowAttribComponent} from './show-attrib/show-attrib.component';
 
 @Component({
   selector: 'app-game',
@@ -18,7 +20,8 @@ import {LoadingScreenComponent} from './loading-screen/loading-screen.component'
 })
 export class GameComponent implements OnInit, AfterViewInit {
 
-  constructor(private router: Router,
+  constructor(private dialog: MatDialog,
+              private router: Router,
               private colyseus: ColyseusClientService,
               private gameInit: GameInitialisationService,
               private boardTilesService: BoardTilesService) {
@@ -68,6 +71,18 @@ export class GameComponent implements OnInit, AfterViewInit {
     this.cameraControl = tuple[0];
     this.boardItemControl = tuple[1];
     this.audioCtrl = tuple[2];
+  }
+
+  showAttribution() {
+    const dialogRef: MatDialogRef<ShowAttribComponent, {roomName: string, skinName: string, randomizeTiles: boolean}> =
+      this.dialog.open(ShowAttribComponent, {
+        width: '80%',
+        maxWidth: '900px',
+        height: '70%',
+        maxHeight: '750px',
+        data: {},
+        panelClass: 'modalbox-base'
+      });
   }
 
 }

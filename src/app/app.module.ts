@@ -47,6 +47,7 @@ import {MatStepperModule} from '@angular/material/stepper';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { VoteCreationComponent } from './customUI/vote-creation/vote-creation.component';
 import {CdkStepperModule} from '@angular/cdk/stepper';
+import { ShowAttribComponent } from './game/show-attrib/show-attrib.component';
 
 const appRoutes: Routes = [
   { path: 'lobby', component: LobbyComponent},
@@ -84,7 +85,8 @@ const appRoutes: Routes = [
     TileOverlayComponent,
     LoadingScreenComponent,
     VoteSystemComponent,
-    VoteCreationComponent
+    VoteCreationComponent,
+    ShowAttribComponent
   ],
   imports: [
     RouterModule.forRoot(
