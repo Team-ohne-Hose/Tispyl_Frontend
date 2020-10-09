@@ -159,12 +159,12 @@ export class ColyseusClientService {
     if ( currentRoom === undefined ) {
       this.getActiveRoom().subscribe((activeRoom) => {
         if (activeRoom !== undefined) {
-          activeRoom.onMessage(onMsg);
+          activeRoom.onMessage('', onMsg);
           activeRoom.state.onChange = this.distributeOnChange.bind(this);
         }
       });
     } else {
-      currentRoom.onMessage(onMsg);
+      currentRoom.onMessage('', onMsg);
       currentRoom.state.onChange = this.distributeOnChange.bind(this);
     }
   }

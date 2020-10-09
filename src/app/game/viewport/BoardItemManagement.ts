@@ -149,7 +149,7 @@ export class BoardItemManagement implements ColyseusNotifyable {
         figureId: userData.physicsId,
         playerId: playerId,
         tileId: fieldID};
-      room.send(msg);
+      room.send('', msg);
     }
   }
 

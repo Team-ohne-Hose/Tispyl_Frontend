@@ -32,7 +32,18 @@ export class HintsService {
     'Wer das liest muss trinken!',
     'Man kann Äpfel und Birnen vergleichen, da beides zu den Rosaceaen gehören',
     'Domi ist in Dörfen!',
-    'Triggerwarnung! Es gibt nur ein Feld dass CC anwendet!'
+    'Triggerwarnung! Es gibt nur ein Feld dass CC anwendet!',
+    'Es gibt mehr Nippel als Menschen auf der Welt!',
+    'Kanada ist quasi die Wohnung über dem Drogenlabor!',
+    'Ich bin zwar nicht Glurak, aber mein Schwanz brennt trotzdem!',
+    'Lieber wiederlich als wieder nicht!',
+    'Wem dus heute kannst besorgen, das verschiebe nicht auf morgen!',
+    'Wer andern eine Bratwurst brät, hat zumeist ein Bratwurstbratgerät!',
+    'Wer im Glashaus sitzt, sollte im Keller ficken!',
+    'Wer schwankt hat mehr vom Weg!',
+    'Gibst du Opi Opium, bringt das Opium Opi um!',
+    '9/10 Menschen finden Mobbing gut!',
+    'Lieber 2 Promille als garkeine inneren Werte',
   ];
 
 
