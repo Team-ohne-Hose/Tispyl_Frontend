@@ -220,6 +220,10 @@ export class ObjectLoaderService {
   getBCapCount(): number {
     return this.texList.size;
   }
+  getBCapTextureThumbPath(sel: number) {
+    const entry = this.texList.get(sel);
+    return '../assets/models/otherTex/' + (entry === undefined ? 'default' : entry.texFName) + '.png';
+  }
 
   private getResourceData(obj: PhysicsEntity, variation: PhysicsEntityVariation): ResourceData {
     switch (obj) {

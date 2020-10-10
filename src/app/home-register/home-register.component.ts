@@ -2,6 +2,9 @@ import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {UserService} from '../services/user.service';
 import {FileService} from '../services/file.service';
 import {ChatMessage} from './ChatMessage';
+import {ObjectLoaderService} from '../services/object-loader.service';
+import {MessageType, PlayerMessageType, SetFigure} from '../model/WsData';
+import {GameStateService} from '../services/game-state.service';
 
 @Component({
   selector: 'app-home-register',
@@ -11,12 +14,16 @@ import {ChatMessage} from './ChatMessage';
 export class HomeRegisterComponent implements OnInit {
 
   profileSource = '../assets/defaultImage.jpg';
-  bottleCapSource = '../assets/models/otherTex/cocaCola.png';
+  bottleCapSource = '../assets/models/otherTex/default.png';
+  myBCapIndex = 1;
 
   @ViewChild('textSection') textSection: ElementRef;
   chatMessages: ChatMessage[] = [];
 
-  constructor(private userManagement: UserService, private fileManagement: FileService) {
+  constructor(private userManagement: UserService,
+              private fileManagement: FileService,
+              public gameState: GameStateService,
+              private loader: ObjectLoaderService) {
     this.userManagement.getActiveUser().subscribe( u => {
       if ( u !== undefined ) {
         this.profileSource = this.fileManagement.profilePictureSource(u.login_name);
@@ -49,4 +56,34 @@ export class HomeRegisterComponent implements OnInit {
     }
   }
 
+  nextBCap($event: Event) {
+    console.log('update bcap to', this.myBCapIndex);
+    this.myBCapIndex++;
+    if (this.myBCapIndex > this.loader.getBCapCount()) {
+      this.myBCapIndex = 1;
+    }
+    console.log('update bcap to', this.myBCapIndex);
+    this.bottleCapSource = this.loader.getBCapTextureThumbPath(this.myBCapIndex);
+
+    const msg: SetFigure = {type: MessageType.PLAYER_MESSAGE,
+      subType: PlayerMessageType.setFigure,
+      playerId: this.gameState.getMyLoginName(),
+      playerModel: this.myBCapIndex};
+    this.gameState.sendMessage(MessageType.PLAYER_MESSAGE, msg);
+  }
+  prevBCap($event: Event) {
+    console.log('update bcap to', this.myBCapIndex);
+    this.myBCapIndex--;
+    if (this.myBCapIndex < 1) {
+      this.myBCapIndex = this.loader.getBCapCount();
+    }
+    console.log('update bcap to', this.myBCapIndex);
+    this.bottleCapSource = this.loader.getBCapTextureThumbPath(this.myBCapIndex);
+
+    const msg: SetFigure = {type: MessageType.PLAYER_MESSAGE,
+      subType: PlayerMessageType.setFigure,
+      playerId: this.gameState.getMyLoginName(),
+      playerModel: this.myBCapIndex};
+    this.gameState.sendMessage(MessageType.PLAYER_MESSAGE, msg);
+  }
 }

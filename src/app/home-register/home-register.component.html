@@ -18,11 +18,13 @@
     </div>
 
     <div class="bottle-cap-section">
-      <div><i class="fas fa-chevron-left"></i></div>
+      <div (click)="prevBCap($event)"><i class="fas fa-chevron-left"></i></div>
       <div class="round-avatar golden-border bottle-cap">
-        <img [src]="bottleCapSource" alt="'Profile'">
+        <div class="bottle-cap-cover">
+          <img [src]="bottleCapSource" alt="'Profile'">
+        </div>
       </div>
-      <div><i class="fas fa-chevron-right"></i></div>
+      <div (click)="nextBCap($event)"><i class="fas fa-chevron-right"></i></div>
     </div>
 
   </div>

@@ -99,12 +99,12 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
   }
 
   switchMyTex(args) {
-    args[1] = Math.max(0, Math.min(Number(args[1]), this.loader.getBCapCount()));
+    /*args[1] = Math.max(0, Math.min(Number(args[1]), this.loader.getBCapCount()));
     const msg: SetFigure = {type: MessageType.PLAYER_MESSAGE,
       subType: PlayerMessageType.setFigure,
       playerId: this.gameState.getMyLoginName(),
       playerModel: args[1]};
-    this.gameState.sendMessage(MessageType.PLAYER_MESSAGE, msg);
+    this.gameState.sendMessage(MessageType.PLAYER_MESSAGE, msg);*/
   }
 
   ngOnInit(): void {

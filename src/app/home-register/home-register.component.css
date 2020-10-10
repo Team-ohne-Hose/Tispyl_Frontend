@@ -48,6 +48,7 @@
   align-items: center;
   flex-direction: row;
   color: var(--dim-text-color);
+  pointer-events: all;
 }
 
 .info-section {
@@ -72,9 +73,19 @@
   object-fit: contain;
 }
 
-.bottle-cap img{
+.bottle-cap-cover {
+  border-radius: 50%;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+.bottle-cap-cover img {
+  height: 149%;
+  width: 149%;
+  border-radius: 0%;
+  border: 0px;
   object-fit: cover;
-  object-position: left;
+  object-position: -12px -12px;
 }
 
 .golden-border {
