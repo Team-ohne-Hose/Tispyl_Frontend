@@ -1,29 +1,39 @@
+<div class="register-card-base">
 
-<div [ngClass]="{'tray-wrapper': true, 'hidden': this.hidden}">
-
-  <div class="tray-handle" (click)="toggleMove($event)">
-    <i [ngClass]="hidden ? 'fas fa-rotate-180 fa-arrow-right' : 'fas fa-arrow-right'"></i>
-  </div>
-
-  <div class="tray">
-    <div class="gold-border">
-      <div class="paper-body">
-        <div class="content-head">
+  <div class="top tray">
+    <div class="top gold-border">
+      <div class="top paper-body">
+        <div class="rule-list">
           <div class="headline-text">
             Special Rules
           </div>
-        </div>
-        <div *ngFor="let r of rules" class="rule-list">
-          <div class="rule">
-            <div>
-              <i class="fas fa-minus"></i>
+          <div *ngFor="let r of rules; let i = index" class="rule">
+            <div class="rule-mover">
+              <i class="fas fa-sort-up move-button"></i>
+              <i class="fas fa-gavel"></i>
+              <i class="fas fa-sort-down move-button"></i>
             </div>
-            <div>{{r}}</div>
+            <div class="rule-text">
+              <span class="author">by {{r.author}}</span>
+              <span class="text">{{r.text}}</span>
+            </div>
+            <div class="delete-rule" (click)="removeRule(i)"><i class="fas fa-ban"></i></div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-</div>
+  <div class="tray" (keyup)="addRuleByKey($event, textInput)">
+    <div class="gold-border">
+      <div class="paper-body">
+          <div class="input-section">
+            <textarea rows="4" placeholder="Add new rule here ..." #textInput></textarea>
+            <div class="vertical-seperator"></div>
+            <div class="add-button" (click)="addRule(textInput)"><i class="fas fa-share"></i></div>
+          </div>
+      </div>
+    </div>
+  </div>
 
+</div>
