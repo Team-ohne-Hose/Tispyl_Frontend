@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {GameActionType, MessageType} from '../../../model/WsData';
 import {Player} from '../../../model/state/Player';
 import {GameStateService} from '../../../services/game-state.service';
@@ -16,6 +16,7 @@ export class PregameBannerComponent {
   players: Player[];
 
   constructor( private gameState: GameStateService) {}
+
 
   readyEvent() {
     this.isReady = !this.isReady;

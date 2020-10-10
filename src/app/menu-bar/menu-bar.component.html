@@ -27,7 +27,8 @@
   <div class="register-edge" #tabEdge></div>
 
   <div class="register-content">
-    <app-home-register *ngIf="tabIndex === 0"></app-home-register>
+    <app-home-register *ngIf="tabIndex === 0"
+                       [playerlist]="this.playerList"></app-home-register>
     <app-ingame-rule-book *ngIf="tabIndex === 1"></app-ingame-rule-book>
   </div>
 </div>

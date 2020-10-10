@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, ViewChild} from '@angular/core';
 import {
   animate,
   animateChild,
@@ -12,6 +12,7 @@ import {
   transition,
   trigger
 } from '@angular/animations';
+import {Player} from '../model/state/Player';
 
 @Component({
   selector: 'app-menu-bar',
@@ -19,10 +20,13 @@ import {
   styleUrls: ['./menu-bar.component.css'],
   animations: []
 })
-export class MenuBarComponent implements OnInit {
+export class MenuBarComponent {
 
   selectionClass = 'selected';
   registerTabClass = 'register-tab';
+
+
+  @Input() playerList: Player[];
 
   @ViewChild('registerFooter') registerFooter: ElementRef;
   @ViewChild('tabEdge') tabEdge: ElementRef;
@@ -30,8 +34,6 @@ export class MenuBarComponent implements OnInit {
   tabIndex = undefined;
 
   constructor() { }
-
-  ngOnInit(): void {}
 
   toggleTab(event): void {
     console.log(event.target.classList);

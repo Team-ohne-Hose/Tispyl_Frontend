@@ -11,11 +11,14 @@
   </app-pregame-banner>
   <app-connected-players
     [players]="gameState.getState() === undefined ? [] : asArray(gameState.getState().playerList)"
-    [currentPlayerDisplayName]="gameState.getState() === undefined ? '' : getDisplayName(gameState.getState().currentPlayerLogin)">
+    [currentPlayerDisplayName]="gameState.getState() === undefined ? '' : getDisplayName(gameState.getState().currentPlayerLogin)"
+    #connectedPlayers>
   </app-connected-players>
-  <app-ingame-rule-book [rules]="gameState.getState() === undefined ? '' : gameState.getState().rules">
+  <app-ingame-rule-book *ngIf="false" [rules]="gameState.getState() === undefined ? '' : gameState.getState().rules">
   </app-ingame-rule-book>
-  <app-menu-bar></app-menu-bar>
+  <app-menu-bar
+    [playerList]="gameState.getState() === undefined ? [] : asArray(gameState.getState().playerList)">
+  </app-menu-bar>
   <app-vote-system [players]="gameState.getState() === undefined ? [] : asArray(gameState.getState().playerList)" #voteSystem></app-vote-system>
   <app-next-turn-button [disabled]="(gameState.getState() === undefined) || !gameState.getState().hasStarted"
                         [action]="gameState.getState() === undefined ? 'Waiting' : gameState.getState().action"

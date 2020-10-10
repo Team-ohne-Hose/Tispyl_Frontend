@@ -1,10 +1,12 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {UserService} from '../services/user.service';
 import {FileService} from '../services/file.service';
 import {ChatMessage} from './ChatMessage';
 import {ObjectLoaderService} from '../services/object-loader.service';
-import {MessageType, PlayerMessageType, SetFigure} from '../model/WsData';
+import {MessageType, PlayerMessageType, RefreshCommandType, RefreshProfilePics, SetFigure} from '../model/WsData';
 import {GameStateService} from '../services/game-state.service';
+import {User} from '../model/User';
+import {Player} from '../model/state/Player';
 
 @Component({
   selector: 'app-home-register',
@@ -17,6 +19,9 @@ export class HomeRegisterComponent implements OnInit {
   bottleCapSource = '../assets/models/otherTex/default.png';
   myBCapIndex = 1;
 
+  user: User;
+  @Input() playerlist: Player[];
+
   @ViewChild('textSection') textSection: ElementRef;
   chatMessages: ChatMessage[] = [];
 
@@ -26,6 +31,7 @@ export class HomeRegisterComponent implements OnInit {
               private loader: ObjectLoaderService) {
     this.userManagement.getActiveUser().subscribe( u => {
       if ( u !== undefined ) {
+        this.user = u;
         this.profileSource = this.fileManagement.profilePictureSource(u.login_name);
       }
     });
@@ -85,5 +91,38 @@ export class HomeRegisterComponent implements OnInit {
       playerId: this.gameState.getMyLoginName(),
       playerModel: this.myBCapIndex};
     this.gameState.sendMessage(MessageType.PLAYER_MESSAGE, msg);
+  }
+
+  getTimePlayed() {
+    const min = this.user.time_played;
+    return `${Math.floor(min / 60)} hours ${Math.floor(min % 60)} minutes`;
+  }
+  getRole() {
+    const p = this.getPlayerFromUser(this.user);
+    if (p === undefined) {
+    } else if (p.isCurrentHost) {
+      return 'Host';
+    } else if (this.user.is_dev) {
+      return 'Dev';
+    } else {
+      return 'Player';
+    }
+    return 'undefined';
+  }
+  getPlayerFromUser(user: User): Player {
+    const p = this.playerlist ? this.playerlist.find((val: Player) => {
+      return val.loginName === user.login_name;
+    }) : undefined;
+    return p;
+  }
+  newProfilePic(event) {
+    const file = event.target.files[0];
+    this.fileManagement.uploadProfilePicture(file, this.user).subscribe(suc => {
+      console.log(suc);
+      this.profileSource = this.fileManagement.profilePictureSource(this.user.login_name);
+      const msg: RefreshProfilePics = {type: MessageType.REFRESH_COMMAND,
+        subType: RefreshCommandType.refreshProfilePic};
+      this.gameState.sendMessage(MessageType.REFRESH_COMMAND, msg);
+    });
   }
 }

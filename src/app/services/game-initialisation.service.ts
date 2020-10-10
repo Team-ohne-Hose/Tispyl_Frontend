@@ -61,6 +61,7 @@ export class GameInitialisationService {
     this.colyseusNotifyableClasses.push(game.interfaceRef.tileOverlayRef);
     this.colyseusNotifyableClasses.push(game.interfaceRef.voteSystemRef);
     this.colyseusNotifyableClasses.push(game.interfaceRef);
+    this.colyseusNotifyableClasses.push(game.interfaceRef.connectedPlayersRef);
 
     this.logInit('loading Textures');
     await this.objectLoader.loadAllObjects((progress: number, total: number) => {

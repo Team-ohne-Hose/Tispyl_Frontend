@@ -14,6 +14,7 @@ import {TurnOverlayComponent} from './turn-overlay/turn-overlay.component';
 import {HintsService} from '../../services/hints.service';
 import {VoteSystemComponent} from './vote-system/vote-system.component';
 import {ObjectLoaderService} from '../../services/object-loader.service';
+import {ConnectedPlayersComponent} from './connected-players/connected-players.component';
 
 
 @Component({
@@ -37,6 +38,7 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
   @ViewChild('tileOverlay') tileOverlayRef: TileOverlayComponent;
   @ViewChild('turnOverlay') turnOverlayRef: TurnOverlayComponent;
   @ViewChild('voteSystem') voteSystemRef: VoteSystemComponent;
+  @ViewChild('connectedPlayers') connectedPlayersRef: ConnectedPlayersComponent;
 
   knownCommands: any[] = [
     {k: '/help', f: this.printHelpCommand.bind(this), h: 'displays this help'},
