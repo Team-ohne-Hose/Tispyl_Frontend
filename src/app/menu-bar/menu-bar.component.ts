@@ -27,6 +27,7 @@ export class MenuBarComponent {
 
 
   @Input() playerList: Player[];
+  @Input() ruleList = [];
 
   @ViewChild('registerFooter') registerFooter: ElementRef;
   @ViewChild('tabEdge') tabEdge: ElementRef;
