@@ -25,8 +25,7 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
 
   constructor(private router: Router,
               public gameState: GameStateService,
-              private hints: HintsService,
-              private loader: ObjectLoaderService) {
+              private hints: HintsService) {
     this.routes = router.config.filter( route => route.path !== '**' && route.path.length > 0);
   }
 
@@ -47,7 +46,6 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
     {k: '/nextAction', f: this.advanceAction.bind(this), h: 'advance to the next action manually'},
     {k: '/next', f: this.advanceTurn.bind(this), h: 'advance the turn manually'},
     {k: '/fps', f: this.toggleFpsDisplay.bind(this), h: 'toggle the FPS display'},
-    {k: '/myTex', f: this.switchMyTex.bind(this), h: '<id> sets the skin to skin <id> (0-13)'},
     {k: '/addRule', f: this.addRule.bind(this), h: 'adds a Rule to the Ruleboard'},
     {k: '/deleteRule', f: this.deleteRule.bind(this), h: '<id> deletes the rule with id'},
     {k: '/dlScene', f: this.dlScene.bind(this), h: 'download the Scene as GLTF'},
@@ -96,15 +94,6 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
         }
       }, {});
     }
-  }
-
-  switchMyTex(args) {
-    /*args[1] = Math.max(0, Math.min(Number(args[1]), this.loader.getBCapCount()));
-    const msg: SetFigure = {type: MessageType.PLAYER_MESSAGE,
-      subType: PlayerMessageType.setFigure,
-      playerId: this.gameState.getMyLoginName(),
-      playerModel: args[1]};
-    this.gameState.sendMessage(MessageType.PLAYER_MESSAGE, msg);*/
   }
 
   ngOnInit(): void {
