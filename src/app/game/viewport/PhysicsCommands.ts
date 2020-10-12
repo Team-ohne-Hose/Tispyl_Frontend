@@ -128,7 +128,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
             // is currently getting loaded
             onDone();
           } else {
-            console.log('adding via State', item.objectIDPhysics);
+            // console.log('adding via State', item.objectIDPhysics);
             this.currentlyLoadingEntities.set(item.objectIDPhysics, true);
             this.generateEntity(onDone, item.entity, item.variant, item.objectIDPhysics,
               item.position.x, item.position.y, item.position.z, item.quaternion.x, item.quaternion.y, item.quaternion.z);
@@ -157,7 +157,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
       model.position.set(posX, posY, posZ);
       const userData: ObjectUserData = {physicsId: physicsId, entityType: entity, variation: variant, clickRole: undefined};
       model.userData = userData;
-      console.log('Adding', model.userData.physicsId, model.name, entity, variant);
+      console.debug('Adding physics object', model.userData.physicsId, model.name, entity, variant);
       this.scene.add(model);
       // set the various references in other classes
       switch (entity) {
@@ -168,7 +168,6 @@ export class PhysicsCommands implements ColyseusNotifyable {
           break;
         case PhysicsEntity.figure:
           this.setClickRole(ClickedTarget.figure, model);
-          console.log('Added Figure', physicsId);
 
           // Load other playermodels
           const room = this.gameState.getRoom();

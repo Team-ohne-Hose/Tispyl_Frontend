@@ -114,7 +114,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     // register at Game Component
     this.registerViewport.emit([this.cameraControl, this.boardItemManager, this.audioControl]);
 
-    console.warn('THREE.js Viewport initialised');
+    console.info('THREE.js Viewport initialised');
   }
   initialiseScene() {
     // load stuff which is dependend on loading textures
@@ -129,7 +129,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   }
   startRendering() {
     this.animate();
-    console.warn('THREE.js rendering started');
+    console.debug('THREE.js rendering started');
   }
 
   keyDown(event) {
@@ -146,7 +146,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   }
 
   onWindowResize(event) {
-    console.log('viewResizing: ', window.innerWidth, this.view['nativeElement'].clientWidth, this.view['nativeElement'].scrollWidth,
+    console.debug('viewResizing: ', window.innerWidth, this.view['nativeElement'].clientWidth, this.view['nativeElement'].scrollWidth,
       this.view['nativeElement'].offsetWidth, this.view['nativeElement'].offsetHeight, this.view);
     this.renderer.setSize(this.view['nativeElement'].offsetWidth, this.view['nativeElement'].offsetHeight);
     this.camera.aspect = this.view['nativeElement'].offsetWidth / this.view['nativeElement'].offsetHeight;

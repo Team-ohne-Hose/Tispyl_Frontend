@@ -43,6 +43,7 @@ export class LobbyComponent implements OnInit {
     document.documentElement.setAttribute('style', 'overflow: scrollbars');
     this.translation = TranslationService.getTranslations('en');
 
+    // TODO: shouldnt query user here oninit before login
     this.userManagement.getActiveUser().subscribe( u => {
       console.log('USER: ', u);
       this.currentUser = u;
@@ -65,7 +66,6 @@ export class LobbyComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(results => {
       if (results !== undefined) {
-        console.log('dialog results are: ', results);
         this.colyseus.createRoom(results.roomName,
           this.currentUser.display_name,
           this.currentUser.login_name,

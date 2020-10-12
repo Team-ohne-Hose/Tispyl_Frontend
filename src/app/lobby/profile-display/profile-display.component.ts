@@ -57,7 +57,6 @@ export class ProfileDisplayComponent {
 
   constructor(private userManagement: UserService, private fileManagement: FileService, private objectLoaderService: ObjectLoaderService) {
     this.userManagement.getActiveUser().subscribe( u => {
-      console.log('USER CHANGED TO: ', u);
       if ( u !== undefined ) {
         this.profileSource = this.fileManagement.profilePictureSource(u.login_name);
       }
@@ -92,7 +91,6 @@ export class ProfileDisplayComponent {
   }
 
   setGameSettings() {
-    console.log('setting the cubemap to', this.selectedEnv);
     this.objectLoaderService.setCurrentCubeMap(this.selectedEnv);
   }
 

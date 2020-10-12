@@ -11,7 +11,7 @@
 
     <div class="info-section">
       <div>
-        <div class="user-name">{{user.display_name}}</div>
+        <div class="user-name">{{user === undefined ? 'Not connected' : user.display_name}}</div>
         <div class="sub-script">Role: {{getRole()}}</div>
         <div class="sub-script">Time played: {{getTimePlayed()}}</div>
       </div>

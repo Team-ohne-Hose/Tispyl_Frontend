@@ -32,13 +32,13 @@ export class LoginComponent {
   onLogin() {
     this.userManagent.loginUser(this.login_name, hash.MD5(this.password_plain)).subscribe( suc => {
       this.userManagent.setActiveUser(suc.payload[0]);
-      console.log('LOGGED IN AS:',  suc.payload[0]);
+      console.debug('LOGGED IN AS:',  suc.payload[0]);
     }, err => {
       if (err.error as APIResponse<any[]> && err.error.success) {
-        console.log('Login Failed: ', err.error);
+        console.warn('Login Failed: ', err.error);
         this.errorMessage = 'Failed to login. Check your credentials.';
       } else {
-        console.log('Unexpected error: ', err);
+        console.error('Unexpected error: ', err);
         this.errorMessage = 'Failed to reach Server. <a href="https://stats.uptimerobot.com/ZpvXzhMyG8">More information</a>';
       }
     });
@@ -55,9 +55,9 @@ export class LoginComponent {
     dialogRef.afterClosed().subscribe(usr => {
       if (usr !== undefined) {
         this.userManagent.addUser(usr).subscribe( suc => {
-          console.log('Registered: ', suc);
+          console.debug('Registered: ', suc);
         }, err => {
-          console.log('Unexpected error: ', err);
+          console.error('Unexpected error: ', err);
         });
       }
     });

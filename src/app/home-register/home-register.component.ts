@@ -33,6 +33,8 @@ export class HomeRegisterComponent implements OnInit {
       if ( u !== undefined ) {
         this.user = u;
         this.profileSource = this.fileManagement.profilePictureSource(u.login_name);
+      } else {
+        console.error('couldnt get user entry');
       }
     });
   }
@@ -44,6 +46,14 @@ export class HomeRegisterComponent implements OnInit {
       new ChatMessage('DOCH!!11!!Eins!!Elf!11!! ', 'Kevin'),
       new ChatMessage('LANGERTEXT DER MIR EIGENTLICH EGAL IST ICH MUSS NUR TESTEN WIE DAS MIT DEN ZEILEN UMBRÜCHEN AUSSIEHT =)', 'tiz')
     ];
+    const p = this.getPlayerFromUser(this.user);
+    if (p !== undefined) {
+      this.myBCapIndex = p.figureModel || 1;
+      console.debug('init bcap to', this.myBCapIndex);
+      this.bottleCapSource = this.loader.getBCapTextureThumbPath(this.myBCapIndex);
+    } else {
+      console.error('couldnt get player entry', this.playerlist);
+    }
   }
 
   sendChatMessageByKey(event: KeyboardEvent, inputField: HTMLInputElement) {
@@ -63,27 +73,21 @@ export class HomeRegisterComponent implements OnInit {
   }
 
   nextBCap($event: Event) {
-    console.log('update bcap to', this.myBCapIndex);
     this.myBCapIndex++;
     if (this.myBCapIndex > this.loader.getBCapCount()) {
       this.myBCapIndex = 1;
     }
-    console.log('update bcap to', this.myBCapIndex);
-    this.bottleCapSource = this.loader.getBCapTextureThumbPath(this.myBCapIndex);
-
-    const msg: SetFigure = {type: MessageType.PLAYER_MESSAGE,
-      subType: PlayerMessageType.setFigure,
-      playerId: this.gameState.getMyLoginName(),
-      playerModel: this.myBCapIndex};
-    this.gameState.sendMessage(MessageType.PLAYER_MESSAGE, msg);
+    this.setBCap();
   }
   prevBCap($event: Event) {
-    console.log('update bcap to', this.myBCapIndex);
     this.myBCapIndex--;
     if (this.myBCapIndex < 1) {
       this.myBCapIndex = this.loader.getBCapCount();
     }
-    console.log('update bcap to', this.myBCapIndex);
+    this.setBCap();
+  }
+  private setBCap() {
+    console.debug('update bcap to', this.myBCapIndex);
     this.bottleCapSource = this.loader.getBCapTextureThumbPath(this.myBCapIndex);
 
     const msg: SetFigure = {type: MessageType.PLAYER_MESSAGE,
@@ -118,7 +122,7 @@ export class HomeRegisterComponent implements OnInit {
   newProfilePic(event) {
     const file = event.target.files[0];
     this.fileManagement.uploadProfilePicture(file, this.user).subscribe(suc => {
-      console.log(suc);
+      console.log('tried uploading new profile picture', suc);
       this.profileSource = this.fileManagement.profilePictureSource(this.user.login_name);
       const msg: RefreshProfilePics = {type: MessageType.REFRESH_COMMAND,
         subType: RefreshCommandType.refreshProfilePic};

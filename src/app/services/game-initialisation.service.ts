@@ -19,7 +19,6 @@ export interface ColyseusNotifyable {
 })
 export class GameInitialisationService {
 
-  private readonly logInitialisation = true;
   private colyseusReady = false;
   private staticReady = false;
 
@@ -31,22 +30,12 @@ export class GameInitialisationService {
 
   constructor(private objectLoader: ObjectLoaderService) { }
 
-  private logInit(msg?: any, ...optional: any[]) {
-    if (this.logInitialisation) {
-      if (optional.length > 0) {
-        console.log(msg, optional);
-      } else {
-        console.log(msg);
-      }
-    }
-  }
-
   async startInitialisation(game: GameComponent,
                             viewPort: ViewportComponent,
                             boardItemManagement: BoardItemManagement,
                             physicsCommands: PhysicsCommands,
                             boardTilesService: BoardTilesService) {
-    this.logInit('starting Initialisation');
+    console.debug('starting Initialisation of game engine');
     game.loadingScreenRef.startTips();
     this.viewPort = viewPort;
     this.game = game;
@@ -63,14 +52,14 @@ export class GameInitialisationService {
     this.colyseusNotifyableClasses.push(game.interfaceRef);
     this.colyseusNotifyableClasses.push(game.interfaceRef.connectedPlayersRef);
 
-    this.logInit('loading Textures');
+    console.debug('loading Textures');
     await this.objectLoader.loadAllObjects((progress: number, total: number) => {
-      this.logInit('static load: ' + progress + '/' + total, ((progress / total) * 50) + '%');
+      console.debug('loading common files: ' + progress + '/' + total, ((progress / total) * 50) + '%');
       game.loadingScreenRef.setProgress((progress / total) * 50);
     });
-    console.log('static done');
+    console.debug('loading of common files done');
 
-    this.logInit('creating static Scene');
+    console.debug('creating static Scene');
     viewPort.initialiseScene();
 
     // check/wait for colyseus to recieve first patch
@@ -78,12 +67,12 @@ export class GameInitialisationService {
     if (this.colyseusReady) {
       this.afterColyseusInitialisation();
     } else {
-      this.logInit('waiting for colyseus ready');
+      console.debug('waiting for colyseus initialisation finished');
     }
   }
   private afterColyseusInitialisation() {
-    this.logInit('colyseus is ready');
-    this.logInit('attaching colyseus callbacks');
+    console.info('colyseus is initialized and common files are loaded');
+    console.debug('attaching colyseus callbacks');
     this.colyseusNotifyableClasses.forEach((obj: ColyseusNotifyable, index: number, array: ColyseusNotifyable[]) => {
       if (obj === undefined) {
         console.error('couldnt attach colyseus Callbacks because the object was undefined', index, array);
@@ -96,24 +85,24 @@ export class GameInitialisationService {
     let progress = 0;
     const queued = 64 + this.viewPort.physics.getInitializePending() + this.viewPort.boardItemManager.getSpritesPending();
     const doneCallback = () => {
-      this.logInit('loading done. Entering Game..');
+      console.info('loading done. Entering Game..');
       this.viewPort.startRendering();
       this.game.loadingScreenRef.stopTips();
       this.game.loadingScreenVisible = false;
     };
     const onProgress = () => {
       progress++;
-      this.logInit('dynamic load: ' + progress + '/' + queued, ((progress / queued) * 50 + 50) + '%');
+      console.debug('loading instance specific files: ' + progress + '/' + queued, ((progress / queued) * 50 + 50) + '%');
       this.game.loadingScreenRef.setProgress(((progress / queued) * 50 + 50));
       if (progress >= queued) {
         doneCallback();
       }
     };
 
-    this.logInit('creating dynamic gameboard');
+    console.debug('creating dynamic gameboard');
     this.boardTilesService.initialize(((grp: THREE.Group) => this.viewPort.scene.add(grp)).bind(this), onProgress);
 
-    this.logInit('creating dynamic objects & players');
+    console.debug('creating dynamic objects & players');
     this.viewPort.physics.initializeFromState(onProgress);
     this.viewPort.boardItemManager.createSprites(onProgress);
   }
@@ -126,7 +115,7 @@ export class GameInitialisationService {
       if (this.staticReady) {
         this.afterColyseusInitialisation();
       } else {
-        this.logInit('waiting for static init ready');
+        console.debug('waiting for common initialisation to be finished');
       }
     }
   }

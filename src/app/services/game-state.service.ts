@@ -38,7 +38,7 @@ export class GameStateService {
       changes.forEach((change: DataChange<any>) => {
         switch (change.field) {
           case 'currentPlayerLogin':
-            console.log('nextRound. pushing to cbs');
+            console.debug('nextTurn detected. notifying callbacks');
             this.callNextTurn();
             if (this.activePlayerLogin !== change.value) {
               this.activePlayerLogin = change.value;
@@ -55,7 +55,7 @@ export class GameStateService {
       if (room !== undefined) {
         this.room = room;
         room.onStateChange.once((state) => {
-          console.log('first colyseus Patch recieved');
+          console.debug('first colyseus Patch recieved');
           this.gameInit.setColyseusReady();
         });
         setTimeout(this.attachCallbacks.bind(this), 100, room);
@@ -90,7 +90,7 @@ export class GameStateService {
       } else {
         room.state.voteState.onChange = this.callVoteSystemUpdate.bind(this);
       }
-      console.log('attached GameStateServiceCallbacks');
+      console.debug('attached GameStateServiceCallbacks');
     }
   }
 

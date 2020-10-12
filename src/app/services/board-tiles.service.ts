@@ -109,7 +109,7 @@ export class BoardTilesService implements ColyseusNotifyable {
       this.tiles.forEach((tile: Tile) => {
         tileReadable[tile.tileId] = tile.translationKey;
       });
-      console.log('Tiles are:', tileReadable);
+      console.info('Tiles are:', tileReadable);
       this.updateField(onProgressCallback);
     }
   }
@@ -123,7 +123,7 @@ export class BoardTilesService implements ColyseusNotifyable {
   attachColyseusStateCallbacks(): void {
     this.gameState.addBoardLayoutCallback(((layout: BoardLayoutState) => {
       this.tiles = this.fromSchema(layout);
-      console.log('Tiles are updated:', this.tiles, layout);
+      console.info('Tiles are updated:', this.tiles, layout);
       this.updateField(() => {});
     }).bind(this));
   }
@@ -224,7 +224,6 @@ export class BoardTilesService implements ColyseusNotifyable {
         this.objectLoader.loadGameTileTexture(this.tiles[tileId].imageUrl, (tex: THREE.Texture) => {
           mat['map'] = tex;
           mat['needsUpdate'] = true;
-          console.log('adding newTex');
           onProgress();
         });
       }

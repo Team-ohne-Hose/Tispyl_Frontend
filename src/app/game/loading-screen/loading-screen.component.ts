@@ -24,7 +24,6 @@ export class LoadingScreenComponent implements OnInit {
 
   private newTip() {
     this.currentTip = 'Tipp: ' + this.hints.getRandomHint();
-    console.log(this.currentTip);
   }
   startTips() {
     this.newTip();

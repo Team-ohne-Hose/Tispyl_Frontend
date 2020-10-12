@@ -31,7 +31,7 @@ export class BoardItemManagement implements ColyseusNotifyable {
     this.allFigures = [];
     this.physics.addPlayer = ((mesh: THREE.Object3D, name: string) => {
       this.allFigures.push({mesh: mesh, labelSprite: undefined, name: name, isHidden: false, labelInScene: false});
-      console.log('adding to allfigures', name, mesh, this.allFigures);
+      console.debug('adding to BoardItemManagement´s list of figures', name, mesh, this.allFigures);
     }).bind(this);
     this.physics.isPlayerCached = ((physId: number) => {
       return this.allFigures.some((val: FigureItem, index: number) => {
@@ -45,15 +45,15 @@ export class BoardItemManagement implements ColyseusNotifyable {
         return val.mesh.userData.physicsId === player.figureId;
       });
       if (figureItem === undefined) {
-        console.log('figure hasnt been initialized yet, but hiddenState is to be set', player.figureId, this.allFigures);
+        console.warn('figure hasnt been initialized yet, but hiddenState is to be set', player.figureId, this.allFigures);
       } else {
         if (player.figureModel !== undefined) {
-          console.log('loading new playerTex', player.figureModel);
+          console.debug('loading new playerTex', player.figureModel);
           // TODO prevent loading Textures all the time/ prevent if not necessary
           this.loader.switchTex(figureItem.mesh, player.figureModel);
         }
         if (player.hasLeft !== figureItem.isHidden) {
-          console.error('changing hiddenState', player.hasLeft, figureItem.isHidden, this.allFigures);
+          console.debug('changing hiddenState', player.hasLeft, figureItem.isHidden, this.allFigures);
           if (figureItem.isHidden) {
             this.scene.add(figureItem.mesh);
             figureItem.isHidden = false;
@@ -69,7 +69,7 @@ export class BoardItemManagement implements ColyseusNotifyable {
 
   throwDice() {
     if (this.gameState.isMyTurn()) {
-      console.log('throwing Dice', this.physics.dice, PhysicsCommands.getPhysId(this.physics.dice));
+      console.debug('throwing Dice', this.physics.dice, PhysicsCommands.getPhysId(this.physics.dice));
       if (this.physics.dice !== undefined) {
         const physIdDice = PhysicsCommands.getPhysId(this.physics.dice);
         this.physics.setPosition(physIdDice, 0, 40, 0);
@@ -82,7 +82,7 @@ export class BoardItemManagement implements ColyseusNotifyable {
         this.physics.setAngularVelocity(physIdDice, rot.x, rot.y, rot.z);
       }
     } else {
-      console.log('You are not the active Player!');
+      console.debug('You are not the active Player!');
     }
   }
 
@@ -92,7 +92,7 @@ export class BoardItemManagement implements ColyseusNotifyable {
   createSprites(onProgressCallback: () => void) {
     this.allFigures.forEach((figure: FigureItem) => {
       if (figure.labelSprite === undefined) {
-        console.log('adding Sprite for player ', figure.name);
+        console.debug('adding Sprite for player ', figure.name);
         figure.labelSprite = this.loader.createLabelSprite(figure.name, 70, 'Roboto',
           new Color(1, 1, 1, 1),
           new Color(.24, .24, .24, .9),
@@ -105,7 +105,7 @@ export class BoardItemManagement implements ColyseusNotifyable {
   updateSprites(hidden: boolean, scene: THREE.Scene) {
     for (const f of this.allFigures) {
       if (f.labelSprite === undefined) {
-        console.log('adding Sprite for player ', f.name);
+        console.debug('adding Sprite for player ', f.name);
         f.labelSprite = this.loader.createLabelSprite(f.name, 70, 'Roboto',
           new Color(1, 1, 1, 1),
           new Color(.24, .24, .24, .9),
@@ -129,7 +129,7 @@ export class BoardItemManagement implements ColyseusNotifyable {
     this.physics.setPosition(PhysicsCommands.getPhysId(object), x, 10, y);
   }
   moveGameFigure(object: THREE.Object3D, fieldID: number) {
-    console.log('move Figure to ', fieldID);
+    console.debug('move Figure to ', fieldID);
     const room = this.gameState.getRoom();
     if (room !== undefined) {
       let playerId: string;
@@ -172,7 +172,7 @@ export class BoardItemManagement implements ColyseusNotifyable {
     marker.position.x = x;
     marker.position.y = y + this.markerGeo.parameters.height / 2;
     marker.position.z = z;
-    console.log('new Marker at: ', x, y, marker.position.z);
+    console.info('new Marker at: ', x, y, marker.position.z);
     marker.rotateX(Math.PI);
     // this.scene.add(marker);
     // this.boardItems.push({mesh: marker, role: BoardItemRole.marker, removeBy: Date.now() + 10000});

@@ -42,7 +42,6 @@ export class ColyseusClientService {
     changes.forEach(change => {
       switch (change.field) {
         case 'playerList':
-        // console.log('Playerlist update', change.value);
         const myPlayer: Player = change.value[this.myLoginName];
         if (myPlayer !== undefined) {
           this.myFigureId = myPlayer.figureId;
@@ -65,7 +64,7 @@ export class ColyseusClientService {
     if (newRoom !== undefined) {
       this.updateRoomCallbacks(newRoom);
     }
-    console.log('connected to new new active Room', newRoom);
+    console.info('connected to new active Room', newRoom);
     this.activeRoom.next(newRoom);
   }
 
@@ -127,7 +126,6 @@ export class ColyseusClientService {
   private gatherFunctionCalls(data: WsData): void {
     const type: MessageType = data.type;
     const list: MessageCallback[] = this.messageCallbacks.get(type);
-    // console.log('distributing: ', type, data, list);
     if (list !== undefined && list.length > 0) {
       list.forEach((value: MessageCallback, index: number) => {
         if (value.filterSubType >= 0) {
