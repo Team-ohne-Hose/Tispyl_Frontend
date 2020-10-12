@@ -38,12 +38,7 @@ export class HomeRegisterComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.chatMessages = [
-      new ChatMessage('Liebler stinkt!!', 'Kevin'),
-      new ChatMessage('Garnicht :(', 'Liebler'),
-      new ChatMessage('DOCH!!11!!Eins!!Elf!11!! ', 'Kevin'),
-      new ChatMessage('LANGERTEXT DER MIR EIGENTLICH EGAL IST ICH MUSS NUR TESTEN WIE DAS MIT DEN ZEILEN UMBRÜCHEN AUSSIEHT =)', 'tiz')
-    ];
+    this.chatMessages = [];
   }
 
   sendChatMessageByKey(event: KeyboardEvent, inputField: HTMLInputElement) {
