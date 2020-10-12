@@ -51,6 +51,7 @@ import { ShowAttribComponent } from './game/show-attrib/show-attrib.component';
 import { MenuBarComponent } from './menu-bar/menu-bar.component';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { HomeRegisterComponent } from './home-register/home-register.component';
+import { TrinkBuddyDisplayComponent } from './trink-buddy-display/trink-buddy-display.component';
 
 const appRoutes: Routes = [
   { path: 'lobby', component: LobbyComponent},
@@ -91,7 +92,8 @@ const appRoutes: Routes = [
     VoteCreationComponent,
     ShowAttribComponent,
     MenuBarComponent,
-    HomeRegisterComponent
+    HomeRegisterComponent,
+    TrinkBuddyDisplayComponent
   ],
   imports: [
     RouterModule.forRoot(

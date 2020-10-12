@@ -1,0 +1,16 @@
+<div class="padding">
+  <div class="title-bar"><span>Trink-Buddies:</span><i class="fas fa-redo" (click)="refreshChart($event)"></i></div>
+  <div id="chart" #chart></div>
+  <div class="add-bar">
+    <div class="add-text">Add:</div>
+    <div class="text-input-container">
+      <input type="text" placeholder="Trinker ..." #inputFrom>
+    </div>
+    <div class="text-input-container">
+      <input type="text" placeholder="Trink-Freund! ..." #inputTo>
+    </div>
+    <div class="post-button" (click)="addLink(inputFrom, inputTo)"><i class="fas fa-share"></i></div>
+  </div>
+  <div class="error-text">{{errorText}}</div>
+</div>
+

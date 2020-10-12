@@ -21,7 +21,11 @@ export class TileOverlayComponent implements ColyseusNotifyable{
   attachColyseusMessageCallbacks(): void {
     this.gameState.registerMessageCallback(MessageType.GAME_MESSAGE, {
       filterSubType: GameActionType.showTile,
-      f: ( data: GameShowTile ) => this.printer.emit(`[EVENT]: ${this.playerName} ist auf Feld ${data.tile} gelandet: ${this.descriptionOf(data.tile)}`)
+      f: ( data: GameShowTile ) => {
+        if (data.action === GameActionType.showTile) {
+          this.printer.emit(`[EVENT]: ${this.playerName} ist auf Feld ${data.tile} gelandet: ${this.descriptionOf(data.tile)}`);
+        }
+      }
     });
   }
 

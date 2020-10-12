@@ -1,0 +1,26 @@
+{
+  "nodes": [
+    {"id": "Domi"},
+    {"id": "Tiz"},
+    {"id": "Liebler"},
+    {"id": "Manu"},
+    {"id": "Couchy"},
+    {"id": "Yoshi"},
+    {"id": "Jens"},
+    {"id": "Fred"},
+    {"id": "Kollin"},
+    {"id": "Simon"},
+    {"id": "Sascha"}
+  ],
+  "links": [
+    {"source": "Domi", "target": "Liebler"},
+    {"source": "Domi", "target": "Jens"},
+    {"source": "Domi", "target": "Couchy"},
+    {"source": "Tiz", "target": "Yoshi"},
+    {"source": "Yoshi", "target": "Tiz"},
+    {"source": "Tiz", "target": "Kollin"},
+    {"source": "Tiz", "target": "Simon"},
+    {"source": "Tiz", "target": "Sascha"},
+    {"source": "Tiz", "target": "Fred"}
+  ]
+}
