@@ -120,14 +120,14 @@ export class BoardTilesService implements ColyseusNotifyable {
     }
     return ret;
   }
-  attachColyseusStateCallbacks(): void {
-    this.gameState.addBoardLayoutCallback(((layout: BoardLayoutState) => {
+  attachColyseusStateCallbacks(gameState: GameStateService): void {
+    gameState.addBoardLayoutCallback(((layout: BoardLayoutState) => {
       this.tiles = this.fromSchema(layout);
       console.info('Tiles are updated:', this.tiles, layout);
       this.updateField(() => {});
     }).bind(this));
   }
-  attachColyseusMessageCallbacks(): void {}
+  attachColyseusMessageCallbacks(gameState: GameStateService): void {}
   getTileRotation(tileID: number): THREE.Quaternion {
     return new THREE.Quaternion().setFromEuler(new THREE.Euler(0, (this.tileCoords[tileID].r / 2) * Math.PI, 0));
   }

@@ -23,8 +23,8 @@ export class ConnectedPlayersComponent implements ColyseusNotifyable {
 
   constructor(private fileManagement: FileService, private gameState: GameStateService) {}
 
-  attachColyseusMessageCallbacks(): void {
-    this.gameState.registerMessageCallback(MessageType.REFRESH_COMMAND, {
+  attachColyseusMessageCallbacks(gameState: GameStateService): void {
+    gameState.registerMessageCallback(MessageType.REFRESH_COMMAND, {
       filterSubType: -1,
       f: (data: WsData) => {
         if (data.type === MessageType.REFRESH_COMMAND) {
@@ -37,7 +37,7 @@ export class ConnectedPlayersComponent implements ColyseusNotifyable {
       }
     });
   }
-  attachColyseusStateCallbacks(): void {}
+  attachColyseusStateCallbacks(gameState: GameStateService): void {}
 
   getProfilePic(name) {
     if (this.profilePics[name] === undefined) {

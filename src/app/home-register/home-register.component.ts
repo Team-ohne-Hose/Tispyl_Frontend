@@ -7,6 +7,7 @@ import {MessageType, PlayerMessageType, RefreshCommandType, RefreshProfilePics, 
 import {GameStateService} from '../services/game-state.service';
 import {User} from '../model/User';
 import {Player} from '../model/state/Player';
+import {ChatService} from '../services/chat.service';
 
 @Component({
   selector: 'app-home-register',
@@ -28,7 +29,8 @@ export class HomeRegisterComponent implements OnInit {
   constructor(private userManagement: UserService,
               private fileManagement: FileService,
               public gameState: GameStateService,
-              private loader: ObjectLoaderService) {
+              private loader: ObjectLoaderService,
+              private chatService: ChatService) {
     this.userManagement.getActiveUser().subscribe( u => {
       if ( u !== undefined ) {
         this.user = u;
@@ -37,6 +39,7 @@ export class HomeRegisterComponent implements OnInit {
         console.error('couldnt get user entry');
       }
     });
+    this.chatMessages = this.chatService.getChatMessages();
   }
 
   ngOnInit(): void {
@@ -48,6 +51,7 @@ export class HomeRegisterComponent implements OnInit {
     } else {
       console.error('couldnt get player entry', this.playerlist);
     }
+    this.chatService.setMessageCallback(this.onChatMessage.bind(this));
   }
 
   sendChatMessageByKey(event: KeyboardEvent, inputField: HTMLInputElement) {
@@ -55,15 +59,29 @@ export class HomeRegisterComponent implements OnInit {
       this.sendChatMessage(inputField);
     }
   }
-
   sendChatMessage(inputField: HTMLInputElement) {
     const userInput: String = String(inputField.value).trim();
     inputField.value = '';
     if (userInput !== '') {
-      this.chatMessages.push(new ChatMessage(String(userInput), 'tiz'));
-      const htmlNode = this.textSection.nativeElement;
-      setTimeout( () => { htmlNode.scrollTop = htmlNode.scrollHeight; }, 20);
+      this.transmitChatMessage(String(userInput));
     }
+  }
+  transmitChatMessage(msg: string) {
+    // TODO: check for commands
+    if (msg.charAt(0) === '/') {
+      this.executeCommand(msg.substring(1));
+    } else {
+      this.chatService.sendMessage(msg);
+    }
+  }
+  onChatMessage() {
+    this.chatMessages = this.chatService.getChatMessages();
+    const htmlNode = this.textSection.nativeElement;
+    setTimeout( () => { htmlNode.scrollTop = htmlNode.scrollHeight; }, 20);
+  }
+  executeCommand(cmdStr: string) {
+    const args = cmdStr.split(' ');
+    // this.chatCommand.emit(args);
   }
 
   nextBCap($event: Event) {

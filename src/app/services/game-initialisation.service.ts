@@ -9,10 +9,12 @@ import {TileOverlayComponent} from '../game/interface/tile-overlay/tile-overlay.
 import {BoardTilesService} from './board-tiles.service';
 import * as THREE from 'three';
 import {GameComponent} from '../game/game.component';
+import {ChatService} from './chat.service';
+import {GameStateService} from './game-state.service';
 
 export interface ColyseusNotifyable {
-  attachColyseusStateCallbacks(): void;
-  attachColyseusMessageCallbacks(): void;
+  attachColyseusStateCallbacks(gameState: GameStateService): void;
+  attachColyseusMessageCallbacks(gameState: GameStateService): void;
 }
 @Injectable({
   providedIn: 'root'
@@ -27,8 +29,10 @@ export class GameInitialisationService {
   private boardTilesService: BoardTilesService;
 
   private colyseusNotifyableClasses: ColyseusNotifyable[] = [];
+  private gameState: GameStateService;
 
-  constructor(private objectLoader: ObjectLoaderService) { }
+  constructor(private objectLoader: ObjectLoaderService,
+              private chatService: ChatService) { }
 
   async startInitialisation(game: GameComponent,
                             viewPort: ViewportComponent,
@@ -45,12 +49,13 @@ export class GameInitialisationService {
     this.colyseusNotifyableClasses.push(this.boardTilesService);
     this.colyseusNotifyableClasses.push(boardItemManagement);
     this.colyseusNotifyableClasses.push(physicsCommands);
-    this.colyseusNotifyableClasses.push(game.interfaceRef.chatRef);
+    // this.colyseusNotifyableClasses.push(game.interfaceRef.chatRef);
     this.colyseusNotifyableClasses.push(game.interfaceRef.nextTurnRef);
     this.colyseusNotifyableClasses.push(game.interfaceRef.tileOverlayRef);
     this.colyseusNotifyableClasses.push(game.interfaceRef.voteSystemRef);
     this.colyseusNotifyableClasses.push(game.interfaceRef);
     this.colyseusNotifyableClasses.push(game.interfaceRef.connectedPlayersRef);
+    this.colyseusNotifyableClasses.push(this.chatService);
 
     console.debug('loading Textures');
     await this.objectLoader.loadAllObjects((progress: number, total: number) => {
@@ -77,8 +82,8 @@ export class GameInitialisationService {
       if (obj === undefined) {
         console.error('couldnt attach colyseus Callbacks because the object was undefined', index, array);
       } else {
-        obj.attachColyseusMessageCallbacks();
-        obj.attachColyseusStateCallbacks();
+        obj.attachColyseusMessageCallbacks(this.gameState);
+        obj.attachColyseusStateCallbacks(this.gameState);
       }
     });
 
@@ -107,7 +112,8 @@ export class GameInitialisationService {
     this.viewPort.boardItemManager.createSprites(onProgress);
   }
 
-  setColyseusReady() {
+  setColyseusReady(gameState: GameStateService) {
+    this.gameState = gameState;
     if (!this.colyseusReady) {
       this.colyseusReady = true;
 

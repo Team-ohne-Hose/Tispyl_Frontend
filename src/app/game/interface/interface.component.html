@@ -5,7 +5,7 @@
     [currentPlayerDisplayName]="gameState.getState() === undefined ? '' : getDisplayName(gameState.getState().currentPlayerLogin)"
     [action]="gameState.getState() === undefined ? 'Waiting' : gameState.getState().action">
   </app-state-display>
-  <app-chat-window (chatCommand)="executeChatCommand($event)" #chat></app-chat-window>
+  <!--<app-chat-window (chatCommand)="executeChatCommand($event)" #chat></app-chat-window>-->
   <app-pregame-banner *ngIf="gameState.getState() === undefined || !gameState.getState().hasStarted"
                       [players]="gameState.getState() === undefined ? [] : asArray(gameState.getState().playerList)">
   </app-pregame-banner>

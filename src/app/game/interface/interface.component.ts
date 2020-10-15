@@ -58,12 +58,12 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
     // TODO readd a feature alike this one. But add a new Player for this client instead
   ];
 
-  attachColyseusStateCallbacks(): void {
-    this.gameState.addNextTurnCallback((activePlayerLogin: string) => {
+  attachColyseusStateCallbacks(gameState: GameStateService): void {
+    gameState.addNextTurnCallback((activePlayerLogin: string) => {
       this.turnOverlayRef.show();
     });
   }
-  attachColyseusMessageCallbacks(): void {}
+  attachColyseusMessageCallbacks(gameState: GameStateService): void {}
 
   private printHint(): void {
     this.print('TIPP: ' + this.hints.getRandomHint());

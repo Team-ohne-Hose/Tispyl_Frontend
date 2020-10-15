@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {ObjectLoaderService} from './object-loader.service';
 import {ColyseusClientService, MessageCallback} from './colyseus-client.service';
 import {Room} from 'colyseus.js';
 import {DataChange, MapSchema} from '@colyseus/schema';
@@ -9,7 +8,6 @@ import {PhysicsObjectState, PhysicsState} from '../model/state/PhysicsState';
 import {BoardLayoutState} from '../model/state/BoardLayoutState';
 import {MessageType} from '../model/WsData';
 import {GameInitialisationService} from './game-initialisation.service';
-import {VoteState} from '../model/state/VoteState';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +30,6 @@ export class GameStateService {
   activeAction = '';
 
   constructor(private colyseus: ColyseusClientService,
-              private objectLoader: ObjectLoaderService,
               private gameInit: GameInitialisationService) {
     this.colyseus.addOnChangeCallback((changes: DataChange<GameState>[]) => {
       changes.forEach((change: DataChange<any>) => {
@@ -56,7 +53,7 @@ export class GameStateService {
         this.room = room;
         room.onStateChange.once((state) => {
           console.debug('first colyseus Patch recieved');
-          this.gameInit.setColyseusReady();
+          this.gameInit.setColyseusReady(this);
         });
         setTimeout(this.attachCallbacks.bind(this), 100, room);
       } else {
@@ -164,5 +161,21 @@ export class GameStateService {
   }
   private callVoteSystemUpdate(changes: DataChange<any>[]) {
     this.voteSystemCallbacks.forEach(f => f(changes));
+  }
+
+  getDisplayName(playerlogin: string): string {
+    const state = this.getState();
+    if (state === undefined) {
+      return undefined;
+    }
+    for (const id in state.playerList) {
+      if (id in state.playerList) {
+        const p: Player = state.playerList[id];
+        if (p.loginName === playerlogin) {
+          return p.displayName;
+        }
+      }
+    }
+    return undefined;
   }
 }

@@ -17,9 +17,9 @@ export class TileOverlayComponent implements ColyseusNotifyable{
 
   constructor( private gameState: GameStateService, private boardTiles: BoardTilesService ) {
   }
-  attachColyseusStateCallbacks(): void {}
-  attachColyseusMessageCallbacks(): void {
-    this.gameState.registerMessageCallback(MessageType.GAME_MESSAGE, {
+  attachColyseusStateCallbacks(gameState: GameStateService): void {}
+  attachColyseusMessageCallbacks(gameState: GameStateService): void {
+    gameState.registerMessageCallback(MessageType.GAME_MESSAGE, {
       filterSubType: GameActionType.showTile,
       f: ( data: GameShowTile ) => {
         if (data.action === GameActionType.showTile) {

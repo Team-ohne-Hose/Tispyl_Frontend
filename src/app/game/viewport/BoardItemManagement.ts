@@ -39,8 +39,8 @@ export class BoardItemManagement implements ColyseusNotifyable {
       });
     }).bind(this);
   }
-  attachColyseusStateCallbacks(): void {
-    this.gameState.addPlayerListUpdateCallback(((player: Player, key: string, players: MapSchema<Player>) => {
+  attachColyseusStateCallbacks(gameState: GameStateService): void {
+    gameState.addPlayerListUpdateCallback(((player: Player, key: string, players: MapSchema<Player>) => {
       const figureItem = this.allFigures.find((val: FigureItem, index: number) => {
         return val.mesh.userData.physicsId === player.figureId;
       });
@@ -65,7 +65,7 @@ export class BoardItemManagement implements ColyseusNotifyable {
       }
     }).bind(this));
   }
-  attachColyseusMessageCallbacks(): void {}
+  attachColyseusMessageCallbacks(gameState: GameStateService): void {}
 
   throwDice() {
     if (this.gameState.isMyTurn()) {

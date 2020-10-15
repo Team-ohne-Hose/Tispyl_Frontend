@@ -21,9 +21,9 @@ export class ChatWindowComponent implements ColyseusNotifyable {
   @Output() chatCommand = new EventEmitter<string[]>();
   @ViewChild('chat') chatRef: ElementRef;
 
-  attachColyseusStateCallbacks(): void {}
-  attachColyseusMessageCallbacks(): void {
-    this.gameState.registerMessageCallback(MessageType.CHAT_MESSAGE, {
+  attachColyseusStateCallbacks(gameState: GameStateService): void {}
+  attachColyseusMessageCallbacks(gameState: GameStateService): void {
+    gameState.registerMessageCallback(MessageType.CHAT_MESSAGE, {
       filterSubType: -1,
       f: (data: WsData) => {
         if (data.type === MessageType.CHAT_MESSAGE) {
@@ -32,7 +32,7 @@ export class ChatWindowComponent implements ColyseusNotifyable {
       }
     });
 
-    this.gameState.registerMessageCallback(MessageType.JOIN_MESSAGE, {
+    gameState.registerMessageCallback(MessageType.JOIN_MESSAGE, {
       filterSubType: -1,
       f: (data: WsData) => {
         if (data.type === MessageType.JOIN_MESSAGE) {
@@ -41,7 +41,7 @@ export class ChatWindowComponent implements ColyseusNotifyable {
       }
     });
 
-    this.gameState.registerMessageCallback(MessageType.LEFT_MESSAGE, {
+    gameState.registerMessageCallback(MessageType.LEFT_MESSAGE, {
       filterSubType: -1,
       f: (data: WsData) => {
         if (data.type === MessageType.LEFT_MESSAGE) {

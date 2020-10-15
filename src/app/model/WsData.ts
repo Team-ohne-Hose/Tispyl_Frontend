@@ -18,6 +18,7 @@ export interface OtherMessage {
 export interface ChatMessage {
   type: MessageType.CHAT_MESSAGE;
   message: string;
+  authorLoginName: string;
 }
 export interface JoinMessage {
   type: MessageType.JOIN_MESSAGE;

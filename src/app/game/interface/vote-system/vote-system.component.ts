@@ -52,8 +52,8 @@ export class VoteSystemComponent implements ColyseusNotifyable {
 
   constructor(public gameState: GameStateService, public fileService: FileService) { }
 
-  attachColyseusMessageCallbacks(): void {
-    this.gameState.registerMessageCallback(MessageType.GAME_MESSAGE, {
+  attachColyseusMessageCallbacks(gameState: GameStateService): void {
+    gameState.registerMessageCallback(MessageType.GAME_MESSAGE, {
       f: ((data: WsData) => {
         if (data !== undefined && data.type === MessageType.GAME_MESSAGE) {
           switch (data.action) {
@@ -95,8 +95,8 @@ export class VoteSystemComponent implements ColyseusNotifyable {
         }
       }).bind(this), filterSubType: undefined});
   }
-  attachColyseusStateCallbacks(): void {
-    this.gameState.addVoteSystemCallback(((changes: DataChange<any>[]) => {
+  attachColyseusStateCallbacks(gameState: GameStateService): void {
+    gameState.addVoteSystemCallback(((changes: DataChange<any>[]) => {
       changes.forEach((change: DataChange) => {
         switch (change.field) {
           case 'author':

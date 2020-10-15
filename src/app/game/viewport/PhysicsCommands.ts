@@ -71,12 +71,12 @@ export class PhysicsCommands implements ColyseusNotifyable {
     return obj.userData.physicsId;
   }
 
-  attachColyseusStateCallbacks(): void {
-    this.gameState.addPhysicsCallback((item: PhysicsObjectState) => {
+  attachColyseusStateCallbacks(gameState: GameStateService): void {
+    gameState.addPhysicsCallback((item: PhysicsObjectState) => {
       this.updateFromState(item, () => {});
     });
   }
-  attachColyseusMessageCallbacks(): void {}
+  attachColyseusMessageCallbacks(gameState: GameStateService): void {}
 
   getInitializePending(): number {
     const gameState = this.gameState.getState();
