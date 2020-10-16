@@ -3,7 +3,7 @@ import {Router} from '@angular/router';
 import {ChatWindowComponent} from './chat-window/chat-window.component';
 import {MapSchema} from '@colyseus/schema';
 import {GameComponent} from '../game.component';
-import {GameActionType, MessageType, PlayerMessageType, SetFigure} from '../../model/WsData';
+import {GameActionType, ItemMessageType, MessageType, PlayerMessageType, SetFigure} from '../../model/WsData';
 import {Player} from '../../model/state/Player';
 import {GLTFExporter} from 'three/examples/jsm/exporters/GLTFExporter';
 import {GameStateService} from '../../services/game-state.service';
@@ -15,6 +15,7 @@ import {HintsService} from '../../services/hints.service';
 import {VoteSystemComponent} from './vote-system/vote-system.component';
 import {ObjectLoaderService} from '../../services/object-loader.service';
 import {ConnectedPlayersComponent} from './connected-players/connected-players.component';
+import {ChatService} from '../../services/chat.service';
 
 
 @Component({
@@ -26,14 +27,14 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
 
   constructor(private router: Router,
               public gameState: GameStateService,
-              private hints: HintsService) {
+              private hints: HintsService,
+              private chat: ChatService) {
     this.routes = router.config.filter( route => route.path !== '**' && route.path.length > 0);
   }
 
   routes;
   gameComponent: GameComponent;
 
-  @ViewChild('chat') chatRef: ChatWindowComponent;
   @ViewChild('nextTurn') nextTurnRef: NextTurnButtonComponent;
   @ViewChild('tileOverlay') tileOverlayRef: TileOverlayComponent;
   @ViewChild('turnOverlay') turnOverlayRef: TurnOverlayComponent;
@@ -52,6 +53,9 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
     {k: '/deleteRule', f: this.deleteRule.bind(this), h: '<id> deletes the rule with id'},
     {k: '/dlScene', f: this.dlScene.bind(this), h: 'download the Scene as GLTF'},
     {k: '/perspectiveChange', f: this.reverseTurnOrder.bind(this), h: 'Reverses the turn order'},
+    {k: '/giveItem', f: this.giveItem.bind(this), h: '<name> <itemId> Gives Player <name> <itemId>. Only the Host can do this.'},
+    {k: '/showItems', f: this.showItems.bind(this), h: 'List your currently owned Items'},
+    {k: '/useItem', f: this.useItem.bind(this), h: '<itemId> <name> Uses Item <itemId> [on Player <name>]. You need to have the Item in your Inventory.'},
     {k: '/hint', f: this.printHint.bind(this), h: 'Gives a random hint'}
 
     // {k: '/addFigure', f: this.addGamefigure.bind(this), h: ''},
@@ -66,7 +70,7 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
   attachColyseusMessageCallbacks(gameState: GameStateService): void {}
 
   private printHint(): void {
-    this.print('TIPP: ' + this.hints.getRandomHint());
+    this.print('TIPP: ' + this.hints.getRandomHint(), '/hint');
   }
 
   private dlScene() {
@@ -113,7 +117,7 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
 
   executeChatCommand( args ) {
     const command = this.knownCommands.find( e => {
-      return e.k.trim().toString() === args[0].trim().toString();
+      return e.k.trim().toString() === '/' + args[0].trim().toString();
     });
     if (command !== undefined) {
       command.f(args);
@@ -144,7 +148,7 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
   }
 
   private reverseTurnOrder( args ) {
-    this.print('The Turn-Order was reversed!');
+    this.print('The Turn-Order was reversed!', '/perspectiveChange');
     this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.reverseTurnOrder});
   }
 
@@ -160,11 +164,11 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
 
   private printHelpCommand( args ) {
     const commands: string[] = this.knownCommands.map( a => `${a.k} ${a.h}`);
-    this.print(commands.join('\n'));
+    this.print(commands.join('\n'), '/help');
   }
 
-  print(msg: string) {
-    this.chatRef.postChatMessage(msg);
+  print(msg: string, senderCmd: string) {
+    this.chat.addLocalMessage(msg, 'Console: ' + senderCmd);
   }
 
   asArray<T>(schema: MapSchema<T>): T[] {
@@ -187,5 +191,104 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
       }
     }
     return 'Login:' + login;
+  }
+  giveItem( args ) {
+    if (args.length < 3) {
+      return;
+    }
+    const playerTag = args.slice(1, args.length - 1).join(' ');
+    const playerList: MapSchema<Player> = this.gameState.getState().playerList;
+
+    const sendGiveMessage = (playerLogin: string) => {
+      const itemId: number = Number(args[args.length - 1]);
+      this.print('Trying to give ' + playerLogin + ' Item ' + itemId, '/giveItem');
+      this.gameState.sendMessage(MessageType.ITEM_MESSAGE, {
+        type: MessageType.ITEM_MESSAGE,
+        subType: ItemMessageType.giveItem,
+        playerLoginName: playerLogin,
+        itemId: itemId,
+      });
+    };
+
+    // first try login names
+    for (const id in playerList) {
+      if (id in playerList) {
+        const p: Player = playerList[id];
+        if (p.loginName === playerTag) {
+          sendGiveMessage(p.loginName);
+        }
+      }
+    }
+    // afterwards try display names
+    for (const id in playerList) {
+      if (id in playerList) {
+        const p: Player = playerList[id];
+        if (p.displayName === playerTag) {
+          sendGiveMessage(p.loginName);
+        }
+      }
+    }
+  }
+  showItems( args ) {
+    const playerList: MapSchema<Player> = this.gameState.getState().playerList;
+    for (const id in playerList) {
+      if (id in playerList) {
+        const p: Player = playerList[id];
+        if (p.loginName === this.gameState.getMyLoginName()) {
+          let list = '';
+          for (const itemId in p.itemList) {
+            if (itemId in p.itemList && p.itemList[itemId] > 0) {
+              list = list + 'desc(' + itemId + '): ' + p.itemList[itemId] + 'x\r\n';
+            }
+          }
+          if (list === '') {
+            this.print('You have no Item', '/showItems');
+          } else {
+            this.print(list, '/showItems');
+          }
+        }
+      }
+    }
+  }
+  useItem( args ) {
+    const sendUseMessage = (targetLogin: string) => {
+      const itemId: number = Number(args[1]);
+      this.print('Trying to use Item ' + 'itemId' + ' on ' + targetLogin, '/useItem');
+      this.gameState.sendMessage(MessageType.ITEM_MESSAGE, {
+        type: MessageType.ITEM_MESSAGE,
+        subType: ItemMessageType.useItem,
+        playerLoginName: this.gameState.getMyLoginName(),
+        targetLoginName: targetLogin,
+        itemId: itemId,
+        param: '',
+      });
+    };
+    if (args.length < 2) {
+      return;
+    } else if (args.length < 3) {
+      sendUseMessage('');
+    }
+    const playerTag = args.slice(2).join(' ');
+    const playerList: MapSchema<Player> = this.gameState.getState().playerList;
+
+
+    // first try login names
+    for (const id in playerList) {
+      if (id in playerList) {
+        const p: Player = playerList[id];
+        if (p.loginName === playerTag) {
+          sendUseMessage(p.loginName);
+        }
+      }
+    }
+    // afterwards try display names
+    for (const id in playerList) {
+      if (id in playerList) {
+        const p: Player = playerList[id];
+        if (p.displayName === playerTag) {
+          sendUseMessage(p.loginName);
+        }
+      }
+    }
   }
 }

@@ -11,6 +11,7 @@ import * as THREE from 'three';
 import {GameComponent} from '../game/game.component';
 import {ChatService} from './chat.service';
 import {GameStateService} from './game-state.service';
+import {ItemService} from './item.service';
 
 export interface ColyseusNotifyable {
   attachColyseusStateCallbacks(gameState: GameStateService): void;
@@ -32,7 +33,8 @@ export class GameInitialisationService {
   private gameState: GameStateService;
 
   constructor(private objectLoader: ObjectLoaderService,
-              private chatService: ChatService) { }
+              private chatService: ChatService,
+              private itemService: ItemService) { }
 
   async startInitialisation(game: GameComponent,
                             viewPort: ViewportComponent,
@@ -56,6 +58,7 @@ export class GameInitialisationService {
     this.colyseusNotifyableClasses.push(game.interfaceRef);
     this.colyseusNotifyableClasses.push(game.interfaceRef.connectedPlayersRef);
     this.colyseusNotifyableClasses.push(this.chatService);
+    this.colyseusNotifyableClasses.push(this.itemService);
 
     console.debug('loading Textures');
     await this.objectLoader.loadAllObjects((progress: number, total: number) => {

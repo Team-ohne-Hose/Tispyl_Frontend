@@ -28,7 +28,8 @@
 
   <div class="register-content">
     <app-home-register *ngIf="tabIndex === 0"
-                       [playerlist]="this.playerList"></app-home-register>
+                       [playerlist]="this.playerList"
+                       (chatCommand)="executeNewChatCommand.emit($event)"></app-home-register>
     <app-ingame-rule-book *ngIf="tabIndex === 1"
     [rules]="ruleList"></app-ingame-rule-book>
   </div>

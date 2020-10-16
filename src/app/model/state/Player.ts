@@ -1,4 +1,4 @@
-import {Schema, type} from '@colyseus/schema';
+import {MapSchema, Schema, type} from '@colyseus/schema';
 import {PlayerModel} from '../WsData';
 
 export class Player extends Schema {
@@ -22,4 +22,6 @@ export class Player extends Schema {
   isConnected: boolean;
   @type('boolean')
   hasLeft: boolean;
+  @type( {map: 'number'} )
+  itemList: MapSchema<number>;
 }

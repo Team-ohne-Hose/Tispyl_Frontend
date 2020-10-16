@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {
   animate,
   animateChild,
@@ -28,6 +28,7 @@ export class MenuBarComponent {
 
   @Input() playerList: Player[];
   @Input() ruleList = [];
+  @Output() executeNewChatCommand = new EventEmitter<string[]>();
 
   @ViewChild('registerFooter') registerFooter: ElementRef;
   @ViewChild('tabEdge') tabEdge: ElementRef;

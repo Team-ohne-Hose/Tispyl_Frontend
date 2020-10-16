@@ -1,4 +1,4 @@
-export type WsData = OtherMessage | ChatMessage | JoinMessage | LeftMessage | GameMessage | PlayerMessage | PhysicsCommand | DebugCommand | RefreshCommand;
+export type WsData = OtherMessage | ChatMessage | JoinMessage | LeftMessage | GameMessage | PlayerMessage | PhysicsCommand | DebugCommand | RefreshCommand | AchievementMessage | ItemMessage;
 export enum MessageType {
   OTHER,
   CHAT_MESSAGE,
@@ -8,7 +8,9 @@ export enum MessageType {
   PLAYER_MESSAGE,
   PHYSICS_MESSAGE,
   DEBUG_COMMAND,
-  REFRESH_COMMAND
+  REFRESH_COMMAND,
+  ACHIEVEMENT_MESSAGE,
+  ITEM_MESSAGE
 }
 
 export interface OtherMessage {
@@ -245,4 +247,35 @@ export enum RefreshCommandType {
 export interface RefreshProfilePics {
   type: MessageType.REFRESH_COMMAND;
   subType: RefreshCommandType.refreshProfilePic;
+}
+
+export type AchievementMessage = NewAchievement;
+export enum AchievementMessageType {
+  newAchievement
+}
+export interface NewAchievement {
+  type: MessageType.ACHIEVEMENT_MESSAGE;
+  subType: AchievementMessageType.newAchievement;
+}
+
+export type ItemMessage = GiveItem | UseItem;
+export enum ItemMessageType {
+  giveItem,
+  useItem,
+}
+export interface GiveItem {
+  type: MessageType.ITEM_MESSAGE;
+  subType: ItemMessageType.giveItem;
+  playerLoginName: string;
+  itemId: number;
+}
+export interface UseItem {
+  type: MessageType.ITEM_MESSAGE;
+  subType: ItemMessageType.useItem;
+  playerLoginName: string;
+  targetLoginName: string;
+  itemId: number;
+  param: string;
+  itemName: string;
+  itemDescription: string;
 }

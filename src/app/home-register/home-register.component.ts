@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {UserService} from '../services/user.service';
 import {FileService} from '../services/file.service';
 import {ChatMessage} from './ChatMessage';
@@ -22,6 +22,7 @@ export class HomeRegisterComponent implements OnInit {
 
   user: User;
   @Input() playerlist: Player[];
+  @Output() chatCommand = new EventEmitter<string[]>();
 
   @ViewChild('textSection') textSection: ElementRef;
   chatMessages: ChatMessage[] = [];
@@ -67,7 +68,6 @@ export class HomeRegisterComponent implements OnInit {
     }
   }
   transmitChatMessage(msg: string) {
-    // TODO: check for commands
     if (msg.charAt(0) === '/') {
       this.executeCommand(msg.substring(1));
     } else {
@@ -81,7 +81,7 @@ export class HomeRegisterComponent implements OnInit {
   }
   executeCommand(cmdStr: string) {
     const args = cmdStr.split(' ');
-    // this.chatCommand.emit(args);
+    this.chatCommand.emit(args);
   }
 
   nextBCap($event: Event) {
