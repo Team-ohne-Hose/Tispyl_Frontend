@@ -1,9 +1,7 @@
 import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
-// @ts-ignore
-import data from '../trink-buddy-display/miserables.json';
 import * as d3 from 'd3';
 import {GameStateService} from '../services/game-state.service';
-import {Player} from '../model/state/Player';
+import {GameActionType, MessageType} from '../model/WsData';
 
 
 @Component({
@@ -24,29 +22,23 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
   links = [];
   nodes = [];
 
-  constructor(private gameState: GameStateService) {}
+  constructor(private gameState: GameStateService) {
+    // TODO: Change callback registration to new version as soon as some one builds one (13/10/20).
+    gameState.getState().drinkBuddyLinks.onAdd = (link, key) => {
+      console.log("Link was added: ", link.source, link.target);
+      setTimeout(() => this.refreshChart(), 2000); // find out why this timeout needs to exist !
+    };
+    gameState.getState().drinkBuddyLinks.onRemove = (link, key) => {
+      console.log("Link was removed: ", link.source, link.target);
+      setTimeout(() => this.refreshChart(), 2000); // find out why this timeout needs to exist !
+    };
+  }
 
   ngAfterViewInit(): void {
-    this.nodes = this.gameState !== undefined ? [] : this.fetchNodeData();
-    this.simulation = this.buildSimulation();
+    this.refreshChart();
   }
 
-  fetchNodeData() {
-    const schema = this.gameState.getState().playerList;
-    const tmpArray: Player[] = [];
-    for (const id in schema) {
-      if (id in schema) {
-        tmpArray.push(schema[id]);
-      }
-    }
-    return tmpArray.map( p => {
-      const node = {};
-      node['id'] = p.displayName;
-      return node;
-    });
-  }
-
-  buildSimulation() {
+  private buildSimulation() {
     const chartWidth = this.chart.nativeElement.offsetWidth;
     const chartHeight = this.chart.nativeElement.offsetHeight;
 
@@ -135,9 +127,9 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
     return simulation;
   }
 
-  drag(simulation) {
+  private drag(simulation) {
     function dragstarted(event) {
-      if (!event.active) simulation.alphaTarget(0.3).restart();
+      if (!event.active) { simulation.alphaTarget(0.3).restart(); }
       event.subject.fx = event.subject.x;
       event.subject.fy = event.subject.y;
     }
@@ -148,7 +140,7 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
     }
 
     function dragended(event) {
-      if (!event.active) simulation.alphaTarget(0);
+      if (!event.active) { simulation.alphaTarget(0); }
       event.subject.fx = null;
       event.subject.fy = null;
     }
@@ -162,8 +154,31 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
   addLink(from: HTMLInputElement, to: HTMLInputElement) {
     const source = String(from.value).trim();
     const target = String(to.value).trim();
+    const validation = this.validateInput(from, to);
+    if (validation.isFromValid && validation.isToValid && !validation.isAlreadyLinked) {
+      console.log( source, target, this.gameState.getRoom().state.drinkBuddyLinks);
+      this.gameState
+        .getRoom()
+        .send(MessageType.GAME_MESSAGE, { type: MessageType.GAME_MESSAGE, action: GameActionType.addDrinkbuddies, source: source, target: target});
+    }
+    if (validation.isAlreadyLinked) { this.errorText = target + ' is already the drinking buddy of' + source; }
+  }
 
-    console.log(source, target);
+  removeLink(from: HTMLInputElement, to: HTMLInputElement) {
+    const source = String(from.value).trim();
+    const target = String(to.value).trim();
+    const validation = this.validateInput(from, to);
+    if (validation.isFromValid && validation.isToValid && validation.isAlreadyLinked) {
+      this.gameState
+        .getRoom()
+        .send(MessageType.GAME_MESSAGE, { type: MessageType.GAME_MESSAGE, action: GameActionType.removeDrinkbuddies, source: source, target: target});
+    }
+    if (!validation.isAlreadyLinked) { this.errorText = target + ' is not the drinking buddy of' + source; }
+  }
+
+  private validateInput(from: HTMLInputElement, to: HTMLInputElement) {
+    const source = String(from.value).trim();
+    const target = String(to.value).trim();
 
     let isFromValid = false;
     let isToValid = false;
@@ -177,44 +192,47 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
         isToValid = true;
       }
     }
-
-    console.log('from:', isFromValid, 'to:', isToValid);
-    if (isFromValid && isToValid) {
-      for ( const link of this.links ) {
-        console.log(link);
-        if (this.nodes[link.source.index].id === source && this.nodes[link.target.index].id === target) {
-          isAlreadyLinked = true;
-        }
-      }
-      console.log('AlreadyLinkes:', isAlreadyLinked);
-      if (!isAlreadyLinked) {
-        this.updateChartLink({source: source, target: target});
+    for ( const link of this.links ) {
+      if (this.nodes[link.source.index].id === source && this.nodes[link.target.index].id === target) {
+        isAlreadyLinked = true;
       }
     }
 
-    if (isAlreadyLinked) { this.errorText = target + ' is already the drinking buddy of' + source; }
     if (!isToValid) { this.errorText = 'Target name was not found.'; }
     if (!isFromValid) { this.errorText = 'Source name was not found.'; }
     if (source === '' || target === '') { this.errorText = 'At least one name was empty.'; }
-
-
     setTimeout(() => { this.errorText = ''; }, 6000);
+
+    return {isFromValid: isFromValid, isToValid: isToValid, isAlreadyLinked: isAlreadyLinked};
   }
 
-  updateChartLink(link: any) {
-    this.simulation.stop();
-    this.svg.remove();
+  refreshChart() {
+    if (this.simulation !== undefined) {
+      this.simulation.stop();
+      this.svg.remove();
+    }
     this.simulation = undefined;
-    this.links.push(link);
+    this.fetchNodeData();
+    this.fetchLinkData();
     this.simulation = this.buildSimulation();
   }
 
-  refreshChart(event) {
-    this.simulation.stop();
-    this.svg.remove();
-    this.simulation = undefined;
-    this.nodes = this.fetchNodeData();
-    setTimeout(() => {this.simulation = this.buildSimulation(); }, 1000);
+  private fetchNodeData() {
+    this.nodes = [];
+    for ( const key in this.gameState.getState().playerList ) {
+      this.nodes.push({id: this.gameState.getState().playerList[key].displayName});
+    }
+  }
+
+  private fetchLinkData() {
+    this.links = [];
+    const remoteLinks = this.gameState.getState().drinkBuddyLinks;
+    const knownNodes = this.nodes.map((n) => n.id);
+    for ( const key in remoteLinks ) {
+      if (knownNodes.indexOf(remoteLinks[key].source) !== -1 && knownNodes.indexOf(remoteLinks[key].target) !== -1) {
+        this.links.push({source: remoteLinks[key].source, target: remoteLinks[key].target});
+      }
+    }
   }
 
 }

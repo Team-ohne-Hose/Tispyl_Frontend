@@ -91,6 +91,7 @@ export class GameStateService {
     }
   }
 
+
   isGameLoaded(): boolean {
     return this.loaded;
   }

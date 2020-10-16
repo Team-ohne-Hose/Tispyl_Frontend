@@ -3,6 +3,7 @@ import {PhysicsState} from './PhysicsState';
 import {Player} from './Player';
 import {BoardLayoutState} from './BoardLayoutState';
 import {VoteState} from './VoteState';
+import {Link} from './Link';
 
 export enum Actions {
   ROLL,
@@ -31,6 +32,9 @@ export class GameState extends Schema {
 
   @type([ 'string' ])
   rules = new ArraySchema<string>();
+
+  @type([ Link ])
+  drinkBuddyLinks = new ArraySchema<Link>();
 
   @type('string')
   currentPlayerLogin: string;
