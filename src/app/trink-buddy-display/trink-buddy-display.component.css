@@ -56,11 +56,15 @@ input::placeholder {
   min-width: 0;
 }
 
+.right-margin {
+  margin-right: 0.5rem;
+}
+
 .text-input-container:focus-within {
   border: var(--dim-text-color) 1px solid;
 }
 
-.post-button {
+.modify-button {
   background-color: var(--accent-color);
   color: var(--dim-text-color);
   padding: 0.35rem;
@@ -71,7 +75,7 @@ input::placeholder {
   font-size: small;
 }
 
-.post-button:hover {
+.modify-button:hover {
   background-color: var(--register-hover-background);
 }
 

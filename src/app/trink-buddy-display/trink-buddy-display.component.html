@@ -1,15 +1,15 @@
 <div class="padding">
-  <div class="title-bar"><span>Trink-Buddies:</span><i class="fas fa-redo" (click)="refreshChart($event)"></i></div>
+  <div class="title-bar"><span>Trink-Buddies:</span><i class="fas fa-redo" (click)="refreshChart()"></i></div>
   <div id="chart" #chart></div>
   <div class="add-bar">
-    <div class="add-text">Add:</div>
+    <div class="modify-button right-margin" (click)="removeLink(inputFrom, inputTo)"><i class="fas fa-minus"></i></div>
     <div class="text-input-container">
       <input type="text" placeholder="Trinker ..." #inputFrom>
     </div>
     <div class="text-input-container">
       <input type="text" placeholder="Trink-Freund! ..." #inputTo>
     </div>
-    <div class="post-button" (click)="addLink(inputFrom, inputTo)"><i class="fas fa-share"></i></div>
+    <div class="modify-button" (click)="addLink(inputFrom, inputTo)"><i class="fas fa-plus"></i></div>
   </div>
   <div class="error-text">{{errorText}}</div>
 </div>
