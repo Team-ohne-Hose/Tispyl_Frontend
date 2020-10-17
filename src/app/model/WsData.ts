@@ -48,7 +48,9 @@ export enum GameActionType {
   createVote,
   openVote,
   playerVote,
-  closeVote
+  closeVote,
+  addDrinkbuddies,
+  removeDrinkbuddies
 }
 export type GameMessage = GameAction |
   GameSetTile |
@@ -133,7 +135,12 @@ export interface GameCloseVote {
   action: GameActionType.closeVote;
   withCooldown: boolean;
 }
-
+export interface GameUpdateDrinkBuddies {
+  type: MessageType.GAME_MESSAGE;
+  action: GameActionType.addDrinkbuddies | GameActionType.removeDrinkbuddies;
+  source: string;
+  target: string;
+}
 
 
 export type PlayerMessage = SetFigure;
