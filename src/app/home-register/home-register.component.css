@@ -165,6 +165,10 @@
   margin-left: auto;
 }
 
+.chat-message-text {
+  white-space: pre-wrap;
+}
+
 .input-section {
   margin-top: 0.5rem;
   margin-bottom: 0.4rem;

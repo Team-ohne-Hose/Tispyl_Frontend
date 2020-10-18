@@ -16,6 +16,7 @@ import {VoteSystemComponent} from './vote-system/vote-system.component';
 import {ObjectLoaderService} from '../../services/object-loader.service';
 import {ConnectedPlayersComponent} from './connected-players/connected-players.component';
 import {ChatService} from '../../services/chat.service';
+import {ItemService} from '../../services/item.service';
 
 
 @Component({
@@ -28,7 +29,8 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
   constructor(private router: Router,
               public gameState: GameStateService,
               private hints: HintsService,
-              private chat: ChatService) {
+              private chat: ChatService,
+              private items: ItemService) {
     this.routes = router.config.filter( route => route.path !== '**' && route.path.length > 0);
   }
 
@@ -238,7 +240,10 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
           let list = '';
           for (const itemId in p.itemList) {
             if (itemId in p.itemList && p.itemList[itemId] > 0) {
-              list = list + 'desc(' + itemId + '): ' + p.itemList[itemId] + 'x\r\n';
+              if (list !== '') {
+                list = list + '\r\n';
+              }
+              list = list + p.itemList[itemId] + 'x ' + this.items.getItemName(Number(itemId)) + '(' + itemId + '): ' + this.items.getItemDesc(Number(itemId));
             }
           }
           if (list === '') {
@@ -253,7 +258,7 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
   useItem( args ) {
     const sendUseMessage = (targetLogin: string) => {
       const itemId: number = Number(args[1]);
-      this.print('Trying to use Item ' + 'itemId' + ' on ' + targetLogin, '/useItem');
+      this.print('Trying to use Item ' + itemId + ((targetLogin === '') ? '' : ' on ' + targetLogin), '/useItem');
       this.gameState.sendMessage(MessageType.ITEM_MESSAGE, {
         type: MessageType.ITEM_MESSAGE,
         subType: ItemMessageType.useItem,

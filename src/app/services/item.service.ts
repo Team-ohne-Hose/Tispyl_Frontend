@@ -51,4 +51,18 @@ export class ItemService implements ColyseusNotifyable {
     }
     this.chatService.addLocalMessage(msg, 'Item Used');
   }
+  getItemName(itemId: number): string {
+    if (itemId < 0 || itemId >= ItemService.items.count) {
+      return 'undefined';
+    } else {
+      return ItemService.items[itemId].name;
+    }
+  }
+  getItemDesc(itemId: number): string {
+    if (itemId < 0 || itemId >= ItemService.items.count) {
+      return 'undefined';
+    } else {
+      return ItemService.items[itemId].desc;
+    }
+  }
 }
