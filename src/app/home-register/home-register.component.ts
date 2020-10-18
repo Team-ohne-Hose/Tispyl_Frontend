@@ -37,7 +37,8 @@ export class HomeRegisterComponent {
       if ( u !== undefined ) {
         this.user = u;
         this.profileSource = this.fileManagement.profilePictureSource(u.login_name);
-        this.myBCapIndex = this.getPlayerFromUser(this.user).figureModel || 1;
+        const player = this.getPlayerFromUser(this.user);
+        if ( player !== undefined ) { this.myBCapIndex = player.figureModel; }
         console.debug('Initialized bottle cap index to: ', this.myBCapIndex);
         this.bottleCapSource = this.loader.getBCapTextureThumbPath(this.myBCapIndex);
 
