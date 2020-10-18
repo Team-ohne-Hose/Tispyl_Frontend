@@ -24,14 +24,18 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
 
   constructor(private gameState: GameStateService) {
     // TODO: Change callback registration to new version as soon as some one builds one (13/10/20).
-    gameState.getState().drinkBuddyLinks.onAdd = (link, key) => {
-      console.log("Link was added: ", link.source, link.target);
-      setTimeout(() => this.refreshChart(), 2000); // find out why this timeout needs to exist !
-    };
-    gameState.getState().drinkBuddyLinks.onRemove = (link, key) => {
-      console.log("Link was removed: ", link.source, link.target);
-      setTimeout(() => this.refreshChart(), 2000); // find out why this timeout needs to exist !
-    };
+    if (gameState.getState() !== undefined) {
+      gameState.getState().drinkBuddyLinks.onAdd = (link, key) => {
+        console.log("Link was added: ", link.source, link.target);
+        setTimeout(() => this.refreshChart(), 2000); // find out why this timeout needs to exist !
+      };
+      gameState.getState().drinkBuddyLinks.onRemove = (link, key) => {
+        console.log("Link was removed: ", link.source, link.target);
+        setTimeout(() => this.refreshChart(), 2000); // find out why this timeout needs to exist !
+      };
+    } else {
+      console.warn('Unable to register Trinkbuddy-link onAdd & onRemove callbacks. GameStateService.getState() returned: ', gameState.getState());
+    }
   }
 
   ngAfterViewInit(): void {
@@ -218,20 +222,30 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
   }
 
   private fetchNodeData() {
-    this.nodes = [];
-    for ( const key in this.gameState.getState().playerList ) {
-      this.nodes.push({id: this.gameState.getState().playerList[key].displayName});
+    const state = this.gameState.getState();
+    if (state !== undefined) {
+      this.nodes = [];
+      for ( const key in state.playerList ) {
+        this.nodes.push({id: state.playerList[key].displayName});
+      }
+    } else {
+      console.warn('Failed to fetch new node data, because the game state was not defined. Nodes now: ', this.links);
     }
   }
 
   private fetchLinkData() {
-    this.links = [];
-    const remoteLinks = this.gameState.getState().drinkBuddyLinks;
-    const knownNodes = this.nodes.map((n) => n.id);
-    for ( const key in remoteLinks ) {
-      if (knownNodes.indexOf(remoteLinks[key].source) !== -1 && knownNodes.indexOf(remoteLinks[key].target) !== -1) {
-        this.links.push({source: remoteLinks[key].source, target: remoteLinks[key].target});
+    const state = this.gameState.getState();
+    if (state !== undefined) {
+      this.links = [];
+      const remoteLinks = state.drinkBuddyLinks;
+      const knownNodes = this.nodes.map((n) => n.id);
+      for ( const key in remoteLinks ) {
+        if (knownNodes.indexOf(remoteLinks[key].source) !== -1 && knownNodes.indexOf(remoteLinks[key].target) !== -1) {
+          this.links.push({source: remoteLinks[key].source, target: remoteLinks[key].target});
+        }
       }
+    } else {
+      console.warn('Failed to fetch new link data, because the game state was not defined. Links now: ', this.links);
     }
   }
 

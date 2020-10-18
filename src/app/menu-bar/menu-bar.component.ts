@@ -38,7 +38,6 @@ export class MenuBarComponent {
   constructor() { }
 
   toggleTab(event): void {
-    console.log(event.target.classList);
     if (event.target.parentElement.classList.contains(this.selectionClass)) {
       this.unselectTab(event);
     } else {
