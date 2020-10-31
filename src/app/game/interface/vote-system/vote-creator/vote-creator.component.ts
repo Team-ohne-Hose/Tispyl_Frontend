@@ -33,7 +33,10 @@ export class VoteCreatorComponent {
   }
 
   toggleEligibility(player: Player): void {
-    this.eligibilities.set(player.displayName, !this.eligibilities.get(player.displayName));
+    // TODO: build solution to close vote if the host is ineligible
+    if ( !(this.gameState.getMe().displayName === player.displayName) ) {
+      this.eligibilities.set(player.displayName, !this.eligibilities.get(player.displayName));
+    }
   }
 
   addVoteEntryByKey(inputElement: HTMLInputElement, event: KeyboardEvent): void {
