@@ -28,13 +28,11 @@ export class FileService {
     return this.httpClient.delete(this.profilePictureEndpoint + `?login_name=${user.login_name}&hash=${user.password_hash}`);
   }
 
-  profilePictureSource(name: string): string {
-      return this.profilePictureEndpoint + `?login_name=${name}&x_rng=${Math.random()}`; // &hash=${user.password_hash}
-  }
-
-
-  // DELETE THIS!!
-  tameProfilePictureSource(name: string): string {
-    return this.profilePictureEndpoint + `?login_name=${name}`;
+  profilePictureSource(name: string, forceUpdate: boolean = false): string {
+    if (forceUpdate) {
+      return this.profilePictureEndpoint + `?login_name=${name}&x_rng=${Math.random()}`;
+    } else {
+      return this.profilePictureEndpoint + `?login_name=${name}`;
+    }
   }
 }

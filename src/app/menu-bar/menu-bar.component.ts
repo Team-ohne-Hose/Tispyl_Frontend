@@ -36,7 +36,7 @@ export class MenuBarComponent {
   @ViewChild('registerFooter') registerFooter: ElementRef;
   @ViewChild('tabEdge') tabEdge: ElementRef;
 
-  tabIndex = 2;
+  tabIndex = undefined;
 
   constructor() { }
 

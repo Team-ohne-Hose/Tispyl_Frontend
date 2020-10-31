@@ -139,7 +139,7 @@ export class HomeRegisterComponent {
     const file = event.target.files[0];
     this.fileManagement.uploadProfilePicture(file, this.user).subscribe(suc => {
       console.log('Uploaded new profile picture: ', suc);
-      this.profileSource = this.fileManagement.profilePictureSource(this.user.login_name);
+      this.profileSource = this.fileManagement.profilePictureSource(this.user.login_name, true);
       const msg: RefreshProfilePics = {type: MessageType.REFRESH_COMMAND,
         subType: RefreshCommandType.refreshProfilePic};
       this.gameState.sendMessage(MessageType.REFRESH_COMMAND, msg);

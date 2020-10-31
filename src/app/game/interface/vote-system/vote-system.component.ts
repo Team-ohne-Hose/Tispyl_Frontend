@@ -33,7 +33,6 @@ export class VoteSystemComponent implements OnInit {
   constructor(public gameState: GameStateService) {
     gameState.addVoteSystemCallback(((changes: DataChange<any>[]) => {
       changes.forEach((change: DataChange) => {
-        console.log(change);
         switch (change.field) {
           case 'author': this.onAuthorChange(change); break;
           case 'activeVoteConfiguration': this.onActiveVoteConfigurationChange(change); break;
@@ -127,6 +126,8 @@ export class VoteSystemComponent implements OnInit {
       this.hasConcluded = change.value.hasConcluded;
       if (this.hasConcluded) {
         this.voteSystemState = VoteSystemState.results;
+      } else if (change.value.ineligibles.includes(this.gameState.getMe().displayName)) {
+        this.voteSystemState = VoteSystemState.notEligible;
       } else {
         this.voteSystemState = VoteSystemState.voting;
       }

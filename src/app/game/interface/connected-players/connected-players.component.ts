@@ -30,7 +30,7 @@ export class ConnectedPlayersComponent implements ColyseusNotifyable {
         if (data.type === MessageType.REFRESH_COMMAND) {
           for (const key in this.profilePics) {
             if (key in this.profilePics) {
-              this.profilePics[key] = this.fileManagement.profilePictureSource(key);
+              this.profilePics[key] = this.fileManagement.profilePictureSource(key, true);
             }
           }
         }
@@ -41,13 +41,11 @@ export class ConnectedPlayersComponent implements ColyseusNotifyable {
 
   getProfilePic(name) {
     if (this.profilePics[name] === undefined) {
-      this.profilePics[name] = this.fileManagement.profilePictureSource(name);
+      this.profilePics[name] = this.fileManagement.profilePictureSource(name, true);
     }
     return this.profilePics[name];
-
-    // HACK !
-    // return this.fileManagement.tameProfilePictureSource(name);
   }
+
   filterConnectedPlayers(value: Player, index: number, list: Player[]): boolean {
     return !value.hasLeft;
   }
