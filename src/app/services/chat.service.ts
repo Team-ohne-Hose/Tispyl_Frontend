@@ -68,6 +68,7 @@ export class ChatService implements ColyseusNotifyable {
   }
   onChatMessageReceived(msg: string, sender: string) {
     this.chatMessages.push(new ChatMessage(msg, sender));
+    console.log('New Chatmessage: "' + msg + '"', this.chatMessages);
     if (this.messageCallback) {
       this.messageCallback();
     }

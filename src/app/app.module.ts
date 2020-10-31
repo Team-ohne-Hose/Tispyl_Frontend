@@ -52,6 +52,7 @@ import { MenuBarComponent } from './menu-bar/menu-bar.component';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { HomeRegisterComponent } from './home-register/home-register.component';
 import { TrinkBuddyDisplayComponent } from './trink-buddy-display/trink-buddy-display.component';
+import { ItemsInterfaceComponent } from './game/interface/items-interface/items-interface.component';
 
 const appRoutes: Routes = [
   { path: 'lobby', component: LobbyComponent},
@@ -93,7 +94,8 @@ const appRoutes: Routes = [
     ShowAttribComponent,
     MenuBarComponent,
     HomeRegisterComponent,
-    TrinkBuddyDisplayComponent
+    TrinkBuddyDisplayComponent,
+    ItemsInterfaceComponent
   ],
   imports: [
     RouterModule.forRoot(

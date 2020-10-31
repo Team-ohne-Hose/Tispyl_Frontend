@@ -3,40 +3,80 @@ import {ChatService} from './chat.service';
 import {ColyseusNotifyable} from './game-initialisation.service';
 import {GameStateService} from './game-state.service';
 import {ItemMessageType, MessageType, UseItem, WsData} from '../model/WsData';
+import {MapSchema} from '@colyseus/schema';
+import {Player} from '../model/state/Player';
+import {createBundleIndexHost} from '@angular/compiler-cli';
 
+enum executeTypes { // even numbers are targeted actions, odd numbers are not targeted
+  untargetedExecute = 1,
+  targetedExecute = 2,
+}
 @Injectable({
   providedIn: 'root'
 })
 export class ItemService implements ColyseusNotifyable {
 
+
   private static readonly items = {
-    0: {id: 0, weight: 1, name: 'Wirt', desc: 'Verteile 3 Rationen', executeType: 0},
-    1: {id: 1, weight: 1, name: 'Diplomat', desc: 'Stelle eine Regel auf', executeType: 0},
-    2: {id: 2, weight: 1, name: 'Klon', desc: 'Ein anderer Mitspieler muss deine Aufgabe auch machen', executeType: 0},
-    3: {id: 3, weight: 1, name: 'Beste Freunde Gulasch', desc: 'Löse eine Trinkbuddy Verbindung auf', executeType: 0},
-    4: {id: 4, weight: 1, name: 'Todfeind', desc: '', executeType: 0},
-    5: {id: 5, weight: 1, name: 'Joker', desc: 'Führe ein beliebiges Feld aus', executeType: 0},
-    6: {id: 6, weight: 1, name: 'MOAB', desc: 'Alle rücken 10 Felder zurück', executeType: 0},
-    7: {id: 7, weight: 1, name: 'Assasin', desc: 'Ein Spieler muss einen nach unten', executeType: 0},
-    8: {id: 8, weight: 1, name: 'Sabotage', desc: 'Ein Spieler muss 5 Felder zurück', executeType: 0},
-    9: {id: 9, weight: 1, name: 'Ah shit, here we go again', desc: 'Spielt danach noch eine Runde Tischspiel', executeType: 0},
-    10: {id: 10, weight: 1, name: 'Trittbrettfahrer', desc: 'Exe dein Getränk. Schaffst du es müssen alle anderen dir gleich tun.(Dein Getränk muss mindestens halb voll sein wenn du dieses Item nutzt.)', executeType: 0},
-    11: {id: 11, weight: 1, name: 'Losing is Fun', desc: 'Gehe zurück zum Start', executeType: 0},
-    12: {id: 12, weight: 1, name: 'Anonymer Tipp', desc: 'ein Spieler muss nächste Runde aussetzen', executeType: 0},
+    0: {id: 0, weight: 1, name: 'Wirt',
+      desc: 'Verteile 3 Rationen',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute},
+    1: {id: 1, weight: 1, name: 'Diplomat',
+      desc: 'Stelle eine Regel auf',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute},
+    2: {id: 2, weight: 1, name: 'Klon',
+      desc: 'Ein anderer Mitspieler muss deine nächste Aufgabe auch machen',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute},
+    3: {id: 3, weight: 1, name: 'Beste Freunde Gulasch',
+      desc: 'Suche dir einen Trinkbuddy',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute},
+    4: {id: 4, weight: 1, name: 'Todfeind',
+      desc: 'Löse eine Trinkbuddy Verbindung auf',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute},
+    5: {id: 5, weight: 1, name: 'Joker',
+      desc: 'Führe ein beliebiges Feld aus',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute},
+    6: {id: 6, weight: 1, name: 'MOAB',
+      desc: 'Alle rücken 10 Felder zurück',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute},
+    7: {id: 7, weight: 1, name: 'Assasin',
+      desc: 'Ein Spieler muss einen Ring nach unten',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute},
+    8: {id: 8, weight: 1, name: 'Sabotage',
+      desc: 'Ein Spieler muss 5 Felder zurück',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute},
+    9: {id: 9, weight: 1, name: 'Ah shit, here we go again',
+      desc: 'Spielt danach noch eine Runde Tischspiel',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute},
+    10: {id: 10, weight: 1, name: 'Trittbrettfahrer',
+      desc: 'Exe dein Getränk. Schaffst du es müssen alle anderen dir gleich tun.(Dein Getränk muss mindestens halb voll sein wenn du dieses Item nutzt.)',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute},
+    11: {id: 11, weight: 1, name: 'Losing is Fun',
+      desc: 'Gehe zurück zum Start',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute},
+    12: {id: 12, weight: 1, name: 'Anonymer Tipp',
+      desc: 'ein Spieler muss nächste Runde aussetzen',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute},
     count: 13,
   };
+
+  targetingItem = false;
+  selectedItem = -1;
+  onUseItem: (itemId: number) => void;
+  gameState: GameStateService;
 
   constructor(private chatService: ChatService) { }
 
   attachColyseusStateCallbacks(gameState: GameStateService): void {}
   attachColyseusMessageCallbacks(gameState: GameStateService): void {
+    this.gameState = gameState;
     gameState.registerMessageCallback(MessageType.ITEM_MESSAGE, {
       filterSubType: -1,
       f: (data: WsData) => {
         if (data.type === MessageType.ITEM_MESSAGE) {
           switch (data.subType) {
             case ItemMessageType.useItem:
-              this.onItemUse(data);
+              this.onItemUsed(data);
               break;
           }
         }
@@ -44,25 +84,154 @@ export class ItemService implements ColyseusNotifyable {
     });
   }
 
-  onItemUse(item: UseItem) {
+  onItemUsed(item: UseItem) {
     let msg = `${item.playerLoginName} used ${item.itemName}: ${item.itemDescription}`;
     if (item.targetLoginName && item.targetLoginName !== '') {
       msg = msg + ' on ' + item.targetLoginName;
     }
     this.chatService.addLocalMessage(msg, 'Item Used');
   }
+  getMyItemsList(): MapSchema<number> {
+    const state = this.gameState.getState();
+    if (state !== undefined) {
+      const playerList: MapSchema<Player> = state.playerList;
+      for (const id in playerList) {
+        if (id in playerList) {
+          const p: Player = playerList[id];
+          if (p.loginName === this.gameState.getMyLoginName()) {
+            return p.itemList;
+          }
+        }
+      }
+    }
+    return undefined;
+  }
+  getOrderedItemList() {
+    const itemListArray: number[] = [];
+    const items = this.getMyItemsList();
+    if (items !== undefined) {
+      for (const itemId in items) {
+        if (itemId in items && items[itemId] > 0) {
+          itemListArray.push(Number(itemId));
+        }
+      }
+      itemListArray.sort((a: number, b: number) => {
+        return a - b;
+      });
+      return itemListArray;
+    }
+}
+  selectNextItem() {
+    const itemListArray: number[] = this.getOrderedItemList();
+    if (itemListArray === undefined || itemListArray.length <= 0) {
+      this.selectItem(-1);
+    } else if (itemListArray !== undefined) {
+      let searchResult = itemListArray.find(element => element > this.selectedItem);
+      if (searchResult === undefined) {
+        searchResult = itemListArray.find(element => true);
+      }
+      this.selectItem(searchResult);
+    }
+  }
+  selectPrevItem() {
+    const itemListArray: number[] = this.getOrderedItemList();
+    if (itemListArray === undefined || itemListArray.length <= 0) {
+      this.selectItem(-1);
+    } else if (itemListArray !== undefined) {
+      for (let i = 0; i < itemListArray.length; i++) {
+        if (itemListArray[i] >= this.selectedItem) {
+          if (i === 0) {
+            this.selectItem(itemListArray[itemListArray.length - 1]);
+            return;
+          } else {
+            this.selectItem(itemListArray[i - 1]);
+            return;
+          }
+        }
+      }
+    }
+  }
+  selectItem(itemId: number) {
+    this.setTargeting(false);
+    if (itemId < 0) {
+      this.selectedItem = -1;
+      return;
+    }
+    const items = this.getMyItemsList();
+    if (items !== undefined) {
+      if (items[itemId] > 0) {
+        this.selectedItem = itemId;
+      }
+    }
+  }
   getItemName(itemId: number): string {
     if (itemId < 0 || itemId >= ItemService.items.count) {
-      return 'undefined';
+      return 'NO ITEM';
     } else {
       return ItemService.items[itemId].name;
     }
   }
   getItemDesc(itemId: number): string {
     if (itemId < 0 || itemId >= ItemService.items.count) {
-      return 'undefined';
+      return '';
     } else {
       return ItemService.items[itemId].desc;
     }
+  }
+  getItemThumb(itemId: number): string {
+    if (itemId < 0 || itemId >= ItemService.items.count) {
+      return '../assets/defaultImage.jpg';
+    } else {
+      return ItemService.items[itemId].imgUrl;
+    }
+  }
+  isItemTargetable(itemId: number): boolean {
+    if (itemId >= ItemService.items.count || itemId < 0) {
+      return false;
+    }
+    return (ItemService.items[itemId].executeType % 2) === 0;
+  }
+  setTargeting(en: boolean) {
+    this.targetingItem = en;
+  }
+  isCurrentlyTargeting(): boolean {
+    return this.targetingItem;
+  }
+  onTargetHover(targetId: number) {
+
+  }
+  onTargetSet(targetId: number) {
+    this.useItem(this.selectedItem, targetId);
+  }
+
+  useItem(itemId: number, targetId?: number) {
+    if (this.onUseItem !== undefined) {
+      this.onUseItem(itemId);
+    }
+
+    let targetLogin = '';
+    const state = this.gameState.getState();
+    if (state !== undefined && targetId !== undefined) {
+      for (const p in state.playerList) {
+        if (p in state.playerList && state.playerList[p] instanceof Player) {
+          if (state.playerList[p].figureId === targetId) {
+            targetLogin = state.playerList[p].loginName;
+          }
+        }
+      }
+    }
+
+    this.chatService.addLocalMessage('Trying to use Item ' + itemId + ((targetLogin === '') ? '' : ' on ' + targetLogin), 'Items');
+    this.gameState.sendMessage(MessageType.ITEM_MESSAGE, {
+      type: MessageType.ITEM_MESSAGE,
+      subType: ItemMessageType.useItem,
+      playerLoginName: this.gameState.getMyLoginName(),
+      targetLoginName: targetLogin,
+      itemId: itemId,
+      param: '',
+      itemName: ItemService.items[itemId].name,
+      itemDescription: ItemService.items[itemId].desc
+    });
+    this.selectNextItem();
   }
 }

@@ -4,6 +4,7 @@ import {BoardItemManagement} from './BoardItemManagement';
 import {ClickedTarget, PhysicsCommands} from './PhysicsCommands';
 import {BoardTilesService} from '../../services/board-tiles.service';
 import {GameStateService} from '../../services/game-state.service';
+import {ItemService} from '../../services/item.service';
 
 export class MouseInteraction {
 
@@ -21,7 +22,8 @@ export class MouseInteraction {
   constructor(camera: Camera, boardItemManager: BoardItemManagement,
               private physics: PhysicsCommands,
               private gameState: GameStateService,
-              private boardTiles: BoardTilesService) {
+              private boardTiles: BoardTilesService,
+              private itemService: ItemService) {
     this.boardItemManager = boardItemManager;
     this.camera = camera;
     this.physics.addInteractable = this.addInteractable.bind(this);
@@ -44,6 +46,26 @@ export class MouseInteraction {
       if (intersects.length > 0) {
         const point = intersects[0].point;
         this.boardItemManager.hoverGameFigure(this.currentlySelected.obj, point.x, point.z);
+      }
+    } else if (this.itemService.isCurrentlyTargeting()) {
+      const normX = (event.clientX / this.currentSize.width) * 2 - 1;
+      const normY = - (event.clientY / this.currentSize.height) * 2 + 1;
+      this.raycaster.setFromCamera({x: normX, y: normY}, this.camera);
+      const intersects = this.raycaster.intersectObjects(this.interactable);
+
+      if (intersects.length > 0) {
+        const point = intersects[0].point;
+        const type = this.getClickedType(intersects[0].object);
+        // console.log('Intersecting:', intersects[0].object.name, type);
+        if (type === ClickedTarget.figure) {
+          const obj = intersects[0].object;
+          const targetFigureId = this.gameState.getMyFigureId();
+          if (targetFigureId === obj.userData.physicsId) {
+
+          } else {
+            this.itemService.onTargetHover(obj.userData.physicsId);
+          }
+        }
       }
     }
   }
@@ -115,7 +137,11 @@ export class MouseInteraction {
             this.boardItemManager.hoverGameFigure(this.currentlySelected.obj, point.x, point.z);
             console.log('selected Object');
           } else {
-            console.log('This is not your figure');
+            if (this.itemService.isCurrentlyTargeting()) {
+              this.itemService.onTargetSet(obj.userData.physicsId);
+            } else {
+              console.log('This is not your figure');
+            }
           }
         }
       } else if (type === ClickedTarget.dice) {

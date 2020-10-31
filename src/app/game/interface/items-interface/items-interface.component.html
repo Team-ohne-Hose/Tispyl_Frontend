@@ -1,0 +1,15 @@
+<div class="Item-Display">
+  <div *ngIf="scrollable" (click)="prevItem($event)"><i class="fas fa-chevron-left"></i></div>
+  <div (click)="activateItem($event)" class="round-avatar golden-border">
+    <img [src]="itemThumbnail" alt="'Item'">
+  </div>
+  <div *ngIf="scrollable" (click)="nextItem($event)"><i class="fas fa-chevron-right"></i></div>
+  <div class="tooltip-container">
+    <div class="tooltip-arrow"></div>
+    <div class="tooltip">
+      <span class="itemName">{{itemName}}</span>
+      <div class="separator"></div>
+      <div class="itemDescription">{{itemDescription}}</div>
+    </div>
+  </div>
+</div>

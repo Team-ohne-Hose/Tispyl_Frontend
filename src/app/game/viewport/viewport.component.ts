@@ -13,6 +13,7 @@ import {ClickedTarget, PhysicsCommands} from './PhysicsCommands';
 import {PhysicsEntity, PhysicsEntityVariation} from '../../model/WsData';
 import {BoardTilesService} from '../../services/board-tiles.service';
 import {GameStateService} from '../../services/game-state.service';
+import {ItemService} from '../../services/item.service';
 
 export class ObjectUserData {
   physicsId: number;
@@ -38,7 +39,8 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   constructor(private sceneBuilder: SceneBuilderService,
               private objectLoaderService: ObjectLoaderService,
               private gameState: GameStateService,
-              private boardTiles: BoardTilesService) {
+              private boardTiles: BoardTilesService,
+              public itemService: ItemService) {
 
   }
 
@@ -103,7 +105,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.boardItemManager = new BoardItemManagement(this.scene, this.sceneBuilder, this.physics, this.gameState, this.objectLoaderService);
 
     // initialize Mouse
-    this.mouseInteract = new MouseInteraction(this.camera, this.boardItemManager, this.physics, this.gameState, this.boardTiles);
+    this.mouseInteract = new MouseInteraction(this.camera, this.boardItemManager, this.physics, this.gameState, this.boardTiles, this.itemService);
     this.mouseInteract.updateScreenSize(width, height);
 
     // initialize Audio/Camera Control

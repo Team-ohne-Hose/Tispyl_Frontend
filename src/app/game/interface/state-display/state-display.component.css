@@ -1,5 +1,5 @@
 
-.state-area {
+.state-area-copy {
   pointer-events: none;
   width: 100%;
   margin-top: 8px;
@@ -8,6 +8,29 @@
   display: flex;
   justify-content: center;
   z-index: 20;
+}
+.state-area {
+  pointer-events: none;
+  width: 100%;
+  margin-top: 8px;
+  position: absolute;
+  background-color: transparent;
+  display: grid;
+  grid-template-columns: 1fr min-content 1fr;
+  grid-template-areas: "leftBox centerBox rightBox";
+  column-gap: 12px;
+  justify-items: center;
+  z-index: 20;
+}
+.leftBoxItem {
+  grid-area: leftBox;
+  justify-self: end;
+  align-self: center;
+}
+.rightBoxItem {
+  grid-area: rightBox;
+  justify-self: start;
+  align-self: center;
 }
 
 .state-window {
@@ -20,6 +43,7 @@
   flex-direction: row;
   background-color: #3d3d3d;
   filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, 0.7));
+  grid-area: centerBox;
 }
 
 .rules {
@@ -36,6 +60,7 @@
 }
 
 .state-description {
+  display: flex;
   color: grey;
 }
 
@@ -52,6 +77,7 @@
   padding-top: 8px;
   font-size: x-large;
   align-self: center;
+  white-space: nowrap;
 }
 
 .seperator {
@@ -59,19 +85,4 @@
   margin-left: 16px;
   margin-right: 16px;
   border: solid 1px black;
-}
-
-.show-rules-button {
-  text-align: center;
-  width: 48px;
-  color: grey;
-  font-size: x-large;
-}
-
-.show-rules-button:hover {
-  color: whitesmoke;
-}
-
-.show-rules-button:active {
-  color: grey;
 }
