@@ -54,7 +54,6 @@ export class GameInitialisationService {
     // this.colyseusNotifyableClasses.push(game.interfaceRef.chatRef);
     this.colyseusNotifyableClasses.push(game.interfaceRef.nextTurnRef);
     this.colyseusNotifyableClasses.push(game.interfaceRef.tileOverlayRef);
-    this.colyseusNotifyableClasses.push(game.interfaceRef.voteSystemRef);
     this.colyseusNotifyableClasses.push(game.interfaceRef);
     this.colyseusNotifyableClasses.push(game.interfaceRef.connectedPlayersRef);
     this.colyseusNotifyableClasses.push(this.chatService);

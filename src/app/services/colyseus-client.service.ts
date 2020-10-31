@@ -31,6 +31,7 @@ export class ColyseusClientService {
   ];
 
   myLoginName: string;
+  myPlayer: Player;
   myFigureId: number;
 
   constructor() {
@@ -42,9 +43,9 @@ export class ColyseusClientService {
     changes.forEach(change => {
       switch (change.field) {
         case 'playerList':
-        const myPlayer: Player = change.value[this.myLoginName];
-        if (myPlayer !== undefined) {
-          this.myFigureId = myPlayer.figureId;
+        this.myPlayer = change.value[this.myLoginName];
+        if (this.myPlayer !== undefined) {
+          this.myFigureId = this.myPlayer.figureId;
         }
         break;
         case 'action':

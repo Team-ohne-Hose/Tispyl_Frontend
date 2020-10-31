@@ -1,3 +1,5 @@
+import {VoteConfiguration} from '../game/interface/vote-system/VoteConfiguration';
+
 export type WsData = OtherMessage | ChatMessage | JoinMessage | LeftMessage | GameMessage | PlayerMessage | PhysicsCommand | DebugCommand | RefreshCommand | AchievementMessage | ItemMessage;
 export enum MessageType {
   OTHER,
@@ -44,11 +46,10 @@ export enum GameActionType {
   setTile,
   refreshData,
   diceRolled,
-  startCreateVote,
-  createVote,
-  openVote,
-  playerVote,
-  closeVote,
+  startVoteCreation,
+  beginVotingSession,
+  playerCastVote,
+  closeVotingSession,
   addDrinkbuddies,
   removeDrinkbuddies
 }
@@ -60,10 +61,11 @@ export type GameMessage = GameAction |
   GameDeleteRule |
   GameDiceRoll |
   GameStartCreatingVote |
-  GameCreateVote |
-  GameOpenVote |
-  GamePlayerVote |
-  GameCloseVote;
+  GameBeginVotingSession |
+  GamePlayerCastVote |
+  GameCloseVotingSession |
+  GameUpdateDrinkBuddies;
+
 type actionTypes = GameActionType.none |
   GameActionType.advanceRound |
   GameActionType.advanceAction |
@@ -110,30 +112,22 @@ export interface GameSetTile {
 }
 export interface GameStartCreatingVote {
   type: MessageType.GAME_MESSAGE;
-  action: GameActionType.startCreateVote;
-  authorLogin: string;
+  action: GameActionType.startVoteCreation;
+  author: string;
 }
-export interface GameCreateVote {
+export interface GameBeginVotingSession {
   type: MessageType.GAME_MESSAGE;
-  action: GameActionType.createVote;
-  authorId: string;
-  eligible: string[];
-  customVote: boolean;
-  options: string[];
+  action: GameActionType.beginVotingSession;
+  config: VoteConfiguration;
 }
-export interface GameOpenVote {
+export interface GamePlayerCastVote {
   type: MessageType.GAME_MESSAGE;
-  action: GameActionType.openVote;
+  action: GameActionType.playerCastVote;
+  elementIndex: number;
 }
-export interface GamePlayerVote {
+export interface GameCloseVotingSession {
   type: MessageType.GAME_MESSAGE;
-  action: GameActionType.playerVote;
-  vote: string;
-}
-export interface GameCloseVote {
-  type: MessageType.GAME_MESSAGE;
-  action: GameActionType.closeVote;
-  withCooldown: boolean;
+  action: GameActionType.closeVotingSession;
 }
 export interface GameUpdateDrinkBuddies {
   type: MessageType.GAME_MESSAGE;

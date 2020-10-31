@@ -1,329 +1,187 @@
-import {Component, Input} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {GameStateService} from '../../../services/game-state.service';
-import {Player} from '../../../model/state/Player';
 import {GameActionType, MessageType, WsData} from '../../../model/WsData';
-import {ColyseusNotifyable} from '../../../services/game-initialisation.service';
 import {FileService} from '../../../services/file.service';
-import {MatChipInputEvent} from '@angular/material/chips';
-import {Option} from '../../../debugdummy/debugdummy.component';
-import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {DataChange} from '@colyseus/schema';
+import {VoteSystemState} from './VoteSystemState';
+import {VoteResult} from './VoteResult';
+import {VoteEntry} from './VoteEntry';
+import {VoteConfiguration} from './VoteConfiguration';
 
-enum VoteState {
-  default,
-  waiting,
-  creating,
-  voting,
-  results,
-  notEligible
-}
-interface VoteEntry {
-  label: string;
-  count: number;
-  isPlayer: boolean;
-  login: string;
-}
+
+
 @Component({
   selector: 'app-vote-system',
   templateUrl: './vote-system.component.html',
   styleUrls: ['./vote-system.component.css']
 })
-export class VoteSystemComponent implements ColyseusNotifyable {
+export class VoteSystemComponent implements OnInit {
 
-  VoteState = VoteState;
-  voteOwner: String = 'Untitled';
-  timeSinceClosingAnnounced = 0;
-  amIEligible = false;
+  readonly stateEnum = VoteSystemState;
+  voteSystemState: VoteSystemState = VoteSystemState.default;
 
-  @Input()
-  players: Player[];
-  hidden = true;
-  showState: VoteState = VoteState.default;
-  voteResults: VoteEntry[] = [];
-  voteOptions: VoteEntry[] = [];
+  // Data values
+  resultHistory: VoteResult[] = []; // TODO: (Not used yet) Find way to keep these values without putting them into the state
 
-  votedFor = '';
+  // Display values
+  currentHistoryResult: number = 0;
+  voteHost: string;
+  voteEntryPercentileDisplay: number[] = [];
+  timerDisplay: number = -1;
+  hasConcluded: boolean = false;
 
-  // for creation of vote
-  playerDeselected: Map<string, boolean> = new Map<string, boolean>();
-  options: Option[] = [];
-  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
-
-
-  constructor(public gameState: GameStateService, public fileService: FileService) { }
-
-  attachColyseusMessageCallbacks(gameState: GameStateService): void {
-    gameState.registerMessageCallback(MessageType.GAME_MESSAGE, {
-      f: ((data: WsData) => {
-        if (data !== undefined && data.type === MessageType.GAME_MESSAGE) {
-          switch (data.action) {
-            case GameActionType.startCreateVote:
-              if (data.authorLogin === this.gameState.getMyLoginName()) {
-                this.showState = VoteState.creating;
-                console.log('create a vote!');
-              } else {
-                this.voteOwner = data.authorLogin || 'Untitled';
-                this.showState = VoteState.waiting;
-                console.log('vote is being created');
-              }
-              break;
-            case GameActionType.openVote:
-              this.timeSinceClosingAnnounced = 0;
-              this.voteOptions = this.getOptions();
-              this.votedFor = '';
-              if (this.eligibleToVote()) {
-                this.amIEligible = true;
-                this.showState = VoteState.voting;
-                console.log('start voting', this.voteOptions);
-                this.hidden = false;
-              } else {
-                this.amIEligible = false;
-                this.showState = VoteState.notEligible;
-                console.log('not eligible for voting this round');
-              }
-              break;
-            case GameActionType.closeVote:
-              if (data.withCooldown) {
-                this.timeSinceClosingAnnounced = (new Date()).getTime();
-              } else {
-                this.voteResults = this.getVotes();
-                console.log('showing Results', this.voteResults);
-                this.showState = VoteState.results;
-              }
-              break;
-          }
-        }
-      }).bind(this), filterSubType: undefined});
-  }
-  attachColyseusStateCallbacks(gameState: GameStateService): void {
+  constructor(public gameState: GameStateService) {
     gameState.addVoteSystemCallback(((changes: DataChange<any>[]) => {
       changes.forEach((change: DataChange) => {
+        console.log(change);
         switch (change.field) {
-          case 'author':
-            if (change.value !== undefined && change.value !== '') {
-
-            }
-            break;
+          case 'author': this.onAuthorChange(change); break;
+          case 'activeVoteConfiguration': this.onActiveVoteConfigurationChange(change); break;
+          case 'closingIn': this.timerDisplay = this.gameState.getState().voteState.closingIn; break;
         }
       });
     }).bind(this));
   }
 
-  toggleMove( ev ) {
-    this.hidden = !this.hidden;
-  }
-  vote(option: string): void {
-    if (this.eligibleToVote()) {
-      this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.playerVote, vote: option});
-      this.votedFor = option;
-    }
-  }
-  closeVoting(): void {
-    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
-      type: MessageType.GAME_MESSAGE,
-      action: GameActionType.closeVote,
-      withCooldown: true,
-    });
-  }
-  createNewVoting(): void {
-    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
-      type: MessageType.GAME_MESSAGE,
-      action: GameActionType.startCreateVote,
-      authorLogin: this.gameState.getMyLoginName()
-    });
-    this.options = [];
-    this.playerDeselected.forEach((val: boolean, key: string) => {
-      this.playerDeselected.set(key, false);
-    });
-  }
-  startNewVote() {
-    const eligible = this.players.filter((val: Player) => {
-      return !this.playerDeselected.get(val.loginName);
-    }).map((val: Player) => {
-      return val.loginName;
-    });
-    if (this.options !== undefined && this.options.length > 0) {
-      this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE,
-        action: GameActionType.createVote,
-        authorId: this.gameState.getMyLoginName(),
-        eligible: eligible,
-        customVote: true,
-        options: this.options.map((val: Option) => {
-          return val.name;
-        })});
-    } else {
-      this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE,
-        action: GameActionType.createVote,
-        authorId: this.gameState.getMyLoginName(),
-        eligible: eligible,
-        customVote: false,
-        options: []});
-    }
-  }
+  /**
+   * Synchronises component state values with their remote counterpart.
+   * This is necessary when the component gets re-initialized during closing and opening of parent containers,
+   * or if the player joins after the remote was altered from its default state.
+   */
+  ngOnInit(): void {
+    if (this.gameState.getState() !== undefined) {
+      const remoteState = this.gameState.getState().voteState;
+      if (remoteState.activeVoteConfiguration !== undefined) {
+        const pseudoChange: DataChange<VoteConfiguration> = {
+          field: 'activeVoteConfiguration',
+          value: remoteState.activeVoteConfiguration,
+          previousValue: undefined
+        };
+        this.onActiveVoteConfigurationChange(pseudoChange);
+        this.timerDisplay = this.gameState.getState().voteState.closingIn;
 
-  getOptions(): VoteEntry[] {
-    const state = this.gameState.getState();
-    if (state !== undefined) {
-      if (state.voteState.isCustom) {
-        console.log('customVote', state.voteState.isCustom, state.voteState.customOptions);
-        const options: VoteEntry[] = [];
-        state.voteState.customOptions.forEach((value: string) => {
-          const playerEntry = this.players.find((value2: Player) => {
-            return value2.displayName === value;
-          });
-          if (playerEntry === undefined) {
-            options.push({label: value, count: 0, isPlayer: false, login: ''});
-          } else {
-            options.push({label: value, count: 0, isPlayer: true, login: playerEntry.loginName});
-          }
-        });
-        return options;
       } else {
-        console.log('defaultVote', state.voteState.isCustom, this.players);
-        return this.players.map<VoteEntry>((p: Player) => {
-          return {label: p.displayName, count: 0, isPlayer: true, login: p.loginName};
-        });
-      }
-    } else {
-      return [];
-    }
-  }
-  getVoteCount(): number {
-    const state = this.gameState.getState();
-    if (state !== undefined) {
-      return Object.keys(state.voteState.votes).length;
-    }
-    return 0;
-  }
-  getVotes(): VoteEntry[] {
-    const votes: VoteEntry[] = [];
-    const state = this.gameState.getState();
-    if (state !== undefined) {
-      if (state.voteState.isCustom) {
-        state.voteState.customOptions.forEach((value: string) => {
-          const playerEntry = this.players.find((value2: Player) => {
-            return value2.displayName === value;
-          });
-          if (playerEntry === undefined) {
-            votes.push({label: value, count: 0, isPlayer: false, login: ''});
-          } else {
-            votes.push({label: value, count: 0, isPlayer: true, login: playerEntry.loginName});
-          }
-        });
-      } else {
-        this.players.forEach((value: Player) => {
-          votes.push({label: value.displayName, count: 0, isPlayer: true, login: value.loginName});
-        });
-      }
-      const allVotes = state.voteState.votes;
-      for (const key in allVotes) {
-        if (key in allVotes) {
-          const voteEntry: VoteEntry = votes.find((value: VoteEntry) => {
-            return (value.label === allVotes[key].vote);
-          });
-          if (voteEntry !== undefined) {
-            voteEntry.count++;
-          } else {
-            console.warn('couldnt find entry!', allVotes[key].vote, votes);
-          }
-        }
-      }
-      const results = votes.sort((a: VoteEntry, b: VoteEntry) => {
-        return -(a.count - b.count);
-      });
-      console.log('returning Results', results, this.players, state.voteState.customOptions);
-      return results;
-    } else {
-      return [];
-    }
-  }
-  eligibleToVote(): boolean {
-    const state = this.gameState.getState();
-    if (state !== undefined) {
-      console.log('eligible:', state.voteState.eligibleLoginNames);
-      const eligible = (state.voteState.eligibleLoginNames.find((value: string) => {
-        return value === this.gameState.getMyLoginName();
-      }));
-      return eligible !== undefined;
-    }
-    return false;
-  }
-  getTitle(): string {
-    const state = this.gameState.getState();
-    if (state !== undefined) {
-      if (state.voteState.author !== undefined && state.voteState.author.length > 0) {
-        const player: Player = state.playerList[state.voteState.author];
-        if (player !== undefined) {
-          return 'Vote System:  ' + player.displayName + '\'s Vote';
+        if (remoteState.author === this.gameState.getMe().displayName) {
+          this.voteSystemState = VoteSystemState.creating;
+          this.voteHost = remoteState.author;
+
+        } else if (remoteState.creationInProgress) {
+          this.voteSystemState = VoteSystemState.waiting;
+          this.voteHost = remoteState.author;
+
         } else {
-          return 'Vote System';
+          this.voteSystemState = VoteSystemState.default;
         }
+      }
+    }
+  }
+
+  previousHistoricResult() {
+    this.currentHistoryResult--;
+    if ( this.currentHistoryResult < 0 ) { this.currentHistoryResult = this.resultHistory.length - 1; }
+    console.log(this.currentHistoryResult, this.resultHistory);
+  }
+
+  nextHistoricResult() {
+    this.currentHistoryResult++;
+    if ( this.currentHistoryResult > this.resultHistory.length - 1 ) { this.currentHistoryResult = 0; }
+  }
+
+  // Triggers
+  triggerVoteBegin(config: VoteConfiguration): void {
+    const messageData = {
+      type: MessageType.GAME_MESSAGE,
+      action: GameActionType.beginVotingSession,
+      config: config
+    };
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, messageData);
+  }
+
+  triggerVoteCreation(event: Event): void {
+    if (this.gameState.getMe() !== undefined) {
+      this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
+        type: MessageType.GAME_MESSAGE,
+        action: GameActionType.startVoteCreation,
+        author: this.gameState.getMe().displayName
+      });
+    }
+  }
+
+
+  triggerCloseVotingSession(event: Event): void {
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
+      type: MessageType.GAME_MESSAGE,
+      action: GameActionType.closeVotingSession
+    });
+  }
+
+  // Reactions
+  /**
+   * This not only updates the current voteSystemState but also recalculates voting percentages
+   * for the displayed vote entries to avoid a function call inside of the Angular html template.
+   *
+   * This would cause a large performance hit. @see [https://medium.com/showpad-engineering/why-you-should-never-use-function-calls-in-angular-template-expressions-e1a50f9c0496]
+   */
+  onActiveVoteConfigurationChange(change: DataChange<VoteConfiguration>): void {
+    if (change.value !== undefined && change.value !== null) {
+      this.hasConcluded = change.value.hasConcluded;
+      if (this.hasConcluded) {
+        this.voteSystemState = VoteSystemState.results;
       } else {
-        return 'Vote System';
+        this.voteSystemState = VoteSystemState.voting;
       }
+      // Update vote entry display values
+      this.voteEntryPercentileDisplay = [];
+      for (const votingOption of change.value.votingOptions) {
+        this.voteEntryPercentileDisplay.push(this.getPercentile(votingOption));
+      }
+    }
+  }
+
+  onAuthorChange(change: DataChange): void {
+    this.voteHost = change.value;
+    if (change.value === this.gameState.getMe().displayName) {
+      this.voteSystemState = VoteSystemState.creating;
     } else {
-      return 'Vote System';
+      this.voteSystemState = VoteSystemState.waiting;
     }
-  }
-  getDisplayName(loginName: string): string {
-    const result: Player = this.players.find((value: Player) => {
-      return value.loginName === loginName;
-    });
-    if (result !== undefined) {
-      return result.displayName;
-    }
-    return 'Undefined';
-  }
-  getTimeRemaining(): number {
-    if (this.timeSinceClosingAnnounced === 0) {
-      return 0;
-    }
-    return 5 - Math.floor(((new Date()).getTime() - this.timeSinceClosingAnnounced) / 1000);
   }
 
-  addOption(event: MatChipInputEvent): void {
-    const input = event.input;
-    const value = event.value;
+  castVote(idx: number): void {
+    // Color selected value in HTML
+    const selectionClass = 'selected';
+    const choices: HTMLCollectionOf<Element> = document.getElementsByClassName('vote-entry');
+    for ( let i = 0; i < choices.length; i++ ) {
+      choices[i].classList.remove(selectionClass);
+    }
+    choices[idx].classList.add(selectionClass);
 
-    // Add our option
-    if ((value || '').trim()) {
-      if (this.options.find((opt: Option) => {
-        return opt.name === value.trim();
-      }) === undefined) {
-        this.options.push({name: value.trim()});
+    // Notify server
+    if ( this.gameState.getState() !== undefined ) {
+      this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
+        type: MessageType.GAME_MESSAGE,
+        action: GameActionType.playerCastVote,
+        elementIndex: idx
+      });
+    }
+  }
+
+  getPercentile(ve: VoteEntry): number {
+    const remoteState = this.gameState.getState();
+    let percentile = 0;
+    if (remoteState !== undefined && remoteState.voteState.activeVoteConfiguration !== undefined) {
+      // Workaround until colyseus 0.14 update, should be replaced by .size()
+      let playerListSize: number = 0;
+      for ( const p in remoteState.playerList) {
+        if ( p in remoteState.playerList ) {
+          playerListSize += 1;
+        }
       }
+      ///////////////////////////////////
+      const max = playerListSize - remoteState.voteState.activeVoteConfiguration.ineligibles.length;
+      percentile = ( ve.castVotes.length / max ) * 100;
     }
+    return percentile;
+  }
 
-    // Reset the input value
-    if (input) {
-      input.value = '';
-    }
-  }
-  removeOption(option: Option): void {
-    const index = this.options.indexOf(option);
-    if (index >= 0) {
-      this.options.splice(index, 1);
-    }
-  }
-  togglePlayer(p: Player) {
-    // console.log('toggle Player', p.loginName);
-    const selected = this.playerDeselected.get(p.loginName);
-    if (selected) {
-      this.playerDeselected.set(p.loginName, false);
-    } else {
-      this.playerDeselected.set(p.loginName, true);
-    }
-  }
-  clearOptions() {
-    this.options = [];
-  }
-  addPlayerOptions() {
-    this.players.forEach((val: Player) => {
-      if (!this.options.find((val2: Option) => {
-        return val.displayName === val2.name;
-      })) {
-        this.options.push({name: val.displayName});
-      }
-    });
-  }
 }

@@ -18,7 +18,6 @@
     [ruleList]="gameState.getState() === undefined ? '' : gameState.getState().rules"
     (executeNewChatCommand)="executeChatCommand($event)">
   </app-menu-bar>
-  <app-vote-system [players]="gameState.getState() === undefined ? [] : asArray(gameState.getState().playerList)" #voteSystem></app-vote-system>
   <app-next-turn-button [disabled]="(gameState.getState() === undefined) || !gameState.getState().hasStarted"
                         [action]="gameState.getState() === undefined ? 'Waiting' : gameState.getState().action"
                         #nextTurn>

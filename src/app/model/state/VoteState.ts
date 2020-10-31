@@ -1,25 +1,18 @@
 import {Schema, ArraySchema, MapSchema, type} from '@colyseus/schema';
+import {VoteConfiguration} from '../../game/interface/vote-system/VoteConfiguration';
 
-export class Vote extends Schema {
-  @type('string')
-  loginName = '';
-  @type('string')
-  vote = '';
-}
 export class VoteState extends Schema {
+
   @type('boolean')
-  idle = true;
+  creationInProgress = true;
+
   @type('string')
   author = '';
-  @type({map: Vote})
-  votes = new MapSchema<Vote>();
-  @type(['string'])
-  eligibleLoginNames = new ArraySchema<string>();
-  @type('boolean')
-  isCustom = false;
-  @type( ['string'] )
-  customOptions = new ArraySchema<string>();
-  constructor() {
-    super();
-  }
+
+  @type( VoteConfiguration )
+  activeVoteConfiguration: VoteConfiguration = undefined;
+
+  @type('number')
+  closingIn: number = -1;
 }
+
