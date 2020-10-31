@@ -1,153 +1,174 @@
 
-<div [ngClass]="{'tray-wrapper': true, 'hidden': this.hidden}">
+<div class="register-card-base">
 
-  <div class="tray-handle" (click)="toggleMove($event)">
-    <i [ngClass]="hidden ? 'fas fa-rotate-180 fa-arrow-right' : 'fas fa-arrow-right'"></i>
+  <div class="vote-head">
+    <div class="head-text">
+      <div>Voting System</div>
+      <div class="selected-history">
+        <div>Result:</div>
+        <div (click)="previousHistoricResult()"><i class="fas fa-caret-left button"></i></div>
+        <div>{{ (currentHistoryResult + 1) === resultHistory.length ? 'Latest' : currentHistoryResult + 1 }}</div>
+        <div (click)="nextHistoricResult()"><i class="fas fa-caret-right button"></i></div>
+      </div>
+    </div>
+    <div class="head-progress" *ngIf="gameState.getState() !== undefined">
+      <i [ngClass]="{'fas fa-circle-notch fa-spin highlight': gameState.getState().voteState.creationInProgress, 'far fa-circle': !gameState.getState().voteState.creationInProgress}"></i>
+    </div>
+    <div class="head-progress" *ngIf="gameState.getState() === undefined">
+      <i class="far fa-circle"></i>
+    </div>
   </div>
 
-  <div class="tray">
-    <div class="gold-border">
-      <div class="paper-body">
-        <div class="content-head">
-          <div class="headline-text">
-            {{getTitle()}}
-          </div>
-        </div>
-        <div *ngIf="showState === VoteState.default" class="votingContainer"><!-- Starting default -->
-          <div style="display: flex;  height: 100%">
-            <button mat-raised-button style="position:fixed; width: 80%; bottom: 10%; left: 10%; right: 10%; height: 10%" (click)="createNewVoting()">Create new Voting</button>
-          </div>
-        </div>
-        <div *ngIf="showState === VoteState.waiting" class="votingContainer"><!-- wait for creation -->
-          <div id="waitCreationHeader">{{getDisplayName(voteOwner)}} is creating a new Vote</div>
-          <div style="margin-top: 20%; margin-bottom: 10%; display: flex; justify-content: center; align-content: center">
-            <mat-progress-spinner class="progressSpinner" mode="indeterminate"></mat-progress-spinner>
-          </div>
-        </div>
-        <div *ngIf="showState === VoteState.creating" class="votingContainerCreate"><!-- creation -->
-          <app-vote-creation style="width: 100%; height: 90%">
-            <cdk-step label="Who should vote">
-              <div class="playerList">
-                <mat-chip-list style="display: flex; flex-direction: column;" aria-label="Options">
-                  <mat-chip *ngFor="let p of players" [selectable]="false" [removable]="false" [ngClass]="{deselected: playerDeselected.get(p.loginName)}">
-                    {{p.displayName}}
-                    <svg class="clearIcon" height="18" width="22" (click)="togglePlayer(p)">
-                      <defs>
-                        <radialGradient id="copperGradient" cx="85%" cy="10%" r="100%">
-                          <stop offset="20%" style="stop-color:#d44300;stop-opacity:1" />
-                          <stop offset="100%" style="stop-color:#662000;stop-opacity:1" />
-                        </radialGradient>
-                        <radialGradient id="greenGradient" cx="85%" cy="10%" r="100%">
-                          <stop offset="20%" style="stop-color:#1fd000;stop-opacity:.7" />
-                          <stop offset="100%" style="stop-color:#14471a;stop-opacity:.6" />
-                        </radialGradient>
-                      </defs>
-                      <path [ngClass]="{playerAdded: !playerDeselected.get(p.loginName), playerRemoved: playerDeselected.get(p.loginName)}" d="M0 0
-                      L19 0
-                      A3 3 0 0 1 22 3
-                      L22 15
-                      A3 3 0 0 1 19 18
-                      L3 18
-                      C 3 8 0 10 0 0
-                      Z"/>
-                      <line x1="10" y1="6" x2="16" y2="12" style="stroke:white;stroke-width:2" [ngClass]="{transformationX: true, rotatedX: playerDeselected.get(p.loginName)}" #line11/>
-                      <line x1="16" y1="6" x2="10" y2="12" style="stroke:white;stroke-width:2" [ngClass]="{transformationX: true, rotatedX: playerDeselected.get(p.loginName)}"#line12/>
-                    </svg>
-                  </mat-chip>
-                </mat-chip-list>
+  <div class="seperator"></div>
+
+  <!-- result history -->
+  <app-vote-result-display [currentResult]="resultHistory[currentHistoryResult]" [totalVoteCount]="resultHistory.length"></app-vote-result-display>
+
+  <div class="seperator"></div>
+
+  <!-- Default page -->
+  <div *ngIf="voteSystemState === stateEnum.default" class="base-container default-bg">
+    <div class="motivational-text">
+      <div>Nobody is currently creating a voting. Make your own!</div>
+      <div class="middle-caret"><i class="fas fa-sort-down"></i></div>
+    </div>
+    <div class="default-button-container">
+      <button (click)="triggerVoteCreation($event)">Create new Voting</button>
+      <button (click)="voteSystemState = stateEnum.results" *ngIf="hasConcluded">Last Results<i class="fas fa-angle-double-right"></i></button>
+    </div>
+  </div>
+
+
+  <!-- Wait page -->
+  <div *ngIf="voteSystemState === stateEnum.waiting" class="base-container waiting-bg">
+    <div class="stall-text">
+      <div>{{voteHost || 'undefined'}} is creating a vote. Wait for him to finish.</div>
+      <mat-progress-spinner class="progress-spinner" mode="indeterminate" [diameter]="15"></mat-progress-spinner>
+    </div>
+    <div class="wait-button-container">
+      <button disabled>Create new Voting</button>
+    </div>
+  </div>
+
+
+  <!-- Ineligible page -->
+  <div *ngIf="voteSystemState === stateEnum.notEligible" class="base-container denial-bg">
+    <div class="denial-text">
+      <div>There is a vote going on but you are not allowed to participate.</div>
+      <div class="frowny-face"><i class="fas fa-frown"></i></div>
+    </div>
+    <div class="Ineligible-button-container">
+      <button disabled>{{activeVotesCast}} / 10 Voted</button>
+    </div>
+  </div>
+
+
+  <!-- Create page -->
+  <app-vote-creator *ngIf="voteSystemState === stateEnum.creating" class="base-container" (voteConfiguration)="triggerVoteBegin($event)"></app-vote-creator>
+
+  <!-- Vote page -->
+  <div *ngIf="voteSystemState === stateEnum.voting" class="base-container">
+
+    <div class="voting-head-container">
+      <div class="voting-head" *ngIf="gameState.getState() !== undefined">
+        <div class="pre-subscript">Select your option:</div>
+        {{gameState.getState().voteState.activeVoteConfiguration.title}}
+      </div>
+      <button class="abort-button" *ngIf="this.gameState.getMe().displayName === voteHost">Cancel</button>
+    </div>
+
+
+    <div *ngIf="this.gameState.getState() !== undefined">
+      <div *ngFor="let ve of this.gameState.getState().voteState.activeVoteConfiguration.votingOptions; let i = index" class="entry-container disable-user-select">
+        <div class="vote-entry" (click)="castVote(i)">
+          <div class="info-box">
+            <div class="info-text">
+              <app-player-icon [loginName]="ve.playerHandle" [size]="'20px'" [borderThickness]="'2px'" *ngIf="ve.isPlayerEntry"></app-player-icon>
+              <div class="entry-text">
+                <span class="text">{{ve.text}}</span>
               </div>
-            </cdk-step>
-            <cdk-step label="What to vote">
-              <mat-chip-list class="actionButtons">
-                <mat-chip (click)="addPlayerOptions()" style="padding-right: 5px">add all Players</mat-chip>
-                <mat-chip (click)="clearOptions()" style="padding-right: 5px">clear List</mat-chip>
-              </mat-chip-list>
-              <mat-form-field class="optionsList">
-                <mat-chip-list #chipList aria-label="Options">
-                  <mat-chip *ngFor="let opt of options" [selectable]="true"
-                            [removable]="true" (removed)="removeOption(opt)">
-                    {{opt.name}}
-                    <svg class="clearIcon matChipRemove" height="18" width="22" (click)="removeOption(opt)">
-                      <defs>
-                        <radialGradient id="copperGradient" cx="85%" cy="10%" r="100%">
-                          <stop offset="20%" style="stop-color:#d44300;stop-opacity:1" />
-                          <stop offset="100%" style="stop-color:#662000;stop-opacity:1" />
-                        </radialGradient>
-                      </defs>
-                      <path d="M0 0
-                      L19 0
-                      A3 3 0 0 1 22 3
-                      L22 15
-                      A3 3 0 0 1 19 18
-                      L3 18
-                      C 3 8 0 10 0 0
-                      Z" fill="url(#copperGradient)"/>
-                      <line x1="10" y1="6" x2="16" y2="12" style="stroke:white;stroke-width:2" />
-                      <line x1="16" y1="6" x2="10" y2="12" style="stroke:white;stroke-width:2" />
-                      Sorry, your browser does not support inline SVG.
-                    </svg>
-                  </mat-chip>
-                  <input placeholder="Options"
-                         [matChipInputFor]="chipList"
-                         [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                         [matChipInputAddOnBlur]="true"
-                         (matChipInputTokenEnd)="addOption($event)">
-                </mat-chip-list>
-              </mat-form-field>
-            </cdk-step>
-          </app-vote-creation>
-          <div class="completeButtonContainer">
-            <button mat-fab color="primary" aria-label="StartSurvey" (click)="startNewVote()">
-              <mat-icon>send</mat-icon>
-            </button>
+              <span class="percentile">{{voteEntryPercentileDisplay[i]}}%</span>
+            </div>
+            <div class="display-bar-bg"><div class="display-bar" [ngStyle]="{'width': voteEntryPercentileDisplay[i] + '%'}"></div></div>
           </div>
+          <div class="vertical-separator"></div>
+          <div class="vote-counter">{{ve.castVotes.length || 0}}</div>
         </div>
-        <div *ngIf="showState === VoteState.voting" class="votingContainer"><!-- vote -->
-          <mat-list>
-            <mat-list-item *ngFor="let res of this.voteOptions">
-              <img mat-list-icon *ngIf="res.isPlayer" [src]="fileService.tameProfilePictureSource(res.login)" />
-              <mat-icon mat-list-icon *ngIf="!res.isPlayer">edit</mat-icon>
-              <mat-list-item class="playerName">{{res.label}}</mat-list-item>
-              <mat-chip-list style="justify-self: right">
-                <mat-chip (click)="vote(res.label)" [disabled]="!amIEligible" [class.votedFor]="votedFor === res.label">Vote</mat-chip>
-              </mat-chip-list>
-            </mat-list-item>
-          </mat-list>
-          <div *ngIf="timeSinceClosingAnnounced !== 0">
-            Vote is being closed in {{getTimeRemaining()}}!
+        <div class="participants-container">
+          <div *ngFor="let playerHandle of ve.castVotes" class="participants">
+            <app-player-icon [loginName]="gameState.getLoginName(playerHandle)" [size]="'15px'" [borderThickness]="'0px'"></app-player-icon>
           </div>
-          <button mat-raised-button *ngIf="gameState.getState().voteState.author === gameState.getMyLoginName()" (click)="closeVoting()">
-            close Voting
-            ( {{getVoteCount()}} voted )
-          </button>
-        </div>
-        <div *ngIf="showState === VoteState.notEligible" class="votingContainer"><!-- wait for creation -->
-          <div id="notEligibleHeader">You are not allowed to Vote</div>
-          <div style="margin-top: 20%; margin-bottom: 10%; display: flex; justify-content: center; align-content: center">
-            <mat-progress-spinner class="progressSpinner" mode="indeterminate"></mat-progress-spinner>
-          </div>
-          <div *ngIf="timeSinceClosingAnnounced !== 0">
-            Vote is being closed in {{getTimeRemaining()}}!
-          </div>
-          <button mat-raised-button *ngIf="gameState.getState().voteState.author === gameState.getMyLoginName()" (click)="closeVoting()">
-            close Voting
-            ( {{getVoteCount()}} voted )
-          </button>
-        </div>
-        <div *ngIf="showState === VoteState.results" class="votingContainer"><!-- results -->
-          <mat-list>
-            <mat-list-item *ngFor="let res of voteResults">
-              <img mat-list-icon *ngIf="res.isPlayer" [src]="fileService.tameProfilePictureSource(res.login)" />
-              <mat-icon mat-list-icon *ngIf="!res.isPlayer">edit</mat-icon>
-              <mat-list-item class="playerName">{{res.label}}</mat-list-item>
-              <mat-chip-list style="justify-self: right">
-                <mat-chip [class.winnerCount]="voteResults[0].count === res.count">{{res.count}}</mat-chip>
-              </mat-chip-list>
-            </mat-list-item>
-          </mat-list>
-          <button mat-raised-button (click)="createNewVoting()">create new Voting</button>
         </div>
       </div>
     </div>
+
+
+    <div class="closure-alert" *ngIf="this.gameState.getState().voteState.closingIn >= 0">
+      <div class="static">The vote is being closed in:</div>
+      <div class="count-down">{{timerDisplay}}</div>
+    </div>
+
+    <div class="host-closure-button">
+      <button *ngIf="this.gameState.getMe().displayName === voteHost" class="close-vote-button" (click)="triggerCloseVotingSession()">Close voting session</button>
+      <button *ngIf="!(this.gameState.getMe().displayName === voteHost)" disabled>Only {{voteHost}} can close the voting.</button>
+    </div>
   </div>
+
+  <!-- results -->
+  <div *ngIf="voteSystemState === stateEnum.results" class="base-container">
+
+    <div class="voting-head-container">
+      <div class="voting-head" *ngIf="gameState.getState() !== undefined">
+        <div class="pre-subscript">Results:</div>
+        {{gameState.getState().voteState.activeVoteConfiguration.title}}
+      </div>
+    </div>
+
+    <div *ngIf="this.gameState.getState() !== undefined">
+      <div *ngFor="let ve of this.gameState.getState().voteState.activeVoteConfiguration.votingOptions; let i = index"
+           [ngClass]="{'entry-container disable-user-select result': true, 'no1': i === 0, 'no2': i === 1, 'no3': i === 2, 'noN': i > 2}">
+
+        <div class="metal-border">
+          <div class="vote-entry">
+            <div class="info-box">
+              <div class="info-text">
+                <app-player-icon [loginName]="ve.playerHandle" [size]="'20px'" [borderThickness]="'2px'" *ngIf="ve.isPlayerEntry"></app-player-icon>
+                <div class="entry-text">
+                  <span class="text">{{ve.text}}</span>
+                </div>
+                <span class="percentile">{{voteEntryPercentileDisplay[i]}}%</span>
+              </div>
+              <div class="display-bar-bg"><div class="display-bar" [ngStyle]="{'width': voteEntryPercentileDisplay[i] + '%'}"></div></div>
+            </div>
+            <div class="vertical-separator"></div>
+            <div class="vote-counter"><div class="gold-laurel"></div>{{ve.castVotes.length || 0}}</div>
+          </div>
+        </div>
+
+
+
+        <div class="participants-container">
+          <div *ngFor="let playerHandle of ve.castVotes" class="participants">
+            <app-player-icon [loginName]="gameState.getLoginName(playerHandle)" [size]="'15px'" [borderThickness]="'0px'"></app-player-icon>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+
+    <div class="back-button">
+      <button (click)="voteSystemState = stateEnum.default"><i class="fas fa-angle-double-left"></i>Back</button>
+    </div>
+  </div>
+
+  <div class="seperator"></div>
+
+  <div class="hints">
+    <div class="head">Hints:</div>
+    <div>- Only one vote can be created at a time.</div>
+    <div>- Creating a vote will notify all other players.</div>
+  </div>
+
 </div>
+

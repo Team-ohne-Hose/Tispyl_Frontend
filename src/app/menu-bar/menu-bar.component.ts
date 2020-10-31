@@ -1,4 +1,6 @@
 import {Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { BrowserModule } from '@angular/platform-browser';
 import {
   animate,
   animateChild,
@@ -13,6 +15,7 @@ import {
   trigger
 } from '@angular/animations';
 import {Player} from '../model/state/Player';
+import {VoteSystemState} from '../game/interface/vote-system/VoteSystemState';
 
 @Component({
   selector: 'app-menu-bar',
@@ -38,7 +41,6 @@ export class MenuBarComponent {
   constructor() { }
 
   toggleTab(event): void {
-    console.log(event.target.classList);
     if (event.target.parentElement.classList.contains(this.selectionClass)) {
       this.unselectTab(event);
     } else {

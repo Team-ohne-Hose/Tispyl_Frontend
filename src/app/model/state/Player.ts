@@ -24,4 +24,11 @@ export class Player extends Schema {
   hasLeft: boolean;
   @type( {map: 'number'} )
   itemList: MapSchema<number>;
+
+  constructor(displayName: string, loginName: string, isCurrentHost: boolean) {
+    super();
+    this.displayName = displayName;
+    this.loginName = loginName;
+    this.isCurrentHost = isCurrentHost;
+  }
 }

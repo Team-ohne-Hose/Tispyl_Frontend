@@ -17,6 +17,12 @@
 
 }
 
+.bronze {
+  width: 500px;
+  height: 500px;
+  background: var(--bronze-radial-bg);
+}
+
 .gold-border {
   padding: 0.15em;
   background:

@@ -58,7 +58,7 @@ export class ProfileDisplayComponent {
   constructor(private userManagement: UserService, private fileManagement: FileService, private objectLoaderService: ObjectLoaderService) {
     this.userManagement.getActiveUser().subscribe( u => {
       if ( u !== undefined ) {
-        this.profileSource = this.fileManagement.profilePictureSource(u.login_name);
+        this.profileSource = this.fileManagement.profilePictureSource(u.login_name, true);
       }
     });
   }

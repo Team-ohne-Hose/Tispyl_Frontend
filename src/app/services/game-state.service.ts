@@ -112,6 +112,9 @@ export class GameStateService {
   getMyLoginName(): string {
     return this.colyseus.myLoginName;
   }
+  getMe(): Player {
+    return this.colyseus.myPlayer;
+  }
   getMyFigureId(): number {
     return this.colyseus.myFigureId;
   }
@@ -177,6 +180,23 @@ export class GameStateService {
         }
       }
     }
+    return undefined;
+  }
+
+  getLoginName(playerDisplayName: string): string {
+    const state = this.getState();
+    if (state === undefined) {
+      return undefined;
+    }
+    for (const id in state.playerList) {
+      if (id in state.playerList) {
+        const p: Player = state.playerList[id];
+        if (p.displayName === playerDisplayName) {
+          return p.loginName;
+        }
+      }
+    }
+    console.info('Could not find loginName corresponding to displayName: ', playerDisplayName);
     return undefined;
   }
 }

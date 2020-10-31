@@ -53,6 +53,9 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import { HomeRegisterComponent } from './home-register/home-register.component';
 import { TrinkBuddyDisplayComponent } from './trink-buddy-display/trink-buddy-display.component';
 import { ItemsInterfaceComponent } from './game/interface/items-interface/items-interface.component';
+import { VoteHistoricResultDisplayComponent } from './game/interface/vote-system/vote-historic-result-display/vote-historic-result-display.component';
+import { VoteCreatorComponent } from './game/interface/vote-system/vote-creator/vote-creator.component';
+import { PlayerIconComponent } from './framework/player-icon/player-icon.component';
 
 const appRoutes: Routes = [
   { path: 'lobby', component: LobbyComponent},
@@ -95,7 +98,10 @@ const appRoutes: Routes = [
     MenuBarComponent,
     HomeRegisterComponent,
     TrinkBuddyDisplayComponent,
-    ItemsInterfaceComponent
+    ItemsInterfaceComponent,
+    VoteHistoricResultDisplayComponent,
+    VoteCreatorComponent,
+    PlayerIconComponent
   ],
   imports: [
     RouterModule.forRoot(
