@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {GameStateService} from '../../../services/game-state.service';
 import {GameActionType, MessageType, WsData} from '../../../model/WsData';
 import {FileService} from '../../../services/file.service';
@@ -30,6 +30,10 @@ export class VoteSystemComponent implements OnInit {
   timerDisplay: number = -1;
   hasConcluded: boolean = false;
 
+  // Events
+  @Output()
+  notifyPlayer: EventEmitter<number> = new EventEmitter<number>();
+
   constructor(public gameState: GameStateService) {
     gameState.addVoteSystemCallback(((changes: DataChange<any>[]) => {
       changes.forEach((change: DataChange) => {
@@ -52,6 +56,7 @@ export class VoteSystemComponent implements OnInit {
       const remoteState = this.gameState.getState().voteState;
       if (remoteState.activeVoteConfiguration !== undefined) {
         const pseudoChange: DataChange<VoteConfiguration> = {
+          op: 0,
           field: 'activeVoteConfiguration',
           value: remoteState.activeVoteConfiguration,
           previousValue: undefined
@@ -126,10 +131,12 @@ export class VoteSystemComponent implements OnInit {
       this.hasConcluded = change.value.hasConcluded;
       if (this.hasConcluded) {
         this.voteSystemState = VoteSystemState.results;
+        this.notifyPlayer.emit(VoteSystemState.results);
       } else if (change.value.ineligibles.includes(this.gameState.getMe().displayName)) {
         this.voteSystemState = VoteSystemState.notEligible;
       } else {
         this.voteSystemState = VoteSystemState.voting;
+        this.notifyPlayer.emit(VoteSystemState.voting);
       }
       // Update vote entry display values
       this.voteEntryPercentileDisplay = [];

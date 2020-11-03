@@ -23,7 +23,7 @@ export class TileOverlayComponent implements ColyseusNotifyable{
       filterSubType: GameActionType.showTile,
       f: ( data: GameShowTile ) => {
         if (data.action === GameActionType.showTile) {
-          this.printer.emit(`[EVENT]: ${this.playerName} ist auf Feld ${data.tile} gelandet: ${this.descriptionOf(data.tile)}`);
+          console.log(`[EVENT]: ${this.playerName} ist auf Feld ${data.tile} gelandet: ${this.descriptionOf(data.tile)}`);
         }
       }
     });
