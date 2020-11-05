@@ -225,9 +225,9 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
     const state = this.gameState.getState();
     if (state !== undefined) {
       this.nodes = [];
-      for ( const key in state.playerList ) {
-        this.nodes.push({id: state.playerList[key].displayName});
-      }
+      state.playerList.forEach(p => {
+        this.nodes.push({id: p.displayName});
+      });
     } else {
       console.warn('Failed to fetch new node data, because the game state was not defined. Nodes now: ', this.links);
     }

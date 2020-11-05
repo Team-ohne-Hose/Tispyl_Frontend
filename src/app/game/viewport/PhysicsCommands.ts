@@ -83,7 +83,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
     if (gameState !== undefined) {
       const physState = gameState.physicsState;
       if (physState !== undefined) {
-        return Object.keys(physState.objects).length;
+        return physState.objects.size;
       }
     }
   }
@@ -92,19 +92,14 @@ export class PhysicsCommands implements ColyseusNotifyable {
     if (gameState !== undefined) {
       const physState = gameState.physicsState;
       if (physState !== undefined) {
-        for (const key in physState.objects) {
-          if (key in physState) {
-            const item: PhysicsObjectState = physState.objects[key];
-            if (item !== undefined) {
-              this.updateFromState(item, progressCallback);
-            } else {
-              console.warn('initializing from State: Object in PhysicsList was undefined');
-              progressCallback();
-            }
+        physState.objects.forEach((item: PhysicsObjectState, key: string) => {
+          if (item !== undefined) {
+            this.updateFromState(item, progressCallback);
           } else {
+            console.warn('initializing from State: Object in PhysicsList was undefined');
             progressCallback();
           }
-        }
+        });
       } else {
         console.error('PhysicsState is not accessible');
       }
@@ -151,6 +146,13 @@ export class PhysicsCommands implements ColyseusNotifyable {
       onDone();
       return;
     }
+    posX = posX || 0;
+    posY = posY || 0;
+    posZ = posZ || 0;
+    rotX = rotX || 0;
+    rotY = rotY || 0;
+    rotZ = rotZ || 0;
+    rotW = rotW || 0;
     this.loader.loadObject(entity, variant, (model: THREE.Object3D) => {
 
       model.quaternion.set(rotX, rotY, rotZ, rotW);
@@ -172,16 +174,13 @@ export class PhysicsCommands implements ColyseusNotifyable {
           // Load other playermodels
           const room = this.gameState.getRoom();
           if (room !== undefined) {
-            for (const p in room.state.playerList) {
-              if (p in room.state.playerList) {
-                const player: Player = room.state.playerList[p];
-                if (player.figureId === physicsId) {
-                  this.loader.switchTex(model, player.figureModel);
-                  this.addPlayer(model, player.displayName);
-                  model.userData.displayName = player.displayName;
-                }
+            room.state.playerList.forEach((player: Player, key: string) => {
+              if (player.figureId === physicsId) {
+                this.loader.switchTex(model, player.figureModel);
+                this.addPlayer(model, player.displayName);
+                model.userData.displayName = player.displayName;
               }
-            }
+            });
           }
           break;
       }

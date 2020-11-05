@@ -5,7 +5,6 @@ import {GameStateService} from './game-state.service';
 import {ItemMessageType, MessageType, UseItem, WsData} from '../model/WsData';
 import {MapSchema} from '@colyseus/schema';
 import {Player} from '../model/state/Player';
-import {createBundleIndexHost} from '@angular/compiler-cli';
 
 enum executeTypes { // even numbers are targeted actions, odd numbers are not targeted
   untargetedExecute = 1,
@@ -95,13 +94,9 @@ export class ItemService implements ColyseusNotifyable {
     const state = this.gameState.getState();
     if (state !== undefined) {
       const playerList: MapSchema<Player> = state.playerList;
-      for (const id in playerList) {
-        if (id in playerList) {
-          const p: Player = playerList[id];
-          if (p.loginName === this.gameState.getMyLoginName()) {
-            return p.itemList;
-          }
-        }
+      const playerMe = playerList.get(this.gameState.getMyLoginName());
+      if (playerMe !== undefined) {
+        return playerMe.itemList;
       }
     }
     return undefined;
@@ -110,11 +105,11 @@ export class ItemService implements ColyseusNotifyable {
     const itemListArray: number[] = [];
     const items = this.getMyItemsList();
     if (items !== undefined) {
-      for (const itemId in items) {
-        if (itemId in items && items[itemId] > 0) {
+      items.forEach((count, itemId) => {
+        if (count > 0) {
           itemListArray.push(Number(itemId));
         }
-      }
+      });
       itemListArray.sort((a: number, b: number) => {
         return a - b;
       });
@@ -212,12 +207,11 @@ export class ItemService implements ColyseusNotifyable {
     let targetLogin = '';
     const state = this.gameState.getState();
     if (state !== undefined && targetId !== undefined) {
-      for (const p in state.playerList) {
-        if (p in state.playerList && state.playerList[p] instanceof Player) {
-          if (state.playerList[p].figureId === targetId) {
-            targetLogin = state.playerList[p].loginName;
-          }
-        }
+      const targetPlayer = Array.from(state.playerList.values()).find(p => {
+        return p.figureId === targetId;
+      });
+      if (targetPlayer !== undefined) {
+        targetLogin = targetPlayer.loginName;
       }
     }
 

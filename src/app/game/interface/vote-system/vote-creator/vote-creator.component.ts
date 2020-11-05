@@ -61,11 +61,11 @@ export class VoteCreatorComponent {
   }
 
   addAllPlayers(event: Event): void {
-    for (const p of this.playerList) {
+    this.playerList.forEach(p =>  {
       if (this.votingOptions.find( o => o.text === p.displayName) === undefined) {
         this.votingOptions.push(VoteEntry.fromPlayer(p));
       }
-    }
+    });
   }
 
   removeEntry(entryIndex: number): void {

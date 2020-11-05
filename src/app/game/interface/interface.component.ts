@@ -174,25 +174,15 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
   }
 
   asArray<T>(schema: MapSchema<T>): T[] {
-    const tmpArray: T[] = [];
-    for (const id in schema) {
-      if (id in schema) {
-        tmpArray.push(schema[id]);
-      }
-    }
-    return tmpArray;
+    const s: IterableIterator<T> = schema.values();
+    return Array.from(s);
   }
   getDisplayName(login: string): string {
-    const playerlist = this.gameState.getState() === undefined ? [] : this.gameState.getState().playerList;
-    for (const key in playerlist) {
-      if (key in playerlist) {
-        const p: Player = playerlist[key];
-        if (p.loginName === login) {
-          return p.displayName;
-        }
-      }
-    }
-    return 'Login:' + login;
+    const playerlist = this.gameState.getState() === undefined ? [] : this.asArray(this.gameState.getState().playerList);
+    const resPlayer = playerlist.find((p: Player, index: number) => {
+      return p.loginName === login;
+    });
+    return (resPlayer === undefined) ? 'Login:' + login : resPlayer.displayName;
   }
   giveItem( args ) {
     if (args.length < 3) {
@@ -213,45 +203,35 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
     };
 
     // first try login names
-    for (const id in playerList) {
-      if (id in playerList) {
-        const p: Player = playerList[id];
-        if (p.loginName === playerTag) {
-          sendGiveMessage(p.loginName);
-        }
-      }
-    }
+    let targetPlayer: Player = playerList.get(playerTag);
     // afterwards try display names
-    for (const id in playerList) {
-      if (id in playerList) {
-        const p: Player = playerList[id];
-        if (p.displayName === playerTag) {
-          sendGiveMessage(p.loginName);
-        }
-      }
+    if (targetPlayer === undefined) {
+      targetPlayer = this.asArray(playerList).find((p: Player) => {
+        return p.displayName === playerTag;
+      });
+    }
+    // send out
+    if (targetPlayer !== undefined) {
+      sendGiveMessage(targetPlayer.loginName);
     }
   }
   showItems( args ) {
     const playerList: MapSchema<Player> = this.gameState.getState().playerList;
-    for (const id in playerList) {
-      if (id in playerList) {
-        const p: Player = playerList[id];
-        if (p.loginName === this.gameState.getMyLoginName()) {
-          let list = '';
-          for (const itemId in p.itemList) {
-            if (itemId in p.itemList && p.itemList[itemId] > 0) {
-              if (list !== '') {
-                list = list + '\r\n';
-              }
-              list = list + p.itemList[itemId] + 'x ' + this.items.getItemName(Number(itemId)) + '(' + itemId + '): ' + this.items.getItemDesc(Number(itemId));
-            }
+    const myPlayer = playerList.get(this.gameState.getMyLoginName());
+    if (myPlayer !== undefined) {
+      let list = '';
+      myPlayer.itemList.forEach((value: number, key: string) => {
+        if (value > 0) {
+          if (list !== '') {
+            list = list + '\r\n';
           }
-          if (list === '') {
-            this.print('You have no Item', '/showItems');
-          } else {
-            this.print(list, '/showItems');
-          }
+          list = list + value + 'x ' + this.items.getItemName(Number(key)) + '(' + key + '): ' + this.items.getItemDesc(Number(key));
         }
+      });
+      if (list === '') {
+        this.print('You have no Item', '/showItems');
+      } else {
+        this.print(list, '/showItems');
       }
     }
   }
@@ -276,24 +256,17 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
     const playerTag = args.slice(2).join(' ');
     const playerList: MapSchema<Player> = this.gameState.getState().playerList;
 
-
     // first try login names
-    for (const id in playerList) {
-      if (id in playerList) {
-        const p: Player = playerList[id];
-        if (p.loginName === playerTag) {
-          sendUseMessage(p.loginName);
-        }
-      }
-    }
+    let targetPlayer: Player = playerList.get(playerTag);
     // afterwards try display names
-    for (const id in playerList) {
-      if (id in playerList) {
-        const p: Player = playerList[id];
-        if (p.displayName === playerTag) {
-          sendUseMessage(p.loginName);
-        }
-      }
+    if (targetPlayer === undefined) {
+      targetPlayer = this.asArray(playerList).find((p: Player) => {
+        return p.displayName === playerTag;
+      });
+    }
+    // send out
+    if (targetPlayer !== undefined) {
+      sendUseMessage(targetPlayer.loginName);
     }
   }
 }

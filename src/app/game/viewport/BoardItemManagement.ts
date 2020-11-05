@@ -105,7 +105,7 @@ export class BoardItemManagement implements ColyseusNotifyable {
   updateSprites(hidden: boolean, scene: THREE.Scene) {
     for (const f of this.allFigures) {
       if (f.labelSprite === undefined) {
-        console.debug('adding Sprite for player ', f.name);
+        console.debug('update: adding Sprite for player ', f.name);
         f.labelSprite = this.loader.createLabelSprite(f.name, 70, 'Roboto',
           new Color(1, 1, 1, 1),
           new Color(.24, .24, .24, .9),
@@ -134,14 +134,11 @@ export class BoardItemManagement implements ColyseusNotifyable {
     if (room !== undefined) {
       let playerId: string;
       const userData = object.userData;
-      for (const key in room.state.playerList) {
-        if (key in room.state.playerList) {
-          const p: Player = room.state.playerList[key];
-          if (p.figureId === userData.physicsId) {
-            playerId = p.loginName;
-            break;
-          }
-        }
+      const player = Array.from(room.state.playerList.values()).find(p => {
+        return p.figureId === userData.physicsId;
+      });
+      if (player !== undefined) {
+        playerId = player.loginName;
       }
       const msg: GameSetTile = {
         type: MessageType.GAME_MESSAGE,

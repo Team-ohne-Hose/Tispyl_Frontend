@@ -172,13 +172,11 @@ export class GameStateService {
     if (state === undefined) {
       return undefined;
     }
-    for (const id in state.playerList) {
-      if (id in state.playerList) {
-        const p: Player = state.playerList[id];
-        if (p.loginName === playerlogin) {
-          return p.displayName;
-        }
-      }
+    const player = Array.from(state.playerList.values()).find(p => {
+      return p.loginName === playerlogin;
+    });
+    if (player !== undefined) {
+      return player.displayName;
     }
     return undefined;
   }
@@ -188,13 +186,11 @@ export class GameStateService {
     if (state === undefined) {
       return undefined;
     }
-    for (const id in state.playerList) {
-      if (id in state.playerList) {
-        const p: Player = state.playerList[id];
-        if (p.displayName === playerDisplayName) {
-          return p.loginName;
-        }
-      }
+    const player = Array.from(state.playerList.values()).find(p => {
+      return p.displayName === playerDisplayName;
+    });
+    if (player !== undefined) {
+      return player.loginName;
     }
     console.info('Could not find loginName corresponding to displayName: ', playerDisplayName);
     return undefined;

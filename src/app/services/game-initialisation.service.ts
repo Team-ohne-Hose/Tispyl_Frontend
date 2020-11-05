@@ -90,7 +90,10 @@ export class GameInitialisationService {
     });
 
     let progress = 0;
-    const queued = 64 + this.viewPort.physics.getInitializePending() + this.viewPort.boardItemManager.getSpritesPending();
+    const initPending = this.viewPort.physics.getInitializePending();
+    const spritesPending = this.viewPort.boardItemManager.getSpritesPending();
+    const queued = 64 + initPending + spritesPending;
+    console.info('loading: 64 Tiles, ', initPending, ' phys Pending ', spritesPending, ' sprites Pending');
     const doneCallback = () => {
       console.info('loading done. Entering Game..');
       this.viewPort.startRendering();
@@ -105,7 +108,6 @@ export class GameInitialisationService {
         doneCallback();
       }
     };
-
     console.debug('creating dynamic gameboard');
     this.boardTilesService.initialize(((grp: THREE.Group) => this.viewPort.scene.add(grp)).bind(this), onProgress);
 
