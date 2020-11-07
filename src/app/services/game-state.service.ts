@@ -8,6 +8,7 @@ import {PhysicsObjectState, PhysicsState} from '../model/state/PhysicsState';
 import {BoardLayoutState} from '../model/state/BoardLayoutState';
 import {MessageType} from '../model/WsData';
 import {GameInitialisationService} from './game-initialisation.service';
+import {Data} from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +23,7 @@ export class GameStateService {
   private nextActionCallbacks: ((action: string) => void)[] = [];
   private playerListUpdateCallbacks: ((player: Player, key: string, players: MapSchema<Player>) => void)[] = [];
   private physicsCallbacks: ((item: PhysicsObjectState, key: string, state: PhysicsState) => void)[] = [];
+  private physicsObjectsMovedCallbacks: ((item: PhysicsObjectState, key: string) => void)[] = [];
   private boardLayoutCallbacks: ((layout: BoardLayoutState) => void)[] = [];
   private voteSystemCallbacks: ((changes: DataChange<any>[]) => void)[] = [];
 
@@ -54,8 +56,8 @@ export class GameStateService {
         room.onStateChange.once((state) => {
           console.debug('first colyseus Patch recieved');
           this.gameInit.setColyseusReady(this);
+          setTimeout(this.attachCallbacks.bind(this), 100, room);
         });
-        setTimeout(this.attachCallbacks.bind(this), 100, room);
       } else {
         console.error('room was undefined');
       }
@@ -75,7 +77,19 @@ export class GameStateService {
       } else if (room.state.physicsState.objects === undefined) {
         console.warn('GameStateService Callbacks couldnt be attached, PhysicsState.objects was undefined');
       } else {
-        room.state.physicsState.objects.onChange = this.callPhysicsUpdate.bind(this);
+        console.warn('PhysicsUpdates attached', room, room.state, room.state.physicsState.objects);
+        const attachMovedCallbacks = (pObj: PhysicsObjectState, key: string) => {
+          console.log('attached Callback to ', pObj);
+          pObj.position.onChange = ((changes: DataChange[]) => {
+            this.callPhysicsObjectMoved(pObj, key);
+          }).bind(this);
+          pObj.listen('quaternion', ((value, previousValue) => this.callPhysicsObjectMoved(pObj, key)).bind(this));
+        };
+        room.state.physicsState.objects.forEach(attachMovedCallbacks.bind(this));
+        room.state.physicsState.objects.onAdd = ((item, key) => {
+          console.log('onAdd triggered', item, key);
+          attachMovedCallbacks(item, key);
+        }).bind(this);
       }
       if (room.state.boardLayout === undefined) {
         console.warn('GameStateService Callbacks couldnt be attached, BoardLayout was undefined');
@@ -135,8 +149,12 @@ export class GameStateService {
   addPlayerListUpdateCallback(f: ((item: Player, key: string, players: MapSchema<Player>) => void)): void {
     this.playerListUpdateCallbacks.push(f);
   }
+  // TODO REMOVE
   addPhysicsCallback(f: ((item: PhysicsObjectState, key: string, state: PhysicsState) => void)): void {
     this.physicsCallbacks.push(f);
+  }
+  addPhysicsObjectMovedCallback(f: (item: PhysicsObjectState, key: string) => void) {
+    this.physicsObjectsMovedCallbacks.push(f);
   }
   addBoardLayoutCallback(f: ((layout: BoardLayoutState) => void)): void {
     this.boardLayoutCallbacks.push(f);
@@ -158,7 +176,12 @@ export class GameStateService {
     this.playerListUpdateCallbacks.forEach(f => f(player, key, this.room.state.playerList));
   }
   private callPhysicsUpdate(item: PhysicsObjectState, key: string) {
+    console.log('new snapshot', item);
     this.physicsCallbacks.forEach(f => f(item, key, this.room.state.physicsState));
+  }
+  private callPhysicsObjectMoved(item: PhysicsObjectState, key: string) {
+    console.log('object Moved', item);
+    this.physicsObjectsMovedCallbacks.forEach(f => f(item, key));
   }
   private callBoardLayoutUpdate() {
     this.boardLayoutCallbacks.forEach(f => f(this.room.state.boardLayout));

@@ -75,6 +75,10 @@ export class PhysicsCommands implements ColyseusNotifyable {
     gameState.addPhysicsCallback((item: PhysicsObjectState) => {
       this.updateFromState(item, () => {});
     });
+    gameState.addPhysicsObjectMovedCallback((item: PhysicsObjectState, key: string) => {
+      console.log('new pos patch');
+      this.updateFromState(item, () => {});
+    });
   }
   attachColyseusMessageCallbacks(gameState: GameStateService): void {}
 
