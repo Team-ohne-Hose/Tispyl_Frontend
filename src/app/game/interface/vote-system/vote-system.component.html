@@ -11,10 +11,10 @@
         <div (click)="nextHistoricResult()"><i class="fas fa-caret-right button"></i></div>
       </div>
     </div>
-    <div class="head-progress" *ngIf="gameState.getState() !== undefined">
-      <i [ngClass]="{'fas fa-circle-notch fa-spin highlight': gameState.getState().voteState.creationInProgress, 'far fa-circle': !gameState.getState().voteState.creationInProgress}"></i>
+    <div class="head-progress" *ngIf="gameState.isGameLoaded()">
+      <i [ngClass]="{'fas fa-circle-notch fa-spin highlight': gameState.getVoteState().creationInProgress, 'far fa-circle': !gameState.getVoteState().creationInProgress}"></i>
     </div>
-    <div class="head-progress" *ngIf="gameState.getState() === undefined">
+    <div class="head-progress" *ngIf="!gameState.isGameLoaded()">
       <i class="far fa-circle"></i>
     </div>
   </div>
@@ -70,16 +70,16 @@
   <div *ngIf="voteSystemState === stateEnum.voting" class="base-container">
 
     <div class="voting-head-container">
-      <div class="voting-head" *ngIf="gameState.getState() !== undefined">
+      <div class="voting-head" *ngIf="gameState.isGameLoaded()">
         <div class="pre-subscript">Select your option:</div>
-        {{gameState.getState().voteState.activeVoteConfiguration.title}}
+        {{gameState.getVoteState().activeVoteConfiguration.title}}
       </div>
       <button class="abort-button" *ngIf="this.gameState.getMe().displayName === voteHost">Cancel</button>
     </div>
 
 
-    <div *ngIf="this.gameState.getState() !== undefined">
-      <div *ngFor="let ve of this.gameState.getState().voteState.activeVoteConfiguration.votingOptions; let i = index" class="entry-container disable-user-select">
+    <div *ngIf="gameState.isGameLoaded()">
+      <div *ngFor="let ve of this.gameState.getVoteState().activeVoteConfiguration.votingOptions; let i = index" class="entry-container disable-user-select">
         <div class="vote-entry" (click)="castVote(i)">
           <div class="info-box">
             <div class="info-text">
@@ -103,7 +103,7 @@
     </div>
 
 
-    <div class="closure-alert" *ngIf="this.gameState.getState().voteState.closingIn >= 0">
+    <div class="closure-alert" *ngIf="this.gameState.getVoteState().closingIn >= 0">
       <div class="static">The vote is being closed in:</div>
       <div class="count-down">{{timerDisplay}}</div>
     </div>
@@ -118,14 +118,14 @@
   <div *ngIf="voteSystemState === stateEnum.results" class="base-container">
 
     <div class="voting-head-container">
-      <div class="voting-head" *ngIf="gameState.getState() !== undefined">
+      <div class="voting-head" *ngIf="gameState.isGameLoaded()">
         <div class="pre-subscript">Results:</div>
-        {{gameState.getState().voteState.activeVoteConfiguration.title}}
+        {{gameState.getVoteState().activeVoteConfiguration.title}}
       </div>
     </div>
 
-    <div *ngIf="this.gameState.getState() !== undefined">
-      <div *ngFor="let ve of this.gameState.getState().voteState.activeVoteConfiguration.votingOptions; let i = index"
+    <div *ngIf="gameState.isGameLoaded()">
+      <div *ngFor="let ve of this.gameState.getVoteState().activeVoteConfiguration.votingOptions; let i = index"
            [ngClass]="{'entry-container disable-user-select result': true, 'no1': i === 0, 'no2': i === 1, 'no3': i === 2, 'noN': i > 2}">
 
         <div class="metal-border">

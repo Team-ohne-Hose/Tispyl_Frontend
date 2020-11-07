@@ -91,13 +91,9 @@ export class ItemService implements ColyseusNotifyable {
     this.chatService.addLocalMessage(msg, 'Item Used');
   }
   getMyItemsList(): MapSchema<number> {
-    const state = this.gameState.getState();
-    if (state !== undefined) {
-      const playerList: MapSchema<Player> = state.playerList;
-      const playerMe = playerList.get(this.gameState.getMyLoginName());
-      if (playerMe !== undefined) {
-        return playerMe.itemList;
-      }
+    const playerMe: Player = this.gameState.getMe();
+    if (playerMe !== undefined) {
+      return playerMe.itemList;
     }
     return undefined;
   }
@@ -205,9 +201,8 @@ export class ItemService implements ColyseusNotifyable {
     }
 
     let targetLogin = '';
-    const state = this.gameState.getState();
-    if (state !== undefined && targetId !== undefined) {
-      const targetPlayer = Array.from(state.playerList.values()).find(p => {
+    if (targetId !== undefined) {
+      const targetPlayer = this.gameState.findInPlayerList((p: Player) => {
         return p.figureId === targetId;
       });
       if (targetPlayer !== undefined) {

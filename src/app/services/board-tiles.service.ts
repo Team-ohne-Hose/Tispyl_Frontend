@@ -99,30 +99,23 @@ export class BoardTilesService implements ColyseusNotifyable {
   tileMeshes: THREE.Mesh[] = [];
 
   initialize(addToScene: (grp: THREE.Group) => void, onProgressCallback: () => void) {
-    const state = this.gameState.getState();
-    if (state !== undefined) {
-      const grp: THREE.Group = this.generateField();
-      addToScene(grp);
+    const grp: THREE.Group = this.generateField();
+    addToScene(grp);
 
-      this.tiles = this.fromSchema(state.boardLayout);
-      const tileReadable = [];
-      this.tiles.forEach((tile: Tile) => {
+    this.tiles = this.gameState.getBoardLayoutAsArray();
+    const tileReadable = [];
+    this.tiles.forEach((tile: Tile) => {
+      if (tile !== undefined) {
         tileReadable[tile.tileId] = tile.translationKey;
-      });
-      console.info('Tiles are:', tileReadable);
-      this.updateField(onProgressCallback);
-    }
+      }
+    });
+    console.info('Tiles are:', tileReadable);
+    this.updateField(onProgressCallback);
   }
-  private fromSchema(schema: BoardLayoutState): Tile[] {
-    const ret: Tile[] = [];
-    for (let i = 0; i < 64; i++) {
-      ret.push(schema.tileList[i]);
-    }
-    return ret;
-  }
+
   attachColyseusStateCallbacks(gameState: GameStateService): void {
     gameState.addBoardLayoutCallback(((layout: BoardLayoutState) => {
-      this.tiles = this.fromSchema(layout);
+      this.tiles = this.gameState.getBoardLayoutAsArray();
       console.info('Tiles are updated:', this.tiles, layout);
       this.updateField(() => {});
     }).bind(this));

@@ -139,7 +139,7 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
   }
 
   private showLocalState( args ) {
-    console.log(`State`, this.gameState.getState() === undefined ? '' : this.gameState.getState());
+    console.log(`State`, this.gameState.getState());
   }
 
   private advanceAction( args ) {
@@ -177,19 +177,11 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
     const s: IterableIterator<T> = schema.values();
     return Array.from(s);
   }
-  getDisplayName(login: string): string {
-    const playerlist = this.gameState.getState() === undefined ? [] : this.asArray(this.gameState.getState().playerList);
-    const resPlayer = playerlist.find((p: Player, index: number) => {
-      return p.loginName === login;
-    });
-    return (resPlayer === undefined) ? 'Login:' + login : resPlayer.displayName;
-  }
   giveItem( args ) {
     if (args.length < 3) {
       return;
     }
     const playerTag = args.slice(1, args.length - 1).join(' ');
-    const playerList: MapSchema<Player> = this.gameState.getState().playerList;
 
     const sendGiveMessage = (playerLogin: string) => {
       const itemId: number = Number(args[args.length - 1]);
@@ -203,12 +195,10 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
     };
 
     // first try login names
-    let targetPlayer: Player = playerList.get(playerTag);
+    let targetPlayer: Player = this.gameState.getByLoginName(playerTag);
     // afterwards try display names
     if (targetPlayer === undefined) {
-      targetPlayer = this.asArray(playerList).find((p: Player) => {
-        return p.displayName === playerTag;
-      });
+      targetPlayer = this.gameState.getByDisplayName(playerTag);
     }
     // send out
     if (targetPlayer !== undefined) {
@@ -216,8 +206,7 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
     }
   }
   showItems( args ) {
-    const playerList: MapSchema<Player> = this.gameState.getState().playerList;
-    const myPlayer = playerList.get(this.gameState.getMyLoginName());
+    const myPlayer: Player = this.gameState.getMe();
     if (myPlayer !== undefined) {
       let list = '';
       myPlayer.itemList.forEach((value: number, key: string) => {
@@ -254,15 +243,12 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
       sendUseMessage('');
     }
     const playerTag = args.slice(2).join(' ');
-    const playerList: MapSchema<Player> = this.gameState.getState().playerList;
 
     // first try login names
-    let targetPlayer: Player = playerList.get(playerTag);
+    let targetPlayer: Player = this.gameState.getByLoginName(playerTag);
     // afterwards try display names
     if (targetPlayer === undefined) {
-      targetPlayer = this.asArray(playerList).find((p: Player) => {
-        return p.displayName === playerTag;
-      });
+      targetPlayer = this.gameState.getByDisplayName(playerTag);
     }
     // send out
     if (targetPlayer !== undefined) {

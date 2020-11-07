@@ -2,6 +2,8 @@ import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
 import * as d3 from 'd3';
 import {GameStateService} from '../services/game-state.service';
 import {GameActionType, MessageType} from '../model/WsData';
+import {Link} from '../model/state/Link';
+import {ArraySchema} from '@colyseus/schema';
 
 
 @Component({
@@ -160,10 +162,8 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
     const target = String(to.value).trim();
     const validation = this.validateInput(from, to);
     if (validation.isFromValid && validation.isToValid && !validation.isAlreadyLinked) {
-      console.log( source, target, this.gameState.getRoom().state.drinkBuddyLinks);
-      this.gameState
-        .getRoom()
-        .send(MessageType.GAME_MESSAGE, { type: MessageType.GAME_MESSAGE, action: GameActionType.addDrinkbuddies, source: source, target: target});
+      console.log( source, target, this.gameState.getState().drinkBuddyLinks);
+      this.gameState.sendMessage(MessageType.GAME_MESSAGE, { type: MessageType.GAME_MESSAGE, action: GameActionType.addDrinkbuddies, source: source, target: target});
     }
     if (validation.isAlreadyLinked) { this.errorText = target + ' is already the drinking buddy of' + source; }
   }
@@ -173,9 +173,7 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
     const target = String(to.value).trim();
     const validation = this.validateInput(from, to);
     if (validation.isFromValid && validation.isToValid && validation.isAlreadyLinked) {
-      this.gameState
-        .getRoom()
-        .send(MessageType.GAME_MESSAGE, { type: MessageType.GAME_MESSAGE, action: GameActionType.removeDrinkbuddies, source: source, target: target});
+      this.gameState.sendMessage(MessageType.GAME_MESSAGE, { type: MessageType.GAME_MESSAGE, action: GameActionType.removeDrinkbuddies, source: source, target: target});
     }
     if (!validation.isAlreadyLinked) { this.errorText = target + ' is not the drinking buddy of' + source; }
   }
@@ -222,14 +220,12 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
   }
 
   private fetchNodeData() {
-    const state = this.gameState.getState();
-    if (state !== undefined) {
-      this.nodes = [];
-      state.playerList.forEach(p => {
-        this.nodes.push({id: p.displayName});
-      });
-    } else {
-      console.warn('Failed to fetch new node data, because the game state was not defined. Nodes now: ', this.links);
+    this.nodes = [];
+    this.gameState.forEachPlayer(p => {
+      this.nodes.push({id: p.displayName});
+    });
+    if (this.nodes.length <= 0) {
+      console.warn('Failed to fetch new node data, because the game state was not defined. Nodes now: ', this.nodes);
     }
   }
 
@@ -237,13 +233,13 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
     const state = this.gameState.getState();
     if (state !== undefined) {
       this.links = [];
-      const remoteLinks = state.drinkBuddyLinks;
+      const remoteLinks: ArraySchema<Link> = state.drinkBuddyLinks;
       const knownNodes = this.nodes.map((n) => n.id);
-      for ( const key in remoteLinks ) {
-        if (knownNodes.indexOf(remoteLinks[key].source) !== -1 && knownNodes.indexOf(remoteLinks[key].target) !== -1) {
-          this.links.push({source: remoteLinks[key].source, target: remoteLinks[key].target});
+      remoteLinks.forEach((link: Link) => {
+        if (knownNodes.indexOf(link.source) !== -1 && knownNodes.indexOf(link.target) !== -1) {
+          this.links.push({source: link.source, target: link.target});
         }
-      }
+      });
     } else {
       console.warn('Failed to fetch new link data, because the game state was not defined. Links now: ', this.links);
     }

@@ -91,20 +91,23 @@ export class GameInitialisationService {
 
     let progress = 0;
     const initPending = this.viewPort.physics.getInitializePending();
+    this.viewPort.physics.initializeFromState(() => {});
     const spritesPending = this.viewPort.boardItemManager.getSpritesPending();
     const queued = 64 + initPending + spritesPending;
     console.info('loading: 64 Tiles, ', initPending, ' phys Pending ', spritesPending, ' sprites Pending');
     const doneCallback = () => {
-      console.info('loading done. Entering Game..');
-      this.viewPort.startRendering();
       this.game.loadingScreenRef.stopTips();
       this.game.loadingScreenVisible = false;
+      console.info('loading done. Entering Game..');
+      this.viewPort.startRendering();
     };
     const onProgress = () => {
       progress++;
       console.debug('loading instance specific files: ' + progress + '/' + queued, ((progress / queued) * 50 + 50) + '%');
-      this.game.loadingScreenRef.setProgress(((progress / queued) * 50 + 50));
-      if (progress >= queued) {
+      if (this.game.loadingScreenRef !== undefined) {
+        this.game.loadingScreenRef.setProgress(((progress / queued) * 50 + 50));
+      }
+      if (progress === queued) {
         doneCallback();
       }
     };

@@ -21,11 +21,10 @@ export class VoteCreatorComponent {
   votingOptions: VoteEntry[] = [];
 
   constructor(private gameState: GameStateService) {
-    if ( this.gameState.getState() !== undefined ) {
-      const schema = this.gameState.getState().playerList;
-      for ( const key in schema ) {
-        this.playerList.push(schema[key]);
-      }
+    if (this.gameState.isGameLoaded()) {
+      this.gameState.forEachPlayer((p: Player) => {
+        this.playerList.push(p);
+      });
     } else {
       console.warn('Failed to update player list. GameState was: ', this.gameState.getState());
     }

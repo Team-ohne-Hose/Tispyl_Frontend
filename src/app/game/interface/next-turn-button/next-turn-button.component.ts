@@ -17,14 +17,11 @@ export class NextTurnButtonComponent implements ColyseusNotifyable {
 
   constructor(private gameState: GameStateService) { }
 
-  attachColyseusStateCallbacks(): void {
-    this.gameState.addNextTurnCallback(this.checkTurn.bind(this));
-    const room = this.gameState.getRoom();
-    if (room !== undefined) {
-      this.checkTurn(room.state.currentPlayerLogin);
-    }
+  attachColyseusStateCallbacks(gameState: GameStateService): void {
+    gameState.addNextTurnCallback(this.checkTurn.bind(this));
+    this.checkTurn(this.gameState.getCurrentPlayerLogin());
   }
-  attachColyseusMessageCallbacks(): void {}
+  attachColyseusMessageCallbacks(gameState: GameStateService): void {}
 
   checkTurn(activePlayerLogin: string) {
     if (this.gameState.isMyTurn()) {
@@ -38,16 +35,13 @@ export class NextTurnButtonComponent implements ColyseusNotifyable {
 
   nextTurn( event ) {
     console.log('clicked next turn');
-    const room = this.gameState.getRoom();
-    if (room !== undefined) {
-      if (this.gameState.isMyTurn() && (new Date().getTime() - this.lastClick) > 500) {
-        this.lastClick = new Date().getTime();
-        if (room.state.action !== 'EXECUTE') {
-          console.log('skipping actions..');
-        }
-        console.log('next Turn');
-        this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.advanceTurn});
+    if (this.gameState.isMyTurn() && (new Date().getTime() - this.lastClick) > 500) {
+      this.lastClick = new Date().getTime();
+      if (this.gameState.getAction() !== 'EXECUTE') {
+        console.log('skipping actions..');
       }
+      console.log('next Turn');
+      this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.advanceTurn});
     }
   }
 

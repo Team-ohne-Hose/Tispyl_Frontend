@@ -41,7 +41,7 @@ export class VoteSystemComponent implements OnInit {
         switch (change.field) {
           case 'author': this.onAuthorChange(change); break;
           case 'activeVoteConfiguration': this.onActiveVoteConfigurationChange(change); break;
-          case 'closingIn': this.timerDisplay = this.gameState.getState().voteState.closingIn; break;
+          case 'closingIn': this.timerDisplay = this.gameState.getVoteState().closingIn; break;
         }
       });
     }).bind(this));
@@ -53,8 +53,8 @@ export class VoteSystemComponent implements OnInit {
    * or if the player joins after the remote was altered from its default state.
    */
   ngOnInit(): void {
-    if (this.gameState.getState() !== undefined) {
-      const remoteState = this.gameState.getState().voteState;
+    if (this.gameState.isGameLoaded()) {
+      const remoteState = this.gameState.getVoteState();
       if (remoteState.activeVoteConfiguration !== undefined) {
         const pseudoChange: DataChange<VoteConfiguration> = {
           op: 0,
@@ -63,7 +63,7 @@ export class VoteSystemComponent implements OnInit {
           previousValue: undefined
         };
         this.onActiveVoteConfigurationChange(pseudoChange);
-        this.timerDisplay = this.gameState.getState().voteState.closingIn;
+        this.timerDisplay = this.gameState.getVoteState().closingIn;
 
       } else {
         if (remoteState.author === this.gameState.getMe().displayName) {
@@ -166,7 +166,7 @@ export class VoteSystemComponent implements OnInit {
     choices[idx].classList.add(selectionClass);
 
     // Notify server
-    if ( this.gameState.getState() !== undefined ) {
+    if (this.gameState.isGameLoaded()) {
       this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
         type: MessageType.GAME_MESSAGE,
         action: GameActionType.playerCastVote,
@@ -176,12 +176,12 @@ export class VoteSystemComponent implements OnInit {
   }
 
   getPercentile(ve: VoteEntry): number {
-    const remoteState = this.gameState.getState();
+    const voteState = this.gameState.getVoteState();
     let percentile = 0;
-    if (remoteState !== undefined && remoteState.voteState.activeVoteConfiguration !== undefined) {
-      const playerListSize = remoteState.playerList.size;
+    if (voteState !== undefined && voteState.activeVoteConfiguration !== undefined) {
+      const playerListSize = this.gameState.getPlayerArray().length;
       ///////////////////////////////////
-      const max = playerListSize - remoteState.voteState.activeVoteConfiguration.ineligibles.length;
+      const max = playerListSize - voteState.activeVoteConfiguration.ineligibles.length;
       percentile = ( ve.castVotes.length / max ) * 100;
     }
     return percentile;

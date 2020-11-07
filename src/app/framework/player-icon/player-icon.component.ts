@@ -41,12 +41,9 @@ export class PlayerIconComponent implements OnInit {
         this.fileManagement.uploadProfilePicture(file, usr).subscribe(suc => {
           console.log('Uploaded new profile picture: ', suc);
           this.currentSource = this.fileManagement.profilePictureSource(this.player.loginName);
-
-          if (this.gameState.getState() !== undefined) {
-            const msg: RefreshProfilePics = {type: MessageType.REFRESH_COMMAND,
-              subType: RefreshCommandType.refreshProfilePic};
-            this.gameState.sendMessage(MessageType.REFRESH_COMMAND, msg);
-          }
+          const msg: RefreshProfilePics = {type: MessageType.REFRESH_COMMAND,
+            subType: RefreshCommandType.refreshProfilePic};
+          this.gameState.sendMessage(MessageType.REFRESH_COMMAND, msg);
         });
       });
     }

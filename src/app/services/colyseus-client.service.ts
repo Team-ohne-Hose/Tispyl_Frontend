@@ -31,8 +31,6 @@ export class ColyseusClientService {
   ];
 
   myLoginName: string;
-  myPlayer: Player;
-  myFigureId: number;
 
   constructor() {
     this.activeRoom = new BehaviorSubject<Room<GameState>>(undefined);
@@ -42,12 +40,6 @@ export class ColyseusClientService {
   onDataChange(changes: DataChange<any>[]) {
     changes.forEach(change => {
       switch (change.field) {
-        case 'playerList':
-        this.myPlayer = change.value[this.myLoginName];
-        if (this.myPlayer !== undefined) {
-          this.myFigureId = this.myPlayer.figureId;
-        }
-        break;
         case 'action':
           break;
       }

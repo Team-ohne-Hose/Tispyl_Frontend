@@ -72,43 +72,32 @@ export class PhysicsCommands implements ColyseusNotifyable {
   }
 
   attachColyseusStateCallbacks(gameState: GameStateService): void {
-    gameState.addPhysicsCallback((item: PhysicsObjectState) => {
-      this.updateFromState(item, () => {});
-    });
     gameState.addPhysicsObjectMovedCallback((item: PhysicsObjectState, key: string) => {
-      console.log('new pos patch');
       this.updateFromState(item, () => {});
     });
   }
   attachColyseusMessageCallbacks(gameState: GameStateService): void {}
 
   getInitializePending(): number {
-    const gameState = this.gameState.getState();
-    if (gameState !== undefined) {
-      const physState = gameState.physicsState;
-      if (physState !== undefined) {
-        return physState.objects.size;
-      }
+    const physState: PhysicsState = this.gameState.getPhysicsState();
+    if (physState !== undefined) {
+      return physState.objects.size;
     }
+    return 0;
   }
   initializeFromState(progressCallback: () => void): void {
-    const gameState = this.gameState.getState();
-    if (gameState !== undefined) {
-      const physState = gameState.physicsState;
-      if (physState !== undefined) {
-        physState.objects.forEach((item: PhysicsObjectState, key: string) => {
-          if (item !== undefined) {
-            this.updateFromState(item, progressCallback);
-          } else {
-            console.warn('initializing from State: Object in PhysicsList was undefined');
-            progressCallback();
-          }
-        });
-      } else {
-        console.error('PhysicsState is not accessible');
-      }
+    const physState = this.gameState.getPhysicsState();
+    if (physState !== undefined) {
+      physState.objects.forEach((item: PhysicsObjectState, key: string) => {
+        if (item !== undefined) {
+          this.updateFromState(item, progressCallback);
+        } else {
+          console.warn('initializing from State: Object in PhysicsList was undefined');
+          progressCallback();
+        }
+      });
     } else {
-      console.error('GameState is not accessible');
+      console.error('PhysicsState is not accessible');
     }
   }
   updateFromState(item: PhysicsObjectState, onDone: () => void): void {
@@ -176,15 +165,13 @@ export class PhysicsCommands implements ColyseusNotifyable {
           this.setClickRole(ClickedTarget.figure, model);
 
           // Load other playermodels
-          const room = this.gameState.getRoom();
-          if (room !== undefined) {
-            room.state.playerList.forEach((player: Player, key: string) => {
-              if (player.figureId === physicsId) {
-                this.loader.switchTex(model, player.figureModel);
-                this.addPlayer(model, player.displayName);
-                model.userData.displayName = player.displayName;
-              }
-            });
+          const player: Player = this.gameState.findInPlayerList((p: Player) => {
+            return p.figureId === physicsId;
+          });
+          if (player !== undefined) {
+            this.loader.switchTex(model, player.figureModel);
+            this.addPlayer(model, player.displayName);
+            model.userData.displayName = player.displayName;
           }
           break;
       }
@@ -206,7 +193,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
       objectID: physId,
       kinematic: enabled
     };
-    this.sendMessage(msg);
+    this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
   }
   setPositionVec(physId: number, vec: THREE.Vector3) {
     this.setPosition(physId, vec.x, vec.y, vec.z);
@@ -220,7 +207,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
       positionY: y,
       positionZ: z
     };
-    this.sendMessage(msg);
+    this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
   }
   /*setRotationQuat(physId, quat: THREE.Quaternion) {
     this.setRotation(physId, quat.x, quat.y, quat.z, quat.w);
@@ -235,7 +222,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
       quaternionZ: z,
       quaternionW: w
     };
-    this.sendMessage(msg);
+    this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
   }*/
   setVelocity(physId: number, x: number, y: number, z: number) {
     const msg: PhysicsCommandVelocity = {
@@ -246,7 +233,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
       velY: y,
       velZ: z
     };
-    this.sendMessage(msg);
+    this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
   }
   setAngularVelocity(physId: number, x: number, y: number, z: number) {
     const msg: PhysicsCommandAngular = {
@@ -257,7 +244,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
       angularY: y,
       angularZ: z,
     };
-    this.sendMessage(msg);
+    this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
   }
   removePhysics(physId: number) {
     const cmd: PhysicsCommandRemove = {
@@ -265,11 +252,5 @@ export class PhysicsCommands implements ColyseusNotifyable {
       subType: PhysicsCommandType.remove,
       objectID: physId,
     };
-  }
-  private sendMessage(msg: PhysicsCommand) {
-    const room = this.gameState.getRoom();
-    if (msg !== undefined && room !== undefined) {
-      room.send(msg.type, msg);
-    }
   }
 }

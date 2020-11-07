@@ -130,24 +130,21 @@ export class BoardItemManagement implements ColyseusNotifyable {
   }
   moveGameFigure(object: THREE.Object3D, fieldID: number) {
     console.debug('move Figure to ', fieldID);
-    const room = this.gameState.getRoom();
-    if (room !== undefined) {
-      let playerId: string;
-      const userData = object.userData;
-      const player = Array.from(room.state.playerList.values()).find(p => {
-        return p.figureId === userData.physicsId;
-      });
-      if (player !== undefined) {
-        playerId = player.loginName;
-      }
-      const msg: GameSetTile = {
-        type: MessageType.GAME_MESSAGE,
-        action: GameActionType.setTile,
-        figureId: userData.physicsId,
-        playerId: playerId,
-        tileId: fieldID};
-      room.send(MessageType.GAME_MESSAGE, msg);
+    let playerId: string;
+    const userData = object.userData;
+    const player = this.gameState.findInPlayerList((p: Player) => {
+      return p.figureId === userData.physicsId;
+    });
+    if (player !== undefined) {
+      playerId = player.loginName;
     }
+    const msg: GameSetTile = {
+      type: MessageType.GAME_MESSAGE,
+      action: GameActionType.setTile,
+      figureId: userData.physicsId,
+      playerId: playerId,
+      tileId: fieldID};
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, msg);
   }
 
   addFlummi(x: number, y: number, z: number, color: number) {
