@@ -1,13 +1,14 @@
 {
   "asset": {
     "version": "2.0",
-    "generator": "GLTFExporter"
+    "generator": "THREE.GLTFExporter"
   },
   "scenes": [
     {
       "name": "Scene",
       "nodes": [
-        2
+        0,
+        1
       ]
     }
   ],
@@ -26,34 +27,6 @@
         "name": "Cube_1"
       },
       "mesh": 1
-    },
-    {
-      "matrix": [
-        1,
-        0,
-        0,
-        0,
-        0,
-        1,
-        0,
-        0,
-        0,
-        0,
-        1,
-        0,
-        0.0046300000000000004,
-        0.002450000000000001,
-        1.0708199999999999,
-        1
-      ],
-      "name": "Cube",
-      "extras": {
-        "name": "Cube"
-      },
-      "children": [
-        0,
-        1
-      ]
     }
   ],
   "bufferViews": [
