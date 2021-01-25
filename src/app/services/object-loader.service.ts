@@ -120,7 +120,7 @@ export class ObjectLoaderService {
     dice: {
       default: {
         cname: 'diceDefault',
-        fname: 'diceDefault.gltf',
+        fname: 'diceDefault.glb',
         objectCache: undefined
       },
       dice: {
@@ -248,10 +248,14 @@ export class ObjectLoaderService {
     } else {
       const loader = new GLTFLoader().setPath(this.resourcePath);
       loader.load(resource.fname, (gltf: GLTF) => {
-        gltf.scene.children[0].castShadow = true;
-        gltf.scene.children[0].receiveShadow = true;
-        resource.objectCache = gltf.scene.children[0].clone(true);
-        callback( gltf.scene.children[0] );
+        gltf.scene.castShadow = true;
+        gltf.scene.receiveShadow = true;
+        resource.objectCache = gltf.scene.clone(true);
+        callback(gltf.scene);
+        //gltf.scene.children[0].castShadow = true;
+        //gltf.scene.children[0].receiveShadow = true;
+        //resource.objectCache = gltf.scene.children[0].clone(true);
+        //callback( gltf.scene.children[0] );
       });
     }
   }

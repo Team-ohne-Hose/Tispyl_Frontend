@@ -74,12 +74,22 @@ export class BoardItemManagement implements ColyseusNotifyable {
         const physIdDice = PhysicsCommands.getPhysId(this.physics.dice);
         this.physics.setPosition(physIdDice, 0, 40, 0);
 
-        const vel = new THREE.Vector3(Math.random() - 0.5, Math.random() / 10, Math.random() - 0.5);
-        const rot = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
-        vel.normalize().multiplyScalar(Math.random() * 35);
-        rot.multiplyScalar(Math.PI);
+        const getSignedRandom = () => (Math.random() - 0.5) * 2;
+        const vel = new THREE.Vector3(getSignedRandom(), Math.random() / 5, getSignedRandom());
+        vel.normalize().multiplyScalar(Math.random() * 30);
         this.physics.setVelocity(physIdDice, vel.x, vel.y, vel.z);
-        this.physics.setAngularVelocity(physIdDice, rot.x, rot.y, rot.z);
+
+        const rotSpeed = (2 * Math.PI) * (getSignedRandom() * 0.5 + 5);
+        const rotation = new THREE.Vector3().setFromSphericalCoords(
+          rotSpeed,
+          (Math.random() * 0.3 + 0.35) * Math.PI, // main rotational axis should not be vertical. therefore restrict phi.
+          Math.random() * 2 * Math.PI);
+        this.physics.setAngularVelocity(physIdDice, rotation.x, rotation.y, rotation.z);
+
+        // old variant for AMMO Physics
+        // const rot = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
+        // rot.multiplyScalar(Math.PI);
+        // this.physics.setAngularVelocity(physIdDice, rot.x, rot.y, rot.z);
       }
     } else {
       console.debug('You are not the active Player!');

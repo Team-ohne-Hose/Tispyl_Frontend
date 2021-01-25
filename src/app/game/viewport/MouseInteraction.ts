@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {Camera, Object3D, Scene, Vector3} from 'three';
+import {Camera, Object3D, Vector3} from 'three';
 import {BoardItemManagement} from './BoardItemManagement';
 import {ClickedTarget, PhysicsCommands} from './PhysicsCommands';
 import {BoardTilesService} from '../../services/board-tiles.service';
@@ -118,14 +118,14 @@ export class MouseInteraction {
     if (intersects.length > 0) {
       const point = intersects[0].point;
       const type = this.getClickedType(intersects[0].object);
-      // console.log('Intersecting:', intersects[0].object.name, type);
+      console.log('Intersecting:', intersects[0].object.name, type);
       if (type === ClickedTarget.board) {
         if (!this.handleBoardTileClick(point)) {
           this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 30, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
         }
         this.currentlySelected = undefined;
       } else if (type === ClickedTarget.figure) {
-        const obj = intersects[0].object;
+        const obj = intersects[0].object.parent;
         if (this.currentlySelected !== undefined) {
           console.log('clicked on other figure');
           this.handleBoardTileClick(point);
@@ -172,7 +172,8 @@ export class MouseInteraction {
     if (o.name === 'gameboard') {
       return ClickedTarget.board;
     } else {
-      return o.userData.clickRole || ClickedTarget.other;
+      console.log('not gameboard', o);
+      return o.parent.userData ? (o.parent.userData.clickRole || ClickedTarget.other) : ClickedTarget.other;
     }
   }
 }
