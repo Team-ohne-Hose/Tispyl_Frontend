@@ -85,6 +85,7 @@ export class BoardItemManagement implements ColyseusNotifyable {
           (Math.random() * 0.3 + 0.35) * Math.PI, // main rotational axis should not be vertical. therefore restrict phi.
           Math.random() * 2 * Math.PI);
         this.physics.setAngularVelocity(physIdDice, rotation.x, rotation.y, rotation.z);
+        this.physics.wakeAll();
       }
     } else {
       console.debug('You are not the active Player!');
