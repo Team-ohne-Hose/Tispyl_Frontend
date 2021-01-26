@@ -9,7 +9,7 @@ import {
   PhysicsCommandQuat,
   PhysicsCommandRemove,
   PhysicsCommandType,
-  PhysicsCommandVelocity,
+  PhysicsCommandVelocity, PhysicsCommandWakeAll,
   PhysicsEntity,
   PhysicsEntityVariation,
 } from '../../model/WsData';
@@ -243,6 +243,13 @@ export class PhysicsCommands implements ColyseusNotifyable {
       angularX: x,
       angularY: y,
       angularZ: z,
+    };
+    this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
+  }
+  wakeAll() {
+    const msg: PhysicsCommandWakeAll = {
+      type: MessageType.PHYSICS_MESSAGE,
+      subType: PhysicsCommandType.wakeAll
     };
     this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
   }

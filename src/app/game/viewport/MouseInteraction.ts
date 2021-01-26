@@ -134,6 +134,7 @@ export class MouseInteraction {
           if (this.gameState.getMyFigureId() === obj.userData.physicsId) {
             this.currentlySelected = {obj: obj, oldPos: obj.position.clone()};
             this.physics.setKinematic(PhysicsCommands.getPhysId(obj), true);
+            this.physics.wakeAll();
             this.boardItemManager.hoverGameFigure(this.currentlySelected.obj, point.x, point.z);
             console.log('selected Object');
           } else {
