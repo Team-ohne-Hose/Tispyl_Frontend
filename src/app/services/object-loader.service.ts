@@ -260,6 +260,15 @@ export class ObjectLoaderService {
     }
   }
   switchTex(obj: THREE.Object3D, model: PlayerModel) {
+    while (!(obj instanceof THREE.Mesh)) {
+      if (obj.children.length <= 0) {
+        return;
+      }
+      obj = obj.children[0];
+      if (obj === undefined) {
+        return;
+      }
+    }
     let texData: PlayerModelData = this.texList.get(model);
     if (texData === undefined) {
       texData = this.texList.get(PlayerModel.bcap_NukaCola);
