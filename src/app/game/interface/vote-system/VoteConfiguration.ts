@@ -16,9 +16,6 @@ export class VoteConfiguration extends Schema {
   @type( [ VoteEntry ] )
   votingOptions: VoteEntry[];
 
-  @type('boolean')
-  hasConcluded: false;
-
   static build(title: string, author: string, eligibilities: Map<string, boolean>, options: VoteEntry[]): VoteConfiguration {
     const config = new VoteConfiguration();
     config.title = title;
