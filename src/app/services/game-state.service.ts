@@ -29,6 +29,7 @@ export class GameStateService {
   private voteStageCallbacks: ((stage: VoteStage) => void)[] = [];
   private voteCastCallbacks: (() => void)[] = [];
   private voteSystemCallbacks: ((change: DataChange<any>[]) => void)[] = [];
+  private itemCallbacks: (() => void)[] = [];
 
 
   activePlayerLogin = '';
@@ -148,6 +149,17 @@ export class GameStateService {
       entry.castVotes.onAdd = this.callVoteCastUpdate.bind(this);
     });
   }
+  private attachItemCallback(room: Room<GameState>) {
+    const playerMe: Player = this.getMe();
+    if (playerMe === undefined || playerMe.itemList === undefined) {
+      console.warn('GameStateService Callbacks couldnt be attached, playerMe or its ItemList was undefined');
+    } else {
+      // onChange works only on Arrays/Maps of primitives. But ItemList is a primitive
+      playerMe.itemList.onChange = this.callItemUpdate.bind(this);
+      playerMe.itemList.onAdd = this.callItemUpdate.bind(this);
+      playerMe.itemList.onRemove = this.callItemUpdate.bind(this);
+    }
+  }
   private attachCallbacks(room: Room<GameState>) {
     if (room === undefined) {
       console.warn('GameStateService Callbacks couldnt be attached, Room was undefined!');
@@ -156,6 +168,7 @@ export class GameStateService {
       this.attachPhysicsMovedCallbacks(room);
       this.attachBoardLayoutCallbacks(room);
       this.attachVoteStateCallbacks(room);
+      this.attachItemCallback(room);
       console.debug('attached GameStateServiceCallbacks');
     }
   }
@@ -343,6 +356,9 @@ export class GameStateService {
   addVoteSystemCallback(f: ((change: DataChange<any>[]) => void)): void {
     this.voteSystemCallbacks.push(f);
   }
+  addItemUpdateCallback(f: () => void): void {
+    this.itemCallbacks.push(f);
+  }
   registerMessageCallback(type: MessageType, cb: MessageCallback): void {
     this.colyseus.registerMessageCallback(type, cb);
   }
@@ -376,5 +392,8 @@ export class GameStateService {
   }
   private callVoteCastUpdate() {
     this.voteCastCallbacks.forEach(f => f());
+  }
+  private callItemUpdate() {
+    this.itemCallbacks.forEach(f => f());
   }
 }

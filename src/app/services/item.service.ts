@@ -61,12 +61,20 @@ export class ItemService implements ColyseusNotifyable {
 
   targetingItem = false;
   selectedItem = -1;
-  onUseItem: (itemId: number) => void;
+  onItemUpdate: () => void;
   gameState: GameStateService;
 
   constructor(private chatService: ChatService) { }
 
-  attachColyseusStateCallbacks(gameState: GameStateService): void {}
+  attachColyseusStateCallbacks(gameState: GameStateService): void {
+    this.gameState = gameState;
+    gameState.addItemUpdateCallback((() => {
+      if (this.onItemUpdate !== undefined) {
+        this.onItemUpdate();
+      }
+    }).bind(this));
+    this.onItemUpdate();
+  }
   attachColyseusMessageCallbacks(gameState: GameStateService): void {
     this.gameState = gameState;
     gameState.registerMessageCallback(MessageType.ITEM_MESSAGE, {
@@ -84,6 +92,7 @@ export class ItemService implements ColyseusNotifyable {
   }
 
   onItemUsed(item: UseItem) {
+    console.log('Used Item: ', item);
     let msg = `${item.playerLoginName} used ${item.itemName}: ${item.itemDescription}`;
     if (item.targetLoginName && item.targetLoginName !== '') {
       msg = msg + ' on ' + item.targetLoginName;
@@ -196,8 +205,8 @@ export class ItemService implements ColyseusNotifyable {
   }
 
   useItem(itemId: number, targetId?: number) {
-    if (this.onUseItem !== undefined) {
-      this.onUseItem(itemId);
+    if (this.onItemUpdate !== undefined) {
+      this.onItemUpdate();
     }
 
     let targetLogin = '';
@@ -221,6 +230,7 @@ export class ItemService implements ColyseusNotifyable {
       itemName: ItemService.items[itemId].name,
       itemDescription: ItemService.items[itemId].desc
     });
+    console.log('Using Item: ', ItemService.items[itemId]);
     this.selectNextItem();
   }
 }
