@@ -16,12 +16,10 @@ export class ItemsInterfaceComponent implements OnInit {
   scrollable = true;
 
   ngOnInit(): void {
-    console.warn('ngOnInit Items');
     this.items.onItemUpdate = this.onItemUpdate.bind(this);
   }
 
   updateItemData() {
-    console.log('updating:', this.items.selectedItem, this.items.getOrderedItemList());
     if (this.items.selectedItem < 0) {
       if (this.items.getOrderedItemList().length <= 0) {
         this.itemName = 'NO ITEM SELECTED';
@@ -31,7 +29,6 @@ export class ItemsInterfaceComponent implements OnInit {
       } else {
         // there are items selectable, so select one automatically.
         this.items.selectNextItem();
-        console.log('autoselected:', this.items.selectedItem, this.items.getOrderedItemList());
       }
     }
     this.itemName = this.items.getItemName(this.items.selectedItem);

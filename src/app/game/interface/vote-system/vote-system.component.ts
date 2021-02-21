@@ -111,7 +111,7 @@ export class VoteSystemComponent implements OnInit {
   // Reactions
   calcVotes() {
     this.voteEntryPercentileDisplay = [];
-    for (const votingOption of this.gameState.getVoteState().activeVoteConfiguration.votingOptions) {
+    for (const votingOption of this.gameState.getVoteState().voteConfiguration.votingOptions) {
       this.voteEntryPercentileDisplay.push(this.getPercentile(votingOption));
     }
   }
@@ -136,7 +136,7 @@ export class VoteSystemComponent implements OnInit {
       case VoteStage.VOTE:
         this.hasConcluded = false;
         this.voteHost = this.gameState.getVoteState().author;
-        if (this.gameState.getVoteState().activeVoteConfiguration.ineligibles.includes(this.gameState.getMe().displayName)) {
+        if (this.gameState.getVoteState().voteConfiguration.ineligibles.includes(this.gameState.getMe().displayName)) {
           this.voteSystemState = VoteSystemState.notEligible;
         } else {
           this.voteSystemState = VoteSystemState.voting;
@@ -171,10 +171,10 @@ export class VoteSystemComponent implements OnInit {
   getPercentile(ve: VoteEntry): number {
     const voteState = this.gameState.getVoteState();
     let percentile = 0;
-    if (voteState !== undefined && voteState.activeVoteConfiguration !== undefined) {
+    if (voteState?.voteConfiguration !== undefined) {
       const playerListSize = this.gameState.getPlayerArray().length;
       ///////////////////////////////////
-      const max = playerListSize - voteState.activeVoteConfiguration.ineligibles.length;
+      const max = playerListSize - voteState.voteConfiguration.ineligibles.length;
       percentile = ( ve.castVotes.length / max ) * 100;
     }
     return percentile;

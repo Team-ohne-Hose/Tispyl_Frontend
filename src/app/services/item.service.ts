@@ -27,7 +27,7 @@ export class ItemService implements ColyseusNotifyable {
       desc: 'Ein anderer Mitspieler muss deine nächste Aufgabe auch machen',
       imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute},
     3: {id: 3, weight: 1, name: 'Beste Freunde Gulasch',
-      desc: 'Suche dir einen Trinkbuddy',
+      desc: 'Wähle einen Trinkbuddy',
       imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute},
     4: {id: 4, weight: 1, name: 'Todfeind',
       desc: 'Löse eine Trinkbuddy Verbindung auf',
@@ -92,7 +92,6 @@ export class ItemService implements ColyseusNotifyable {
   }
 
   onItemUsed(item: UseItem) {
-    console.log('Used Item: ', item);
     let msg = `${item.playerLoginName} used ${item.itemName}: ${item.itemDescription}`;
     if (item.targetLoginName && item.targetLoginName !== '') {
       msg = msg + ' on ' + item.targetLoginName;
@@ -230,7 +229,6 @@ export class ItemService implements ColyseusNotifyable {
       itemName: ItemService.items[itemId].name,
       itemDescription: ItemService.items[itemId].desc
     });
-    console.log('Using Item: ', ItemService.items[itemId]);
     this.selectNextItem();
   }
 }

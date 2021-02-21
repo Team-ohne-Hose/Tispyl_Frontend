@@ -4,20 +4,20 @@ import {VoteConfiguration} from '../../game/interface/vote-system/VoteConfigurat
 
 export enum VoteStage {
   IDLE = 1,
-  CREATION,
-  VOTE
+  CREATION = 2,
+  VOTE = 3
 }
 
 export class VoteState extends Schema {
 
   @type('string')
-  author = '';
+  author = 'undefined';
 
   @type('number')
   voteStage: number = VoteStage.IDLE;
 
   @type( VoteConfiguration )
-  activeVoteConfiguration: VoteConfiguration = undefined;
+  voteConfiguration: VoteConfiguration = undefined;
 
   @type('number')
   closingIn: number = -1;

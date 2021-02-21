@@ -135,23 +135,20 @@ export class GameStateService {
     }
   }
   private attachVoteCastCallback() {
-    if (this.room === undefined ||
-        this.room.state === undefined ||
-        this.room.state.voteState === undefined ||
-        this.room.state.voteState.activeVoteConfiguration === undefined) {
+    if (this.room?.state?.voteState?.voteConfiguration === undefined) {
       console.warn('GameStateService tried to attach callbacks for casting votes. Something was not defined. Room is:', this.room);
       return;
     }
     // this should get called everytime a new Vote is started.
     // it attaches the callVoteCastUpdate to every voting option. For every casted/changed vote, the old entry is removed and a new entry
     // in the corresponding option is added for the player, which just casted the vote. Therefore the onAdd callback should be sufficient.
-    this.room.state.voteState.activeVoteConfiguration.votingOptions.forEach((entry: VoteEntry) => {
+    this.room.state.voteState.voteConfiguration.votingOptions.forEach((entry: VoteEntry) => {
       entry.castVotes.onAdd = this.callVoteCastUpdate.bind(this);
     });
   }
   private attachItemCallback(room: Room<GameState>) {
     const playerMe: Player = this.getMe();
-    if (playerMe === undefined || playerMe.itemList === undefined) {
+    if (playerMe?.itemList === undefined) {
       console.warn('GameStateService Callbacks couldnt be attached, playerMe or its ItemList was undefined');
     } else {
       // onChange works only on Arrays/Maps of primitives. But ItemList is a primitive
@@ -379,15 +376,11 @@ export class GameStateService {
     this.boardLayoutCallbacks.forEach(f => f(this.room.state.boardLayout));
   }
   private callVoteStageUpdate(changes: DataChange<any>[]) {
-    changes.forEach((dataChange: DataChange<any>) => {
-      if (dataChange.field === 'voteStage') {
-        this.voteStageCallbacks.forEach(f => f(dataChange.value));
-        if (dataChange.value === VoteStage.VOTE) {
-          this.attachVoteCastCallback();
-        }
-        return;
-      }
-    });
+    const newVal: VoteStage = changes.find((change: DataChange<any>) => change.field === 'voteStage')?.value;
+    this.voteStageCallbacks.forEach(f => f(newVal));
+    if (newVal === VoteStage.VOTE) {
+      this.attachVoteCastCallback();
+    }
     this.voteSystemCallbacks.forEach(f => f(changes.filter((v: DataChange<any>) => v.field !== 'voteStage')));
   }
   private callVoteCastUpdate() {

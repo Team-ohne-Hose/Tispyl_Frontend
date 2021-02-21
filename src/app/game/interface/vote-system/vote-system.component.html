@@ -72,14 +72,14 @@
     <div class="voting-head-container">
       <div class="voting-head" *ngIf="gameState.isGameLoaded()">
         <div class="pre-subscript">Select your option:</div>
-        {{gameState.getVoteState().activeVoteConfiguration.title}}
+        {{gameState.getVoteState().voteConfiguration.title}}
       </div>
       <button class="abort-button" *ngIf="this.gameState.getMe().displayName === voteHost">Cancel</button>
     </div>
 
 
     <div *ngIf="gameState.isGameLoaded()">
-      <div *ngFor="let ve of this.gameState.getVoteState().activeVoteConfiguration.votingOptions; let i = index" class="entry-container disable-user-select">
+      <div *ngFor="let ve of this.gameState.getVoteState().voteConfiguration.votingOptions; let i = index" class="entry-container disable-user-select">
         <div class="vote-entry" (click)="castVote(i)">
           <div class="info-box">
             <div class="info-text">
@@ -120,12 +120,12 @@
     <div class="voting-head-container">
       <div class="voting-head" *ngIf="gameState.isGameLoaded()">
         <div class="pre-subscript">Results:</div>
-        {{gameState.getVoteState().activeVoteConfiguration.title}}
+        {{gameState.getVoteState().voteConfiguration.title}}
       </div>
     </div>
 
     <div *ngIf="gameState.isGameLoaded()">
-      <div *ngFor="let ve of this.gameState.getVoteState().activeVoteConfiguration.votingOptions; let i = index"
+      <div *ngFor="let ve of this.gameState.getVoteState().voteConfiguration.votingOptions; let i = index"
            [ngClass]="{'entry-container disable-user-select result': true, 'no1': i === 0, 'no2': i === 1, 'no3': i === 2, 'noN': i > 2}">
 
         <div class="metal-border">
