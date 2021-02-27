@@ -1,14 +1,12 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {GameStateService} from '../../../services/game-state.service';
-import {GameActionType, MessageType, WsData} from '../../../model/WsData';
-import {FileService} from '../../../services/file.service';
+import {GameActionType, MessageType} from '../../../model/WsData';
 import {DataChange} from '@colyseus/schema';
 import {VoteSystemState} from './VoteSystemState';
 import {VoteResult} from './VoteResult';
 import {VoteEntry} from './VoteEntry';
 import {VoteConfiguration} from './VoteConfiguration';
-import {removeOptionsParameter} from '@angular/core/schematics/migrations/dynamic-queries/util';
-
+import {VoteStage} from '../../../model/state/VoteState';
 
 
 @Component({
@@ -36,11 +34,19 @@ export class VoteSystemComponent implements OnInit {
   notifyPlayer: EventEmitter<number> = new EventEmitter<number>();
 
   constructor(public gameState: GameStateService) {
+    gameState.addVoteStageCallback(this.onVoteStageChange.bind(this));
+
+    /**
+     * This recalculates voting percentages
+     * for the displayed vote entries to avoid a function call inside of the Angular html template.
+     *
+     * This would cause a large performance hit. @see [https://medium.com/showpad-engineering/why-you-should-never-use-function-calls-in-angular-template-expressions-e1a50f9c0496]
+     */
+    gameState.addVoteCastCallback(this.calcVotes.bind(this));
+
     gameState.addVoteSystemCallback(((changes: DataChange<any>[]) => {
       changes.forEach((change: DataChange) => {
         switch (change.field) {
-          case 'author': this.onAuthorChange(change); break;
-          case 'activeVoteConfiguration': this.onActiveVoteConfigurationChange(change); break;
           case 'closingIn': this.timerDisplay = this.gameState.getVoteState().closingIn; break;
         }
       });
@@ -55,28 +61,11 @@ export class VoteSystemComponent implements OnInit {
   ngOnInit(): void {
     if (this.gameState.isGameLoaded()) {
       const remoteState = this.gameState.getVoteState();
-      if (remoteState.activeVoteConfiguration !== undefined) {
-        const pseudoChange: DataChange<VoteConfiguration> = {
-          op: 0,
-          field: 'activeVoteConfiguration',
-          value: remoteState.activeVoteConfiguration,
-          previousValue: undefined
-        };
-        this.onActiveVoteConfigurationChange(pseudoChange);
-        this.timerDisplay = this.gameState.getVoteState().closingIn;
-
+      if (remoteState.voteStage === VoteStage.IDLE) {
+        this.voteSystemState = VoteSystemState.default;
+        this.hasConcluded = true;
       } else {
-        if (remoteState.author === this.gameState.getMe().displayName) {
-          this.voteSystemState = VoteSystemState.creating;
-          this.voteHost = remoteState.author;
-
-        } else if (remoteState.creationInProgress) {
-          this.voteSystemState = VoteSystemState.waiting;
-          this.voteHost = remoteState.author;
-
-        } else {
-          this.voteSystemState = VoteSystemState.default;
-        }
+        this.onVoteStageChange(remoteState.voteStage);
       }
     }
   }
@@ -112,7 +101,6 @@ export class VoteSystemComponent implements OnInit {
     }
   }
 
-
   triggerCloseVotingSession(event: Event): void {
     this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
       type: MessageType.GAME_MESSAGE,
@@ -121,38 +109,43 @@ export class VoteSystemComponent implements OnInit {
   }
 
   // Reactions
-  /**
-   * This not only updates the current voteSystemState but also recalculates voting percentages
-   * for the displayed vote entries to avoid a function call inside of the Angular html template.
-   *
-   * This would cause a large performance hit. @see [https://medium.com/showpad-engineering/why-you-should-never-use-function-calls-in-angular-template-expressions-e1a50f9c0496]
-   */
-  onActiveVoteConfigurationChange(change: DataChange<VoteConfiguration>): void {
-    if (change.value !== undefined && change.value !== null) {
-      this.hasConcluded = change.value.hasConcluded;
-      if (this.hasConcluded) {
-        this.voteSystemState = VoteSystemState.results;
-        this.notifyPlayer.emit(VoteSystemState.results);
-      } else if (change.value.ineligibles.includes(this.gameState.getMe().displayName)) {
-        this.voteSystemState = VoteSystemState.notEligible;
-      } else {
-        this.voteSystemState = VoteSystemState.voting;
-        this.notifyPlayer.emit(VoteSystemState.voting);
-      }
-      // Update vote entry display values
-      this.voteEntryPercentileDisplay = [];
-      for (const votingOption of change.value.votingOptions) {
-        this.voteEntryPercentileDisplay.push(this.getPercentile(votingOption));
-      }
+  calcVotes() {
+    this.voteEntryPercentileDisplay = [];
+    for (const votingOption of this.gameState.getVoteState().voteConfiguration.votingOptions) {
+      this.voteEntryPercentileDisplay.push(this.getPercentile(votingOption));
     }
   }
-
-  onAuthorChange(change: DataChange): void {
-    this.voteHost = change.value;
-    if (change.value === this.gameState.getMe().displayName) {
-      this.voteSystemState = VoteSystemState.creating;
-    } else {
-      this.voteSystemState = VoteSystemState.waiting;
+  onVoteStageChange(stage: VoteStage) {
+    switch (stage) {
+      case VoteStage.IDLE:
+        this.hasConcluded = true;
+        this.voteSystemState = VoteSystemState.results;
+        this.notifyPlayer.emit(VoteSystemState.results);
+        this.calcVotes();
+        break;
+      case VoteStage.CREATION:
+        this.hasConcluded = true;
+        this.voteHost = this.gameState.getVoteState().author;
+        console.log('setting voteHost to', this.voteHost.toString());
+        if (this.voteHost === this.gameState.getMe().displayName) {
+          this.voteSystemState = VoteSystemState.creating;
+        } else {
+          this.voteSystemState = VoteSystemState.waiting;
+        }
+        break;
+      case VoteStage.VOTE:
+        this.hasConcluded = false;
+        this.voteHost = this.gameState.getVoteState().author;
+        if (this.gameState.getVoteState().voteConfiguration.ineligibles.includes(this.gameState.getMe().displayName)) {
+          this.voteSystemState = VoteSystemState.notEligible;
+        } else {
+          this.voteSystemState = VoteSystemState.voting;
+          this.notifyPlayer.emit(VoteSystemState.voting);
+        }
+        this.calcVotes();
+        break;
+      default:
+        console.warn('undefined VoteStage! Something likely went wrong');
     }
   }
 
@@ -178,10 +171,10 @@ export class VoteSystemComponent implements OnInit {
   getPercentile(ve: VoteEntry): number {
     const voteState = this.gameState.getVoteState();
     let percentile = 0;
-    if (voteState !== undefined && voteState.activeVoteConfiguration !== undefined) {
+    if (voteState?.voteConfiguration !== undefined) {
       const playerListSize = this.gameState.getPlayerArray().length;
       ///////////////////////////////////
-      const max = playerListSize - voteState.activeVoteConfiguration.ineligibles.length;
+      const max = playerListSize - voteState.voteConfiguration.ineligibles.length;
       percentile = ( ve.castVotes.length / max ) * 100;
     }
     return percentile;
