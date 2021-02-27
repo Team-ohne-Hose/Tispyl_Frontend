@@ -32,9 +32,9 @@
     "text": {
       "ruleTitle": "REGELN",
       "rule0": "untitled",
-      "rule1": "Jeder Stellt sein Getränk auf ein beliebiges Spielfeld. Kommt jemand auf dieses Feld, trinkt der Getränkebesitzer",
-      "rule2": "Es wird immer in Rationen getrunken. Eine Ration entspricht zwei Schlücken oder einem Shot. 0,5L(0,004 Badewannen) sind in maximal 10 Schlücken zu leeren!",
-      "rule3": "Negative Kritik am Spiel ist als Regelverstoß(2 Rationen) zu werten!",
+      "rule1": "Jeder Spieler platziert sein Getränk auf ein beliebiges Spielfeld. Betritt ein Spieler dieses Feld, so muss der Getränkebesitzer einen Trinken.",
+      "rule2": "Es wird immer in Rationen getrunken. Eine Ration entspricht zwei Schlücken oder einem Shot. 0,5L (0,004 Badewannen) sind in maximal 10 Schlücken zu leeren!",
+      "rule3": "Negative Kritik am Spiel ist als Regelverstoß (2 Rationen) zu werten!",
       "rule4": "Alle Aufgaben müssen versucht werden. Schaffst du es nicht, trinkst du zwei Strafrationen!",
       "rule5": "Regeln und Aktionen gelten immer bis Ende des Spiels, falls Sie nicht explizit aufgelöst werden!",
       "rule6": "An Abstimmungen müssen alle teilnehmen außer dem Auslöser. Bei Gleichstand darf der Auslöser entscheiden!",
