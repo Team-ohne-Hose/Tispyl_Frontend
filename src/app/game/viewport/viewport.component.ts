@@ -8,7 +8,7 @@ import {CameraControl} from './CameraControl';
 import {SceneBuilderService} from '../../services/scene-builder.service';
 import {GameBoardOrbitControl} from './GameBoardOrbitControl';
 import {ObjectLoaderService} from '../../services/object-loader.service';
-import Stats from 'THREE/examples/jsm/libs/stats.module.js';
+import Stats from 'three/examples/jsm/libs/stats.module.js';
 import {ClickedTarget, PhysicsCommands} from './PhysicsCommands';
 import {PhysicsEntity, PhysicsEntityVariation} from '../../model/WsData';
 import {BoardTilesService} from '../../services/board-tiles.service';
