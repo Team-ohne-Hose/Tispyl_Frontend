@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "startWSL": "ng serve --live-reload -o",
     "build": "ng build",
     "build prod": "ng build --prod",
     "deploy": "deployment.cmd deployment_rsa",
