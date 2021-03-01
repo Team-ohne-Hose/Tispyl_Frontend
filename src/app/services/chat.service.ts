@@ -18,6 +18,7 @@ export class ChatService implements ColyseusNotifyable {
   attachColyseusStateCallbacks(gameState: GameStateService): void {}
   attachColyseusMessageCallbacks(gameState: GameStateService): void {
     this.gameState = gameState;
+    
     gameState.registerMessageCallback(MessageType.CHAT_MESSAGE, {
       filterSubType: -1,
       f: (data: WsData) => {
@@ -66,6 +67,7 @@ export class ChatService implements ColyseusNotifyable {
   setMessageCallback(cb: () => void) {
     this.messageCallback = cb;
   }
+
   onChatMessageReceived(msg: string, sender: string) {
     this.chatMessages.push(new ChatMessage(msg, sender));
     console.log('New Chatmessage: "' + msg + '"', this.chatMessages);

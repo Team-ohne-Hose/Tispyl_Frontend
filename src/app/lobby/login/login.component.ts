@@ -2,10 +2,11 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { RegisterPopupComponent } from '../dialogs/register-popup/register-popup.component';
 import { TextContainer } from '../../model/TextContainer';
-import { User } from '../../model/User';
+import { LoginUser, User } from '../../model/User';
 import * as hash from 'object-hash';
 import { UserService } from '../../services/user.service';
 import { APIResponse } from '../../model/APIResponse';
+import { JwtTokenService } from 'src/app/services/jwttoken.service';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +15,7 @@ import { APIResponse } from '../../model/APIResponse';
 })
 export class LoginComponent {
 
-  constructor(private dialog: MatDialog, private userManagement: UserService) { }
+  constructor(private dialog: MatDialog, private userManagement: UserService, private jwtTokenService: JwtTokenService) { }
 
   @Input() languageObjects: TextContainer;
 
@@ -30,9 +31,21 @@ export class LoginComponent {
   };
 
   onLogin() {
-    this.userManagement.loginUser(this.login_name, hash.MD5(this.password_plain)).subscribe(suc => {
-      this.userManagement.setActiveUser(suc.payload[0]);
-      console.debug('LOGGED IN AS:', suc.payload[0]);
+    this.userManagement.loginUser(this.login_name, hash.MD5(this.password_plain)).subscribe(jwtResponse => {
+
+      if (jwtResponse?.status === 'ok') {
+        this.jwtTokenService.setJwtToken(jwtResponse.data)
+      
+        this.userManagement.getUserByLoginName(this.login_name).subscribe(UserResponse => {
+          console.debug("US", UserResponse)
+          this.userManagement.setActiveUser(UserResponse.data as LoginUser);
+          console.debug('LOGGED IN AS:', UserResponse);
+        })
+      }
+
+      // this.userManagement.setActiveUser(null);
+      // console.debug('LOGGED IN AS:', null);
+      
     }, err => {
       if (err.error as APIResponse<any[]> && err.error.success) {
         console.warn('Login Failed: ', err.error);
