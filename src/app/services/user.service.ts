@@ -44,9 +44,9 @@ export class UserService {
   //     .pipe(map(users => users[0]));
   // }
 
-  getUserByLoginName(login_name: string): Observable<UserResponse> {
+  getUserByLoginName(login_name: string): Observable<APIResponse<LoginUser>> {
     const requestUrl = this.userEndpoint + '?login_name=' + login_name;
-    return this.httpClient.get<UserResponse>(requestUrl)
+    return this.httpClient.get<APIResponse<LoginUser>>(requestUrl)
     //return userRes.data as LoginUser;
     return undefined
   }
@@ -60,8 +60,8 @@ export class UserService {
     return this.httpClient.post(this.userEndpoint, user);
   }
 
-  loginUser(login_name: string, password_hash: string): Observable<JwtResponse> {
-    return this.httpClient.post<JwtResponse>(this.userEndpoint + '/token', { username: login_name, password: password_hash });
+  loginUser(login_name: string, password_hash: string): Observable<APIResponse<JwtResponse>> {
+    return this.httpClient.post<APIResponse<JwtResponse>>(this.userEndpoint + '/token', { username: login_name, password: password_hash });
   }
 
   // loginUser(login_name: string, password_hash: string): Observable<APIResponse<User[]>> {

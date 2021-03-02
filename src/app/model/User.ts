@@ -18,8 +18,6 @@ export class User {
   is_connected: boolean;
   is_dev: boolean;
 }
-
-
 export class LoginUser {
 
   login_name: string;

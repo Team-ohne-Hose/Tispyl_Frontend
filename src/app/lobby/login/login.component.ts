@@ -33,13 +33,14 @@ export class LoginComponent {
   onLogin() {
     this.userManagement.loginUser(this.login_name, hash.MD5(this.password_plain)).subscribe(jwtResponse => {
 
-      if (jwtResponse?.status === 'ok') {
-        this.jwtTokenService.setJwtToken(jwtResponse.data)
+      if (jwtResponse.success === true) {
+        this.jwtTokenService.setJwtToken(jwtResponse.payload.jwtToken)
+        console.log(jwtResponse.payload.jwtToken)
       
-        this.userManagement.getUserByLoginName(this.login_name).subscribe(UserResponse => {
-          console.debug("US", UserResponse)
-          this.userManagement.setActiveUser(UserResponse.data as LoginUser);
-          console.debug('LOGGED IN AS:', UserResponse);
+        this.userManagement.getUserByLoginName(this.login_name).subscribe(userResponse => {
+          console.debug("US", userResponse)
+          this.userManagement.setActiveUser(userResponse.payload as LoginUser);
+          console.debug('LOGGED IN AS:', userResponse.payload);
         })
       }
 

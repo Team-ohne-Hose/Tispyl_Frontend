@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {TranslationService} from '../services/translation.service';
-import {User} from '../model/User';
+import {LoginUser, User} from '../model/User';
 import {Translation} from '../model/Translation';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {OpenGamePopupComponent} from './dialogs/open-game-popup/open-game-popup.component';
@@ -20,7 +20,8 @@ import {ProfileDisplayComponent} from './profile-display/profile-display.compone
 })
 export class LobbyComponent implements OnInit {
 
-  currentUser: User;
+  //currentUser: User;
+  currentUser: LoginUser;
   activeLobby: Room<GameState>;
   gameClient: Client;
 
