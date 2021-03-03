@@ -117,8 +117,13 @@ export class ItemService implements ColyseusNotifyable {
       itemListArray.sort((a: number, b: number) => {
         return a - b;
       });
-      return itemListArray;
+      if (itemListArray?.length > 0) {
+        return itemListArray;
+      } else {
+        return [];
+      }
     }
+    return [];
 }
   selectNextItem() {
     const itemListArray: number[] = this.getOrderedItemList();

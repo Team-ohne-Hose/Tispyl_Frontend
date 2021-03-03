@@ -21,7 +21,7 @@ export class ItemsInterfaceComponent implements OnInit {
 
   updateItemData() {
     if (this.items.selectedItem < 0) {
-      if (this.items.getOrderedItemList().length <= 0) {
+      if (!(this.items.getOrderedItemList().length > 0)) {
         this.itemName = 'NO ITEM SELECTED';
         this.itemDescription = '';
         this.itemThumbnail = '../assets/defaultImage.jpg';
