@@ -39,7 +39,7 @@ export class PlayerIconComponent implements OnInit {
     const file = event.target.files[0];
     if (this.player !== undefined) {
       this.userManagement.getUserByLoginName(this.player.loginName).subscribe( userResponse => {
-        this.fileManagement.uploadProfilePicture(file, userResponse.data).subscribe(suc => {
+        this.fileManagement.uploadProfilePicture(file, userResponse.payload).subscribe(suc => {
           console.log('Uploaded new profile picture: ', suc);
           this.currentSource = this.fileManagement.profilePictureSource(this.player.loginName);
           const msg: RefreshProfilePics = {type: MessageType.REFRESH_COMMAND,

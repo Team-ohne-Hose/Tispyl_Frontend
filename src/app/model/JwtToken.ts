@@ -1,3 +1,4 @@
 export class JwtResponse {
-    jwtToken: string
+    jwtToken: string;
+    expiresIn: string;
 }

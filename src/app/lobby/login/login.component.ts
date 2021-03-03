@@ -31,31 +31,33 @@ export class LoginComponent {
   };
 
   onLogin() {
-    this.userManagement.loginUser(this.login_name, hash.MD5(this.password_plain)).subscribe(jwtResponse => {
+    //this.userManagement.loginUser(this.login_name, hash.MD5(this.password_plain)).subscribe(jwtResponse => {
+      this.jwtTokenService.login(this.login_name, hash.MD5(this.password_plain))
+      //.subscribe(jwtResponse => {
 
-      if (jwtResponse.success === true) {
-        this.jwtTokenService.setJwtToken(jwtResponse.payload.jwtToken)
-        console.log(jwtResponse.payload.jwtToken)
+      // if (jwtResponse.success === true) {
+      //   this.jwtTokenService.setJwtToken(jwtResponse.payload.jwtToken)
+      //   console.log(jwtResponse.payload.jwtToken)
       
         this.userManagement.getUserByLoginName(this.login_name).subscribe(userResponse => {
           console.debug("US", userResponse)
           this.userManagement.setActiveUser(userResponse.payload as LoginUser);
           console.debug('LOGGED IN AS:', userResponse.payload);
         })
-      }
+    //   }
 
-      // this.userManagement.setActiveUser(null);
-      // console.debug('LOGGED IN AS:', null);
+    //   this.userManagement.setActiveUser(null);
+    //   console.debug('LOGGED IN AS:', null);
       
-    }, err => {
-      if (err.error as APIResponse<any[]> && err.error.success) {
-        console.warn('Login Failed: ', err.error);
-        this.errorMessage = 'Failed to login. Check your credentials.';
-      } else {
-        console.error('Unexpected error: ', err);
-        this.errorMessage = 'Failed to reach Server. <a href="https://stats.uptimerobot.com/ZpvXzhMyG8">More information</a>';
-      }
-    });
+    // }, err => {
+    //   if (err.error as APIResponse<any[]> && err.error.success) {
+    //     console.warn('Login Failed: ', err.error);
+    //     this.errorMessage = 'Failed to login. Check your credentials.';
+    //   } else {
+    //     console.error('Unexpected error: ', err);
+    //     this.errorMessage = 'Failed to reach Server. <a href="https://stats.uptimerobot.com/ZpvXzhMyG8">More information</a>';
+    //   }
+    // });
   }
 
   enter(keyEvent) {

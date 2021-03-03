@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
@@ -56,6 +56,7 @@ import { ItemsInterfaceComponent } from './game/interface/items-interface/items-
 import { VoteHistoricResultDisplayComponent } from './game/interface/vote-system/vote-historic-result-display/vote-historic-result-display.component';
 import { VoteCreatorComponent } from './game/interface/vote-system/vote-creator/vote-creator.component';
 import { PlayerIconComponent } from './framework/player-icon/player-icon.component';
+import { AuthInterceptor } from './modules/AuthInterceptor';
 
 const appRoutes: Routes = [
   { path: 'lobby', component: LobbyComponent},
@@ -127,7 +128,11 @@ const appRoutes: Routes = [
     MatSlideToggleModule,
     CdkStepperModule
   ],
-  providers: [],
+  providers: [{
+    provide: HTTP_INTERCEPTORS,
+    useClass: AuthInterceptor,
+    multi: true
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

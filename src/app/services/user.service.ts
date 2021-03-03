@@ -37,13 +37,6 @@ export class UserService {
       .pipe(map(users => users[0]));
   }
 
-  // getUserByLoginName(login_name: string): Observable<User> {
-  //   const requestUrl = this.userEndpoint + '?login_name=' + login_name;
-  //   return this.httpClient
-  //     .get<User[]>(requestUrl)
-  //     .pipe(map(users => users[0]));
-  // }
-
   getUserByLoginName(login_name: string): Observable<APIResponse<LoginUser>> {
     const requestUrl = this.userEndpoint + '?login_name=' + login_name;
     return this.httpClient.get<APIResponse<LoginUser>>(requestUrl)
@@ -64,16 +57,12 @@ export class UserService {
     return this.httpClient.post<APIResponse<JwtResponse>>(this.userEndpoint + '/token', { username: login_name, password: password_hash });
   }
 
-  // loginUser(login_name: string, password_hash: string): Observable<APIResponse<User[]>> {
-  //   return this.httpClient.post<APIResponse<User[]>>(this.userEndpoint + '/token', {username: login_name, password: password_hash});
-  // }
-
   syncUserData(user: User): void {
     this.httpClient
-      .post<APIResponse<User[]>>(this.userEndpoint + '/login', { login_name: user.login_name, password_hash: user.password_hash })
+      .get<APIResponse<User>>(this.userEndpoint + '?login_name=' + user.login_name)
       .subscribe(response => {
-        if (response.payload[0] !== undefined) {
-          this.setActiveUser(response.payload[0]);
+        if (response.payload !== undefined) {
+          this.setActiveUser(response.payload as LoginUser);
         } else {
           console.error('Failed to update user: ', response);
         }
