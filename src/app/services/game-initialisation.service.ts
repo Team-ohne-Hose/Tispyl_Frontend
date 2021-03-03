@@ -122,6 +122,7 @@ export class GameInitialisationService {
   setColyseusReady(gameState: GameStateService) {
     this.gameState = gameState;
     if (!this.colyseusReady) {
+      console.debug('Colyseus is ready');
       this.colyseusReady = true;
 
       // if static has already loaded, proceed to init, because static loading stopped and is waiting for colyseus

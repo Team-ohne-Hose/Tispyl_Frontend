@@ -30,7 +30,8 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
               public gameState: GameStateService,
               private hints: HintsService,
               private chat: ChatService,
-              private items: ItemService) {
+              private items: ItemService,
+              private objectLoader: ObjectLoaderService) {
     this.routes = router.config.filter( route => route.path !== '**' && route.path.length > 0);
   }
 
@@ -58,7 +59,8 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
     {k: '/giveItem', f: this.giveItem.bind(this), h: '<name> <itemId> Gives Player <name> <itemId>. Only the Host can do this.'},
     {k: '/showItems', f: this.showItems.bind(this), h: 'List your currently owned Items'},
     {k: '/useItem', f: this.useItem.bind(this), h: '<itemId> <name> Uses Item <itemId> [on Player <name>]. You need to have the Item in your Inventory.'},
-    {k: '/hint', f: this.printHint.bind(this), h: 'Gives a random hint'}
+    {k: '/hint', f: this.printHint.bind(this), h: 'Gives a random hint'},
+    {k: '/hires', f: this.objectLoader.loadHiResTex.bind(this.objectLoader), h: 'loads HiRes Textures'}
 
     // {k: '/addFigure', f: this.addGamefigure.bind(this), h: ''},
     // TODO readd a feature alike this one. But add a new Player for this client instead
