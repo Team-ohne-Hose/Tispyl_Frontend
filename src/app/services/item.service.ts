@@ -105,7 +105,7 @@ export class ItemService implements ColyseusNotifyable {
     }
     return undefined;
   }
-  getOrderedItemList() {
+  getOrderedItemList(): number[] {
     const itemListArray: number[] = [];
     const items = this.getMyItemsList();
     if (items !== undefined) {
@@ -117,13 +117,8 @@ export class ItemService implements ColyseusNotifyable {
       itemListArray.sort((a: number, b: number) => {
         return a - b;
       });
-      if (itemListArray?.length > 0) {
-        return itemListArray;
-      } else {
-        return [];
-      }
     }
-    return [];
+    return itemListArray;
 }
   selectNextItem() {
     const itemListArray: number[] = this.getOrderedItemList();
