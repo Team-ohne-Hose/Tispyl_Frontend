@@ -27,7 +27,7 @@ export class ItemService implements ColyseusNotifyable {
       desc: 'Ein anderer Mitspieler muss deine nächste Aufgabe auch machen',
       imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute},
     3: {id: 3, weight: 1, name: 'Beste Freunde Gulasch',
-      desc: 'Suche dir einen Trinkbuddy',
+      desc: 'Wähle einen Trinkbuddy',
       imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute},
     4: {id: 4, weight: 1, name: 'Todfeind',
       desc: 'Löse eine Trinkbuddy Verbindung auf',
@@ -61,12 +61,20 @@ export class ItemService implements ColyseusNotifyable {
 
   targetingItem = false;
   selectedItem = -1;
-  onUseItem: (itemId: number) => void;
+  onItemUpdate: () => void;
   gameState: GameStateService;
 
   constructor(private chatService: ChatService) { }
 
-  attachColyseusStateCallbacks(gameState: GameStateService): void {}
+  attachColyseusStateCallbacks(gameState: GameStateService): void {
+    this.gameState = gameState;
+    gameState.addItemUpdateCallback((() => {
+      if (this.onItemUpdate !== undefined) {
+        this.onItemUpdate();
+      }
+    }).bind(this));
+    this.onItemUpdate();
+  }
   attachColyseusMessageCallbacks(gameState: GameStateService): void {
     this.gameState = gameState;
     gameState.registerMessageCallback(MessageType.ITEM_MESSAGE, {
@@ -97,7 +105,7 @@ export class ItemService implements ColyseusNotifyable {
     }
     return undefined;
   }
-  getOrderedItemList() {
+  getOrderedItemList(): number[] {
     const itemListArray: number[] = [];
     const items = this.getMyItemsList();
     if (items !== undefined) {
@@ -109,8 +117,8 @@ export class ItemService implements ColyseusNotifyable {
       itemListArray.sort((a: number, b: number) => {
         return a - b;
       });
-      return itemListArray;
     }
+    return itemListArray;
 }
   selectNextItem() {
     const itemListArray: number[] = this.getOrderedItemList();
@@ -196,8 +204,8 @@ export class ItemService implements ColyseusNotifyable {
   }
 
   useItem(itemId: number, targetId?: number) {
-    if (this.onUseItem !== undefined) {
-      this.onUseItem(itemId);
+    if (this.onItemUpdate !== undefined) {
+      this.onItemUpdate();
     }
 
     let targetLogin = '';

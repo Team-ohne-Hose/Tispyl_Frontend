@@ -3,6 +3,7 @@ import {GLTF, GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
 import {PhysicsEntity, PhysicsEntityVariation, PlayerModel} from '../model/WsData';
 import {Texture} from 'three';
+import {Observable, Subject, Subscription} from 'rxjs';
 
 interface ResourceData {
   cname: string;
@@ -24,8 +25,10 @@ export interface EntityList<T> {
 interface PlayerModelData {
   texFName: string;
   specFName: string;
+  lowResTex: THREE.Texture;
   tex: THREE.Texture;
   spec: THREE.Texture;
+  subject: Subject<{tex: THREE.Texture, spec: THREE.Texture}>;
 }
 export class Color {
   r: number;
@@ -94,23 +97,34 @@ export class ObjectLoaderService {
   ];
   currentCubeMap = 2;
   private readonly resourcePath = '/assets/models/';
+  private readonly lowResSuffix = '_256'; // set the suffix for the lower resolution/faster loading playermodels, currently _128 or _256 or nothing
+  private texMapEntry = ((texFName: string, specFName?: string) =>
+    ({texFName: texFName,
+      specFName: (specFName || 'default_spec'),
+      lowResTex: undefined,
+      tex: undefined,
+      spec: undefined,
+      subject: new Subject<{tex: THREE.Texture, spec: THREE.Texture}>(),
+      objectList: []}));
+
+  // we are currently not using specific specular maps, to use those, the subject has to also update those
   private texList: Map<PlayerModel, PlayerModelData> = new Map<PlayerModel, PlayerModelData>([
-    [PlayerModel.bcap_NukaCola, {texFName: 'default', specFName: 'default_spec', tex: undefined, spec: undefined}],
-    [PlayerModel.bcap_CocaCola, {texFName: 'cocaCola', specFName: 'default_spec', tex: undefined, spec: undefined}],
-    [PlayerModel.bcap_Developer, {texFName: 'dev', specFName: 'default_spec', tex: undefined, spec: undefined}],
-    [PlayerModel.bcap_Jagermeister, {texFName: 'jagermeister', specFName: 'default_spec', tex: undefined, spec: undefined}],
-    [PlayerModel.bcap_Murica, {texFName: 'murica', specFName: 'default_spec', tex: undefined, spec: undefined}],
-    [PlayerModel.bcap_hb, {texFName: 'hb', specFName: 'default_spec', tex: undefined, spec: undefined}],
-    [PlayerModel.bcap_OurAnthem, {texFName: 'ourAnthem', specFName: 'default_spec', tex: undefined, spec: undefined}],
-    [PlayerModel.bcap_Schmucker, {texFName: 'schmucker', specFName: 'default_spec', tex: undefined, spec: undefined}],
-    [PlayerModel.bcap_Tiddies1, {texFName: 'kronkorken1', specFName: 'default_spec', tex: undefined, spec: undefined}],
-    [PlayerModel.bcap_cat, {texFName: 'catGoblin', specFName: 'default_spec', tex: undefined, spec: undefined}],
-    [PlayerModel.bcap_yoshi, {texFName: 'yoshi', specFName: 'default_spec', tex: undefined, spec: undefined}],
-    [PlayerModel.bcap_niclas, {texFName: 'Niclas_Kronkorken', specFName: 'default_spec', tex: undefined, spec: undefined}],
-    [PlayerModel.bcap_adi, {texFName: 'Adis_kronkorken', specFName: 'default_spec', tex: undefined, spec: undefined}],
-    [PlayerModel.bcap_countcount, {texFName: 'countcount', specFName: 'default_spec', tex: undefined, spec: undefined}],
-    [PlayerModel.bcap_gude, {texFName: 'gude', specFName: 'default_spec', tex: undefined, spec: undefined}],
-    [PlayerModel.bcap_lordHelmchen, {texFName: 'lord_helmchen', specFName: 'default_spec', tex: undefined, spec: undefined}],
+    [PlayerModel.bcap_NukaCola, this.texMapEntry('default')],
+    [PlayerModel.bcap_CocaCola, this.texMapEntry('cocaCola')],
+    [PlayerModel.bcap_Developer, this.texMapEntry('dev')],
+    [PlayerModel.bcap_Jagermeister, this.texMapEntry('jagermeister')],
+    [PlayerModel.bcap_Murica, this.texMapEntry('murica')],
+    [PlayerModel.bcap_hb, this.texMapEntry('hb')],
+    [PlayerModel.bcap_OurAnthem, this.texMapEntry('ourAnthem')],
+    [PlayerModel.bcap_Schmucker, this.texMapEntry('schmucker')],
+    [PlayerModel.bcap_Tiddies1, this.texMapEntry('kronkorken1')],
+    [PlayerModel.bcap_cat, this.texMapEntry('catGoblin')],
+    [PlayerModel.bcap_yoshi, this.texMapEntry('yoshi')],
+    [PlayerModel.bcap_niclas, this.texMapEntry('Niclas_Kronkorken')],
+    [PlayerModel.bcap_adi, this.texMapEntry('Adis_kronkorken')],
+    [PlayerModel.bcap_countcount, this.texMapEntry('countcount')],
+    [PlayerModel.bcap_gude, this.texMapEntry('gude')],
+    [PlayerModel.bcap_lordHelmchen, this.texMapEntry('lord_helmchen')],
   ]);
   private readonly entities: ([PhysicsEntity, PhysicsEntityVariation])[] = [
     [PhysicsEntity.dice, PhysicsEntityVariation.default],
@@ -178,7 +192,7 @@ export class ObjectLoaderService {
       };
 
       this.texList.forEach((val: PlayerModelData, key: PlayerModel) => {
-        this.loadBcapTex(key, onProgress);
+        this.loadBcapLowRes(key, onProgress);
       });
 
       this.entities.forEach((value: [PhysicsEntity, PhysicsEntityVariation], index: number) => {
@@ -187,6 +201,14 @@ export class ObjectLoaderService {
     });
 
     return myPromise;
+  }
+  async loadHiResTex() {
+    console.log('this is:', this, this.texList);
+    this.texList.forEach((val: PlayerModelData, key: PlayerModel) => {
+      this.loadBcapTex(key, (tex: THREE.Texture, spec: THREE.Texture) => {
+        val.subject.next({tex: tex, spec: spec});
+      });
+    });
   }
 
   setCurrentCubeMap(cubeMapId: number) {
@@ -222,7 +244,7 @@ export class ObjectLoaderService {
   }
   getBCapTextureThumbPath(sel: number) {
     const entry = this.texList.get(sel);
-    return '../assets/models/otherTex/' + (entry === undefined ? 'default' : entry.texFName) + '.png';
+    return '../assets/models/otherTex/' + (entry === undefined ? 'default' : entry.texFName) + '_128.png';
   }
 
   private getResourceData(obj: PhysicsEntity, variation: PhysicsEntityVariation): ResourceData {
@@ -252,14 +274,32 @@ export class ObjectLoaderService {
         gltf.scene.receiveShadow = true;
         resource.objectCache = gltf.scene.clone(true);
         callback(gltf.scene);
-        //gltf.scene.children[0].castShadow = true;
-        //gltf.scene.children[0].receiveShadow = true;
-        //resource.objectCache = gltf.scene.children[0].clone(true);
-        //callback( gltf.scene.children[0] );
+      });
+    }
+  }
+  private getTexture(model: PlayerModel) {
+    let texData: PlayerModelData = this.texList.get(model);
+    if (texData === undefined) {
+      texData = this.texList.get(PlayerModel.bcap_NukaCola);
+    }
+
+    if (texData.spec !== undefined && texData.tex !== undefined) {
+      return texData.tex;
+    } else if (texData.spec !== undefined && texData.lowResTex !== undefined) {
+      return texData.lowResTex;
+    } else {
+      this.loadBcapTex(model, (tex, spec) => {
+        if (tex === undefined) {
+          console.error('Error loading bcap texture', model);
+        }
       });
     }
   }
   switchTex(obj: THREE.Object3D, model: PlayerModel) {
+    if (model === undefined) {
+      return;
+    }
+    // filter out non-Mesh Objects, this makes sure to not refer to the group containing the mesh
     while (!(obj instanceof THREE.Mesh)) {
       if (obj.children.length <= 0) {
         return;
@@ -269,45 +309,68 @@ export class ObjectLoaderService {
         return;
       }
     }
-    let texData: PlayerModelData = this.texList.get(model);
-    if (texData === undefined) {
-      texData = this.texList.get(PlayerModel.bcap_NukaCola);
-    }
-    if (texData.tex === undefined || texData.spec === undefined) {
-      this.loadBcapTex(model, (tex) => {
-        if (tex !== undefined) {
-          const mesh: THREE.Mesh = obj as THREE.Mesh;
-          if (mesh.material instanceof THREE.Material) {
-            mesh.material = mesh.material.clone();
-            mesh.material['map'] = tex;
-          }
-        } else {
-          console.error('Error loading bcap texture', model);
+
+    // gather correct Texture
+    const tex = this.getTexture(model);
+
+    const mesh: THREE.Mesh = obj as THREE.Mesh;
+    if (mesh.material instanceof THREE.Material && tex !== undefined) {
+      mesh.material['map'] = tex;
+
+      const subscription = mesh.userData['textureSubscription'] as Subscription;
+      if (subscription !== undefined) {
+        subscription.unsubscribe();
+      }
+      mesh.userData['textureSubscription'] = this.texList.get(model).subject.subscribe({
+        next: (newTexture: {tex: THREE.Texture, spec: THREE.Texture}) => {
+          mesh.material['map'] = newTexture.tex;
+          // mesh.material['spec'] = newTexture.spec;
         }
       });
-    } else {
-      const mesh: THREE.Mesh = obj as THREE.Mesh;
-      if (mesh.material instanceof THREE.Material) {
-        mesh.material = mesh.material.clone();
-        mesh.material['map'] = texData.tex;
-      }
+
     }
   }
-  loadBcapTex(model: PlayerModel, onDone: (tex: Texture) => void): void {
+  loadTex(fname: string, fnameSpec: string): {tex: THREE.Texture, spec: THREE.Texture} {
+    const texture = new THREE.TextureLoader().load( '/assets/models/otherTex/' + fname + '.png' );
+    texture.encoding = THREE.sRGBEncoding;
+    texture.anisotropy = 16;
+    const gloss = new THREE.TextureLoader().load( '/assets/models/otherTex/' + fnameSpec + '.png' );
+    gloss.encoding = THREE.LinearEncoding;
+    return {tex: texture, spec: gloss};
+  }
+  loadBcapLowRes(model: PlayerModel, onDone: (tex: Texture, spec: Texture) => void): void {
     const texData: PlayerModelData = this.texList.get(model);
     if (texData !== undefined) {
       const fname = texData.texFName || 'kronkorken1';
       const fnameSpec = texData.specFName || 'kronkorken1';
-      const texture = new THREE.TextureLoader().load( '/assets/models/otherTex/' + fname + '.png' );
-      texture.encoding = THREE.sRGBEncoding;
-      texture.anisotropy = 16;
-      texData.tex = texture;
-      const gloss = new THREE.TextureLoader().load( '/assets/models/otherTex/' + fnameSpec + '.png' );
-      gloss.encoding = THREE.LinearEncoding;
-      texData.spec = gloss;
-      onDone(texture);
+      const texMaps = this.loadTex(fname + this.lowResSuffix, fnameSpec + this.lowResSuffix);
+      texData.lowResTex = texMaps.tex;
+      if (texData.spec === undefined) {
+        texData.spec = texMaps.spec;
+      }
+
+      // only notify, if no hires tex exists
+      if (texData.tex === undefined) {
+        texData.subject.next({tex: texMaps.tex, spec: texMaps.spec});
+      }
+      onDone(texMaps.tex, texMaps.spec);
     } else {
-      onDone(undefined);
+      onDone(undefined, undefined);
+    }
+  }
+  loadBcapTex(model: PlayerModel, onDone: (tex: Texture, spec: Texture) => void): void {
+    const texData: PlayerModelData = this.texList.get(model);
+    if (texData !== undefined) {
+      const fname = texData.texFName || 'kronkorken1';
+      const fnameSpec = texData.specFName || 'kronkorken1';
+      const texMaps = this.loadTex(fname, fnameSpec);
+      texData.tex = texMaps.tex;
+      texData.spec = texMaps.spec;
+
+      texData.subject.next({tex: texData.tex, spec: texData.spec});
+      onDone(texMaps.tex, texMaps.spec);
+    } else {
+      onDone(undefined, undefined);
     }
   }
 

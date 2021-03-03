@@ -16,15 +16,20 @@ export class ItemsInterfaceComponent implements OnInit {
   scrollable = true;
 
   ngOnInit(): void {
-    this.items.onUseItem = this.onItemUse.bind(this);
-    this.updateItemData();
+    this.items.onItemUpdate = this.onItemUpdate.bind(this);
   }
 
   updateItemData() {
     if (this.items.selectedItem < 0) {
-      this.itemName = 'NO ITEM SELECTED';
-      this.itemDescription = '';
-      this.itemThumbnail = '../assets/defaultImage.jpg';
+      if (!(this.items.getOrderedItemList().length > 0)) {
+        this.itemName = 'NO ITEM SELECTED';
+        this.itemDescription = '';
+        this.itemThumbnail = '../assets/defaultImage.jpg';
+        return;
+      } else {
+        // there are items selectable, so select one automatically.
+        this.items.selectNextItem();
+      }
     }
     this.itemName = this.items.getItemName(this.items.selectedItem);
     this.itemDescription = this.items.getItemDesc(this.items.selectedItem);
@@ -52,7 +57,7 @@ export class ItemsInterfaceComponent implements OnInit {
       }
     }
   }
-  onItemUse(itemId: number) {
+  onItemUpdate() {
     this.updateItemData();
   }
 }
