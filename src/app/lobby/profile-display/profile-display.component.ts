@@ -60,6 +60,8 @@ export class ProfileDisplayComponent {
     private fileManagement: FileService, 
     private objectLoaderService: ObjectLoaderService,
     private AuthService: JwtTokenService) {
+
+    
     this.userManagement.getActiveUser().subscribe( u => {
       if ( u !== undefined ) {
         this.profileSource = this.fileManagement.profilePictureSource(u.login_name, true);

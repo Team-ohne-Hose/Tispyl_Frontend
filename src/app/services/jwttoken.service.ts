@@ -7,6 +7,7 @@ import { APIResponse } from "../model/APIResponse";
 import { JwtResponse } from "../model/JwtToken";
 import { Login } from "../model/Login";
 import { LoginUser, User } from "../model/User";
+import { UserService } from "./user.service";
 
 @Injectable({ providedIn: 'root' })
 export class JwtTokenService {
@@ -24,17 +25,22 @@ export class JwtTokenService {
     //     return (token)
     //   }
 
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient, private UserService: UserService) { }
 
     login(username: string, password: string) {
 
         console.debug("Enter Login")
 
         this.http.post<APIResponse<JwtResponse>>(this.endpoint + "/token", { username, password }).subscribe(
-
             res => {
                 console.debug("Enter Subscribe")
                 this.setSession(res, username)
+
+                this.UserService.getUserByLoginName(username).subscribe(userResponse => {
+                    console.debug("US", userResponse)
+                    this.UserService.setActiveUser(userResponse.payload as LoginUser);
+                    console.debug('LOGGED IN AS:', userResponse.payload);
+                  });
             }
         );
     }

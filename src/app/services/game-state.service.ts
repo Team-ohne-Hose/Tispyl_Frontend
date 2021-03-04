@@ -10,7 +10,7 @@ import { BoardLayoutState, Tile } from '../model/state/BoardLayoutState';
 import { MessageType } from '../model/WsData';
 import { GameInitialisationService } from './game-initialisation.service';
 import { Data } from '@angular/router';
-import { VoteState } from '../model/state/VoteState';
+import { VoteStage, VoteState } from '../model/state/VoteState';
 import { VoteEntry } from '../game/interface/vote-system/VoteEntry';
 
 
