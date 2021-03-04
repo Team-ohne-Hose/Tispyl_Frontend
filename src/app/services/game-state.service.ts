@@ -1,16 +1,18 @@
-import {Injectable} from '@angular/core';
-import {ColyseusClientService, MessageCallback} from './colyseus-client.service';
-import {Room} from 'colyseus.js';
-import {DataChange, MapSchema, ArraySchema} from '@colyseus/schema';
-import {GameState} from '../model/state/GameState';
-import {Player} from '../model/state/Player';
-import {PhysicsObjectState, PhysicsState} from '../model/state/PhysicsState';
-import {BoardLayoutState, Tile} from '../model/state/BoardLayoutState';
-import {MessageType} from '../model/WsData';
-import {GameInitialisationService} from './game-initialisation.service';
-import {Data} from '@angular/router';
-import {VoteStage, VoteState} from '../model/state/VoteState';
-import {VoteEntry} from '../game/interface/vote-system/VoteEntry';
+
+import { Injectable } from '@angular/core';
+import { ColyseusClientService, MessageCallback } from './colyseus-client.service';
+import { Room } from 'colyseus.js';
+import { DataChange, MapSchema, ArraySchema } from '@colyseus/schema';
+import { GameState } from '../model/state/GameState';
+import { Player } from '../model/state/Player';
+import { PhysicsObjectState, PhysicsState } from '../model/state/PhysicsState';
+import { BoardLayoutState, Tile } from '../model/state/BoardLayoutState';
+import { MessageType } from '../model/WsData';
+import { GameInitialisationService } from './game-initialisation.service';
+import { Data } from '@angular/router';
+import { VoteState } from '../model/state/VoteState';
+import { VoteEntry } from '../game/interface/vote-system/VoteEntry';
+
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +38,7 @@ export class GameStateService {
   activeAction = '';
 
   constructor(private colyseus: ColyseusClientService,
-              private gameInit: GameInitialisationService) {
+    private gameInit: GameInitialisationService) {
     this.colyseus.addOnChangeCallback((changes: DataChange<GameState>[]) => {
       changes.forEach((change: DataChange<any>) => {
         switch (change.field) {
@@ -170,7 +172,6 @@ export class GameStateService {
     }
   }
 
-
   isGameLoaded(): boolean {
     return this.loaded;
   }
@@ -230,23 +231,22 @@ export class GameStateService {
     if (s !== undefined) {
       return s.playerList.get(loginName);
     }
-    /*
-    return this.findInPlayerList((p: Player) => {
-      return p.loginName === loginName;
-    });*/
   }
+
   getByDisplayName(displayName: string) {
     return this.findInPlayerList((p: Player) => {
       return p.displayName === displayName;
     });
   }
+
   getDisplayName(playerlogin: string): string {
-    const p: Player = this.getByDisplayName(playerlogin);
+    const p: Player = this.getByLoginName(playerlogin);
     if (p !== undefined) {
       return p.displayName;
     }
     return undefined;
   }
+
   getLoginName(playerDisplayName: string): string {
     const p: Player = this.getByDisplayName(playerDisplayName);
     if (p !== undefined) {

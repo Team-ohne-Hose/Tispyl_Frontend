@@ -4,6 +4,7 @@ import {UserService} from '../../services/user.service';
 import {FileService} from '../../services/file.service';
 import {PlayerModel} from '../../model/WsData';
 import {ObjectLoaderService} from '../../services/object-loader.service';
+import { JwtTokenService } from 'src/app/services/jwttoken.service';
 
 enum Resolution {
   res_8k,
@@ -55,7 +56,10 @@ export class ProfileDisplayComponent {
     {name: 'Bridge (2k)', resolution: Resolution.res_2k, thumb: '/cubemaps/thumbs/bridge-bridge.jpg', value: 14},
     {name: 'Bridge2 (2k)', resolution: Resolution.res_2k, thumb: '/cubemaps/thumbs/bridge-bridge2.jpg', value: 15}];
 
-  constructor(private userManagement: UserService, private fileManagement: FileService, private objectLoaderService: ObjectLoaderService) {
+  constructor(private userManagement: UserService, 
+    private fileManagement: FileService, 
+    private objectLoaderService: ObjectLoaderService,
+    private AuthService: JwtTokenService) {
     this.userManagement.getActiveUser().subscribe( u => {
       if ( u !== undefined ) {
         this.profileSource = this.fileManagement.profilePictureSource(u.login_name, true);
@@ -72,6 +76,7 @@ export class ProfileDisplayComponent {
   }
 
   logout() {
+    this.AuthService.logout();
     this.userManagement.setActiveUser(undefined);
   }
 

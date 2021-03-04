@@ -5,7 +5,7 @@ import {ChatMessage} from './ChatMessage';
 import {ObjectLoaderService} from '../services/object-loader.service';
 import {MessageType, PlayerMessageType, RefreshCommandType, RefreshProfilePics, SetFigure} from '../model/WsData';
 import {GameStateService} from '../services/game-state.service';
-import {User} from '../model/User';
+import {LoginUser, User} from '../model/User';
 import {Player} from '../model/state/Player';
 import {ChatService} from '../services/chat.service';
 
@@ -20,7 +20,7 @@ export class HomeRegisterComponent {
   bottleCapSource = '../assets/models/otherTex/default.png';
   myBCapIndex = 1;
 
-  user: User;
+  user: LoginUser;
   @Input() playerlist: Player[];
   @Output() chatCommand = new EventEmitter<string[]>();
 
@@ -129,7 +129,7 @@ export class HomeRegisterComponent {
     }
   }
 
-  getPlayerFromUser(user: User): Player {
+  getPlayerFromUser(user: LoginUser): Player {
     return this.playerlist ? this.playerlist.find((val: Player) => {
       return val.loginName === user.login_name;
     }) : undefined;
