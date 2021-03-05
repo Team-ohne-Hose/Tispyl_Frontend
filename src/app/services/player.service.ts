@@ -4,7 +4,7 @@ import { Player } from "../model/state/Player";
 @Injectable({
     providedIn: 'root'
   })
-  export class PLayerService {
+  export class PlayerService {
 
     playerList: Player[];
 

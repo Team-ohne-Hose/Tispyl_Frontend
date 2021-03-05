@@ -15,7 +15,8 @@ export interface MessageCallback {
 }
 @Injectable({
   providedIn: 'root'
-})export class ColyseusClientService {
+})
+export class ColyseusClientService {
 
   private readonly prodBackendWStarget = 'wss://tispyl.uber.space:41920';
   private readonly devBackendWStarget = 'ws://localhost:25670';
