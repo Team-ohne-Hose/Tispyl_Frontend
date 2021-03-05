@@ -61,9 +61,9 @@ export class GameStateService {
         this.room = room;
         room.onStateChange.once((state) => {
           console.debug('first colyseus Patch recieved');
+          this.loaded = true;
           this.gameInit.setColyseusReady(this);
           setTimeout(this.attachCallbacks.bind(this), 100, room);
-          this.loaded = true;
         });
       } else {
         console.error('room was undefined');
@@ -284,30 +284,19 @@ export class GameStateService {
   }
   forEachPlayer(f: (p: Player) => void) {
     const s: GameState = this.getState();
-    if (s !== undefined) {
-      s.playerList.forEach(f);
-    }
+    s?.playerList?.forEach(f);
   }
   getRules(): ArraySchema<string> {
     const s: GameState = this.getState();
-    if (s !== undefined) {
-      return s.rules;
-    }
-    return undefined;
+    return s?.rules;
   }
   getVoteState(): VoteState {
     const s: GameState = this.getState();
-    if (s !== undefined) {
-      return s.voteState;
-    }
-    return undefined;
+    return s?.voteState;
   }
   getPhysicsState(): PhysicsState {
     const s = this.getState();
-    if (s !== undefined) {
-      return s.physicsState;
-    }
-    return undefined;
+    return s?.physicsState;
   }
   getBoardLayoutAsArray(): Tile[] {
     const s: GameState = this.getState();

@@ -1,9 +1,8 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
-import {ChatWindowComponent} from './chat-window/chat-window.component';
 import {MapSchema} from '@colyseus/schema';
 import {GameComponent} from '../game.component';
-import {GameActionType, ItemMessageType, MessageType, PlayerMessageType, SetFigure} from '../../model/WsData';
+import {ChatCommandType, GameActionType, ItemMessageType, MessageType} from '../../model/WsData';
 import {Player} from '../../model/state/Player';
 import {GLTFExporter} from 'three/examples/jsm/exporters/GLTFExporter';
 import {GameStateService} from '../../services/game-state.service';
@@ -60,7 +59,11 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
     {k: '/showItems', f: this.showItems.bind(this), h: 'List your currently owned Items'},
     {k: '/useItem', f: this.useItem.bind(this), h: '<itemId> <name> Uses Item <itemId> [on Player <name>]. You need to have the Item in your Inventory.'},
     {k: '/hint', f: this.printHint.bind(this), h: 'Gives a random hint'},
+    {k: '/respawn', f: this.respawn.bind(this), h: 'Respawn your figure'},
+    {k: '/ask', f: this.askGame.bind(this), h: '<Question> Ask the Game a Yes/No-Question'},
+    {k: '/random', f: this.randomNum.bind(this), h: '<number> get a random number between 1 and <number>'},
     {k: '/hires', f: this.objectLoader.loadHiResTex.bind(this.objectLoader), h: 'loads HiRes Textures'}
+
 
     // {k: '/addFigure', f: this.addGamefigure.bind(this), h: ''},
     // TODO readd a feature alike this one. But add a new Player for this client instead
@@ -111,6 +114,29 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
 
   private listPhysics() {
     this.gameState.sendMessage('SERVER_COMMAND', {type: 'SERVER_COMMAND', content: {subType: 'listphysics'}});
+  }
+
+  private respawn() {
+    this.gameComponent.boardItemControl.respawnMyFigure();
+  }
+
+  private askGame( args: string[]) {
+    const question = args.slice(1).join(' ');
+
+    this.gameState.sendMessage(MessageType.CHAT_COMMAND, {
+      type: MessageType.CHAT_COMMAND,
+      subType: ChatCommandType.commandAsk,
+      question: question,
+      authorDisplayName: this.gameState.getMe().displayName });
+  }
+
+  private randomNum( args ) {
+    const limit: number = (args[1] !== undefined) ? Math.round(Number(args[1].trim())) : 10;
+    this.gameState.sendMessage(MessageType.CHAT_COMMAND, {
+      type: MessageType.CHAT_COMMAND,
+      subType: ChatCommandType.commandRandom,
+      limit: limit
+    });
   }
 
   private playAnthem() {

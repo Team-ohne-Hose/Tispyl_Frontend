@@ -28,7 +28,6 @@ import { OpenGamePopupComponent } from './lobby/dialogs/open-game-popup/open-gam
 import { JoinGameComponent } from './lobby/dialogs/join-game/join-game.component';
 import { InterfaceComponent } from './game/interface/interface.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
-import { ChatWindowComponent } from './game/interface/chat-window/chat-window.component';
 import { StateDisplayComponent } from './game/interface/state-display/state-display.component';
 import { ConnectedPlayersComponent } from './game/interface/connected-players/connected-players.component';
 import { PregameBannerComponent } from './game/interface/pregame-banner/pregame-banner.component';
@@ -83,7 +82,6 @@ const appRoutes: Routes = [
     OpenGamePopupComponent,
     JoinGameComponent,
     InterfaceComponent,
-    ChatWindowComponent,
     StateDisplayComponent,
     ConnectedPlayersComponent,
     PregameBannerComponent,

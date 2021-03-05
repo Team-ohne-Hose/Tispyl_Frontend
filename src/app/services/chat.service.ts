@@ -18,7 +18,7 @@ export class ChatService implements ColyseusNotifyable {
   attachColyseusStateCallbacks(gameState: GameStateService): void {}
   attachColyseusMessageCallbacks(gameState: GameStateService): void {
     this.gameState = gameState;
-    
+
     gameState.registerMessageCallback(MessageType.CHAT_MESSAGE, {
       filterSubType: -1,
       f: (data: WsData) => {
@@ -43,6 +43,15 @@ export class ChatService implements ColyseusNotifyable {
       f: (data: WsData) => {
         if (data.type === MessageType.LEFT_MESSAGE) {
           this.onChatMessageReceived(data.message, 'SERVER');
+        }
+      }
+    });
+
+    gameState.registerMessageCallback(MessageType.SERVER_MESSAGE, {
+      filterSubType: -1,
+      f: (data: WsData) => {
+        if (data.type === MessageType.SERVER_MESSAGE) {
+          this.onChatMessageReceived(data.message, data.origin);
         }
       }
     });

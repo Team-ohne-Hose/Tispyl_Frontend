@@ -131,8 +131,16 @@ export class BoardItemManagement implements ColyseusNotifyable {
   }
 
   hoverGameFigure(object: THREE.Object3D, x: number, y: number) {
+    const physID = PhysicsCommands.getPhysId(object);
+    // pick up figure, set to no spatial velocity, rotation is ok, but the figure shouldnt move.
+    this.physics.setPosition(physID, x, 10, y);
+    this.physics.setVelocity(physID, 0, 0, 0);
     // this.physics.setRotation(PhysicsCommands.getPhysId(object), 0, 0, 0, 1);
-    this.physics.setPosition(PhysicsCommands.getPhysId(object), x, 10, y);
+  }
+  respawnMyFigure() {
+    const physID = this.gameState.getMe().figureId;
+    this.physics.setPosition(physID, 0, 15, 0);
+    this.physics.setVelocity(physID, 0, 0, 0);
   }
   moveGameFigure(object: THREE.Object3D, fieldID: number) {
     console.debug('move Figure to ', fieldID);

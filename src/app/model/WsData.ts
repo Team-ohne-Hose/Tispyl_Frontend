@@ -1,8 +1,22 @@
 import {VoteConfiguration} from '../game/interface/vote-system/VoteConfiguration';
 
-export type WsData = OtherMessage | ChatMessage | JoinMessage | LeftMessage | GameMessage | PlayerMessage | PhysicsCommand | DebugCommand | RefreshCommand | AchievementMessage | ItemMessage;
+export type WsData = OtherMessage |
+                      ServerMessage |
+                      ChatMessage |
+                      JoinMessage |
+                      LeftMessage |
+                      GameMessage |
+                      PlayerMessage |
+                      PhysicsCommand |
+                      DebugCommand |
+                      RefreshCommand |
+                      AchievementMessage |
+                      ItemMessage |
+                      ChatCommand;
+
 export enum MessageType {
   OTHER,
+  SERVER_MESSAGE,
   CHAT_MESSAGE,
   JOIN_MESSAGE,
   LEFT_MESSAGE,
@@ -12,12 +26,18 @@ export enum MessageType {
   DEBUG_COMMAND,
   REFRESH_COMMAND,
   ACHIEVEMENT_MESSAGE,
-  ITEM_MESSAGE
+  ITEM_MESSAGE,
+  CHAT_COMMAND
 }
 
 export interface OtherMessage {
   type: MessageType.OTHER;
   message: string;
+}
+export interface ServerMessage {
+  type: MessageType.SERVER_MESSAGE;
+  message: string;
+  origin: string;
 }
 export interface ChatMessage {
   type: MessageType.CHAT_MESSAGE;
@@ -285,4 +305,21 @@ export interface UseItem {
   param: string;
   itemName: string;
   itemDescription: string;
+}
+
+export type ChatCommand = AskCommand | RandomCommand;
+export enum ChatCommandType {
+  commandAsk,
+  commandRandom
+}
+export interface AskCommand {
+  type: MessageType.CHAT_COMMAND;
+  subType: ChatCommandType.commandAsk;
+  question: string;
+  authorDisplayName: string;
+}
+export interface RandomCommand {
+  type: MessageType.CHAT_COMMAND;
+  subType: ChatCommandType.commandRandom;
+  limit: number;
 }
