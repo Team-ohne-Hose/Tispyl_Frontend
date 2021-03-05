@@ -43,12 +43,9 @@ export class LobbyComponent implements OnInit {
 
   ngOnInit() {
 
-    console.log(localStorage.getItem("jwt_token"))
     if (this.AuthService.isLoggedIn) {
       this.userManagement.getUserByLoginName(localStorage.getItem('username')).subscribe(userResponse => {
-        console.debug("US", userResponse)
         this.userManagement.setActiveUser(userResponse.payload as LoginUser);
-        console.debug('LOGGED IN AS:', userResponse.payload);
       })
 
     } else { this.AuthService.logout() }
