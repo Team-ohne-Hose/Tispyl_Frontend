@@ -1,13 +1,12 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import moment from "moment";
-import { Observable } from "rxjs";
 import { environment } from "src/environments/environment";
 import { APIResponse } from "../model/APIResponse";
 import { JwtResponse } from "../model/JwtToken";
-import { Login } from "../model/Login";
-import { LoginUser, User } from "../model/User";
+import { LoginUser } from "../model/User";
 import { UserService } from "./user.service";
+import moment from "moment";
+import { RegisterOptions } from "../model/RegisterOptions";
 
 @Injectable({ providedIn: 'root' })
 export class JwtTokenService {
@@ -17,19 +16,9 @@ export class JwtTokenService {
     private readonly devUserEndpoint = 'http://localhost:25670/api/user';
     private endpoint = environment.production ? this.prodUserEndpoint : this.devUserEndpoint;
 
-    // decode(t) {
-    //     let token: JwtResponse = null;
-    //     token.raw = t;
-    //     token.header = JSON.parse(window.atob(t.split('.')[0]));
-    //     token.payload = JSON.parse(window.atob(t.split('.')[1]));
-    //     return (token)
-    //   }
-
     constructor(private http: HttpClient, private UserService: UserService) { }
 
     login(username: string, password: string) {
-
-        console.debug("Enter Login")
 
         this.http.post<APIResponse<JwtResponse>>(this.endpoint + "/token", { username, password }).subscribe(
             res => {
@@ -43,6 +32,12 @@ export class JwtTokenService {
                   });
             }
         );
+    }
+
+    register(registerOptions: RegisterOptions) {
+        this.http.post<APIResponse<JwtResponse>>(this.endpoint, registerOptions).subscribe( res => {
+            this.login(registerOptions.username, registerOptions.password)
+        });
     }
 
     logout() {
@@ -72,22 +67,8 @@ export class JwtTokenService {
         localStorage.setItem('username', username)
 
         localStorage.setItem("expires_at", JSON.stringify(expiresAt.valueOf()));
-
-        // if (authResult.success === true) {
-        //     this.setJwtToken(authResult.payload.jwtToken)
-        //     console.log(jwtResponse.payload.jwtToken)
-
-        //     this.userManagement.getUserByLoginName(this.login_name).subscribe(userResponse => {
-        //       console.debug("US", userResponse)
-        //       this.userManagement.setActiveUser(userResponse.payload as LoginUser);
-        //       console.debug('LOGGED IN AS:', userResponse.payload);
-        //     })
-        //   }
         return authResult
     }
-
-
-
 
     setJwtToken(token: string): void {
         this.JwtToken = token;

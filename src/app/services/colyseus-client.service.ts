@@ -1,12 +1,13 @@
-import {Injectable} from '@angular/core';
-import {Client, Room, RoomAvailable} from 'colyseus.js';
-import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {RoomMetaInfo} from '../model/RoomMetaInfo';
-import {GameState} from '../model/state/GameState';
-import {MessageType, PhysicsCommandType, WsData} from '../model/WsData';
-import {DataChange} from '@colyseus/schema';
-import {environment} from '../../environments/environment';
-import {Player} from '../model/state/Player';
+import { Injectable } from '@angular/core';
+import { Client, Room, RoomAvailable } from 'colyseus.js';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { RoomMetaInfo } from '../model/RoomMetaInfo';
+import { GameState } from '../model/state/GameState';
+import { MessageType, PhysicsCommandType, WsData } from '../model/WsData';
+import { DataChange } from '@colyseus/schema';
+import { environment } from '../../environments/environment';
+import { Player } from '../model/state/Player';
+import { Router } from '@angular/router';
 
 export interface MessageCallback {
   filterSubType: number; // -1/undefined for no filter, otherwise the subtype to filter for
@@ -20,6 +21,7 @@ export class ColyseusClientService {
   private readonly prodBackendWStarget = 'wss://tispyl.uber.space:41920';
   private readonly devBackendWStarget = 'ws://localhost:25670';
   private backendWStarget = environment.production ? this.prodBackendWStarget : this.devBackendWStarget;
+  myLoginName: string;
 
   private client: Client = new Client(this.backendWStarget);
   private activeRoom: BehaviorSubject<Room<GameState>>;
@@ -30,9 +32,7 @@ export class ColyseusClientService {
     this.onDataChange.bind(this)
   ];
 
-  myLoginName: string;
-
-  constructor() {
+  constructor(private router: Router) { 
     this.activeRoom = new BehaviorSubject<Room<GameState>>(undefined);
     this.availableRooms = new BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>([]);
   }
@@ -45,6 +45,7 @@ export class ColyseusClientService {
       }
     });
   }
+
   getClient(): Client {
     return this.client;
   }
@@ -60,7 +61,7 @@ export class ColyseusClientService {
     console.info('connected to new active Room', newRoom);
     this.activeRoom.next(newRoom);
   }
-
+  
   createRoom(roomName: string, author: string, loginName: string, displayName: string, skin: string, randomizeTiles: boolean) {
     const options = {
       name: roomName,
@@ -76,9 +77,11 @@ export class ColyseusClientService {
         this.setActiveRoom(suc);
         this.updateAvailableRooms();
         this.myLoginName = loginName;
+        this.router.navigateByUrl('/game');
       });
     }
   }
+  
   joinActiveRoom(roomAva: RoomAvailable<RoomMetaInfo>, loginName: string, displayName: string) {
     const options = {
       name: undefined,
@@ -97,7 +100,7 @@ export class ColyseusClientService {
   }
 
   updateAvailableRooms(): void {
-    this.client.getAvailableRooms('game').then( rooms => {
+    this.client.getAvailableRooms('game').then(rooms => {
       this.availableRooms.next(rooms);
     });
   }
@@ -146,7 +149,7 @@ export class ColyseusClientService {
 
   private updateRoomCallbacks(currentRoom?: Room<GameState>) {
     const onMsg = this.gatherFunctionCalls.bind(this);
-    if ( currentRoom === undefined ) {
+    if (currentRoom === undefined) {
       this.getActiveRoom().subscribe((activeRoom) => {
         if (activeRoom !== undefined) {
           // activeRoom.onMessage('', onMsg);
