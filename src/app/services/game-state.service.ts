@@ -286,15 +286,15 @@ export class GameStateService {
     const s: GameState = this.getState();
     s?.playerList?.forEach(f);
   }
-  getRules(): ArraySchema<string> {
+  getRules(): ArraySchema<string> | undefined {
     const s: GameState = this.getState();
     return s?.rules;
   }
-  getVoteState(): VoteState {
+  getVoteState(): VoteState | undefined {
     const s: GameState = this.getState();
     return s?.voteState;
   }
-  getPhysicsState(): PhysicsState {
+  getPhysicsState(): PhysicsState | undefined {
     const s = this.getState();
     return s?.physicsState;
   }
