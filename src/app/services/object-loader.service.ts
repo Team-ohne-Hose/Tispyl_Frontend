@@ -316,6 +316,7 @@ export class ObjectLoaderService {
 
     const mesh: THREE.Mesh = obj as THREE.Mesh;
     if (mesh.material instanceof THREE.Material && tex !== undefined) {
+      mesh.material = mesh.material.clone();
       mesh.material['map'] = tex;
 
       const subscription = mesh.userData['textureSubscription'] as Subscription;
@@ -324,7 +325,8 @@ export class ObjectLoaderService {
       }
       mesh.userData['textureSubscription'] = this.texList.get(model).subject.subscribe({
         next: (newTexture: {tex: THREE.Texture, spec: THREE.Texture}) => {
-          mesh.material['map'] = newTexture.tex;
+          mesh.material = (mesh.material as THREE.Material).clone();
+          mesh.material['map'] = tex;
           // mesh.material['spec'] = newTexture.spec;
         }
       });

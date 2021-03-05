@@ -3,6 +3,7 @@ import {GameActionType, GameShowTile, MessageType} from '../../../model/WsData';
 import {BoardTilesService} from '../../../services/board-tiles.service';
 import {GameStateService} from '../../../services/game-state.service';
 import {ColyseusNotifyable} from '../../../services/game-initialisation.service';
+import {ChatService} from '../../../services/chat.service';
 
 
 @Component({
@@ -10,12 +11,12 @@ import {ColyseusNotifyable} from '../../../services/game-initialisation.service'
   templateUrl: './tile-overlay.component.html',
   styleUrls: ['./tile-overlay.component.css']
 })
-export class TileOverlayComponent implements ColyseusNotifyable{
+export class TileOverlayComponent implements ColyseusNotifyable {
 
   @Output() printer: EventEmitter<string> = new EventEmitter<string>();
   @Input() playerName: string;
 
-  constructor( private gameState: GameStateService, private boardTiles: BoardTilesService ) {
+  constructor( private gameState: GameStateService, private boardTiles: BoardTilesService, private chatService: ChatService ) {
   }
   attachColyseusStateCallbacks(gameState: GameStateService): void {}
   attachColyseusMessageCallbacks(gameState: GameStateService): void {
@@ -23,7 +24,9 @@ export class TileOverlayComponent implements ColyseusNotifyable{
       filterSubType: GameActionType.showTile,
       f: ( data: GameShowTile ) => {
         if (data.action === GameActionType.showTile) {
-          console.log(`[EVENT]: ${this.playerName} ist auf Feld ${data.tile} gelandet: ${this.descriptionOf(data.tile)}`);
+          const msg = `${this.playerName} ist auf Feld ${data.tile} gelandet: ${this.descriptionOf(data.tile)}`;
+          console.log(`[EVENT]: ${msg}`);
+          this.printer.emit(msg);
         }
       }
     });
