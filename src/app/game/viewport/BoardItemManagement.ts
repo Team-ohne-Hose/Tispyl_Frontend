@@ -95,6 +95,7 @@ export class BoardItemManagement implements ColyseusNotifyable {
   getSpritesPending(): number {
     return this.allFigures.length;
   }
+  
   createSprites(onProgressCallback: () => void) {
     this.allFigures.forEach((figure: FigureItem) => {
       if (figure.labelSprite === undefined) {
@@ -108,6 +109,7 @@ export class BoardItemManagement implements ColyseusNotifyable {
       figure.labelSprite.position.set(figure.mesh.position.x, figure.mesh.position.y + 5, figure.mesh.position.z);
     });
   }
+
   updateSprites(hidden: boolean, scene: THREE.Scene) {
     for (const f of this.allFigures) {
       if (f.labelSprite === undefined) {

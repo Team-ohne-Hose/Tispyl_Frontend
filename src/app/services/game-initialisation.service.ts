@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
-import {ViewportComponent} from '../game/viewport/viewport.component';
-import {ObjectLoaderService} from './object-loader.service';
-import {BoardItemManagement} from '../game/viewport/BoardItemManagement';
-import {PhysicsCommands} from '../game/viewport/PhysicsCommands';
-import {ChatWindowComponent} from '../game/interface/chat-window/chat-window.component';
-import {NextTurnButtonComponent} from '../game/interface/next-turn-button/next-turn-button.component';
-import {TileOverlayComponent} from '../game/interface/tile-overlay/tile-overlay.component';
-import {BoardTilesService} from './board-tiles.service';
+import { ViewportComponent } from '../game/viewport/viewport.component';
+import { ObjectLoaderService } from './object-loader.service';
+import { BoardItemManagement } from '../game/viewport/BoardItemManagement';
+import { PhysicsCommands } from '../game/viewport/PhysicsCommands';
+import { ChatWindowComponent } from '../game/interface/chat-window/chat-window.component';
+import { NextTurnButtonComponent } from '../game/interface/next-turn-button/next-turn-button.component';
+import { TileOverlayComponent } from '../game/interface/tile-overlay/tile-overlay.component';
+import { BoardTilesService } from './board-tiles.service';
 import * as THREE from 'three';
-import {GameComponent} from '../game/game.component';
-import {ChatService} from './chat.service';
-import {GameStateService} from './game-state.service';
-import {ItemService} from './item.service';
+import { GameComponent } from '../game/game.component';
+import { ChatService } from './chat.service';
+import { GameStateService } from './game-state.service';
+import { ItemService } from './item.service';
 
 export interface ColyseusNotifyable {
   attachColyseusStateCallbacks(gameState: GameStateService): void;
@@ -33,14 +33,14 @@ export class GameInitialisationService {
   private gameState: GameStateService;
 
   constructor(private objectLoader: ObjectLoaderService,
-              private chatService: ChatService,
-              private itemService: ItemService) { }
+    private chatService: ChatService,
+    private itemService: ItemService) { }
 
   async startInitialisation(game: GameComponent,
-                            viewPort: ViewportComponent,
-                            boardItemManagement: BoardItemManagement,
-                            physicsCommands: PhysicsCommands,
-                            boardTilesService: BoardTilesService) {
+    viewPort: ViewportComponent,
+    boardItemManagement: BoardItemManagement,
+    physicsCommands: PhysicsCommands,
+    boardTilesService: BoardTilesService) {
     console.debug('starting Initialisation of game engine');
     game.loadingScreenRef.startTips();
     this.viewPort = viewPort;
@@ -64,6 +64,7 @@ export class GameInitialisationService {
       console.debug('loading common files: ' + progress + '/' + total, ((progress / total) * 50) + '%');
       game.loadingScreenRef.setProgress((progress / total) * 50);
     });
+
     console.debug('loading of common files done');
 
     console.debug('creating static Scene');
@@ -77,6 +78,7 @@ export class GameInitialisationService {
       console.debug('waiting for colyseus initialisation finished');
     }
   }
+
   private afterColyseusInitialisation() {
     console.info('colyseus is initialized and common files are loaded');
     console.debug('attaching colyseus callbacks');
@@ -91,7 +93,7 @@ export class GameInitialisationService {
 
     let progress = 0;
     const initPending = this.viewPort.physics.getInitializePending();
-    this.viewPort.physics.initializeFromState(() => {});
+    this.viewPort.physics.initializeFromState(() => { });
     const spritesPending = this.viewPort.boardItemManager.getSpritesPending();
     const queued = 64 + initPending + spritesPending;
     console.info('loading: 64 Tiles, ', initPending, ' phys Pending ', spritesPending, ' sprites Pending');
@@ -120,6 +122,9 @@ export class GameInitialisationService {
   }
 
   setColyseusReady(gameState: GameStateService) {
+
+    console.log(this.gameState)
+
     this.gameState = gameState;
     if (!this.colyseusReady) {
       console.debug('Colyseus is ready');

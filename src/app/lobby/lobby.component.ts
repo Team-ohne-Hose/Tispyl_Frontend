@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { TranslationService } from '../services/translation.service';
 import { LoginUser, User } from '../model/User';
 import { Translation } from '../model/Translation';
@@ -31,7 +31,7 @@ export class LobbyComponent implements OnInit {
   translation: Translation;
 
   @ViewChild('profileDisplay') profileDisplay: ProfileDisplayComponent;
-
+  
   constructor(
     private dialog: MatDialog,
     private colyseus: ColyseusClientService,
@@ -78,7 +78,7 @@ export class LobbyComponent implements OnInit {
         panelClass: 'modalbox-base'
       });
 
-    dialogRef.afterClosed().subscribe(results => {
+    dialogRef.afterClosed().subscribe(results => {     
       if (results !== undefined) {
         this.colyseus.createRoom(results.roomName,
           this.currentUser.display_name,
