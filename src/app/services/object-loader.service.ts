@@ -295,6 +295,7 @@ export class ObjectLoaderService {
       });
     }
   }
+  
   switchTex(obj: THREE.Object3D, model: PlayerModel) {
     if (model === undefined) {
       return;

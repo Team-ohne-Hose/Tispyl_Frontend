@@ -32,12 +32,7 @@ export class LoginComponent {
   };
 
   onLogin() {
-      this.jwtTokenService.login(this.login_name, hash.MD5(this.password_plain))
-      // this.userManagement.getUserByLoginName(this.login_name).subscribe(userResponse => {
-      //     console.debug("US", userResponse)
-      //     this.userManagement.setActiveUser(userResponse.payload as LoginUser);
-      //     console.debug('LOGGED IN AS:', userResponse.payload);
-      //   })
+    this.jwtTokenService.login(this.login_name, hash.MD5(this.password_plain))
   }
 
   enter(keyEvent) {
