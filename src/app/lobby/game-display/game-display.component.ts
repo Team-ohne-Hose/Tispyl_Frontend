@@ -18,9 +18,7 @@ export class GameDisplayComponent {
   @Output('join') joinGame = new EventEmitter<RoomAvailable<RoomMetaInfo>>();
   @Output('enter') enterGame = new EventEmitter<void>();
 
-  constructor(public router: Router) {
-
-  }
+  constructor(public router: Router) {}
 
   leave() {
     this.leaveGame.emit();

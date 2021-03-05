@@ -1,5 +1,5 @@
 
 export class RoomMetaInfo {
-  lobbyName: string;
+  roomName: string;
   author: string;
 }

@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, pipe } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { LoginUser, User } from '../model/User';
 import { map } from 'rxjs/operators';
 import { APIResponse } from '../model/APIResponse';
 import { environment } from '../../environments/environment';
 import { JwtResponse } from '../model/JwtToken';
-import { UserResponse } from '../model/UserResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -16,10 +15,11 @@ export class UserService {
   private readonly prodUserEndpoint = 'https://tispyl.uber.space:41920/api/user';
   private readonly devUserEndpoint = 'http://localhost:25670/api/user';
   private userEndpoint = environment.production ? this.prodUserEndpoint : this.devUserEndpoint;
+
   activeUser: BehaviorSubject<LoginUser>;
 
   constructor(private httpClient: HttpClient) {
-    this.activeUser = new BehaviorSubject<User>(undefined);
+    this.activeUser = new BehaviorSubject<LoginUser>(undefined);
   }
 
   setActiveUser(user: LoginUser): void {
@@ -32,16 +32,13 @@ export class UserService {
 
   getUserById(user_id: number): Observable<User> {
     const requestUrl = this.userEndpoint + '?user_id=' + user_id;
-    return this.httpClient
-      .get<User[]>(requestUrl)
-      .pipe(map(users => users[0]));
+    return this.httpClient.get<User[]>(requestUrl).pipe(map(users => users[0]));
   }
 
+  // REQUESTS
+
   getUserByLoginName(login_name: string): Observable<APIResponse<LoginUser>> {
-    const requestUrl = this.userEndpoint + '?login_name=' + login_name;
-    return this.httpClient.get<APIResponse<LoginUser>>(requestUrl)
-    //return userRes.data as LoginUser;
-    return undefined
+    return this.httpClient.get<APIResponse<LoginUser>>(this.userEndpoint + '?login_name=' + login_name)
   }
 
   removeUser(user_id: number): Observable<number> {

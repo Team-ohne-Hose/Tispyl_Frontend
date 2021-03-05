@@ -1,10 +1,12 @@
-import {Component, Inject, Injectable, Output} from '@angular/core';
+import { Component, Inject, Injectable, Output } from '@angular/core';
 
-import {MatDialogRef, MAT_DIALOG_DATA, MatDialog} from  '@angular/material/dialog';
-import {User} from '../../../model/User';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
+import { RegisterOptions } from 'src/app/model/RegisterOptions';
+import { JwtTokenService } from 'src/app/services/jwttoken.service';
+import { User } from '../../../model/User';
 
 @Component({
-  templateUrl:  './register-popup.component.html',
+  templateUrl: './register-popup.component.html',
   styleUrls: ['./register-popup.component.css']
 })
 export class RegisterPopupComponent {
@@ -14,20 +16,16 @@ export class RegisterPopupComponent {
   password_0: string = '';
   password_1: string = '';
 
-  constructor(private  dialogRef:  MatDialogRef<RegisterPopupComponent, User>, @Inject(MAT_DIALOG_DATA) public  data:  any) {
+  constructor(private dialogRef: MatDialogRef<RegisterPopupComponent, User>, private AuthService: JwtTokenService, @Inject(MAT_DIALOG_DATA) public data: any) {
   }
 
-  public closeMe() {
+  public close() {
     this.dialogRef.close();
   }
 
   registerUser() {
-    const violations: string[] = this.validateInput()
-    if (violations.length == 0) {
-      this.dialogRef.close(new User(this.login_name, this.display_name, this.password_0));
-    } else {
-      console.log('Registration violation: ' + violations)
-    }
+    this.AuthService.register({ username: this.login_name, displayname: this.display_name, password: this.password_0 } as RegisterOptions)
+    this.dialogRef.close()
   }
 
   validateInput(): string[] {
@@ -46,6 +44,6 @@ export class RegisterPopupComponent {
       'Password length outside of the allowed range: [' + minPasswordLength + ', ' + maxPasswordLength + ']'
     ]
 
-    return [arePasswordsEqual, hasPasswordCorrectLength].filter( e => !e[0] ).map( e => e[1] )
+    return [arePasswordsEqual, hasPasswordCorrectLength].filter(e => !e[0]).map(e => e[1])
   }
 }
