@@ -49,6 +49,12 @@ export class HomeRegisterComponent {
 
     this.chatMessages = this.chatService.getChatMessages();
     this.chatService.setMessageCallback(this.onChatMessage.bind(this));
+
+    // scroll to bottom
+    setTimeout( () => {
+      const htmlNode = this.textSection.nativeElement;
+      htmlNode.scrollTop = htmlNode.scrollHeight;
+    }, 20);
   }
 
   sendChatMessageByKey(event: KeyboardEvent, inputField: HTMLInputElement) {
