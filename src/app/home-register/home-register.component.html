@@ -11,7 +11,7 @@
 
     <div class="info-section">
       <div>
-        <div class="user-name">{{user === undefined ? 'Not connected' : user.display_name}}</div>
+        <div class="user-name">{{myPlayer?.displayName || 'Not connected'}}</div>
         <div class="sub-script">Role: {{getRole()}}</div>
         <div class="sub-script">Time played: {{getTimePlayed()}}</div>
       </div>
@@ -38,7 +38,7 @@
   <div class="chat-box">
 
     <div class="text-section" #textSection>
-      <div *ngFor="let msg of chatMessages" [ngClass]="{'move-right': msg.sender === user.display_name}">
+      <div *ngFor="let msg of chatMessages" [ngClass]="{'move-right': msg.sender === myPlayer?.displayName}">
         <div class="chat-message">
           <div class="head-row">
             <div class="sender"><i class="fas fa-user"></i>{{msg.sender}}</div>
