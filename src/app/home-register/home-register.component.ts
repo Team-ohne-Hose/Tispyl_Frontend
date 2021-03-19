@@ -3,7 +3,7 @@ import {UserService} from '../services/user.service';
 import {FileService} from '../services/file.service';
 import {ChatMessage} from './ChatMessage';
 import {ObjectLoaderService} from '../services/object-loader.service';
-import {MessageType, PlayerMessageType, RefreshCommandType, RefreshProfilePics, SetFigure} from '../model/WsData';
+import {MessageType, PlayerMessageType, PlayerModel, RefreshCommandType, RefreshProfilePics, SetFigure, WsData} from '../model/WsData';
 import {GameStateService} from '../services/game-state.service';
 import {LoginUser, User} from '../model/User';
 import {Player} from '../model/state/Player';
@@ -18,7 +18,7 @@ export class HomeRegisterComponent {
 
   profileSource = '../assets/defaultImage.jpg';
   bottleCapSource = '../assets/models/otherTex/default.png';
-  myBCapIndex = 1;
+  myBCapIndex = PlayerModel.bcap_NukaCola;
 
   user: LoginUser;
   myPlayer: Player;
@@ -36,7 +36,7 @@ export class HomeRegisterComponent {
 
     this.myPlayer = this.gameState.getMe();
     this.profileSource = this.fileManagement.profilePictureSource(this.myPlayer?.loginName) || '../assets/defaultImage.jpg';
-    this.myBCapIndex = this.myPlayer.figureModel || 1;
+    this.myBCapIndex = this.myPlayer.figureModel || PlayerModel.bcap_NukaCola;
     console.debug('Initialized bottle cap index to: ', this.myBCapIndex);
     this.bottleCapSource = this.loader.getBCapTextureThumbPath(this.myBCapIndex);
 
