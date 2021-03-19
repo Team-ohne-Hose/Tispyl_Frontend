@@ -366,7 +366,9 @@ export class GameStateService {
   }
   private callVoteStageUpdate(changes: DataChange<any>[]) {
     const newVal: VoteStage = changes.find((change: DataChange<any>) => change.field === 'voteStage')?.value;
-    this.voteStageCallbacks.forEach(f => f(newVal));
+    if (newVal !== undefined) {
+      this.voteStageCallbacks.forEach(f => f(newVal));
+    }
     if (newVal === VoteStage.VOTE) {
       this.attachVoteCastCallback();
     }

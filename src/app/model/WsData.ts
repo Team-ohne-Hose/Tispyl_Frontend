@@ -67,6 +67,7 @@ export enum GameActionType {
   refreshData,
   diceRolled,
   startVoteCreation,
+  stopVoteCreation,
   beginVotingSession,
   playerCastVote,
   closeVotingSession,
@@ -81,6 +82,7 @@ export type GameMessage = GameAction |
   GameDeleteRule |
   GameDiceRoll |
   GameStartCreatingVote |
+  GameStopCreatingVote |
   GameBeginVotingSession |
   GamePlayerCastVote |
   GameCloseVotingSession |
@@ -134,6 +136,10 @@ export interface GameStartCreatingVote {
   type: MessageType.GAME_MESSAGE;
   action: GameActionType.startVoteCreation;
   author: string;
+}
+export interface GameStopCreatingVote {
+  type: MessageType.GAME_MESSAGE;
+  action: GameActionType.stopVoteCreation;
 }
 export interface GameBeginVotingSession {
   type: MessageType.GAME_MESSAGE;

@@ -12,7 +12,8 @@
       </div>
     </div>
     <div class="head-progress" *ngIf="gameState.isGameLoaded()">
-      <i [ngClass]="{'fas fa-circle-notch fa-spin highlight': gameState.getVoteState().creationInProgress, 'far fa-circle': !gameState.getVoteState().creationInProgress}"></i>
+      <!-- VoteStage 2 should be creation -->
+      <i [ngClass]="gameState.getVoteState().voteStage === 2 ? 'fas fa-circle-notch fa-spin highlight' : 'far fa-circle'"></i>
     </div>
     <div class="head-progress" *ngIf="!gameState.isGameLoaded()">
       <i class="far fa-circle"></i>
@@ -109,7 +110,7 @@
     </div>
 
     <div class="host-closure-button">
-      <button *ngIf="this.gameState.getMe().displayName === voteHost" class="close-vote-button" (click)="triggerCloseVotingSession()">Close voting session</button>
+      <button *ngIf="this.gameState.getMe().displayName === voteHost" class="close-vote-button" (click)="triggerCloseVotingSession($event)">Close voting session</button>
       <button *ngIf="!(this.gameState.getMe().displayName === voteHost)" disabled>Only {{voteHost}} can close the voting.</button>
     </div>
   </div>

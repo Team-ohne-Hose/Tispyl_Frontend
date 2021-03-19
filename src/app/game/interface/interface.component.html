@@ -26,7 +26,7 @@
                     [currentPlayerName]="gameState.getCurrentPlayerDisplayName()" #turnOverlay>
   </app-turn-overlay>
   <app-tile-overlay (printer)="print($event, 'Tiles')"
-                    [playerName]="gameState.getCurrentPlayerLogin()"
+                    [playerName]="gameState.getCurrentPlayerDisplayName()"
                     #tileOverlay>
   </app-tile-overlay>
 </div>

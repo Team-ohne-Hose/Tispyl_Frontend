@@ -119,9 +119,13 @@ export class VoteSystemComponent implements OnInit {
     switch (stage) {
       case VoteStage.IDLE:
         this.hasConcluded = true;
-        this.voteSystemState = VoteSystemState.results;
-        this.notifyPlayer.emit(VoteSystemState.results);
-        this.calcVotes();
+        if (this.gameState.getVoteState().voteConfiguration?.votingOptions?.length > 0) {
+          this.voteSystemState = VoteSystemState.results;
+          this.notifyPlayer.emit(VoteSystemState.results);
+          this.calcVotes();
+        } else {
+          this.voteSystemState = VoteSystemState.default;
+        }
         break;
       case VoteStage.CREATION:
         this.hasConcluded = true;
@@ -145,7 +149,7 @@ export class VoteSystemComponent implements OnInit {
         this.calcVotes();
         break;
       default:
-        console.warn('undefined VoteStage! Something likely went wrong');
+        console.warn('undefined VoteStage! Something likely went wrong', stage);
     }
   }
 
