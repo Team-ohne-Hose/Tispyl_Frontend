@@ -13,7 +13,7 @@
     </div>
     <div class="head-progress" *ngIf="gameState.isGameLoaded()">
       <!-- VoteStage 2 should be creation -->
-      <i [ngClass]="{'fas fa-circle-notch fa-spin highlight': gameState.getVoteState().voteStage === 2, 'far fa-circle': gameState.getVoteState().voteStage !== 2}"></i>
+      <i [ngClass]="gameState.getVoteState().voteStage === 2 ? 'fas fa-circle-notch fa-spin highlight' : 'far fa-circle'"></i>
     </div>
     <div class="head-progress" *ngIf="!gameState.isGameLoaded()">
       <i class="far fa-circle"></i>

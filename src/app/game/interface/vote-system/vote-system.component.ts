@@ -119,7 +119,7 @@ export class VoteSystemComponent implements OnInit {
     switch (stage) {
       case VoteStage.IDLE:
         this.hasConcluded = true;
-        if (this.gameState.getVoteState().voteConfiguration.votingOptions.length > 0) {
+        if (this.gameState.getVoteState().voteConfiguration?.votingOptions?.length > 0) {
           this.voteSystemState = VoteSystemState.results;
           this.notifyPlayer.emit(VoteSystemState.results);
           this.calcVotes();
