@@ -4,6 +4,7 @@ import {Player} from '../../../../model/state/Player';
 import {VoteEntry} from '../VoteEntry';
 import {UserService} from '../../../../services/user.service';
 import {VoteConfiguration} from '../VoteConfiguration';
+import {GameActionType, MessageType} from '../../../../model/WsData';
 
 @Component({
   selector: 'app-vote-creator',
@@ -93,4 +94,10 @@ export class VoteCreatorComponent {
     }
   }
 
+  cancelVoteCreation(event: Event): void {
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
+      type: MessageType.GAME_MESSAGE,
+      action: GameActionType.stopVoteCreation
+    });
+  }
 }

@@ -120,7 +120,7 @@ export class GameInitialisationService {
 
   setColyseusReady(gameState: GameStateService) {
 
-    console.log(this.gameState)
+    console.info('Setting colyseus ready. Gamestate is: ', this.gameState);
 
     this.gameState = gameState;
     if (!this.colyseusReady) {
