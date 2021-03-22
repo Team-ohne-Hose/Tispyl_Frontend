@@ -1,5 +1,5 @@
-import {Player} from '../../../../../../model/state/Player';
-import {Schema, ArraySchema, MapSchema, type} from '@colyseus/schema';
+import { Player } from '../../../../../../model/state/Player';
+import { Schema, ArraySchema, MapSchema, type } from '@colyseus/schema';
 
 export class VoteEntry extends Schema {
 
@@ -12,7 +12,7 @@ export class VoteEntry extends Schema {
   @type('string')
   text: string = undefined;
 
-  @type([ 'string' ])
+  @type(['string'])
   castVotes = new ArraySchema<string>();
 
   static fromPlayer(p: Player): VoteEntry {

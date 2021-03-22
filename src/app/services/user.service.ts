@@ -12,11 +12,10 @@ import { JwtResponse } from '../model/JwtToken';
 })
 export class UserService {
 
+  activeUser: BehaviorSubject<LoginUser>;
   private readonly prodUserEndpoint = 'https://tispyl.uber.space:41920/api/user';
   private readonly devUserEndpoint = 'http://localhost:25670/api/user';
   private userEndpoint = environment.production ? this.prodUserEndpoint : this.devUserEndpoint;
-
-  activeUser: BehaviorSubject<LoginUser>;
 
   constructor(private httpClient: HttpClient) {
     this.activeUser = new BehaviorSubject<LoginUser>(undefined);
@@ -38,7 +37,7 @@ export class UserService {
   // REQUESTS
 
   getUserByLoginName(login_name: string): Observable<APIResponse<LoginUser>> {
-    return this.httpClient.get<APIResponse<LoginUser>>(this.userEndpoint + '?login_name=' + login_name)
+    return this.httpClient.get<APIResponse<LoginUser>>(this.userEndpoint + '?login_name=' + login_name);
   }
 
   removeUser(user_id: number): Observable<number> {
@@ -51,7 +50,7 @@ export class UserService {
   }
 
   loginUser(login_name: string, password_hash: string): Observable<APIResponse<JwtResponse>> {
-    return this.httpClient.post<APIResponse<JwtResponse>>(this.userEndpoint + '/token', { username: login_name, password: password_hash });
+    return this.httpClient.post<APIResponse<JwtResponse>>(this.userEndpoint + '/token', {username: login_name, password: password_hash});
   }
 
   syncUserData(user: User): void {

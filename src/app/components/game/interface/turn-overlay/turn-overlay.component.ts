@@ -1,6 +1,6 @@
-import {Component, Input} from '@angular/core';
-import {trigger, state, style, animate, transition} from '@angular/animations';
-import {SoundService} from '../../../../services/sound.service';
+import { Component, Input } from '@angular/core';
+import { trigger, state, style, animate, transition } from '@angular/animations';
+import { SoundService } from '../../../../services/sound.service';
 
 @Component({
   selector: 'app-turn-overlay',
@@ -31,12 +31,12 @@ export class TurnOverlayComponent {
   @Input()
   currentPlayerName = '';
 
-  constructor( private sounds: SoundService) {
+  constructor(private sounds: SoundService) {
   }
 
   triggerChime() {
     if (this.state === 'active') {
-      if ( this.ownTurn ) {
+      if (this.ownTurn) {
         this.sounds.play('own_turn');
       } else {
         this.sounds.play('others_turn');
@@ -46,7 +46,7 @@ export class TurnOverlayComponent {
 
   show() {
     this.state = 'active';
-    setTimeout (() => {
+    setTimeout(() => {
       this.state = 'faded';
     }, 4000);
   }

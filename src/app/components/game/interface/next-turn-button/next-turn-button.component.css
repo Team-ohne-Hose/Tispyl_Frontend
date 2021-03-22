@@ -13,7 +13,7 @@
 
   transition-property: transform;
   transition-duration: .8s;
-  transition-timing-function: cubic-bezier(.63,-0.34,.36,1.22);
+  transition-timing-function: cubic-bezier(.63, -0.34, .36, 1.22);
   z-index: 10;
 }
 
@@ -26,6 +26,7 @@
 .hidden {
   transform: translateY(-10em);
 }
+
 .turnNotFinished {
   transform: translateY(-2.3em) scale(0.4, 0.4);
 }

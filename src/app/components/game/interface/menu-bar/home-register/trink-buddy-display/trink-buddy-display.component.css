@@ -35,7 +35,7 @@
   color: var(--dim-text-color);
 }
 
-input{
+input {
   flex: 1;
   color: var(--text-color);
   border-bottom: var(--dim-text-color);

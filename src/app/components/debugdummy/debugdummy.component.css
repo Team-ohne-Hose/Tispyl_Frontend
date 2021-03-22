@@ -25,9 +25,8 @@
 
 .gold-border {
   padding: 0.15em;
-  background:
-    radial-gradient(ellipse farthest-corner at left bottom, #FEDB37 0%, #FDB931 8%, #9f7928 30%, #8A6E2F 40%, transparent 80%),
-    radial-gradient(ellipse farthest-corner at right top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%);
+  background: radial-gradient(ellipse farthest-corner at left bottom, #FEDB37 0%, #FDB931 8%, #9f7928 30%, #8A6E2F 40%, transparent 80%),
+  radial-gradient(ellipse farthest-corner at right top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%);
   filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, 0.6));
   flex-grow: 1;
   display: flex;
@@ -60,11 +59,13 @@
   flex-direction: column;
   height: 100%;
 }
+
 .progressSpinner {
   margin: 0 !important;
   justify-self: center;
   position: relative;
 }
+
 .example-chip-list {
   width: 100%;
 }
@@ -72,37 +73,45 @@
 .transformationX {
   transition-property: transform;
   transition-duration: 1.5s;
-  transition-timing-function: cubic-bezier(.63,-0.34,.36,1.22);
+  transition-timing-function: cubic-bezier(.63, -0.34, .36, 1.22);
   transform-origin: 13px 9px;
 }
+
 .rotatedX {
   transform: rotateZ(225deg);
 }
+
 .playerAdded {
-  fill:url(#copperGradient);
+  fill: url(#copperGradient);
 }
+
 .playerRemoved {
-  fill:url(#greenGradient);
+  fill: url(#greenGradient);
 }
+
 .deselected {
   background-color: rgba(192, 192, 192, 0.3);
   color: rgba(0, 0, 0, 0.3);
 }
+
 .clearIcon {
   margin-left: auto;
   color: red;
   align-self: flex-end;
 }
+
 .playerList {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
 }
+
 .completeButtonContainer {
   position: fixed;
   bottom: 8px;
   right: 8px;
 }
+
 .actionButtons {
   display: flex;
   flex-direction: row-reverse;

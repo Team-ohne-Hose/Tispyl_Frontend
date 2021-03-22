@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { TranslationService } from 'src/app/services/translation.service';
 
 @Component({
@@ -8,13 +8,13 @@ import { TranslationService } from 'src/app/services/translation.service';
 })
 export class LanguageSelectorComponent implements OnInit {
 
+  languageList = [];
+  @Output() changeLang = new EventEmitter<String>();
+  //flag resources from http://www.iconarchive.com/show/flags-icons-by-wikipedia.2.html
+
   constructor() {
     this.languageList = TranslationService.getTranslationNames();
   }
-  languageList = [];
-  //flag resources from http://www.iconarchive.com/show/flags-icons-by-wikipedia.2.html
-
-  @Output() changeLang = new EventEmitter<String>();
 
   ngOnInit() {
 

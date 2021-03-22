@@ -6,19 +6,19 @@
     <div class="element">
       <label>
         Login Name
-        <input type="text" class="to-right" placeholder="dennis7773" [(ngModel)]="login_name">
+        <input [(ngModel)]="login_name" class="to-right" placeholder="dennis7773" type="text">
       </label>
     </div>
     <div class="element">
       <label>
         Display Name
-        <input type="text" class="to-right" placeholder="Dennis Mustermann" [(ngModel)]="display_name">
+        <input [(ngModel)]="display_name" class="to-right" placeholder="Dennis Mustermann" type="text">
       </label>
     </div>
     <div class="element">
       <label>
         Password
-        <input type="password" class="to-right" [(ngModel)]="password_0">
+        <input [(ngModel)]="password_0" class="to-right" type="password">
       </label>
     </div>
     <div class="info">
@@ -28,10 +28,10 @@
     <div class="element">
       <label>
         Re-enter password
-        <input type="password" class="to-right" [(ngModel)]="password_1">
+        <input [(ngModel)]="password_1" class="to-right" type="password">
       </label>
     </div>
-    <div> </div>
+    <div></div>
   </div>
   <div class="foot">
     <button (click)="close()">Close</button>

@@ -1,4 +1,4 @@
-import {Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import {
@@ -14,8 +14,8 @@ import {
   transition,
   trigger
 } from '@angular/animations';
-import {Player} from '../../../../model/state/Player';
-import {VoteSystemState} from './vote-system/helpers/VoteSystemState';
+import { Player } from '../../../../model/state/Player';
+import { VoteSystemState } from './vote-system/helpers/VoteSystemState';
 
 @Component({
   selector: 'app-menu-bar',
@@ -38,7 +38,8 @@ export class MenuBarComponent {
 
   tabIndex = undefined;
 
-  constructor() { }
+  constructor() {
+  }
 
   toggleTab(event): void {
     if (event.target.parentElement.classList.contains(this.selectionClass)) {

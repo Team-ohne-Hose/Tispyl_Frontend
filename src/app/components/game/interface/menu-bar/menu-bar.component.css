@@ -3,9 +3,9 @@
 
   pointer-events: visibleFill;
 
-  --register-background: rgba(60,60,60,0.8);
-  --register-unselected-background: rgba(30,30,30,0.6);
-  --register-hover-background: rgba(45,45,45,0.7);
+  --register-background: rgba(60, 60, 60, 0.8);
+  --register-unselected-background: rgba(30, 30, 30, 0.6);
+  --register-hover-background: rgba(45, 45, 45, 0.7);
 
   background-color: transparent;
   display: flex;
@@ -38,9 +38,9 @@
 }
 
 .corner {
-   clip-path: polygon(0 0, 100% 0, 100% 100%);
-   height: 1.5rem;
-   background-color: var(--register-unselected-background);
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+  height: 1.5rem;
+  background-color: var(--register-unselected-background);
 }
 
 .reverse-corner {
@@ -69,19 +69,19 @@
   margin-bottom: 0;
 }
 
-.register-tab-footer.selected .footer-box{
+.register-tab-footer.selected .footer-box {
   background-color: var(--register-background);
 }
 
-.register-tab-footer.selected .reverse-corner{
+.register-tab-footer.selected .reverse-corner {
   background-color: var(--register-background);
 }
 
-.register-tab.selected .corner{
+.register-tab.selected .corner {
   background-color: var(--register-background);
 }
 
-.register-tab.selected .register-icon-box{
+.register-tab.selected .register-icon-box {
   background-color: var(--register-background);
 }
 

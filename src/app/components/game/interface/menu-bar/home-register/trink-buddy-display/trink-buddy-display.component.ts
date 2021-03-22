@@ -1,9 +1,9 @@
-import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import * as d3 from 'd3';
-import {GameStateService} from '../../../../../../services/game-state.service';
-import {GameActionType, MessageType} from '../../../../../../model/WsData';
-import {Link} from '../../../../../../model/state/Link';
-import {ArraySchema} from '@colyseus/schema';
+import { GameStateService } from '../../../../../../services/game-state.service';
+import { GameActionType, MessageType } from '../../../../../../model/WsData';
+import { Link } from '../../../../../../model/state/Link';
+import { ArraySchema } from '@colyseus/schema';
 
 
 @Component({
@@ -28,11 +28,11 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
     // TODO: Change callback registration to new version as soon as some one builds one (13/10/20).
     if (gameState.getState() !== undefined) {
       gameState.getState().drinkBuddyLinks.onAdd = (link, key) => {
-        console.log("Link was added: ", link.source, link.target);
+        console.log('Link was added: ', link.source, link.target);
         setTimeout(() => this.refreshChart(), 2000); // find out why this timeout needs to exist !
       };
       gameState.getState().drinkBuddyLinks.onRemove = (link, key) => {
-        console.log("Link was removed: ", link.source, link.target);
+        console.log('Link was removed: ', link.source, link.target);
         setTimeout(() => this.refreshChart(), 2000); // find out why this timeout needs to exist !
       };
     } else {
@@ -42,6 +42,52 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.refreshChart();
+  }
+
+  addLink(from: HTMLInputElement, to: HTMLInputElement) {
+    const source = String(from.value).trim();
+    const target = String(to.value).trim();
+    const validation = this.validateInput(from, to);
+    if (validation.isFromValid && validation.isToValid && !validation.isAlreadyLinked) {
+      console.log(source, target, this.gameState.getState().drinkBuddyLinks);
+      this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
+        type: MessageType.GAME_MESSAGE,
+        action: GameActionType.addDrinkbuddies,
+        source: source,
+        target: target
+      });
+    }
+    if (validation.isAlreadyLinked) {
+      this.errorText = target + ' is already the drinking buddy of' + source;
+    }
+  }
+
+  removeLink(from: HTMLInputElement, to: HTMLInputElement) {
+    const source = String(from.value).trim();
+    const target = String(to.value).trim();
+    const validation = this.validateInput(from, to);
+    if (validation.isFromValid && validation.isToValid && validation.isAlreadyLinked) {
+      this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
+        type: MessageType.GAME_MESSAGE,
+        action: GameActionType.removeDrinkbuddies,
+        source: source,
+        target: target
+      });
+    }
+    if (!validation.isAlreadyLinked) {
+      this.errorText = target + ' is not the drinking buddy of' + source;
+    }
+  }
+
+  refreshChart() {
+    if (this.simulation !== undefined) {
+      this.simulation.stop();
+      this.svg.remove();
+    }
+    this.simulation = undefined;
+    this.fetchNodeData();
+    this.fetchLinkData();
+    this.simulation = this.buildSimulation();
   }
 
   private buildSimulation() {
@@ -59,59 +105,59 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
     this.svg = d3
       .select('#chart')
       .append('svg')
-        .style('stroke', 'grey')
-        .attr('width', chartWidth )
-        .attr('height', chartHeight);
+      .style('stroke', 'grey')
+      .attr('width', chartWidth)
+      .attr('height', chartHeight);
 
     // Define triangle-shape
     this.svg
       .append('svg:defs')
       .append('svg:marker')
-        .attr('id', 'triangle')
-        .attr('refX', 14)
-        .attr('refY', 4)
-        .attr('markerWidth', 12)
-        .attr('markerHeight', 12)
-        .attr('orient', 'auto')
+      .attr('id', 'triangle')
+      .attr('refX', 14)
+      .attr('refY', 4)
+      .attr('markerWidth', 12)
+      .attr('markerHeight', 12)
+      .attr('orient', 'auto')
       .append('path')
-        .attr('d', 'M 0 0 8 4 0 8 2 4')
-        .style('fill', 'grey');
+      .attr('d', 'M 0 0 8 4 0 8 2 4')
+      .style('fill', 'grey');
 
     // Define look and feel of nodes, labels and lines
     const link = this.svg
       .append('g')
-        .attr('class', 'links')
-        .attr('stroke', 'grey')
-        .attr('stroke-opacity', 0.6)
+      .attr('class', 'links')
+      .attr('stroke', 'grey')
+      .attr('stroke-opacity', 0.6)
       .selectAll('line')
-        .data(this.links)
-        .join('line')
-        .attr('stroke-width', 1)
-        .attr('marker-end', 'url(#triangle)');
+      .data(this.links)
+      .join('line')
+      .attr('stroke-width', 1)
+      .attr('marker-end', 'url(#triangle)');
 
     const node = this.svg
       .append('g')
-        .attr('class', 'node-group')
-        .attr('stroke', 'black')
-        .attr('stroke-width', 1)
+      .attr('class', 'node-group')
+      .attr('stroke', 'black')
+      .attr('stroke-width', 1)
       .selectAll('circle')
-        .data(this.nodes)
-        .join('circle')
-        .attr('r', this.radius)
-        .call(this.drag(simulation));
+      .data(this.nodes)
+      .join('circle')
+      .attr('r', this.radius)
+      .call(this.drag(simulation));
 
     const labels = this.svg
       .append('g')
-        .attr('class', 'labels-group')
-        .attr('stroke', 'none')
-        .attr('font-size', 12)
-        .attr('text-anchor', 'middle')
-        .attr('fill', 'grey')
-        .attr('pointer-events', 'none')
+      .attr('class', 'labels-group')
+      .attr('stroke', 'none')
+      .attr('font-size', 12)
+      .attr('text-anchor', 'middle')
+      .attr('fill', 'grey')
+      .attr('pointer-events', 'none')
       .selectAll('node-group')
-        .data(this.nodes)
-        .join('text')
-        .text(d => d.id);
+      .data(this.nodes)
+      .join('text')
+      .text(d => d.id);
 
     // Define simulation update function
     simulation.on('tick', () => {
@@ -135,7 +181,9 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
 
   private drag(simulation) {
     function dragstarted(event) {
-      if (!event.active) { simulation.alphaTarget(0.3).restart(); }
+      if (!event.active) {
+        simulation.alphaTarget(0.3).restart();
+      }
       event.subject.fx = event.subject.x;
       event.subject.fy = event.subject.y;
     }
@@ -146,7 +194,9 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
     }
 
     function dragended(event) {
-      if (!event.active) { simulation.alphaTarget(0); }
+      if (!event.active) {
+        simulation.alphaTarget(0);
+      }
       event.subject.fx = null;
       event.subject.fy = null;
     }
@@ -157,27 +207,6 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
       .on('end', dragended);
   }
 
-  addLink(from: HTMLInputElement, to: HTMLInputElement) {
-    const source = String(from.value).trim();
-    const target = String(to.value).trim();
-    const validation = this.validateInput(from, to);
-    if (validation.isFromValid && validation.isToValid && !validation.isAlreadyLinked) {
-      console.log( source, target, this.gameState.getState().drinkBuddyLinks);
-      this.gameState.sendMessage(MessageType.GAME_MESSAGE, { type: MessageType.GAME_MESSAGE, action: GameActionType.addDrinkbuddies, source: source, target: target});
-    }
-    if (validation.isAlreadyLinked) { this.errorText = target + ' is already the drinking buddy of' + source; }
-  }
-
-  removeLink(from: HTMLInputElement, to: HTMLInputElement) {
-    const source = String(from.value).trim();
-    const target = String(to.value).trim();
-    const validation = this.validateInput(from, to);
-    if (validation.isFromValid && validation.isToValid && validation.isAlreadyLinked) {
-      this.gameState.sendMessage(MessageType.GAME_MESSAGE, { type: MessageType.GAME_MESSAGE, action: GameActionType.removeDrinkbuddies, source: source, target: target});
-    }
-    if (!validation.isAlreadyLinked) { this.errorText = target + ' is not the drinking buddy of' + source; }
-  }
-
   private validateInput(from: HTMLInputElement, to: HTMLInputElement) {
     const source = String(from.value).trim();
     const target = String(to.value).trim();
@@ -186,7 +215,7 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
     let isToValid = false;
     let isAlreadyLinked = false;
 
-    for ( const node of this.nodes ) {
+    for (const node of this.nodes) {
       if (node.id === source) {
         isFromValid = true;
       }
@@ -194,29 +223,26 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
         isToValid = true;
       }
     }
-    for ( const link of this.links ) {
+    for (const link of this.links) {
       if (this.nodes[link.source.index].id === source && this.nodes[link.target.index].id === target) {
         isAlreadyLinked = true;
       }
     }
 
-    if (!isToValid) { this.errorText = 'Target name was not found.'; }
-    if (!isFromValid) { this.errorText = 'Source name was not found.'; }
-    if (source === '' || target === '') { this.errorText = 'At least one name was empty.'; }
-    setTimeout(() => { this.errorText = ''; }, 6000);
+    if (!isToValid) {
+      this.errorText = 'Target name was not found.';
+    }
+    if (!isFromValid) {
+      this.errorText = 'Source name was not found.';
+    }
+    if (source === '' || target === '') {
+      this.errorText = 'At least one name was empty.';
+    }
+    setTimeout(() => {
+      this.errorText = '';
+    }, 6000);
 
     return {isFromValid: isFromValid, isToValid: isToValid, isAlreadyLinked: isAlreadyLinked};
-  }
-
-  refreshChart() {
-    if (this.simulation !== undefined) {
-      this.simulation.stop();
-      this.svg.remove();
-    }
-    this.simulation = undefined;
-    this.fetchNodeData();
-    this.fetchLinkData();
-    this.simulation = this.buildSimulation();
   }
 
   private fetchNodeData() {

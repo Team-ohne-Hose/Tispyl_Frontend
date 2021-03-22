@@ -1,6 +1,6 @@
-import {VoteEntry} from './VoteEntry';
-import {VoteResult} from './VoteResult';
-import {Schema, ArraySchema, MapSchema, type} from '@colyseus/schema';
+import { VoteEntry } from './VoteEntry';
+import { VoteResult } from './VoteResult';
+import { Schema, ArraySchema, MapSchema, type } from '@colyseus/schema';
 
 export class VoteConfiguration extends Schema {
 
@@ -10,10 +10,10 @@ export class VoteConfiguration extends Schema {
   @type('string')
   title: string;
 
-  @type( [ 'string' ] )
+  @type(['string'])
   ineligibles = new ArraySchema<string>();
 
-  @type( [ VoteEntry ] )
+  @type([VoteEntry])
   votingOptions: VoteEntry[];
 
   static build(title: string, author: string, eligibilities: Map<string, boolean>, options: VoteEntry[]): VoteConfiguration {

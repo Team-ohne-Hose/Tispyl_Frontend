@@ -1,5 +1,5 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {HintsService} from '../../../services/hints.service';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { HintsService } from '../../../services/hints.service';
 
 @Component({
   selector: 'app-loading-screen',
@@ -9,11 +9,11 @@ import {HintsService} from '../../../services/hints.service';
 export class LoadingScreenComponent implements OnInit {
 
   progress = 0;
-
-  private timeOutRef: number;
   currentTip = '...';
+  private timeOutRef: number;
 
-  constructor(private hints: HintsService) { }
+  constructor(private hints: HintsService) {
+  }
 
   ngOnInit(): void {
   }
@@ -22,17 +22,19 @@ export class LoadingScreenComponent implements OnInit {
     this.progress = Math.round(progress * 10) / 10;
   }
 
-  private newTip() {
-    this.currentTip = 'Tipp: ' + this.hints.getRandomHint();
-  }
   startTips() {
     this.newTip();
     this.timeOutRef = window.setInterval(this.newTip.bind(this), 5000);
   }
+
   stopTips() {
     if (this.timeOutRef !== undefined) {
       window.clearInterval(this.timeOutRef);
       this.timeOutRef = undefined;
     }
+  }
+
+  private newTip() {
+    this.currentTip = 'Tipp: ' + this.hints.getRandomHint();
   }
 }

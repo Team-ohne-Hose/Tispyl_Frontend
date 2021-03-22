@@ -1,9 +1,9 @@
-import {Component, Input} from '@angular/core';
-import {Player} from '../../../../model/state/Player';
-import {FileService} from '../../../../services/file.service';
-import {ColyseusNotifyable} from '../../../../services/game-initialisation.service';
-import {MessageType, WsData} from '../../../../model/WsData';
-import {GameStateService} from '../../../../services/game-state.service';
+import { Component, Input } from '@angular/core';
+import { Player } from '../../../../model/state/Player';
+import { FileService } from '../../../../services/file.service';
+import { ColyseusNotifyable } from '../../../../services/game-initialisation.service';
+import { MessageType, WsData } from '../../../../model/WsData';
+import { GameStateService } from '../../../../services/game-state.service';
 
 
 @Component({
@@ -21,7 +21,8 @@ export class ConnectedPlayersComponent implements ColyseusNotifyable {
 
   profilePics = {};
 
-  constructor(private fileManagement: FileService, private gameState: GameStateService) {}
+  constructor(private fileManagement: FileService, private gameState: GameStateService) {
+  }
 
   attachColyseusMessageCallbacks(gameState: GameStateService): void {
     gameState.registerMessageCallback(MessageType.REFRESH_COMMAND, {
@@ -37,7 +38,9 @@ export class ConnectedPlayersComponent implements ColyseusNotifyable {
       }
     });
   }
-  attachColyseusStateCallbacks(gameState: GameStateService): void {}
+
+  attachColyseusStateCallbacks(gameState: GameStateService): void {
+  }
 
   getProfilePic(name) {
     if (this.profilePics[name] === undefined) {

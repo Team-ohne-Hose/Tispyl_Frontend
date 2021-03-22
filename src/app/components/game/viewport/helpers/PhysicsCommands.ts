@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {Object3D} from 'three';
+import { Object3D } from 'three';
 import {
   MessageType,
   PhysicsCommand,
@@ -13,13 +13,13 @@ import {
   PhysicsEntity,
   PhysicsEntityVariation,
 } from '../../../../model/WsData';
-import {ObjectUserData} from '../viewport.component';
-import {ObjectLoaderService} from '../../../../services/object-loader.service';
-import {PhysicsObjectState, PhysicsState} from '../../../../model/state/PhysicsState';
-import {Player} from '../../../../model/state/Player';
-import {GameStateService} from '../../../../services/game-state.service';
-import {ColyseusNotifyable} from '../../../../services/game-initialisation.service';
-import {NodeLib} from 'three/examples/jsm/nodes/core/NodeLib';
+import { ObjectUserData } from '../viewport.component';
+import { ObjectLoaderService } from '../../../../services/object-loader.service';
+import { PhysicsObjectState, PhysicsState } from '../../../../model/state/PhysicsState';
+import { Player } from '../../../../model/state/Player';
+import { GameStateService } from '../../../../services/game-state.service';
+import { ColyseusNotifyable } from '../../../../services/game-initialisation.service';
+import { NodeLib } from 'three/examples/jsm/nodes/core/NodeLib';
 import add = NodeLib.add;
 
 export enum ClickedTarget {
@@ -28,6 +28,7 @@ export enum ClickedTarget {
   dice,
   figure
 }
+
 export enum CollisionGroups {
   All = 15,
   Other = 1,
@@ -35,6 +36,7 @@ export enum CollisionGroups {
   Figures = 4,
   Dice = 8
 }
+
 export class PhysicsCommands implements ColyseusNotifyable {
   scene: THREE.Scene;
 
@@ -46,11 +48,12 @@ export class PhysicsCommands implements ColyseusNotifyable {
   isPlayerCached: (physId: number) => boolean;
 
   constructor(private loader: ObjectLoaderService,
-              private gameState: GameStateService) {}
+              private gameState: GameStateService) {
+  }
 
   static getObjectByPhysId(toSearch: Object3D, physId: number): THREE.Object3D {
     if (toSearch.name !== undefined) {
-    // console.log('searching for ' + physId + ' in: ', toSearch.name, toSearch.userData.physicsId, toSearch.userData.physicsId === physId);
+      // console.log('searching for ' + physId + ' in: ', toSearch.name, toSearch.userData.physicsId, toSearch.userData.physicsId === physId);
     }
     if (toSearch.userData.physicsId === physId) {
       // console.warn('found', toSearch);
@@ -67,16 +70,20 @@ export class PhysicsCommands implements ColyseusNotifyable {
       return result;
     }
   }
+
   static getPhysId(obj: Object3D): number {
     return obj.userData.physicsId;
   }
 
   attachColyseusStateCallbacks(gameState: GameStateService): void {
     gameState.addPhysicsObjectMovedCallback((item: PhysicsObjectState, key: string) => {
-      this.updateFromState(item, () => {});
+      this.updateFromState(item, () => {
+      });
     });
   }
-  attachColyseusMessageCallbacks(gameState: GameStateService): void {}
+
+  attachColyseusMessageCallbacks(gameState: GameStateService): void {
+  }
 
   getInitializePending(): number {
     const physState: PhysicsState = this.gameState.getPhysicsState();
@@ -85,6 +92,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
     }
     return 0;
   }
+
   initializeFromState(progressCallback: () => void): void {
     const physState = this.gameState.getPhysicsState();
     if (physState !== undefined) {
@@ -100,6 +108,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
       console.error('PhysicsState is not accessible');
     }
   }
+
   updateFromState(item: PhysicsObjectState, onDone: () => void): void {
     if (!item.disabled) {
       const obj = PhysicsCommands.getObjectByPhysId(this.scene, item.objectIDPhysics);
@@ -129,6 +138,95 @@ export class PhysicsCommands implements ColyseusNotifyable {
     } else {
       onDone();
     }
+  }
+
+  setClickRole(clickRole: ClickedTarget, obj: THREE.Object3D) {
+    if (obj !== undefined) {
+      obj.userData.clickRole = clickRole;
+      this.addInteractable(obj);
+      obj.children.forEach((value => this.setClickRole(clickRole, value)));
+    }
+  }
+
+  setKinematic(physId: number, enabled: boolean) {
+    const msg: PhysicsCommandKinematic = {
+      type: MessageType.PHYSICS_MESSAGE,
+      subType: PhysicsCommandType.kinematic,
+      objectID: physId,
+      kinematic: enabled
+    };
+    this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
+  }
+
+  setPositionVec(physId: number, vec: THREE.Vector3) {
+    this.setPosition(physId, vec.x, vec.y, vec.z);
+  }
+
+  setPosition(physId: number, x: number, y: number, z: number) {
+    const msg: PhysicsCommandPosition = {
+      type: MessageType.PHYSICS_MESSAGE,
+      subType: PhysicsCommandType.position,
+      objectID: physId,
+      positionX: x,
+      positionY: y,
+      positionZ: z
+    };
+    this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
+  }
+
+  /*setRotationQuat(physId, quat: THREE.Quaternion) {
+    this.setRotation(physId, quat.x, quat.y, quat.z, quat.w);
+  }
+  setRotation(physId: number, x: number, y: number, z: number, w: number) {
+    const msg: PhysicsCommandQuat = {
+      type: MessageType.PHYSICS_MESSAGE,
+      subType: PhysicsCommandType.quaternion,
+      objectID: physId,
+      quaternionX: x,
+      quaternionY: y,
+      quaternionZ: z,
+      quaternionW: w
+    };
+    this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
+  }*/
+  setVelocity(physId: number, x: number, y: number, z: number) {
+    const msg: PhysicsCommandVelocity = {
+      type: MessageType.PHYSICS_MESSAGE,
+      subType: PhysicsCommandType.velocity,
+      objectID: physId,
+      velX: x,
+      velY: y,
+      velZ: z
+    };
+    this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
+  }
+
+  setAngularVelocity(physId: number, x: number, y: number, z: number) {
+    const msg: PhysicsCommandAngular = {
+      type: MessageType.PHYSICS_MESSAGE,
+      subType: PhysicsCommandType.angularVelocity,
+      objectID: physId,
+      angularX: x,
+      angularY: y,
+      angularZ: z,
+    };
+    this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
+  }
+
+  wakeAll() {
+    const msg: PhysicsCommandWakeAll = {
+      type: MessageType.PHYSICS_MESSAGE,
+      subType: PhysicsCommandType.wakeAll
+    };
+    this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
+  }
+
+  removePhysics(physId: number) {
+    const cmd: PhysicsCommandRemove = {
+      type: MessageType.PHYSICS_MESSAGE,
+      subType: PhysicsCommandType.remove,
+      objectID: physId,
+    };
   }
 
   private generateEntity(onDone: () => void, entity: PhysicsEntity, variant: PhysicsEntityVariation, physicsId: number,
@@ -178,86 +276,5 @@ export class PhysicsCommands implements ColyseusNotifyable {
       this.currentlyLoadingEntities.set(physicsId, false);
       onDone();
     });
-  }
-  setClickRole(clickRole: ClickedTarget, obj: THREE.Object3D) {
-    if (obj !== undefined) {
-      obj.userData.clickRole = clickRole;
-      this.addInteractable(obj);
-      obj.children.forEach((value => this.setClickRole(clickRole, value)));
-    }
-  }
-  setKinematic(physId: number, enabled: boolean) {
-    const msg: PhysicsCommandKinematic = {
-      type: MessageType.PHYSICS_MESSAGE,
-      subType: PhysicsCommandType.kinematic,
-      objectID: physId,
-      kinematic: enabled
-    };
-    this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
-  }
-  setPositionVec(physId: number, vec: THREE.Vector3) {
-    this.setPosition(physId, vec.x, vec.y, vec.z);
-  }
-  setPosition(physId: number, x: number, y: number, z: number) {
-    const msg: PhysicsCommandPosition = {
-      type: MessageType.PHYSICS_MESSAGE,
-      subType: PhysicsCommandType.position,
-      objectID: physId,
-      positionX: x,
-      positionY: y,
-      positionZ: z
-    };
-    this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
-  }
-  /*setRotationQuat(physId, quat: THREE.Quaternion) {
-    this.setRotation(physId, quat.x, quat.y, quat.z, quat.w);
-  }
-  setRotation(physId: number, x: number, y: number, z: number, w: number) {
-    const msg: PhysicsCommandQuat = {
-      type: MessageType.PHYSICS_MESSAGE,
-      subType: PhysicsCommandType.quaternion,
-      objectID: physId,
-      quaternionX: x,
-      quaternionY: y,
-      quaternionZ: z,
-      quaternionW: w
-    };
-    this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
-  }*/
-  setVelocity(physId: number, x: number, y: number, z: number) {
-    const msg: PhysicsCommandVelocity = {
-      type: MessageType.PHYSICS_MESSAGE,
-      subType: PhysicsCommandType.velocity,
-      objectID: physId,
-      velX: x,
-      velY: y,
-      velZ: z
-    };
-    this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
-  }
-  setAngularVelocity(physId: number, x: number, y: number, z: number) {
-    const msg: PhysicsCommandAngular = {
-      type: MessageType.PHYSICS_MESSAGE,
-      subType: PhysicsCommandType.angularVelocity,
-      objectID: physId,
-      angularX: x,
-      angularY: y,
-      angularZ: z,
-    };
-    this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
-  }
-  wakeAll() {
-    const msg: PhysicsCommandWakeAll = {
-      type: MessageType.PHYSICS_MESSAGE,
-      subType: PhysicsCommandType.wakeAll
-    };
-    this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
-  }
-  removePhysics(physId: number) {
-    const cmd: PhysicsCommandRemove = {
-      type: MessageType.PHYSICS_MESSAGE,
-      subType: PhysicsCommandType.remove,
-      objectID: physId,
-    };
   }
 }

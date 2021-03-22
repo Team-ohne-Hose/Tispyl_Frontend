@@ -35,9 +35,11 @@
   color: grey;
   cursor: pointer;
 }
+
 .register-link:hover {
   color: lightgrey;
 }
+
 .error-text {
   margin-top: 16px;
   height: 16px;
@@ -45,6 +47,6 @@
   color: lightcoral;
 }
 
-.error-text i{
+.error-text i {
   padding-right: 8px;
 }

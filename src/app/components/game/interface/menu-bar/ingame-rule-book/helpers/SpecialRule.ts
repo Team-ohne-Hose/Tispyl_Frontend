@@ -1,4 +1,3 @@
-
 export class SpecialRule {
   author: string;
   text: string;

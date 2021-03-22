@@ -1,10 +1,10 @@
-import {Component, ElementRef, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
-import {GameStateService} from '../../../../../../services/game-state.service';
-import {Player} from '../../../../../../model/state/Player';
-import {VoteEntry} from '../helpers/VoteEntry';
-import {UserService} from '../../../../../../services/user.service';
-import {VoteConfiguration} from '../helpers/VoteConfiguration';
-import {GameActionType, MessageType} from '../../../../../../model/WsData';
+import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { GameStateService } from '../../../../../../services/game-state.service';
+import { Player } from '../../../../../../model/state/Player';
+import { VoteEntry } from '../helpers/VoteEntry';
+import { UserService } from '../../../../../../services/user.service';
+import { VoteConfiguration } from '../helpers/VoteConfiguration';
+import { GameActionType, MessageType } from '../../../../../../model/WsData';
 
 @Component({
   selector: 'app-vote-creator',
@@ -34,7 +34,7 @@ export class VoteCreatorComponent {
 
   toggleEligibility(player: Player): void {
     // TODO: build solution to close vote if the host is ineligible
-    if ( !(this.gameState.getMe().displayName === player.displayName) ) {
+    if (!(this.gameState.getMe().displayName === player.displayName)) {
       this.eligibilities.set(player.displayName, !this.eligibilities.get(player.displayName));
     }
   }
@@ -46,8 +46,8 @@ export class VoteCreatorComponent {
   }
 
   addVoteEntry(inputElement: HTMLInputElement): void {
-    const userInput =  String(inputElement.value).trim();
-    const correlatingPlayer = this.playerList.find( p => p.displayName === userInput);
+    const userInput = String(inputElement.value).trim();
+    const correlatingPlayer = this.playerList.find(p => p.displayName === userInput);
     if (userInput !== '') {
       if (correlatingPlayer !== undefined) {
         this.votingOptions.push(VoteEntry.fromPlayer(correlatingPlayer));
@@ -61,8 +61,8 @@ export class VoteCreatorComponent {
   }
 
   addAllPlayers(event: Event): void {
-    this.playerList.forEach(p =>  {
-      if (this.votingOptions.find( o => o.text === p.displayName) === undefined) {
+    this.playerList.forEach(p => {
+      if (this.votingOptions.find(o => o.text === p.displayName) === undefined) {
         this.votingOptions.push(VoteEntry.fromPlayer(p));
       }
     });
@@ -87,10 +87,10 @@ export class VoteCreatorComponent {
       voteConfig = VoteConfiguration.build(userInput, 'undefined', this.eligibilities, this.votingOptions);
     }
 
-    if ( voteConfig.votingOptions.length > 1 ) {
+    if (voteConfig.votingOptions.length > 1) {
       this.voteConfiguration.emit(voteConfig);
     } else {
-      alert("please ensure u have atleast 2 vote option");
+      alert('please ensure u have atleast 2 vote option');
     }
   }
 

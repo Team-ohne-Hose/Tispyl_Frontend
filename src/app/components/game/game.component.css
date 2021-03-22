@@ -10,12 +10,14 @@ app-loading-screen {
   justify-content: center;
   align-items: center;
 }
+
 .attribution {
   position: absolute;
   left: 3px;
   bottom: 0px;
   color: whitesmoke !important;
 }
+
 .attribution a {
   color: whitesmoke !important;
 }

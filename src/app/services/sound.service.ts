@@ -20,7 +20,8 @@ export class SoundService {
       this.html5Audio.setAttribute('src', this.assetPath + this.sounds.get(soundName));
       this.html5Audio.load();
       this.html5Audio.volume = 1;
-      this.html5Audio.play().then(x => { });
+      this.html5Audio.play().then(x => {
+      });
     } else {
       console.warn('No sound known for name: ', soundName);
     }

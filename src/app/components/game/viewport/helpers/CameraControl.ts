@@ -1,11 +1,12 @@
-import {PerspectiveCamera} from 'three';
+import { PerspectiveCamera } from 'three';
 import * as THREE from 'three';
-import {GameBoardOrbitControl} from './GameBoardOrbitControl';
+import { GameBoardOrbitControl } from './GameBoardOrbitControl';
 
 
 export class CameraControl {
   cam: PerspectiveCamera;
   controls: GameBoardOrbitControl;
+
   constructor(c: PerspectiveCamera, ctrl: GameBoardOrbitControl) {
     this.cam = c;
     this.controls = ctrl;
@@ -22,9 +23,11 @@ export class CameraControl {
   lookAtField(tileId: number) {
     // TODO
   }
+
   lookAtOverview() {
     // TODO
   }
+
   getPosition(): THREE.Vector3 {
     return this.cam.position;
   }

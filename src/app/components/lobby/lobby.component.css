@@ -38,10 +38,12 @@
   margin-left: 16px;
   margin-top: 16px;
 }
+
 .headlineContainer {
   display: flex;
-  justify-content:space-between;
+  justify-content: space-between;
 }
+
 .languageContainer {
   padding-bottom: 0px;
   padding-top: 0px;

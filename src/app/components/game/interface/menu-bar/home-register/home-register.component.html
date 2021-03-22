@@ -6,7 +6,7 @@
       <div class="round-avatar golden-border">
         <img [src]="profileSource" alt="'Profile'">
       </div>
-      <div class="upload-icon" (click)="fileInput.click()"><i class="fas fa-file-upload"></i></div>
+      <div (click)="fileInput.click()" class="upload-icon"><i class="fas fa-file-upload"></i></div>
     </div>
 
     <div class="info-section">
@@ -37,7 +37,7 @@
 
   <div class="chat-box">
 
-    <div class="text-section" #textSection>
+    <div #textSection class="text-section">
       <div *ngFor="let msg of chatMessages" [ngClass]="{'move-right': msg.sender === myPlayer?.displayName}">
         <div class="chat-message">
           <div class="head-row">
@@ -54,15 +54,15 @@
 
     <div class="input-section">
       <div class="command-hint"><i class="fas fa-terminal"></i></div>
-      <div class="text-input-container" (keyup)="sendChatMessageByKey($event, chatInput)">
-        <input type="text" placeholder="Type here ..." #chatInput>
+      <div (keyup)="sendChatMessageByKey($event, chatInput)" class="text-input-container">
+        <input #chatInput placeholder="Type here ..." type="text">
       </div>
-      <div class="post-button" (click)="sendChatMessage(chatInput)"><i class="fas fa-share"></i></div>
+      <div (click)="sendChatMessage(chatInput)" class="post-button"><i class="fas fa-share"></i></div>
     </div>
 
   </div>
   <input
-    style="display: none"
-    type="file" (change)="newProfilePic($event)"
-    #fileInput>
+    #fileInput
+    (change)="newProfilePic($event)" style="display: none"
+    type="file">
 </div>

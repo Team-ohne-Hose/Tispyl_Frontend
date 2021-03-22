@@ -46,9 +46,11 @@ export class LobbyComponent implements OnInit {
     if (this.AuthService.isLoggedIn) {
       this.userManagement.getUserByLoginName(localStorage.getItem('username')).subscribe(userResponse => {
         this.userManagement.setActiveUser(userResponse.payload as LoginUser);
-      })
+      });
 
-    } else { this.AuthService.logout() }
+    } else {
+      this.AuthService.logout();
+    }
 
     // enable scrollbars
     document.documentElement.setAttribute('style', 'overflow: scrollbars');
@@ -58,7 +60,9 @@ export class LobbyComponent implements OnInit {
     this.userManagement.getActiveUser().subscribe(u => {
       console.log('USER: ', u);
       this.currentUser = u;
-      if (this.currentUser !== undefined) { this.refresh(); }
+      if (this.currentUser !== undefined) {
+        this.refresh();
+      }
     });
     this.colyseus.getActiveRoom().subscribe(r => this.activeLobby = r);
     this.colyseus.watchAvailableRooms().subscribe(arr => this.availableLobbies = arr);
@@ -71,7 +75,7 @@ export class LobbyComponent implements OnInit {
         maxWidth: '500px',
         height: '70%',
         maxHeight: '350px',
-        data: { user: this.currentUser },
+        data: {user: this.currentUser},
         panelClass: 'modalbox-base'
       });
 
@@ -103,7 +107,7 @@ export class LobbyComponent implements OnInit {
     const dialogRef: MatDialogRef<JoinGameComponent, void> = this.dialog.open(JoinGameComponent, {
       width: '60%',
       maxWidth: '400px',
-      data: { lobby: lobby, lobbyComponent: this },
+      data: {lobby: lobby, lobbyComponent: this},
       panelClass: 'modalbox-base'
     });
 

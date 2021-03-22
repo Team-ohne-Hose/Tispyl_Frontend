@@ -47,7 +47,8 @@ export class HintsService {
   ];
 
 
-  constructor() { }
+  constructor() {
+  }
 
 
   getRandomHint(): string {

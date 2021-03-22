@@ -1,6 +1,6 @@
-import {Component, EventEmitter, Inject, OnInit, Output} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {Router} from '@angular/router';
+import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-join-game',
@@ -11,9 +11,10 @@ export class JoinGameComponent {
 
   constructor(
     private router: Router,
-    private  dialogRef:  MatDialogRef<JoinGameComponent, void>,
-    @Inject(MAT_DIALOG_DATA) public  data:  any
-  ) {}
+    private  dialogRef: MatDialogRef<JoinGameComponent, void>,
+    @Inject(MAT_DIALOG_DATA) public  data: any
+  ) {
+  }
 
   public closeMe() {
     this.dialogRef.close();
@@ -21,6 +22,6 @@ export class JoinGameComponent {
 
   public join() {
     this.data.lobbyComponent.onEnterGame();
-    this.router.navigateByUrl('/game').then( e => this.dialogRef.close());
+    this.router.navigateByUrl('/game').then(e => this.dialogRef.close());
   }
 }

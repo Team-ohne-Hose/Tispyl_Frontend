@@ -1,9 +1,9 @@
-import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild} from '@angular/core';
-import {User} from '../../../model/User';
-import {UserService} from '../../../services/user.service';
-import {FileService} from '../../../services/file.service';
-import {PlayerModel} from '../../../model/WsData';
-import {ObjectLoaderService} from '../../../services/object-loader.service';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
+import { User } from '../../../model/User';
+import { UserService } from '../../../services/user.service';
+import { FileService } from '../../../services/file.service';
+import { PlayerModel } from '../../../model/WsData';
+import { ObjectLoaderService } from '../../../services/object-loader.service';
 import { JwtTokenService } from 'src/app/services/jwttoken.service';
 
 enum Resolution {
@@ -12,6 +12,7 @@ enum Resolution {
   res_2k,
   res_1k
 }
+
 @Component({
   selector: 'app-profile-display',
   templateUrl: './profile-display.component.html',
@@ -38,7 +39,7 @@ export class ProfileDisplayComponent {
     {name: 'Anime', value: PlayerModel.bcap_Tiddies1},
     {name: 'Cat', value: PlayerModel.bcap_cat},
     {name: 'Yoshi', value: PlayerModel.bcap_yoshi}
-    ];
+  ];
   envList = [{name: 'Ryfjallet (2k)', resolution: Resolution.res_2k, thumb: '/cubemaps/thumbs/mountain-ryfjallet.jpg', value: 0},
     {name: 'Maskonaive1 (2k)', resolution: Resolution.res_2k, thumb: '/cubemaps/thumbs/mountain-maskonaive.jpg', value: 1},
     {name: 'Maskonaive2 (2k)', resolution: Resolution.res_2k, thumb: '/cubemaps/thumbs/mountain-maskonaive2.jpg', value: 2},
@@ -57,13 +58,13 @@ export class ProfileDisplayComponent {
     {name: 'Bridge2 (2k)', resolution: Resolution.res_2k, thumb: '/cubemaps/thumbs/bridge-bridge2.jpg', value: 15}];
 
   constructor(private userManagement: UserService,
-    private fileManagement: FileService,
-    private objectLoaderService: ObjectLoaderService,
-    private AuthService: JwtTokenService) {
+              private fileManagement: FileService,
+              private objectLoaderService: ObjectLoaderService,
+              private AuthService: JwtTokenService) {
 
 
-    this.userManagement.getActiveUser().subscribe( u => {
-      if ( u !== undefined ) {
+    this.userManagement.getActiveUser().subscribe(u => {
+      if (u !== undefined) {
         this.profileSource = this.fileManagement.profilePictureSource(u.login_name, true);
       }
     });
@@ -72,6 +73,7 @@ export class ProfileDisplayComponent {
   getDate() {
     return new Date(this.user.user_creation);
   }
+
   getTimePlayed() {
     const min = this.user.time_played;
     return `${Math.floor(min / 60)} hours ${Math.floor(min % 60)} minutes`;
@@ -91,7 +93,7 @@ export class ProfileDisplayComponent {
   }
 
   removeProfilePic(event) {
-    this.fileManagement.removeProfilePicture(this.user).subscribe( suc => {
+    this.fileManagement.removeProfilePicture(this.user).subscribe(suc => {
       console.log(suc);
       this.userManagement.syncUserData(this.user);
     });

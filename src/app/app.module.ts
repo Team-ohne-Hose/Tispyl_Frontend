@@ -11,13 +11,13 @@ import { LanguageSelectorComponent } from './components/lobby/language-selector/
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 
-import {MatInputModule} from '@angular/material/input';
-import {MatButtonModule} from '@angular/material/button';
-import {MatCardModule} from '@angular/material/card';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialogModule } from '@angular/material/dialog';
 import { RegisterPopupComponent } from './components/lobby/dialogs/register-popup/register-popup.component';
-import {MatSelectModule} from '@angular/material/select';
+import { MatSelectModule } from '@angular/material/select';
 import { ProfileDisplayComponent } from './components/lobby/profile-display/profile-display.component';
 import { LobbyComponent } from './components/lobby/lobby.component';
 import { RouterModule, Routes } from '@angular/router';
@@ -27,7 +27,7 @@ import { ViewportComponent } from './components/game/viewport/viewport.component
 import { OpenGamePopupComponent } from './components/lobby/dialogs/open-game-popup/open-game-popup.component';
 import { JoinGameComponent } from './components/lobby/dialogs/join-game/join-game.component';
 import { InterfaceComponent } from './components/game/interface/interface.component';
-import {DragDropModule} from '@angular/cdk/drag-drop';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { StateDisplayComponent } from './components/game/interface/state-display/state-display.component';
 import { ConnectedPlayersComponent } from './components/game/interface/connected-players/connected-players.component';
 import { PregameBannerComponent } from './components/game/interface/pregame-banner/pregame-banner.component';
@@ -38,32 +38,31 @@ import { TurnOverlayComponent } from './components/game/interface/turn-overlay/t
 import { TileOverlayComponent } from './components/game/interface/tile-overlay/tile-overlay.component';
 import { LoadingScreenComponent } from './components/game/loading-screen/loading-screen.component';
 import { VoteSystemComponent } from './components/game/interface/menu-bar/vote-system/vote-system.component';
-import {MatIconModule} from '@angular/material/icon';
-import {MatListModule} from '@angular/material/list';
-import {MatChipsModule} from '@angular/material/chips';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import {MatStepperModule} from '@angular/material/stepper';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-import { VoteCreationComponent } from './customUI/vote-creation/vote-creation.component';
-import {CdkStepperModule} from '@angular/cdk/stepper';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { CdkStepperModule } from '@angular/cdk/stepper';
 import { ShowAttribComponent } from './components/game/show-attrib/show-attrib.component';
 import { MenuBarComponent } from './components/game/interface/menu-bar/menu-bar.component';
-import {MatExpansionModule} from '@angular/material/expansion';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { HomeRegisterComponent } from './components/game/interface/menu-bar/home-register/home-register.component';
 import { TrinkBuddyDisplayComponent } from './components/game/interface/menu-bar/home-register/trink-buddy-display/trink-buddy-display.component';
 import { ItemsInterfaceComponent } from './components/game/interface/state-display/items-interface/items-interface.component';
-import { VoteHistoricResultDisplayComponent } from './components/game/interface/menu-bar/vote-system/vote-historic-result-display/vote-historic-result-display.component';
+import { HistoricResultsDisplayComponent } from './components/game/interface/menu-bar/vote-system/historic-results-display/historic-results-display.component';
 import { VoteCreatorComponent } from './components/game/interface/menu-bar/vote-system/vote-creator/vote-creator.component';
 import { PlayerIconComponent } from './components/framework/player-icon/player-icon.component';
 import { AuthInterceptor } from './modules/AuthInterceptor';
 
 const appRoutes: Routes = [
-  { path: 'lobby', component: LobbyComponent},
-  { path: 'debug', component: DebugdummyComponent},
-  { path: 'game', component: GameComponent},
-  { path: '', redirectTo: '/lobby', pathMatch: 'full'},
-  { path: '**', component: PageNotFoundComponent }
-  ];
+  {path: 'lobby', component: LobbyComponent},
+  {path: 'debug', component: DebugdummyComponent},
+  {path: 'game', component: GameComponent},
+  {path: '', redirectTo: '/lobby', pathMatch: 'full'},
+  {path: '**', component: PageNotFoundComponent}
+];
 
 @NgModule({
   declarations: [
@@ -92,13 +91,12 @@ const appRoutes: Routes = [
     TileOverlayComponent,
     LoadingScreenComponent,
     VoteSystemComponent,
-    VoteCreationComponent,
     ShowAttribComponent,
     MenuBarComponent,
     HomeRegisterComponent,
     TrinkBuddyDisplayComponent,
     ItemsInterfaceComponent,
-    VoteHistoricResultDisplayComponent,
+    HistoricResultsDisplayComponent,
     VoteCreatorComponent,
     PlayerIconComponent
   ],
@@ -133,4 +131,5 @@ const appRoutes: Routes = [
   }],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

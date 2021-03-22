@@ -1,4 +1,4 @@
-<div [@fading]="state" (@fading.start)="triggerChime()" class="banner-style">
+<div (@fading.start)="triggerChime()" [@fading]="state" class="banner-style">
 
   <div *ngIf="!ownTurn">
     <div class="faded-line"></div>

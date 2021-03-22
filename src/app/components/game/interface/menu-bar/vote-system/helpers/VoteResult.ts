@@ -1,4 +1,4 @@
-import {VoteEntry} from './VoteEntry';
+import { VoteEntry } from './VoteEntry';
 
 
 export class VoteResult {
@@ -9,7 +9,7 @@ export class VoteResult {
   readonly ineligibles: string[];
   readonly timestamp: Date;
 
-  constructor( title: string, author: string, options: VoteEntry[], ineligibles: string[] = [] ) {
+  constructor(title: string, author: string, options: VoteEntry[], ineligibles: string[] = []) {
     this.title = title;
     this.author = author;
     this.entries = options;

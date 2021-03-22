@@ -1,12 +1,12 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
-import {GameStateService} from '../../../../../services/game-state.service';
-import {GameActionType, MessageType} from '../../../../../model/WsData';
-import {DataChange} from '@colyseus/schema';
-import {VoteSystemState} from './helpers/VoteSystemState';
-import {VoteResult} from './helpers/VoteResult';
-import {VoteEntry} from './helpers/VoteEntry';
-import {VoteConfiguration} from './helpers/VoteConfiguration';
-import {VoteStage} from '../../../../../model/state/VoteState';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { GameStateService } from '../../../../../services/game-state.service';
+import { GameActionType, MessageType } from '../../../../../model/WsData';
+import { DataChange } from '@colyseus/schema';
+import { VoteSystemState } from './helpers/VoteSystemState';
+import { VoteResult } from './helpers/VoteResult';
+import { VoteEntry } from './helpers/VoteEntry';
+import { VoteConfiguration } from './helpers/VoteConfiguration';
+import { VoteStage } from '../../../../../model/state/VoteState';
 
 
 @Component({
@@ -47,7 +47,9 @@ export class VoteSystemComponent implements OnInit {
     gameState.addVoteSystemCallback(((changes: DataChange<any>[]) => {
       changes.forEach((change: DataChange) => {
         switch (change.field) {
-          case 'closingIn': this.timerDisplay = this.gameState.getVoteState().closingIn; break;
+          case 'closingIn':
+            this.timerDisplay = this.gameState.getVoteState().closingIn;
+            break;
         }
       });
     }).bind(this));
@@ -72,13 +74,17 @@ export class VoteSystemComponent implements OnInit {
 
   previousHistoricResult() {
     this.currentHistoryResult--;
-    if ( this.currentHistoryResult < 0 ) { this.currentHistoryResult = this.resultHistory.length - 1; }
+    if (this.currentHistoryResult < 0) {
+      this.currentHistoryResult = this.resultHistory.length - 1;
+    }
     console.log(this.currentHistoryResult, this.resultHistory);
   }
 
   nextHistoricResult() {
     this.currentHistoryResult++;
-    if ( this.currentHistoryResult > this.resultHistory.length - 1 ) { this.currentHistoryResult = 0; }
+    if (this.currentHistoryResult > this.resultHistory.length - 1) {
+      this.currentHistoryResult = 0;
+    }
   }
 
   // Triggers
@@ -115,6 +121,7 @@ export class VoteSystemComponent implements OnInit {
       this.voteEntryPercentileDisplay.push(this.getPercentile(votingOption));
     }
   }
+
   onVoteStageChange(stage: VoteStage) {
     switch (stage) {
       case VoteStage.IDLE:
@@ -157,7 +164,7 @@ export class VoteSystemComponent implements OnInit {
     // Color selected value in HTML
     const selectionClass = 'selected';
     const choices: HTMLCollectionOf<Element> = document.getElementsByClassName('vote-entry');
-    for ( let i = 0; i < choices.length; i++ ) {
+    for (let i = 0; i < choices.length; i++) {
       choices[i].classList.remove(selectionClass);
     }
     choices[idx].classList.add(selectionClass);
@@ -179,7 +186,7 @@ export class VoteSystemComponent implements OnInit {
       const playerListSize = this.gameState.getPlayerArray().length;
       ///////////////////////////////////
       const max = playerListSize - voteState.voteConfiguration.ineligibles.length;
-      percentile = ( ve.castVotes.length / max ) * 100;
+      percentile = (ve.castVotes.length / max) * 100;
     }
     return percentile;
   }

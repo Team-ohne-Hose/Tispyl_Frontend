@@ -1,4 +1,3 @@
-
 /*====MISC======*/
 .creation-head {
   display: flex;
@@ -42,7 +41,7 @@
   min-width: 0;
 }
 
-.text-input-container > input{
+.text-input-container > input {
   flex: 1;
   color: var(--text-color);
   border-bottom: var(--dim-text-color);

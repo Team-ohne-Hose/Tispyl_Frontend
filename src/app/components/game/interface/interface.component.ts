@@ -1,21 +1,21 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {Router} from '@angular/router';
-import {MapSchema} from '@colyseus/schema';
-import {GameComponent} from '../game.component';
-import {ChatCommandType, GameActionType, ItemMessageType, MessageType} from '../../../model/WsData';
-import {Player} from '../../../model/state/Player';
-import {GLTFExporter} from 'three/examples/jsm/exporters/GLTFExporter';
-import {GameStateService} from '../../../services/game-state.service';
-import {NextTurnButtonComponent} from './next-turn-button/next-turn-button.component';
-import {TileOverlayComponent} from './tile-overlay/tile-overlay.component';
-import {ColyseusNotifyable} from '../../../services/game-initialisation.service';
-import {TurnOverlayComponent} from './turn-overlay/turn-overlay.component';
-import {HintsService} from '../../../services/hints.service';
-import {VoteSystemComponent} from './menu-bar/vote-system/vote-system.component';
-import {ObjectLoaderService} from '../../../services/object-loader.service';
-import {ConnectedPlayersComponent} from './connected-players/connected-players.component';
-import {ChatService} from '../../../services/chat.service';
-import {ItemService} from '../../../services/item.service';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { MapSchema } from '@colyseus/schema';
+import { GameComponent } from '../game.component';
+import { ChatCommandType, GameActionType, ItemMessageType, MessageType } from '../../../model/WsData';
+import { Player } from '../../../model/state/Player';
+import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
+import { GameStateService } from '../../../services/game-state.service';
+import { NextTurnButtonComponent } from './next-turn-button/next-turn-button.component';
+import { TileOverlayComponent } from './tile-overlay/tile-overlay.component';
+import { ColyseusNotifyable } from '../../../services/game-initialisation.service';
+import { TurnOverlayComponent } from './turn-overlay/turn-overlay.component';
+import { HintsService } from '../../../services/hints.service';
+import { VoteSystemComponent } from './menu-bar/vote-system/vote-system.component';
+import { ObjectLoaderService } from '../../../services/object-loader.service';
+import { ConnectedPlayersComponent } from './connected-players/connected-players.component';
+import { ChatService } from '../../../services/chat.service';
+import { ItemService } from '../../../services/item.service';
 
 
 @Component({
@@ -25,24 +25,13 @@ import {ItemService} from '../../../services/item.service';
 })
 export class InterfaceComponent implements OnInit, ColyseusNotifyable {
 
-  constructor(private router: Router,
-              public gameState: GameStateService,
-              private hints: HintsService,
-              private chat: ChatService,
-              private items: ItemService,
-              private objectLoader: ObjectLoaderService) {
-    this.routes = router.config.filter( route => route.path !== '**' && route.path.length > 0);
-  }
-
   routes;
   gameComponent: GameComponent;
-
   @ViewChild('nextTurn') nextTurnRef: NextTurnButtonComponent;
   @ViewChild('tileOverlay') tileOverlayRef: TileOverlayComponent;
   @ViewChild('turnOverlay') turnOverlayRef: TurnOverlayComponent;
   @ViewChild('voteSystem') voteSystemRef: VoteSystemComponent;
   @ViewChild('connectedPlayers') connectedPlayersRef: ConnectedPlayersComponent;
-
   knownCommands: any[] = [
     {k: '/help', f: this.printHelpCommand.bind(this), h: 'displays this help'},
     {k: '/ourAnthem', f: this.playAnthem.bind(this), h: 'play our anthem'},
@@ -57,7 +46,11 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
     {k: '/perspectiveChange', f: this.reverseTurnOrder.bind(this), h: 'Reverses the turn order'},
     {k: '/giveItem', f: this.giveItem.bind(this), h: '<name> <itemId> Gives Player <name> <itemId>. Only the Host can do this.'},
     {k: '/showItems', f: this.showItems.bind(this), h: 'List your currently owned Items'},
-    {k: '/useItem', f: this.useItem.bind(this), h: '<itemId> <name> Uses Item <itemId> [on Player <name>]. You need to have the Item in your Inventory.'},
+    {
+      k: '/useItem',
+      f: this.useItem.bind(this),
+      h: '<itemId> <name> Uses Item <itemId> [on Player <name>]. You need to have the Item in your Inventory.'
+    },
     {k: '/hint', f: this.printHint.bind(this), h: 'Gives a random hint'},
     {k: '/respawn', f: this.respawn.bind(this), h: 'Respawn your figure'},
     {k: '/ask', f: this.askGame.bind(this), h: '<Question> Ask the Game a Yes/No-Question'},
@@ -69,84 +62,29 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
     // TODO readd a feature alike this one. But add a new Player for this client instead
   ];
 
+  constructor(private router: Router,
+              public gameState: GameStateService,
+              private hints: HintsService,
+              private chat: ChatService,
+              private items: ItemService,
+              private objectLoader: ObjectLoaderService) {
+    this.routes = router.config.filter(route => route.path !== '**' && route.path.length > 0);
+  }
+
   attachColyseusStateCallbacks(gameState: GameStateService): void {
     gameState.addNextTurnCallback((activePlayerLogin: string) => {
       this.turnOverlayRef.show();
     });
   }
-  attachColyseusMessageCallbacks(gameState: GameStateService): void {}
 
-  private printHint(): void {
-    this.print('TIPP: ' + this.hints.getRandomHint(), '/hint');
-  }
-
-  private dlScene() {
-    if (this.gameComponent !== undefined) {
-      const exporter = new GLTFExporter();
-
-      const link = document.createElement( 'a' );
-      link.style.display = 'none';
-      document.body.appendChild( link ); // Firefox workaround, see #6594
-      const save = ( blob, filename ) => {
-        link.href = URL.createObjectURL( blob );
-        link.download = filename;
-        link.click();
-        // URL.revokeObjectURL( url ); breaks Firefox...
-      };
-
-      // Parse the input and generate the glTF output
-      exporter.parse( this.gameComponent.boardItemControl.scene, function ( result ) {
-        console.log( result );
-        if ( result instanceof ArrayBuffer ) {
-          save( new Blob( [ result ], { type: 'application/octet-stream' } ), 'scene.glb' );
-        } else {
-          const output = JSON.stringify( result, null, 2 );
-          console.log( output );
-          save( new Blob( [ output ], { type: 'text/plain' } ), 'scene.gltf' );
-
-        }
-      }, {});
-    }
+  attachColyseusMessageCallbacks(gameState: GameStateService): void {
   }
 
   ngOnInit(): void {
   }
 
-  private listPhysics() {
-    this.gameState.sendMessage('SERVER_COMMAND', {type: 'SERVER_COMMAND', content: {subType: 'listphysics'}});
-  }
-
-  private respawn() {
-    this.gameComponent.boardItemControl.respawnMyFigure();
-  }
-
-  private askGame( args: string[]) {
-    const question = args.slice(1).join(' ');
-
-    this.gameState.sendMessage(MessageType.CHAT_COMMAND, {
-      type: MessageType.CHAT_COMMAND,
-      subType: ChatCommandType.commandAsk,
-      question: question,
-      authorDisplayName: this.gameState.getMe().displayName });
-  }
-
-  private randomNum( args ) {
-    const limit: number = (args[1] !== undefined) ? Math.round(Number(args[1].trim())) : 10;
-    this.gameState.sendMessage(MessageType.CHAT_COMMAND, {
-      type: MessageType.CHAT_COMMAND,
-      subType: ChatCommandType.commandRandom,
-      limit: limit
-    });
-  }
-
-  private playAnthem() {
-    if (this.gameComponent !== undefined) {
-      this.gameComponent.audioCtrl.playAudio();
-    }
-  }
-
-  executeChatCommand( args ) {
-    const command = this.knownCommands.find( e => {
+  executeChatCommand(args) {
+    const command = this.knownCommands.find(e => {
       return e.k.trim().toString() === '/' + args[0].trim().toString();
     });
     if (command !== undefined) {
@@ -154,47 +92,6 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
     } else {
       console.log('Unknown command: ', args);
     }
-  }
-
-  private addRule( args ) {
-    console.log(args);
-    const msgArray: any[] = args.slice(1);
-    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.addRule, text: msgArray.join(' ')});
-  }
-
-  private deleteRule( args ) {
-    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.deleteRule, id: args[1]});
-  }
-
-  private showLocalState( args ) {
-    console.log(`State`, this.gameState.getState());
-  }
-
-  private advanceAction( args ) {
-    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.advanceAction});
-  }
-  private advanceTurn( args ) {
-    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.advanceTurn});
-  }
-
-  private reverseTurnOrder( args ) {
-    this.print('The Turn-Order was reversed!', '/perspectiveChange');
-    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.reverseTurnOrder});
-  }
-
-  private toggleFpsDisplay( args ) {
-    if (this.gameComponent !== undefined) {
-      this.gameComponent.viewRef.stats.dom.hidden = !this.gameComponent.viewRef.stats.dom.hidden;
-    }
-  }
-
-  private start( args ) {
-    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.setStartingCondition});
-  }
-
-  private printHelpCommand( args ) {
-    const commands: string[] = this.knownCommands.map( a => `${a.k} ${a.h}`);
-    this.print(commands.join('\n'), '/help');
   }
 
   print(msg: string, senderCmd: string) {
@@ -205,7 +102,8 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
     const s: IterableIterator<T> = schema.values();
     return Array.from(s);
   }
-  giveItem( args ) {
+
+  giveItem(args) {
     if (args.length < 3) {
       return;
     }
@@ -233,7 +131,8 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
       sendGiveMessage(targetPlayer.loginName);
     }
   }
-  showItems( args ) {
+
+  showItems(args) {
     const myPlayer: Player = this.gameState.getMe();
     if (myPlayer !== undefined) {
       let list = '';
@@ -252,7 +151,8 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
       }
     }
   }
-  useItem( args ) {
+
+  useItem(args) {
     const sendUseMessage = (targetLogin: string) => {
       const itemId: number = Number(args[1]);
       this.print('Trying to use Item ' + itemId + ((targetLogin === '') ? '' : ' on ' + targetLogin), '/useItem');
@@ -282,5 +182,118 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
     if (targetPlayer !== undefined) {
       sendUseMessage(targetPlayer.loginName);
     }
+  }
+
+  private printHint(): void {
+    this.print('TIPP: ' + this.hints.getRandomHint(), '/hint');
+  }
+
+  private dlScene() {
+    if (this.gameComponent !== undefined) {
+      const exporter = new GLTFExporter();
+
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      document.body.appendChild(link); // Firefox workaround, see #6594
+      const save = (blob, filename) => {
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+        // URL.revokeObjectURL( url ); breaks Firefox...
+      };
+
+      // Parse the input and generate the glTF output
+      exporter.parse(this.gameComponent.boardItemControl.scene, function (result) {
+        console.log(result);
+        if (result instanceof ArrayBuffer) {
+          save(new Blob([result], {type: 'application/octet-stream'}), 'scene.glb');
+        } else {
+          const output = JSON.stringify(result, null, 2);
+          console.log(output);
+          save(new Blob([output], {type: 'text/plain'}), 'scene.gltf');
+
+        }
+      }, {});
+    }
+  }
+
+  private listPhysics() {
+    this.gameState.sendMessage('SERVER_COMMAND', {type: 'SERVER_COMMAND', content: {subType: 'listphysics'}});
+  }
+
+  private respawn() {
+    this.gameComponent.boardItemControl.respawnMyFigure();
+  }
+
+  private askGame(args: string[]) {
+    const question = args.slice(1).join(' ');
+
+    this.gameState.sendMessage(MessageType.CHAT_COMMAND, {
+      type: MessageType.CHAT_COMMAND,
+      subType: ChatCommandType.commandAsk,
+      question: question,
+      authorDisplayName: this.gameState.getMe().displayName
+    });
+  }
+
+  private randomNum(args) {
+    const limit: number = (args[1] !== undefined) ? Math.round(Number(args[1].trim())) : 10;
+    this.gameState.sendMessage(MessageType.CHAT_COMMAND, {
+      type: MessageType.CHAT_COMMAND,
+      subType: ChatCommandType.commandRandom,
+      limit: limit
+    });
+  }
+
+  private playAnthem() {
+    if (this.gameComponent !== undefined) {
+      this.gameComponent.audioCtrl.playAudio();
+    }
+  }
+
+  private addRule(args) {
+    console.log(args);
+    const msgArray: any[] = args.slice(1);
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
+      type: MessageType.GAME_MESSAGE,
+      action: GameActionType.addRule,
+      text: msgArray.join(' ')
+    });
+  }
+
+  private deleteRule(args) {
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.deleteRule, id: args[1]});
+  }
+
+  private showLocalState(args) {
+    console.log(`State`, this.gameState.getState());
+  }
+
+  private advanceAction(args) {
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.advanceAction});
+  }
+
+  private advanceTurn(args) {
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.advanceTurn});
+  }
+
+  private reverseTurnOrder(args) {
+    this.print('The Turn-Order was reversed!', '/perspectiveChange');
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.reverseTurnOrder});
+  }
+
+  private toggleFpsDisplay(args) {
+    if (this.gameComponent !== undefined) {
+      this.gameComponent.viewRef.stats.dom.hidden = !this.gameComponent.viewRef.stats.dom.hidden;
+    }
+  }
+
+  private start(args) {
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.setStartingCondition});
+  }
+
+  private printHelpCommand(args) {
+    const commands: string[] = this.knownCommands.map(a => `${a.k} ${a.h}`);
+    this.print(commands.join('\n'), '/help');
   }
 }

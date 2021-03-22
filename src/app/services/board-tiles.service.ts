@@ -1,16 +1,14 @@
 import * as THREE from 'three';
 import { Injectable } from '@angular/core';
-import {ObjectLoaderService} from './object-loader.service';
-import {BoardLayoutState, Tile} from '../model/state/BoardLayoutState';
-import {GameStateService} from './game-state.service';
-import {ColyseusNotifyable} from './game-initialisation.service';
+import { ObjectLoaderService } from './object-loader.service';
+import { BoardLayoutState, Tile } from '../model/state/BoardLayoutState';
+import { GameStateService } from './game-state.service';
+import { ColyseusNotifyable } from './game-initialisation.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BoardTilesService implements ColyseusNotifyable {
-
-  constructor(private objectLoader: ObjectLoaderService, private gameState: GameStateService) { }
 
   centerCoords = {
     x: [-30, -20, -10, 0, 10, 20, 30, 40],
@@ -20,6 +18,8 @@ export class BoardTilesService implements ColyseusNotifyable {
     x: [-35, -25, -15, -5, 5, 15, 25, 35, 45],
     y: [-40, -30, -20, -10, 0, 10, 20, 30, 40]
   };
+  tiles: Tile[] = [];
+  tileMeshes: THREE.Mesh[] = [];
   /*
   centerCoords = {
     x: [-25.725, -16.664, -7.259, 1.793, 11.009, 20.208, 29.398, 38.708],
@@ -95,8 +95,9 @@ export class BoardTilesService implements ColyseusNotifyable {
     {x: 3, y: 4, r: 3},
     {x: 4, y: 4, r: 2},
   ];
-  tiles: Tile[] = [];
-  tileMeshes: THREE.Mesh[] = [];
+
+  constructor(private objectLoader: ObjectLoaderService, private gameState: GameStateService) {
+  }
 
   initialize(addToScene: (grp: THREE.Group) => void, onProgressCallback: () => void) {
     const grp: THREE.Group = this.generateField();
@@ -117,13 +118,18 @@ export class BoardTilesService implements ColyseusNotifyable {
     gameState.addBoardLayoutCallback(((layout: BoardLayoutState) => {
       this.tiles = this.gameState.getBoardLayoutAsArray();
       console.info('Tiles are updated:', this.tiles, layout);
-      this.updateField(() => {});
+      this.updateField(() => {
+      });
     }).bind(this));
   }
-  attachColyseusMessageCallbacks(gameState: GameStateService): void {}
+
+  attachColyseusMessageCallbacks(gameState: GameStateService): void {
+  }
+
   getTileRotation(tileID: number): THREE.Quaternion {
     return new THREE.Quaternion().setFromEuler(new THREE.Euler(0, (this.tileCoords[tileID].r / 2) * Math.PI, 0));
   }
+
   generateField(): THREE.Group {
     const group = new THREE.Group();
     for (let tileId = 0; tileId < 64; tileId++) {
@@ -161,15 +167,16 @@ export class BoardTilesService implements ColyseusNotifyable {
     return group;
   }
 
-  getFieldCenter(fieldId: number): {x: number, y: number} {
-    const coords: {x: number, y: number} = this.getCoords(fieldId);
+  getFieldCenter(fieldId: number): { x: number, y: number } {
+    const coords: { x: number, y: number } = this.getCoords(fieldId);
     return {
       x: this.centerCoords.x[coords.x],
       y: this.centerCoords.y[coords.y]
     };
   }
-  getFieldCoords(fieldId: number): {x1: number, y1: number, x2: number, y2: number} {
-    const coords: {x: number, y: number} = this.getCoords(fieldId);
+
+  getFieldCoords(fieldId: number): { x1: number, y1: number, x2: number, y2: number } {
+    const coords: { x: number, y: number } = this.getCoords(fieldId);
     return {
       x1: this.borderCoords.x[coords.x],
       y1: this.borderCoords.y[coords.y],
@@ -177,7 +184,8 @@ export class BoardTilesService implements ColyseusNotifyable {
       y2: this.borderCoords.y[coords.y + 1]
     };
   }
-  coordsToFieldCoords(coords: THREE.Vector3): {x: number, y: number} {
+
+  coordsToFieldCoords(coords: THREE.Vector3): { x: number, y: number } {
     let x = -1, y = -1;
     for (let i = 0; i < 9; i++) {
       if (coords.x >= this.borderCoords.x[i]) {
@@ -189,12 +197,14 @@ export class BoardTilesService implements ColyseusNotifyable {
     }
     return {x: x, y: y};
   }
-  getCoords(tileId: number): {x: number, y: number} {
+
+  getCoords(tileId: number): { x: number, y: number } {
     if (tileId < 0 || tileId > 63) {
       return {x: 7, y: 0};
     }
     return {x: this.tileCoords[tileId].x, y: this.tileCoords[tileId].y};
   }
+
   getId(x: number, y: number): number {
     for (const t in this.tileCoords) {
       if (this.tileCoords[t].x === x && this.tileCoords[t].y === y) {
@@ -202,6 +212,7 @@ export class BoardTilesService implements ColyseusNotifyable {
       }
     }
   }
+
   getTile(fieldId: number): Tile {
     if (fieldId < 0 || fieldId > 63) {
       return undefined;

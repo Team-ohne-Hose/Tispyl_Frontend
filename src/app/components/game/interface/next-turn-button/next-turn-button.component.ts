@@ -1,7 +1,7 @@
-import {Component, Input} from '@angular/core';
-import {GameActionType, MessageType} from '../../../../model/WsData';
-import {GameStateService} from '../../../../services/game-state.service';
-import {ColyseusNotifyable} from '../../../../services/game-initialisation.service';
+import { Component, Input } from '@angular/core';
+import { GameActionType, MessageType } from '../../../../model/WsData';
+import { GameStateService } from '../../../../services/game-state.service';
+import { ColyseusNotifyable } from '../../../../services/game-initialisation.service';
 
 @Component({
   selector: 'app-next-turn-button',
@@ -15,13 +15,16 @@ export class NextTurnButtonComponent implements ColyseusNotifyable {
   hidden = true;
   private lastClick = 0;
 
-  constructor(private gameState: GameStateService) { }
+  constructor(private gameState: GameStateService) {
+  }
 
   attachColyseusStateCallbacks(gameState: GameStateService): void {
     gameState.addNextTurnCallback(this.checkTurn.bind(this));
     this.checkTurn(this.gameState.getCurrentPlayerLogin());
   }
-  attachColyseusMessageCallbacks(gameState: GameStateService): void {}
+
+  attachColyseusMessageCallbacks(gameState: GameStateService): void {
+  }
 
   checkTurn(activePlayerLogin: string) {
     if (this.gameState.isMyTurn()) {
@@ -33,7 +36,7 @@ export class NextTurnButtonComponent implements ColyseusNotifyable {
     }
   }
 
-  nextTurn( event ) {
+  nextTurn(event) {
     console.log('clicked next turn');
     if (this.gameState.isMyTurn() && (new Date().getTime() - this.lastClick) > 500) {
       this.lastClick = new Date().getTime();

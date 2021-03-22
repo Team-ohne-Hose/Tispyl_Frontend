@@ -1,9 +1,9 @@
-import {Component, Input, AfterViewInit, OnInit} from '@angular/core';
-import {Player} from '../../../model/state/Player';
-import {FileService} from '../../../services/file.service';
-import {GameStateService} from '../../../services/game-state.service';
-import {MessageType, RefreshCommandType, RefreshProfilePics} from '../../../model/WsData';
-import {UserService} from '../../../services/user.service';
+import { Component, Input, AfterViewInit, OnInit } from '@angular/core';
+import { Player } from '../../../model/state/Player';
+import { FileService } from '../../../services/file.service';
+import { GameStateService } from '../../../services/game-state.service';
+import { MessageType, RefreshCommandType, RefreshProfilePics } from '../../../model/WsData';
+import { UserService } from '../../../services/user.service';
 import { UserResponse } from 'src/app/model/UserResponse';
 
 @Component({
@@ -33,17 +33,20 @@ export class PlayerIconComponent implements OnInit {
   constructor(
     private fileManagement: FileService,
     private gameState: GameStateService,
-    private userManagement: UserService) {}
+    private userManagement: UserService) {
+  }
 
   uploadImageFile(event) {
     const file = event.target.files[0];
     if (this.player !== undefined) {
-      this.userManagement.getUserByLoginName(this.player.loginName).subscribe( userResponse => {
+      this.userManagement.getUserByLoginName(this.player.loginName).subscribe(userResponse => {
         this.fileManagement.uploadProfilePicture(file, userResponse.payload).subscribe(suc => {
           console.log('Uploaded new profile picture: ', suc);
           this.currentSource = this.fileManagement.profilePictureSource(this.player.loginName);
-          const msg: RefreshProfilePics = {type: MessageType.REFRESH_COMMAND,
-            subType: RefreshCommandType.refreshProfilePic};
+          const msg: RefreshProfilePics = {
+            type: MessageType.REFRESH_COMMAND,
+            subType: RefreshCommandType.refreshProfilePic
+          };
           this.gameState.sendMessage(MessageType.REFRESH_COMMAND, msg);
         });
       });

@@ -1,16 +1,17 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {SpecialRule} from './helpers/SpecialRule';
-import {GameActionType, MessageType} from '../../../../../model/WsData';
-import {GameStateService} from '../../../../../services/game-state.service';
+import { Component, Input, OnInit } from '@angular/core';
+import { SpecialRule } from './helpers/SpecialRule';
+import { GameActionType, MessageType } from '../../../../../model/WsData';
+import { GameStateService } from '../../../../../services/game-state.service';
 
 @Component({
   selector: 'app-ingame-rule-book',
   templateUrl: './ingame-rule-book.component.html',
   styleUrls: ['./ingame-rule-book.component.css']
 })
-export class IngameRuleBookComponent  {
+export class IngameRuleBookComponent {
 
   @Input() rules = [];
+
   //rules: SpecialRule[] = [];
 
   constructor(private gameState: GameStateService) {
@@ -32,9 +33,9 @@ export class IngameRuleBookComponent  {
         type: MessageType.GAME_MESSAGE,
         action: GameActionType.addRule,
         text: String(userInput),
-        author: ''});
+        author: ''
+      });
     }
-
 
 
   }
@@ -43,6 +44,7 @@ export class IngameRuleBookComponent  {
     this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
       type: MessageType.GAME_MESSAGE,
       action: GameActionType.deleteRule,
-      id: index});
+      id: index
+    });
   }
 }

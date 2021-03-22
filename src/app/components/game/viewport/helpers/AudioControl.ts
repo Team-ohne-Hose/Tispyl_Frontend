@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {AudioLoader, Camera} from 'three';
+import { AudioLoader, Camera } from 'three';
 
 export class AudioControl {
 
@@ -14,6 +14,7 @@ export class AudioControl {
   initAudio(cam: Camera) {
     cam.add(this.listener);
   }
+
   playAudio() {
     this.audioLoader.load('/assets/ourAnthem.ogg', (buffer) => {
       this.sound.setBuffer(buffer);

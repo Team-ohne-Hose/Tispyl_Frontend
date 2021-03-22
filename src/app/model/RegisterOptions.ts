@@ -1,5 +1,5 @@
 export type RegisterOptions = {
-    username: string,
-    password: string,
-    displayname: string
+  username: string,
+  password: string,
+  displayname: string
 }

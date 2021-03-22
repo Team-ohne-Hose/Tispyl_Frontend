@@ -96,14 +96,14 @@
 }
 
 .default-bg {
-  background: url("../../../../../../assets/self-made-doubletick.svg") no-repeat bottom ;
+  background: url("../../../../../../assets/self-made-doubletick.svg") no-repeat bottom;
   background-size: cover;
 }
 
 /*=====WAITING PAGE====*/
 
 .waiting-bg {
-  background: url("../../../../../../assets/self-made-ring.svg") no-repeat bottom ;
+  background: url("../../../../../../assets/self-made-ring.svg") no-repeat bottom;
   background-size: cover;
 }
 
@@ -129,7 +129,7 @@
 /*=====DENIAL PAGE=====*/
 
 .denial-bg {
-  background: url("../../../../../../assets/self-made-cross.svg") no-repeat bottom ;
+  background: url("../../../../../../assets/self-made-cross.svg") no-repeat bottom;
   background-size: cover;
 }
 
@@ -309,7 +309,6 @@
 }
 
 /* ============ RESULTS ==============*/
-
 
 
 .result.vote-entry {

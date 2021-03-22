@@ -1,6 +1,6 @@
-<app-viewport (registerViewport)="registerViewport($event)" style="z-index: 1" #viewRef></app-viewport>
-<app-loading-screen *ngIf="loadingScreenVisible" #loadingRef></app-loading-screen>
+<app-viewport #viewRef (registerViewport)="registerViewport($event)" style="z-index: 1"></app-viewport>
+<app-loading-screen #loadingRef *ngIf="loadingScreenVisible"></app-loading-screen>
 <app-interface #interfaceRef></app-interface>
 <div class="attribution">
-  <a href="javascript:;" (click)="showAttribution()">Attribution</a>
+  <a (click)="showAttribution()" href="javascript:;">Attribution</a>
 </div>

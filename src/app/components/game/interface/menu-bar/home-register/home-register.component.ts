@@ -1,13 +1,20 @@
-import {Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
-import {UserService} from '../../../../../services/user.service';
-import {FileService} from '../../../../../services/file.service';
-import {ChatMessage} from './helpers/ChatMessage';
-import {ObjectLoaderService} from '../../../../../services/object-loader.service';
-import {MessageType, PlayerMessageType, PlayerModel, RefreshCommandType, RefreshProfilePics, SetFigure} from '../../../../../model/WsData';
-import {GameStateService} from '../../../../../services/game-state.service';
-import {LoginUser} from '../../../../../model/User';
-import {Player} from '../../../../../model/state/Player';
-import {ChatService} from '../../../../../services/chat.service';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { UserService } from '../../../../../services/user.service';
+import { FileService } from '../../../../../services/file.service';
+import { ChatMessage } from './helpers/ChatMessage';
+import { ObjectLoaderService } from '../../../../../services/object-loader.service';
+import {
+  MessageType,
+  PlayerMessageType,
+  PlayerModel,
+  RefreshCommandType,
+  RefreshProfilePics,
+  SetFigure
+} from '../../../../../model/WsData';
+import { GameStateService } from '../../../../../services/game-state.service';
+import { LoginUser } from '../../../../../model/User';
+import { Player } from '../../../../../model/state/Player';
+import { ChatService } from '../../../../../services/chat.service';
 
 @Component({
   selector: 'app-home-register',
@@ -40,7 +47,7 @@ export class HomeRegisterComponent {
     console.debug('Initialized bottle cap index to: ', this.myBCapIndex);
     this.bottleCapSource = this.loader.getBCapTextureThumbPath(this.myBCapIndex);
 
-    this.userManagement.getActiveUser().subscribe( u => {
+    this.userManagement.getActiveUser().subscribe(u => {
       this.user = u;
     });
 
@@ -48,7 +55,7 @@ export class HomeRegisterComponent {
     this.chatService.setMessageCallback(this.onChatMessage.bind(this));
 
     // scroll to bottom
-    setTimeout( () => {
+    setTimeout(() => {
       const htmlNode = this.textSection.nativeElement;
       htmlNode.scrollTop = htmlNode.scrollHeight;
     }, 20);
@@ -75,7 +82,9 @@ export class HomeRegisterComponent {
   onChatMessage() {
     this.chatMessages = this.chatService.getChatMessages();
     const htmlNode = this.textSection.nativeElement;
-    setTimeout( () => { htmlNode.scrollTop = htmlNode.scrollHeight; }, 20);
+    setTimeout(() => {
+      htmlNode.scrollTop = htmlNode.scrollHeight;
+    }, 20);
   }
 
   executeCommand(cmdStr: string) {
@@ -97,17 +106,6 @@ export class HomeRegisterComponent {
       this.myBCapIndex = this.loader.getBCapCount();
     }
     this.setBCap();
-  }
-
-  private setBCap() {
-    console.debug('Update bottle cap index to: ', this.myBCapIndex);
-    this.bottleCapSource = this.loader.getBCapTextureThumbPath(this.myBCapIndex);
-
-    const msg: SetFigure = {type: MessageType.PLAYER_MESSAGE,
-      subType: PlayerMessageType.setFigure,
-      playerId: this.gameState.getMyLoginName(),
-      playerModel: this.myBCapIndex};
-    this.gameState.sendMessage(MessageType.PLAYER_MESSAGE, msg);
   }
 
   getTimePlayed() {
@@ -136,9 +134,24 @@ export class HomeRegisterComponent {
     this.fileManagement.uploadProfilePicture(file, this.user).subscribe(suc => {
       console.log('Uploaded new profile picture: ', suc);
       this.profileSource = this.fileManagement.profilePictureSource(this.myPlayer.loginName, true);
-      const msg: RefreshProfilePics = {type: MessageType.REFRESH_COMMAND,
-        subType: RefreshCommandType.refreshProfilePic};
+      const msg: RefreshProfilePics = {
+        type: MessageType.REFRESH_COMMAND,
+        subType: RefreshCommandType.refreshProfilePic
+      };
       this.gameState.sendMessage(MessageType.REFRESH_COMMAND, msg);
     });
+  }
+
+  private setBCap() {
+    console.debug('Update bottle cap index to: ', this.myBCapIndex);
+    this.bottleCapSource = this.loader.getBCapTextureThumbPath(this.myBCapIndex);
+
+    const msg: SetFigure = {
+      type: MessageType.PLAYER_MESSAGE,
+      subType: PlayerMessageType.setFigure,
+      playerId: this.gameState.getMyLoginName(),
+      playerModel: this.myBCapIndex
+    };
+    this.gameState.sendMessage(MessageType.PLAYER_MESSAGE, msg);
   }
 }

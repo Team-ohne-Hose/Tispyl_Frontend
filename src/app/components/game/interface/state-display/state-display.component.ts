@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-state-display',
@@ -12,9 +12,10 @@ export class StateDisplayComponent implements OnInit {
   @Input() action: string;
   @Input() rules: string[];
 
-  knownActions = { ROLL: 'fas fa-dice', MOVE: 'fas fa-running', EXECUTE: 'fas fa-beer' };
+  knownActions = {ROLL: 'fas fa-dice', MOVE: 'fas fa-running', EXECUTE: 'fas fa-beer'};
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
   }

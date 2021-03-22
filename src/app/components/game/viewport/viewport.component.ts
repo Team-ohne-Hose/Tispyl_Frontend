@@ -1,19 +1,19 @@
-import {AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import * as THREE from 'three';
-import {PerspectiveCamera, Renderer, Scene} from 'three';
-import {MouseInteraction} from './helpers/MouseInteraction';
-import {AudioControl} from './helpers/AudioControl';
-import {BoardItemManagement} from './helpers/BoardItemManagement';
-import {CameraControl} from './helpers/CameraControl';
-import {SceneBuilderService} from '../../../services/scene-builder.service';
-import {GameBoardOrbitControl} from './helpers/GameBoardOrbitControl';
-import {ObjectLoaderService} from '../../../services/object-loader.service';
+import { PerspectiveCamera, Renderer, Scene } from 'three';
+import { MouseInteraction } from './helpers/MouseInteraction';
+import { AudioControl } from './helpers/AudioControl';
+import { BoardItemManagement } from './helpers/BoardItemManagement';
+import { CameraControl } from './helpers/CameraControl';
+import { SceneBuilderService } from '../../../services/scene-builder.service';
+import { GameBoardOrbitControl } from './helpers/GameBoardOrbitControl';
+import { ObjectLoaderService } from '../../../services/object-loader.service';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
-import {ClickedTarget, PhysicsCommands} from './helpers/PhysicsCommands';
-import {PhysicsEntity, PhysicsEntityVariation} from '../../../model/WsData';
-import {BoardTilesService} from '../../../services/board-tiles.service';
-import {GameStateService} from '../../../services/game-state.service';
-import {ItemService} from '../../../services/item.service';
+import { ClickedTarget, PhysicsCommands } from './helpers/PhysicsCommands';
+import { PhysicsEntity, PhysicsEntityVariation } from '../../../model/WsData';
+import { BoardTilesService } from '../../../services/board-tiles.service';
+import { GameStateService } from '../../../services/game-state.service';
+import { ItemService } from '../../../services/item.service';
 
 export class ObjectUserData {
   physicsId: number;
@@ -21,6 +21,7 @@ export class ObjectUserData {
   variation: PhysicsEntityVariation;
   clickRole: ClickedTarget;
 }
+
 @Component({
   selector: 'app-viewport',
   templateUrl: './viewport.component.html',
@@ -35,6 +36,14 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   stats: Stats;
 
   labelSpritesHidden = true;
+  @ViewChild('view') view: HTMLDivElement;
+  @Output() registerViewport = new EventEmitter<[CameraControl, BoardItemManagement, AudioControl]>();
+  // Utilities
+  scene: Scene;
+  camera: PerspectiveCamera;
+  renderer: Renderer;
+  controls: GameBoardOrbitControl;
+  physics: PhysicsCommands;
 
   constructor(private sceneBuilder: SceneBuilderService,
               private objectLoaderService: ObjectLoaderService,
@@ -43,16 +52,6 @@ export class ViewportComponent implements AfterViewInit, OnInit {
               public itemService: ItemService) {
 
   }
-
-  @ViewChild('view') view: HTMLDivElement;
-  @Output() registerViewport = new EventEmitter<[CameraControl, BoardItemManagement, AudioControl]>();
-
-  // Utilities
-  scene: Scene;
-  camera: PerspectiveCamera;
-  renderer: Renderer;
-  controls: GameBoardOrbitControl;
-  physics: PhysicsCommands;
 
   animate() {
     requestAnimationFrame(this.animate.bind(this));
@@ -77,12 +76,12 @@ export class ViewportComponent implements AfterViewInit, OnInit {
 
     // initialize Camera & Renderer
     this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 5000);
-    this.camera.position.set( 0, 70, -30 );
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+    this.camera.position.set(0, 70, -30);
+    this.renderer = new THREE.WebGLRenderer({antialias: true, powerPreference: 'high-performance'});
     this.renderer.setSize(width, height);
     const viewPortRenderer: HTMLCanvasElement = this.renderer.domElement;
     viewPortRenderer.setAttribute('style', viewPortRenderer.getAttribute('style') + 'display_name: block;');
-    document.getElementById('viewport-container').appendChild( viewPortRenderer );
+    document.getElementById('viewport-container').appendChild(viewPortRenderer);
 
     // add Stats Overlay
     this.stats = Stats();
@@ -118,6 +117,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
 
     console.info('THREE.js Viewport initialised');
   }
+
   initialiseScene() {
     // load stuff which is dependend on loading textures
     this.scene.background = this.objectLoaderService.getCubeMap();
@@ -129,6 +129,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.boardItemManager.board = gameBoard;
     this.mouseInteract.addInteractable(gameBoard);
   }
+
   startRendering() {
     this.animate();
     console.debug('THREE.js rendering started');
@@ -141,6 +142,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
       event.stopPropagation();
     }
   }
+
   keyUp(event) {
     if (event.key === 'Tab') {
       this.labelSpritesHidden = true;

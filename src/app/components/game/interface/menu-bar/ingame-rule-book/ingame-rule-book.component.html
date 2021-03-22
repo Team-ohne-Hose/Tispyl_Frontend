@@ -19,21 +19,21 @@
               <span class="author">by undefined</span>
               <span class="text">{{r}}</span>
             </div>
-            <div class="delete-rule" (click)="removeRule(i)"><i class="fas fa-ban"></i></div>
+            <div (click)="removeRule(i)" class="delete-rule"><i class="fas fa-ban"></i></div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="tray" (keyup)="addRuleByKey($event, textInput)">
+  <div (keyup)="addRuleByKey($event, textInput)" class="tray">
     <div class="gold-border">
       <div class="paper-body">
-          <div class="input-section">
-            <textarea rows="4" placeholder="Add new rule here ..." #textInput></textarea>
-            <div class="vertical-seperator"></div>
-            <div class="add-button" (click)="addRule(textInput)"><i class="fas fa-share"></i></div>
-          </div>
+        <div class="input-section">
+          <textarea #textInput placeholder="Add new rule here ..." rows="4"></textarea>
+          <div class="vertical-seperator"></div>
+          <div (click)="addRule(textInput)" class="add-button"><i class="fas fa-share"></i></div>
+        </div>
       </div>
     </div>
   </div>

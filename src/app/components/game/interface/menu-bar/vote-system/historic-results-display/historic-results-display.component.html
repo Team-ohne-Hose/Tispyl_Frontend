@@ -2,14 +2,15 @@
 
   <!-- DEFAULT VIEW -->
   <div *ngIf="currentResult === undefined" class="default-container">
-    <img class="snooze-img" [src]="snoozeImagePath">
+    <img [src]="snoozeImagePath" class="snooze-img">
     <div class="footer-text">You have {{totalVoteCount}} voting results in your history.</div>
   </div>
 
   <!-- DEFINED VIEW -->
   <div *ngIf="currentResult !== undefined" class="display-container">
     <div>{{currentResult.title}}</div>
-    <div class="title-subscript">Past vote by {{currentResult.author}} at {{currentResult.timestamp | date:'shortTime'}}</div>
+    <div class="title-subscript">Past vote by {{currentResult.author}}
+      at {{currentResult.timestamp | date:'shortTime'}}</div>
     <div class="scroll-container">
       <div *ngFor="let e of currentResult.entries" class="vote-option">
         <div *ngIf="e.isPlayerEntry" class="icon-wrapper"><i class="fas fa-tags"></i></div>
@@ -18,7 +19,9 @@
         <div class="count">{{e.count}}</div>
       </div>
     </div>
-    <div class="ineligible-players">Ineligible player(s):<span *ngIf="currentResult.ineligibles.length === 0">none</span><span *ngFor="let p of currentResult.ineligibles">{{p}}</span></div>
+    <div class="ineligible-players">Ineligible player(s):<span
+      *ngIf="currentResult.ineligibles.length === 0">none</span><span
+      *ngFor="let p of currentResult.ineligibles">{{p}}</span></div>
   </div>
 
 </div>

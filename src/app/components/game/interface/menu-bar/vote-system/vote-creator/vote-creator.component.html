@@ -1,14 +1,14 @@
 <div class="base">
   <div class="creation-head">
     <div class="head-text">Configure your vote:</div>
-    <button class="abort-button" (click)="cancelVoteCreation($event)">Cancel</button>
+    <button (click)="cancelVoteCreation($event)" class="abort-button">Cancel</button>
   </div>
 
   <!-- Name of Voting -->
   <div class="title-input-container">
     <div class="vote-name-head">1. What is the vote about ?</div>
     <div class="text-input-container">
-      <input type="text" placeholder="Enter title here ..." #titleInput>
+      <input #titleInput placeholder="Enter title here ..." type="text">
     </div>
   </div>
 
@@ -19,11 +19,12 @@
       empty
     </div>
     <div *ngIf="playerList.length > 0" class="wrapping-player-container">
-      <div *ngFor="let p of playerList" class="eligibility-selector" (click)="toggleEligibility(p)" >
-        <app-player-icon [loginName]="p.loginName" [size]="'30px'" [borderThickness]="'3px'" [enableUpload]="false"></app-player-icon>
+      <div (click)="toggleEligibility(p)" *ngFor="let p of playerList" class="eligibility-selector">
+        <app-player-icon [borderThickness]="'3px'" [enableUpload]="false" [loginName]="p.loginName"
+                         [size]="'30px'"></app-player-icon>
         <div class="{{eligibilities.get(p.displayName) ? 'info-container eligible' : 'info-container ineligible'}}">
-          <i class="fas fa-check" *ngIf="eligibilities.get(p.displayName)"></i>
-          <i class="fas fa-times" *ngIf="!eligibilities.get(p.displayName)"></i>
+          <i *ngIf="eligibilities.get(p.displayName)" class="fas fa-check"></i>
+          <i *ngIf="!eligibilities.get(p.displayName)" class="fas fa-times"></i>
           <div class="name">{{p.displayName}}</div>
         </div>
       </div>
@@ -35,8 +36,8 @@
 
     <div class="vote-option-head">
       <div>3. What to vote on ?</div>
-      <span class="first-tool-button" (click)="addAllPlayers($event)"><i class="fas fa-user-plus"></i>All</span>
-      <span class="last-tool-button" (click)="clearAllEntries($event)"><i class="fas fa-trash"></i>Clear</span>
+      <span (click)="addAllPlayers($event)" class="first-tool-button"><i class="fas fa-user-plus"></i>All</span>
+      <span (click)="clearAllEntries($event)" class="last-tool-button"><i class="fas fa-trash"></i>Clear</span>
     </div>
 
 
@@ -44,25 +45,25 @@
       <div *ngIf="votingOptions.length === 0" class="vote-option emptiness-indicator">
         <div class="emptiness-text">- No voting options yet -</div>
       </div>
-      <div *ngFor="let o of votingOptions; let i = index" class="vote-option" (click)="removeEntry(i)">
-        <i class="fas fa-beer" *ngIf="!o.isPlayerEntry"></i>
-        <i class="fas fa-user" *ngIf="o.isPlayerEntry"></i>
+      <div (click)="removeEntry(i)" *ngFor="let o of votingOptions; let i = index" class="vote-option">
+        <i *ngIf="!o.isPlayerEntry" class="fas fa-beer"></i>
+        <i *ngIf="o.isPlayerEntry" class="fas fa-user"></i>
         <div>{{o.text}}</div>
         <span class="remove-indicator"><i class="fas fa-minus"></i></span>
       </div>
     </div>
 
-    <div class="add-option-container" (keyup)="addVoteEntryByKey(optionInput, $event)">
+    <div (keyup)="addVoteEntryByKey(optionInput, $event)" class="add-option-container">
       <div class="text-input-container">
-        <input type="text" placeholder="Add new option ..." #optionInput>
+        <input #optionInput placeholder="Add new option ..." type="text">
       </div>
-      <div class="modify-button" (click)="addVoteEntry(optionInput)"><i class="fas fa-plus"></i></div>
+      <div (click)="addVoteEntry(optionInput)" class="modify-button"><i class="fas fa-plus"></i></div>
     </div>
   </div>
 
   <!-- Buttons -->
   <div class="button-container">
-    <button class="submit" (click)="emitVoting(titleInput)">Start Voting !</button>
+    <button (click)="emitVoting(titleInput)" class="submit">Start Voting !</button>
   </div>
 
 </div>

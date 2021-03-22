@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import {LoginUser, User} from '../model/User';
-import {HttpClient} from '@angular/common/http';
-import {environment} from '../../environments/environment';
-import {Observable} from 'rxjs';
+import { LoginUser, User } from '../model/User';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,8 @@ export class FileService {
   private readonly devProfilePictureEndpoint = 'http://localhost:25670/api/profile';
   private profilePictureEndpoint = environment.production ? this.prodProfilePictureEndpoint : this.devProfilePictureEndpoint;
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient) {
+  }
 
   uploadProfilePicture(file: File, user: LoginUser): Observable<any> {
     const formData: FormData = new FormData();

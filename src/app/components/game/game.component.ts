@@ -1,17 +1,17 @@
-import {Component, OnInit, AfterViewInit, ViewChild} from '@angular/core';
-import {BoardItemManagement} from './viewport/helpers/BoardItemManagement';
-import {AudioControl} from './viewport/helpers/AudioControl';
-import {CameraControl} from './viewport/helpers/CameraControl';
-import {Router} from '@angular/router';
-import {ColyseusClientService} from '../../services/colyseus-client.service';
-import {ViewportComponent} from './viewport/viewport.component';
-import {GameAction, GameActionType, MessageType} from '../../model/WsData';
-import {GameInitialisationService} from '../../services/game-initialisation.service';
-import {InterfaceComponent} from './interface/interface.component';
-import {BoardTilesService} from '../../services/board-tiles.service';
-import {LoadingScreenComponent} from './loading-screen/loading-screen.component';
-import {MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {ShowAttribComponent} from './show-attrib/show-attrib.component';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { BoardItemManagement } from './viewport/helpers/BoardItemManagement';
+import { AudioControl } from './viewport/helpers/AudioControl';
+import { CameraControl } from './viewport/helpers/CameraControl';
+import { Router } from '@angular/router';
+import { ColyseusClientService } from '../../services/colyseus-client.service';
+import { ViewportComponent } from './viewport/viewport.component';
+import { GameAction, GameActionType, MessageType } from '../../model/WsData';
+import { GameInitialisationService } from '../../services/game-initialisation.service';
+import { InterfaceComponent } from './interface/interface.component';
+import { BoardTilesService } from '../../services/board-tiles.service';
+import { LoadingScreenComponent } from './loading-screen/loading-screen.component';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { ShowAttribComponent } from './show-attrib/show-attrib.component';
 
 @Component({
   selector: 'app-game',
@@ -20,17 +20,9 @@ import {ShowAttribComponent} from './show-attrib/show-attrib.component';
 })
 export class GameComponent implements OnInit, AfterViewInit {
 
-  constructor(private dialog: MatDialog,
-              private router: Router,
-              private colyseus: ColyseusClientService,
-              private gameInit: GameInitialisationService,
-              private boardTilesService: BoardTilesService) {
-  }
-
   @ViewChild('viewRef') viewRef: ViewportComponent;
   @ViewChild('interfaceRef') interfaceRef: InterfaceComponent;
   @ViewChild('loadingRef') loadingScreenRef: LoadingScreenComponent;
-
   // might be obsolete in the future
   cameraControl: CameraControl;
   boardItemControl: BoardItemManagement;
@@ -38,22 +30,29 @@ export class GameComponent implements OnInit, AfterViewInit {
   loadGame = true;
   loadingScreenVisible = true;
 
+  constructor(private dialog: MatDialog,
+              private router: Router,
+              private colyseus: ColyseusClientService,
+              private gameInit: GameInitialisationService,
+              private boardTilesService: BoardTilesService) {
+  }
+
   ngOnInit(): void {
-      this.colyseus.getActiveRoom().subscribe((myRoom) => {
-        if (myRoom === undefined) {
-          this.router.navigateByUrl('/lobby');
-          this.loadGame = false;
-        } else {
-          const msg: GameAction = {
-            type: MessageType.GAME_MESSAGE,
-            action: GameActionType.refreshData
-          };
-          myRoom.send(MessageType.GAME_MESSAGE, msg);
-        }
-      }, (errRoom) => {
-        console.log('ErrorRoom is', errRoom);
+    this.colyseus.getActiveRoom().subscribe((myRoom) => {
+      if (myRoom === undefined) {
         this.router.navigateByUrl('/lobby');
-      });
+        this.loadGame = false;
+      } else {
+        const msg: GameAction = {
+          type: MessageType.GAME_MESSAGE,
+          action: GameActionType.refreshData
+        };
+        myRoom.send(MessageType.GAME_MESSAGE, msg);
+      }
+    }, (errRoom) => {
+      console.log('ErrorRoom is', errRoom);
+      this.router.navigateByUrl('/lobby');
+    });
   }
 
   ngAfterViewInit(): void {
@@ -74,7 +73,7 @@ export class GameComponent implements OnInit, AfterViewInit {
   }
 
   showAttribution() {
-    const dialogRef: MatDialogRef<ShowAttribComponent, {roomName: string, skinName: string, randomizeTiles: boolean}> =
+    const dialogRef: MatDialogRef<ShowAttribComponent, { roomName: string, skinName: string, randomizeTiles: boolean }> =
       this.dialog.open(ShowAttribComponent, {
         width: '80%',
         maxWidth: '900px',

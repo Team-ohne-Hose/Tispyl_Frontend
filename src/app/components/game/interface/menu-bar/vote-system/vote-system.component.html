@@ -1,4 +1,3 @@
-
 <div class="register-card-base">
 
   <div class="vote-head">
@@ -11,11 +10,12 @@
         <div (click)="nextHistoricResult()"><i class="fas fa-caret-right button"></i></div>
       </div>
     </div>
-    <div class="head-progress" *ngIf="gameState.isGameLoaded()">
+    <div *ngIf="gameState.isGameLoaded()" class="head-progress">
       <!-- VoteStage 2 should be creation -->
-      <i [ngClass]="gameState.getVoteState().voteStage === 2 ? 'fas fa-circle-notch fa-spin highlight' : 'far fa-circle'"></i>
+      <i
+        [ngClass]="gameState.getVoteState().voteStage === 2 ? 'fas fa-circle-notch fa-spin highlight' : 'far fa-circle'"></i>
     </div>
-    <div class="head-progress" *ngIf="!gameState.isGameLoaded()">
+    <div *ngIf="!gameState.isGameLoaded()" class="head-progress">
       <i class="far fa-circle"></i>
     </div>
   </div>
@@ -23,7 +23,8 @@
   <div class="seperator"></div>
 
   <!-- result history -->
-  <app-vote-result-display [currentResult]="resultHistory[currentHistoryResult]" [totalVoteCount]="resultHistory.length"></app-vote-result-display>
+  <app-historic-results-display [currentResult]="resultHistory[currentHistoryResult]"
+                                [totalVoteCount]="resultHistory.length"></app-historic-results-display>
 
   <div class="seperator"></div>
 
@@ -35,7 +36,8 @@
     </div>
     <div class="default-button-container">
       <button (click)="triggerVoteCreation($event)">Create new Voting</button>
-      <button (click)="voteSystemState = stateEnum.results" *ngIf="hasConcluded">Last Results<i class="fas fa-angle-double-right"></i></button>
+      <button (click)="voteSystemState = stateEnum.results" *ngIf="hasConcluded">Last Results<i
+        class="fas fa-angle-double-right"></i></button>
     </div>
   </div>
 
@@ -44,7 +46,7 @@
   <div *ngIf="voteSystemState === stateEnum.waiting" class="base-container waiting-bg">
     <div class="stall-text">
       <div>{{voteHost || 'undefined'}} is creating a vote. Wait for him to finish.</div>
-      <mat-progress-spinner class="progress-spinner" mode="indeterminate" [diameter]="15"></mat-progress-spinner>
+      <mat-progress-spinner [diameter]="15" class="progress-spinner" mode="indeterminate"></mat-progress-spinner>
     </div>
     <div class="wait-button-container">
       <button disabled>Create new Voting</button>
@@ -65,53 +67,63 @@
 
 
   <!-- Create page -->
-  <app-vote-creator *ngIf="voteSystemState === stateEnum.creating" class="base-container" (voteConfiguration)="triggerVoteBegin($event)"></app-vote-creator>
+  <app-vote-creator (voteConfiguration)="triggerVoteBegin($event)" *ngIf="voteSystemState === stateEnum.creating"
+                    class="base-container"></app-vote-creator>
 
   <!-- Vote page -->
   <div *ngIf="voteSystemState === stateEnum.voting" class="base-container">
 
     <div class="voting-head-container">
-      <div class="voting-head" *ngIf="gameState.isGameLoaded()">
+      <div *ngIf="gameState.isGameLoaded()" class="voting-head">
         <div class="pre-subscript">Select your option:</div>
         {{gameState.getVoteState().voteConfiguration.title}}
       </div>
-      <button class="abort-button" *ngIf="this.gameState.getMe().displayName === voteHost">Cancel</button>
+      <button *ngIf="this.gameState.getMe().displayName === voteHost" class="abort-button">Cancel</button>
     </div>
 
 
     <div *ngIf="gameState.isGameLoaded()">
-      <div *ngFor="let ve of this.gameState.getVoteState().voteConfiguration.votingOptions; let i = index" class="entry-container disable-user-select">
-        <div class="vote-entry" (click)="castVote(i)">
+      <div *ngFor="let ve of this.gameState.getVoteState().voteConfiguration.votingOptions; let i = index"
+           class="entry-container disable-user-select">
+        <div (click)="castVote(i)" class="vote-entry">
           <div class="info-box">
             <div class="info-text">
-              <app-player-icon [loginName]="ve.playerHandle" [size]="'20px'" [borderThickness]="'2px'" *ngIf="ve.isPlayerEntry"></app-player-icon>
+              <app-player-icon *ngIf="ve.isPlayerEntry" [borderThickness]="'2px'" [loginName]="ve.playerHandle"
+                               [size]="'20px'"></app-player-icon>
               <div class="entry-text">
                 <span class="text">{{ve.text}}</span>
               </div>
               <span class="percentile">{{voteEntryPercentileDisplay[i]}}%</span>
             </div>
-            <div class="display-bar-bg"><div class="display-bar" [ngStyle]="{'width': voteEntryPercentileDisplay[i] + '%'}"></div></div>
+            <div class="display-bar-bg">
+              <div [ngStyle]="{'width': voteEntryPercentileDisplay[i] + '%'}" class="display-bar"></div>
+            </div>
           </div>
           <div class="vertical-separator"></div>
           <div class="vote-counter">{{ve.castVotes.length || 0}}</div>
         </div>
         <div class="participants-container">
           <div *ngFor="let playerHandle of ve.castVotes" class="participants">
-            <app-player-icon [loginName]="gameState.getLoginName(playerHandle)" [size]="'15px'" [borderThickness]="'0px'"></app-player-icon>
+            <app-player-icon [borderThickness]="'0px'" [loginName]="gameState.getLoginName(playerHandle)"
+                             [size]="'15px'"></app-player-icon>
           </div>
         </div>
       </div>
     </div>
 
 
-    <div class="closure-alert" *ngIf="this.gameState.getVoteState().closingIn >= 0">
+    <div *ngIf="this.gameState.getVoteState().closingIn >= 0" class="closure-alert">
       <div class="static">The vote is being closed in:</div>
       <div class="count-down">{{timerDisplay}}</div>
     </div>
 
     <div class="host-closure-button">
-      <button *ngIf="this.gameState.getMe().displayName === voteHost" class="close-vote-button" (click)="triggerCloseVotingSession($event)">Close voting session</button>
-      <button *ngIf="!(this.gameState.getMe().displayName === voteHost)" disabled>Only {{voteHost}} can close the voting.</button>
+      <button (click)="triggerCloseVotingSession($event)" *ngIf="this.gameState.getMe().displayName === voteHost"
+              class="close-vote-button">Close voting session
+      </button>
+      <button *ngIf="!(this.gameState.getMe().displayName === voteHost)" disabled>Only {{voteHost}} can close the
+        voting.
+      </button>
     </div>
   </div>
 
@@ -119,7 +131,7 @@
   <div *ngIf="voteSystemState === stateEnum.results" class="base-container">
 
     <div class="voting-head-container">
-      <div class="voting-head" *ngIf="gameState.isGameLoaded()">
+      <div *ngIf="gameState.isGameLoaded()" class="voting-head">
         <div class="pre-subscript">Results:</div>
         {{gameState.getVoteState().voteConfiguration.title}}
       </div>
@@ -133,24 +145,29 @@
           <div class="vote-entry">
             <div class="info-box">
               <div class="info-text">
-                <app-player-icon [loginName]="ve.playerHandle" [size]="'20px'" [borderThickness]="'2px'" *ngIf="ve.isPlayerEntry"></app-player-icon>
+                <app-player-icon *ngIf="ve.isPlayerEntry" [borderThickness]="'2px'" [loginName]="ve.playerHandle"
+                                 [size]="'20px'"></app-player-icon>
                 <div class="entry-text">
                   <span class="text">{{ve.text}}</span>
                 </div>
                 <span class="percentile">{{voteEntryPercentileDisplay[i]}}%</span>
               </div>
-              <div class="display-bar-bg"><div class="display-bar" [ngStyle]="{'width': voteEntryPercentileDisplay[i] + '%'}"></div></div>
+              <div class="display-bar-bg">
+                <div [ngStyle]="{'width': voteEntryPercentileDisplay[i] + '%'}" class="display-bar"></div>
+              </div>
             </div>
             <div class="vertical-separator"></div>
-            <div class="vote-counter"><div class="gold-laurel"></div>{{ve.castVotes.length || 0}}</div>
+            <div class="vote-counter">
+              <div class="gold-laurel"></div>
+              {{ve.castVotes.length || 0}}</div>
           </div>
         </div>
 
 
-
         <div class="participants-container">
           <div *ngFor="let playerHandle of ve.castVotes" class="participants">
-            <app-player-icon [loginName]="gameState.getLoginName(playerHandle)" [size]="'15px'" [borderThickness]="'0px'"></app-player-icon>
+            <app-player-icon [borderThickness]="'0px'" [loginName]="gameState.getLoginName(playerHandle)"
+                             [size]="'15px'"></app-player-icon>
           </div>
         </div>
 

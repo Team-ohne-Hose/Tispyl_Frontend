@@ -24,8 +24,8 @@ export class RegisterPopupComponent {
   }
 
   registerUser() {
-    this.AuthService.register({ username: this.login_name, displayname: this.display_name, password: this.password_0 } as RegisterOptions)
-    this.dialogRef.close()
+    this.AuthService.register({username: this.login_name, displayname: this.display_name, password: this.password_0} as RegisterOptions);
+    this.dialogRef.close();
   }
 
   validateInput(): string[] {
@@ -37,13 +37,13 @@ export class RegisterPopupComponent {
     const arePasswordsEqual: [boolean, string] = [
       this.password_0 === this.password_1,
       'Password_0 was not equal to Password_1'
-    ]
+    ];
 
     const hasPasswordCorrectLength: [boolean, string] = [
       this.password_0.length >= minPasswordLength && this.password_0.length <= maxPasswordLength,
       'Password length outside of the allowed range: [' + minPasswordLength + ', ' + maxPasswordLength + ']'
-    ]
+    ];
 
-    return [arePasswordsEqual, hasPasswordCorrectLength].filter(e => !e[0]).map(e => e[1])
+    return [arePasswordsEqual, hasPasswordCorrectLength].filter(e => !e[0]).map(e => e[1]);
   }
 }

@@ -5,16 +5,18 @@
   color: grey;
 }
 
-img.animated-gif{
+img.animated-gif {
   width: 40vw;
   max-width: 450px
 }
-img.animated-gif:hover{
+
+img.animated-gif:hover {
   transition: all 0.2s ease-out;
   filter: drop-shadow(5px 5px 5px black);
   transform: scale(1.02);
 }
-img.animated-gif:active{
+
+img.animated-gif:active {
   transition: all 0.2s ease-out;
   filter: drop-shadow(0px 0px 0px black);
   transform: scale(1.0);

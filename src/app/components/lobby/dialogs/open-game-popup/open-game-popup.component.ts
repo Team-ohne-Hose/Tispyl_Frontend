@@ -13,7 +13,7 @@ export class OpenGamePopupComponent implements OnInit {
   randomizeTiles;
 
   constructor(private dialogRef: MatDialogRef<OpenGamePopupComponent, { roomName: string, skinName: string, randomizeTiles: boolean }>,
-    @Inject(MAT_DIALOG_DATA) public data: any) {
+              @Inject(MAT_DIALOG_DATA) public data: any) {
   }
 
   public closeMe() {
@@ -32,6 +32,7 @@ export class OpenGamePopupComponent implements OnInit {
       this.dialogRef.close();
     }
   }
+
   ngOnInit(): void {
   }
 

@@ -1,4 +1,4 @@
-import {TextContainer} from './TextContainer';
+import { TextContainer } from './TextContainer';
 
 export class Translation {
   id: String;

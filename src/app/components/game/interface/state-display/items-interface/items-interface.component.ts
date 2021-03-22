@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {ItemService} from '../../../../../services/item.service';
+import { ItemService } from '../../../../../services/item.service';
 
 @Component({
   selector: 'app-items-interface',
@@ -8,12 +8,13 @@ import {ItemService} from '../../../../../services/item.service';
 })
 export class ItemsInterfaceComponent implements OnInit {
 
-  constructor(public items: ItemService) { }
-
   itemThumbnail = '../assets/defaultImage.jpg';
   itemName = 'NO ITEM';
   itemDescription = '';
   scrollable = true;
+
+  constructor(public items: ItemService) {
+  }
 
   ngOnInit(): void {
     this.items.onItemUpdate = this.onItemUpdate.bind(this);
@@ -41,11 +42,13 @@ export class ItemsInterfaceComponent implements OnInit {
     this.items.selectPrevItem();
     this.updateItemData();
   }
+
   nextItem($event: Event) {
     this.items.setTargeting(false);
     this.items.selectNextItem();
     this.updateItemData();
   }
+
   activateItem($event: Event) {
     if (this.items.isCurrentlyTargeting()) {
       this.items.setTargeting(false);
@@ -57,6 +60,7 @@ export class ItemsInterfaceComponent implements OnInit {
       }
     }
   }
+
   onItemUpdate() {
     this.updateItemData();
   }

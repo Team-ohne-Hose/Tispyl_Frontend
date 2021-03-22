@@ -1,32 +1,31 @@
-
 <div class="interface-bounds">
   <app-state-display
-    [round]="gameState.getRound()"
+    [action]="gameState.getAction()"
     [currentPlayerDisplayName]="gameState.getCurrentPlayerDisplayName()"
-    [action]="gameState.getAction()">
+    [round]="gameState.getRound()">
   </app-state-display>
   <app-pregame-banner *ngIf="!gameState.hasStarted()"
                       [players]="gameState.getPlayerArray()">
   </app-pregame-banner>
   <app-connected-players
-    [players]="gameState.getPlayerArray()"
+    #connectedPlayers
     [currentPlayerDisplayName]="gameState.getCurrentPlayerDisplayName()"
-    #connectedPlayers>
+    [players]="gameState.getPlayerArray()">
   </app-connected-players>
   <app-menu-bar
+    (executeNewChatCommand)="executeChatCommand($event)"
     [playerList]="gameState.getPlayerArray()"
-    [ruleList]="gameState.getRules()"
-    (executeNewChatCommand)="executeChatCommand($event)">
+    [ruleList]="gameState.getRules()">
   </app-menu-bar>
-  <app-next-turn-button [disabled]="!gameState.hasStarted"
+  <app-next-turn-button #nextTurn
                         [action]="gameState.getAction()"
-                        #nextTurn>
+                        [disabled]="!gameState.hasStarted">
   </app-next-turn-button>
-  <app-turn-overlay [ownTurn]="this.gameState.isMyTurn()"
-                    [currentPlayerName]="gameState.getCurrentPlayerDisplayName()" #turnOverlay>
+  <app-turn-overlay #turnOverlay
+                    [currentPlayerName]="gameState.getCurrentPlayerDisplayName()" [ownTurn]="this.gameState.isMyTurn()">
   </app-turn-overlay>
-  <app-tile-overlay (printer)="print($event, 'Tiles')"
-                    [playerName]="gameState.getCurrentPlayerDisplayName()"
-                    #tileOverlay>
+  <app-tile-overlay #tileOverlay
+                    (printer)="print($event, 'Tiles')"
+                    [playerName]="gameState.getCurrentPlayerDisplayName()">
   </app-tile-overlay>
 </div>

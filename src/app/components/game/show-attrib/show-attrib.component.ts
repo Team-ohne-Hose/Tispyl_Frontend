@@ -1,5 +1,5 @@
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {Component, Inject} from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Component, Inject } from '@angular/core';
 
 @Component({
   selector: 'app-show-attrib',
@@ -8,8 +8,9 @@ import {Component, Inject} from '@angular/core';
 })
 export class ShowAttribComponent {
 
-  constructor(private  dialogRef:  MatDialogRef<ShowAttribComponent, void>,
-              @Inject(MAT_DIALOG_DATA) public  data:  any) {}
+  constructor(private  dialogRef: MatDialogRef<ShowAttribComponent, void>,
+              @Inject(MAT_DIALOG_DATA) public  data: any) {
+  }
 
   public closeMe() {
     this.dialogRef.close();

@@ -1,15 +1,16 @@
 import { Injectable } from '@angular/core';
-import {ChatService} from './chat.service';
-import {ColyseusNotifyable} from './game-initialisation.service';
-import {GameStateService} from './game-state.service';
-import {ItemMessageType, MessageType, UseItem, WsData} from '../model/WsData';
-import {MapSchema} from '@colyseus/schema';
-import {Player} from '../model/state/Player';
+import { ChatService } from './chat.service';
+import { ColyseusNotifyable } from './game-initialisation.service';
+import { GameStateService } from './game-state.service';
+import { ItemMessageType, MessageType, UseItem, WsData } from '../model/WsData';
+import { MapSchema } from '@colyseus/schema';
+import { Player } from '../model/state/Player';
 
 enum executeTypes { // even numbers are targeted actions, odd numbers are not targeted
   untargetedExecute = 1,
   targetedExecute = 2,
 }
+
 @Injectable({
   providedIn: 'root'
 })
@@ -17,45 +18,71 @@ export class ItemService implements ColyseusNotifyable {
 
 
   private static readonly items = {
-    0: {id: 0, weight: 1, name: 'Wirt',
+    0: {
+      id: 0, weight: 1, name: 'Wirt',
       desc: 'Verteile 3 Rationen',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute},
-    1: {id: 1, weight: 1, name: 'Diplomat',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute
+    },
+    1: {
+      id: 1, weight: 1, name: 'Diplomat',
       desc: 'Stelle eine Regel auf',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute},
-    2: {id: 2, weight: 1, name: 'Klon',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute
+    },
+    2: {
+      id: 2, weight: 1, name: 'Klon',
       desc: 'Ein anderer Mitspieler muss deine nächste Aufgabe auch machen',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute},
-    3: {id: 3, weight: 1, name: 'Beste Freunde Gulasch',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute
+    },
+    3: {
+      id: 3, weight: 1, name: 'Beste Freunde Gulasch',
       desc: 'Wähle einen Trinkbuddy',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute},
-    4: {id: 4, weight: 1, name: 'Todfeind',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute
+    },
+    4: {
+      id: 4, weight: 1, name: 'Todfeind',
       desc: 'Löse eine Trinkbuddy Verbindung auf',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute},
-    5: {id: 5, weight: 1, name: 'Joker',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute
+    },
+    5: {
+      id: 5, weight: 1, name: 'Joker',
       desc: 'Führe ein beliebiges Feld aus',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute},
-    6: {id: 6, weight: 1, name: 'MOAB',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute
+    },
+    6: {
+      id: 6, weight: 1, name: 'MOAB',
       desc: 'Alle rücken 10 Felder zurück',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute},
-    7: {id: 7, weight: 1, name: 'Assasin',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute
+    },
+    7: {
+      id: 7, weight: 1, name: 'Assasin',
       desc: 'Ein Spieler muss einen Ring nach unten',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute},
-    8: {id: 8, weight: 1, name: 'Sabotage',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute
+    },
+    8: {
+      id: 8, weight: 1, name: 'Sabotage',
       desc: 'Ein Spieler muss 5 Felder zurück',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute},
-    9: {id: 9, weight: 1, name: 'Ah shit, here we go again',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute
+    },
+    9: {
+      id: 9, weight: 1, name: 'Ah shit, here we go again',
       desc: 'Spielt danach noch eine Runde Tischspiel',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute},
-    10: {id: 10, weight: 1, name: 'Trittbrettfahrer',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute
+    },
+    10: {
+      id: 10, weight: 1, name: 'Trittbrettfahrer',
       desc: 'Exe dein Getränk. Schaffst du es müssen alle anderen dir gleich tun.(Dein Getränk muss mindestens halb voll sein wenn du dieses Item nutzt.)',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute},
-    11: {id: 11, weight: 1, name: 'Losing is Fun',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute
+    },
+    11: {
+      id: 11, weight: 1, name: 'Losing is Fun',
       desc: 'Gehe zurück zum Start',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute},
-    12: {id: 12, weight: 1, name: 'Anonymer Tipp',
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute
+    },
+    12: {
+      id: 12, weight: 1, name: 'Anonymer Tipp',
       desc: 'ein Spieler muss nächste Runde aussetzen',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute},
+      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute
+    },
     count: 13,
   };
 
@@ -64,7 +91,8 @@ export class ItemService implements ColyseusNotifyable {
   onItemUpdate: () => void;
   gameState: GameStateService;
 
-  constructor(private chatService: ChatService) { }
+  constructor(private chatService: ChatService) {
+  }
 
   attachColyseusStateCallbacks(gameState: GameStateService): void {
     this.gameState = gameState;
@@ -75,6 +103,7 @@ export class ItemService implements ColyseusNotifyable {
     }).bind(this));
     this.onItemUpdate();
   }
+
   attachColyseusMessageCallbacks(gameState: GameStateService): void {
     this.gameState = gameState;
     gameState.registerMessageCallback(MessageType.ITEM_MESSAGE, {
@@ -98,6 +127,7 @@ export class ItemService implements ColyseusNotifyable {
     }
     this.chatService.addLocalMessage(msg, 'Item Used');
   }
+
   getMyItemsList(): MapSchema<number> {
     const playerMe: Player = this.gameState.getMe();
     if (playerMe !== undefined) {
@@ -105,6 +135,7 @@ export class ItemService implements ColyseusNotifyable {
     }
     return undefined;
   }
+
   getOrderedItemList(): number[] {
     const itemListArray: number[] = [];
     const items = this.getMyItemsList();
@@ -119,7 +150,8 @@ export class ItemService implements ColyseusNotifyable {
       });
     }
     return itemListArray;
-}
+  }
+
   selectNextItem() {
     const itemListArray: number[] = this.getOrderedItemList();
     if (itemListArray === undefined || itemListArray.length <= 0) {
@@ -132,6 +164,7 @@ export class ItemService implements ColyseusNotifyable {
       this.selectItem(searchResult);
     }
   }
+
   selectPrevItem() {
     const itemListArray: number[] = this.getOrderedItemList();
     if (itemListArray === undefined || itemListArray.length <= 0) {
@@ -150,6 +183,7 @@ export class ItemService implements ColyseusNotifyable {
       }
     }
   }
+
   selectItem(itemId: number) {
     this.setTargeting(false);
     if (itemId < 0) {
@@ -163,6 +197,7 @@ export class ItemService implements ColyseusNotifyable {
       }
     }
   }
+
   getItemName(itemId: number): string {
     if (itemId < 0 || itemId >= ItemService.items.count) {
       return 'NO ITEM';
@@ -170,6 +205,7 @@ export class ItemService implements ColyseusNotifyable {
       return ItemService.items[itemId].name;
     }
   }
+
   getItemDesc(itemId: number): string {
     if (itemId < 0 || itemId >= ItemService.items.count) {
       return '';
@@ -177,6 +213,7 @@ export class ItemService implements ColyseusNotifyable {
       return ItemService.items[itemId].desc;
     }
   }
+
   getItemThumb(itemId: number): string {
     if (itemId < 0 || itemId >= ItemService.items.count) {
       return '../assets/defaultImage.jpg';
@@ -184,21 +221,26 @@ export class ItemService implements ColyseusNotifyable {
       return ItemService.items[itemId].imgUrl;
     }
   }
+
   isItemTargetable(itemId: number): boolean {
     if (itemId >= ItemService.items.count || itemId < 0) {
       return false;
     }
     return (ItemService.items[itemId].executeType % 2) === 0;
   }
+
   setTargeting(en: boolean) {
     this.targetingItem = en;
   }
+
   isCurrentlyTargeting(): boolean {
     return this.targetingItem;
   }
+
   onTargetHover(targetId: number) {
 
   }
+
   onTargetSet(targetId: number) {
     this.useItem(this.selectedItem, targetId);
   }

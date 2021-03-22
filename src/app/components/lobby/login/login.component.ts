@@ -16,14 +16,10 @@ import { JwtTokenService } from 'src/app/services/jwttoken.service';
 })
 export class LoginComponent {
 
-  constructor(private dialog: MatDialog, private userManagement: UserService, private jwtTokenService: JwtTokenService) { }
-
   @Input() languageObjects: TextContainer;
-
   login_name = '';
   password_plain = '';
   errorMessage = '';
-
   dialog_config: MatDialogConfig = {
     width: '80%',
     maxWidth: '500px',
@@ -31,8 +27,11 @@ export class LoginComponent {
     panelClass: 'modalbox-base'
   };
 
+  constructor(private dialog: MatDialog, private userManagement: UserService, private jwtTokenService: JwtTokenService) {
+  }
+
   onLogin() {
-    this.jwtTokenService.login(this.login_name, hash.MD5(this.password_plain))
+    this.jwtTokenService.login(this.login_name, hash.MD5(this.password_plain));
   }
 
   enter(keyEvent) {

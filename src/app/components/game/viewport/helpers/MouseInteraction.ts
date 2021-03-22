@@ -1,15 +1,15 @@
 import * as THREE from 'three';
-import {Camera, Object3D, Vector3} from 'three';
-import {BoardItemManagement} from './BoardItemManagement';
-import {ClickedTarget, PhysicsCommands} from './PhysicsCommands';
-import {BoardTilesService} from '../../../../services/board-tiles.service';
-import {GameStateService} from '../../../../services/game-state.service';
-import {ItemService} from '../../../../services/item.service';
+import { Camera, Object3D, Vector3 } from 'three';
+import { BoardItemManagement } from './BoardItemManagement';
+import { ClickedTarget, PhysicsCommands } from './PhysicsCommands';
+import { BoardTilesService } from '../../../../services/board-tiles.service';
+import { GameStateService } from '../../../../services/game-state.service';
+import { ItemService } from '../../../../services/item.service';
 
 export class MouseInteraction {
 
   // Raycasting & Mouse
-  lastMouseLeftDownCoords: {x: number, y: number, button: number, ts: number};
+  lastMouseLeftDownCoords: { x: number, y: number, button: number, ts: number };
   raycaster = new THREE.Raycaster();
   currentSize = new THREE.Vector2();
 
@@ -17,7 +17,7 @@ export class MouseInteraction {
   camera: Camera;
   interactable: Object3D[] = [];
 
-  currentlySelected: {obj: THREE.Object3D, oldPos: Vector3};
+  currentlySelected: { obj: THREE.Object3D, oldPos: Vector3 };
 
   constructor(camera: Camera, boardItemManager: BoardItemManagement,
               private physics: PhysicsCommands,
@@ -28,6 +28,7 @@ export class MouseInteraction {
     this.camera = camera;
     this.physics.addInteractable = this.addInteractable.bind(this);
   }
+
   addInteractable(obj: Object3D) {
     // console.error('pushing obj', obj);
     this.interactable.push(obj);
@@ -37,10 +38,11 @@ export class MouseInteraction {
     this.currentSize.width = width;
     this.currentSize.height = height;
   }
+
   mouseMoved(event) {
     if (this.currentlySelected !== undefined) {
       const normX = (event.clientX / this.currentSize.width) * 2 - 1;
-      const normY = - (event.clientY / this.currentSize.height) * 2 + 1;
+      const normY = -(event.clientY / this.currentSize.height) * 2 + 1;
       this.raycaster.setFromCamera({x: normX, y: normY}, this.camera);
       const intersects = this.raycaster.intersectObject(this.boardItemManager.board);
       if (intersects.length > 0) {
@@ -49,7 +51,7 @@ export class MouseInteraction {
       }
     } else if (this.itemService.isCurrentlyTargeting()) {
       const normX = (event.clientX / this.currentSize.width) * 2 - 1;
-      const normY = - (event.clientY / this.currentSize.height) * 2 + 1;
+      const normY = -(event.clientY / this.currentSize.height) * 2 + 1;
       this.raycaster.setFromCamera({x: normX, y: normY}, this.camera);
       const intersects = this.raycaster.intersectObjects(this.interactable);
 
@@ -69,6 +71,7 @@ export class MouseInteraction {
       }
     }
   }
+
   mouseDown(event) {
     if (event.button === 0) {
       this.lastMouseLeftDownCoords = {
@@ -79,6 +82,7 @@ export class MouseInteraction {
       };
     }
   }
+
   mouseUp(event) {
     if (event.button === 0 && this.lastMouseLeftDownCoords.ts !== 0) {
       const travelled = {
@@ -109,9 +113,10 @@ export class MouseInteraction {
     console.log('dragDropRecognised: ', dist, x, y);
     console.error('scene:', this.boardItemManager.scene, this.interactable);
   }
+
   clickCoords(x: number, y: number) {
     const normX = (x / this.currentSize.width) * 2 - 1;
-    const normY = - (y / this.currentSize.height) * 2 + 1;
+    const normY = -(y / this.currentSize.height) * 2 + 1;
     this.raycaster.setFromCamera({x: normX, y: normY}, this.camera);
     const intersects = this.raycaster.intersectObjects(this.interactable);
 
@@ -150,6 +155,7 @@ export class MouseInteraction {
       }
     }
   }
+
   handleBoardTileClick(intersection: THREE.Vector3): boolean {
     const coords = this.boardTiles.coordsToFieldCoords(intersection);
     if (coords.x >= 0 && coords.x < 8 && coords.y >= 0 && coords.y < 8) {
@@ -169,6 +175,7 @@ export class MouseInteraction {
     }
     return false;
   }
+
   private getClickedType(o: Object3D): ClickedTarget {
     if (o.name === 'gameboard') {
       return ClickedTarget.board;

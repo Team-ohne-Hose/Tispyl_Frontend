@@ -9,6 +9,7 @@
   justify-content: center;
   z-index: 20;
 }
+
 .state-area {
   pointer-events: none;
   width: 100%;
@@ -22,11 +23,13 @@
   justify-items: center;
   z-index: 20;
 }
+
 .leftBoxItem {
   grid-area: leftBox;
   justify-self: end;
   align-self: center;
 }
+
 .rightBoxItem {
   grid-area: rightBox;
   justify-self: start;
@@ -69,7 +72,7 @@
   padding-left: 8px;
 }
 
-.no-icon span{
+.no-icon span {
   padding-left: 0;
 }
 

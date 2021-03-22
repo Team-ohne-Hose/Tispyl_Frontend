@@ -1,7 +1,7 @@
-import {Component, Input} from '@angular/core';
-import {GameActionType, MessageType} from '../../../../model/WsData';
-import {Player} from '../../../../model/state/Player';
-import {GameStateService} from '../../../../services/game-state.service';
+import { Component, Input } from '@angular/core';
+import { GameActionType, MessageType } from '../../../../model/WsData';
+import { Player } from '../../../../model/state/Player';
+import { GameStateService } from '../../../../services/game-state.service';
 
 @Component({
   selector: 'app-pregame-banner',
@@ -15,12 +15,17 @@ export class PregameBannerComponent {
   @Input()
   players: Player[];
 
-  constructor( private gameState: GameStateService) {}
+  constructor(private gameState: GameStateService) {
+  }
 
 
   readyEvent() {
     this.isReady = !this.isReady;
-    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.readyPropertyChange, isReady: this.isReady} );
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
+      type: MessageType.GAME_MESSAGE,
+      action: GameActionType.readyPropertyChange,
+      isReady: this.isReady
+    });
   }
 
   countReadyPlayers() {

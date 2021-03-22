@@ -34,7 +34,7 @@
   color: var(--dim-text-color);
 }
 
-.avatar-section .upload-icon{
+.avatar-section .upload-icon {
   display: grid;
   align-content: end;
 }
@@ -79,6 +79,7 @@
   width: 100%;
   overflow: hidden;
 }
+
 .bottle-cap-cover img {
   height: 149%;
   width: 149%;
@@ -91,9 +92,8 @@
 .golden-border {
   border-radius: 50%;
   padding: 5px;
-  background:
-    radial-gradient(ellipse farthest-corner at left bottom, #FEDB37 0%, #FDB931 8%, #9f7928 30%, #8A6E2F 40%, transparent 80%),
-    radial-gradient(ellipse farthest-corner at right top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%);
+  background: radial-gradient(ellipse farthest-corner at left bottom, #FEDB37 0%, #FDB931 8%, #9f7928 30%, #8A6E2F 40%, transparent 80%),
+  radial-gradient(ellipse farthest-corner at right top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%);
 }
 
 .user-name {
@@ -129,7 +129,7 @@
   max-width: 90%;
 }
 
-.move-right{
+.move-right {
   align-self: flex-end;
 }
 
@@ -208,7 +208,7 @@
   background-color: var(--register-hover-background);
 }
 
-.input-section input{
+.input-section input {
   flex: 1;
   margin: 0.2rem 0.8rem;
   color: var(--text-color);

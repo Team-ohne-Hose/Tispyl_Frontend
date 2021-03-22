@@ -1,4 +1,3 @@
-
 export class ChatMessage {
   sender: string;
   text: string;

@@ -2,7 +2,7 @@
   <mat-form-field>
     <mat-label class="languageLabel">Language</mat-label>
     <mat-select>
-      <mat-option *ngFor="let lang of languageList" (click)="selectLang(lang.id)">
+      <mat-option (click)="selectLang(lang.id)" *ngFor="let lang of languageList">
         <img class="flagIcon" src="/assets/{{lang.flag}}"/>
         {{lang.desc}}
       </mat-option>

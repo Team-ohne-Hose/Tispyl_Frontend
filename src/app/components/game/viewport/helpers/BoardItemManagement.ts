@@ -1,12 +1,12 @@
 import * as THREE from 'three';
-import {SceneBuilderService} from '../../../../services/scene-builder.service';
-import {PhysicsCommands} from './PhysicsCommands';
-import {GameActionType, GameSetTile, MessageType, WsData} from '../../../../model/WsData';
-import {Color, ObjectLoaderService} from '../../../../services/object-loader.service';
-import {MapSchema} from '@colyseus/schema';
-import {Player} from '../../../../model/state/Player';
-import {GameStateService} from '../../../../services/game-state.service';
-import {ColyseusNotifyable} from '../../../../services/game-initialisation.service';
+import { SceneBuilderService } from '../../../../services/scene-builder.service';
+import { PhysicsCommands } from './PhysicsCommands';
+import { GameActionType, GameSetTile, MessageType, WsData } from '../../../../model/WsData';
+import { Color, ObjectLoaderService } from '../../../../services/object-loader.service';
+import { MapSchema } from '@colyseus/schema';
+import { Player } from '../../../../model/state/Player';
+import { GameStateService } from '../../../../services/game-state.service';
+import { ColyseusNotifyable } from '../../../../services/game-initialisation.service';
 
 export interface FigureItem {
   mesh: THREE.Object3D;
@@ -15,6 +15,7 @@ export interface FigureItem {
   isHidden: boolean;
   labelInScene: boolean;
 }
+
 export class BoardItemManagement implements ColyseusNotifyable {
 
   allFigures: FigureItem[];
@@ -39,6 +40,7 @@ export class BoardItemManagement implements ColyseusNotifyable {
       });
     }).bind(this);
   }
+
   attachColyseusStateCallbacks(gameState: GameStateService): void {
     gameState.addPlayerListUpdateCallback(((player: Player, key: string, players: MapSchema<Player>) => {
       const figureItem = this.allFigures.find((val: FigureItem, index: number) => {
@@ -65,7 +67,9 @@ export class BoardItemManagement implements ColyseusNotifyable {
       }
     }).bind(this));
   }
-  attachColyseusMessageCallbacks(gameState: GameStateService): void {}
+
+  attachColyseusMessageCallbacks(gameState: GameStateService): void {
+  }
 
   throwDice() {
     if (this.gameState.isMyTurn()) {
@@ -139,11 +143,13 @@ export class BoardItemManagement implements ColyseusNotifyable {
     this.physics.setVelocity(physID, 0, 0, 0);
     // this.physics.setRotation(PhysicsCommands.getPhysId(object), 0, 0, 0, 1);
   }
+
   respawnMyFigure() {
     const physID = this.gameState.getMe().figureId;
     this.physics.setPosition(physID, 0, 15, 0);
     this.physics.setVelocity(physID, 0, 0, 0);
   }
+
   moveGameFigure(object: THREE.Object3D, fieldID: number) {
     console.debug('move Figure to ', fieldID);
     let playerId: string;
@@ -159,20 +165,22 @@ export class BoardItemManagement implements ColyseusNotifyable {
       action: GameActionType.setTile,
       figureId: userData.physicsId,
       playerId: playerId,
-      tileId: fieldID};
+      tileId: fieldID
+    };
     this.gameState.sendMessage(MessageType.GAME_MESSAGE, msg);
   }
 
   addFlummi(x: number, y: number, z: number, color: number) {
     // const geometry = new THREE.SphereGeometry( 2, 32, 32 );
-    const geometry = new THREE.SphereBufferGeometry( 2, 32, 32 );
-    const material = new THREE.MeshStandardMaterial( {color: color} );
-    const sphere = new THREE.Mesh( geometry, material );
+    const geometry = new THREE.SphereBufferGeometry(2, 32, 32);
+    const material = new THREE.MeshStandardMaterial({color: color});
+    const sphere = new THREE.Mesh(geometry, material);
     sphere.position.set(x, y, z);
     // this.scene.add( sphere );
     // TODO rebuild Flummis, because important
     // this.physics.setVelocity(physId, (2 * Math.random() - 1) * 15, Math.random() * 15, (2 * Math.random() - 1) * 15);
   }
+
   addMarker(x: number, y: number, z: number, col: number): void {
     // TODO rebuild Marker, because important
     const markerMat = new THREE.MeshStandardMaterial({color: col});
