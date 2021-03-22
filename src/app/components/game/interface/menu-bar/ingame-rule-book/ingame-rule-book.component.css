@@ -1,0 +1,177 @@
+
+.register-card-base {
+
+  --base-padding: 0.5rem;
+  --seperator-padding: 0.25rem;
+
+  --text-color: #4b4b4b;
+  --dim-text-color: rgba(150, 150, 150, 1);
+
+  --light-bg: rgba(255, 255, 255, 0.2);
+  --light-bg-hover: rgba(255, 255, 255, 0.3);
+
+  min-width: 16rem;
+  width: 50vw;
+  max-width: 24rem;
+
+  display: flex;
+  flex-flow: column;
+
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+
+}
+
+.gold-border {
+  padding: 0.15em;
+  background: var(--golden-radial-bg);
+  filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, 0.6));
+}
+
+.paper-body {
+  color: var(--text-color);
+  background: url("../../../../../../assets/old-paper-texture-background.jpg");
+  box-shadow: inset 0 0 0.2em 0.15em rgba(0, 0, 0, 0.6);
+}
+
+.top {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
+}
+
+.tray {
+  margin: var(--base-padding);
+}
+
+/*==================================RULES===================================*/
+
+.headline-text {
+  font-size: large;
+  border-bottom: var(--text-color) solid 2px;
+}
+
+.rule-list {
+  padding: 1rem;
+  flex-grow: 1;
+  overflow: auto;
+  min-height: 0;
+}
+
+.rule {
+  display: flex;
+  flex-direction: row;
+  margin-top: 0.5rem;
+  align-items: center;
+  font-size: medium;
+  padding-left: 0.2rem;
+  padding-right: 0.2rem;
+  border-radius: 5px;
+  background-color: var(--light-bg);
+}
+
+.rule span{
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.rule:hover {
+  background-color: var(--light-bg-hover);
+}
+
+.rule-text {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+}
+
+.rule-text .author{
+  font-size: x-small;
+  color: var(--dim-text-color);
+}
+
+.rule-text .text{
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+}
+
+.rule-mover {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-self: stretch;
+  align-items: center;
+  min-height: 0;
+}
+
+.rule:hover .move-button {
+  color: var(--dim-text-color);
+}
+
+.move-button {
+  color: transparent
+}
+
+.rule:hover .move-button:hover {
+  color: white;
+}
+
+.delete-rule {
+  margin-left: auto;
+  color: var(--dim-text-color);
+}
+
+.rule:hover .delete-rule:hover {
+  color: #ff5a5b;
+}
+
+/*=============================INPUT=================================*/
+
+.input-section {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0.5rem;
+}
+
+.input-section textarea{
+  flex-grow: 1;
+  padding: 0.2rem;
+  border-radius: 5px;
+  background-color: var(--light-bg);
+  color: black;
+  resize: none;
+  border: 0;
+  scrollbar-width: none;
+}
+
+.input-section textarea:hover {
+  background-color: var(--light-bg-hover);
+}
+
+.vertical-seperator {
+  border: var(--dim-text-color) solid 1px;
+  align-self: stretch;
+  margin: 0.5rem;
+}
+
+.add-button {
+  background-color: var(--light-bg);
+  padding: 0.2rem;
+  border-radius: 50%;
+}
+
+.add-button:hover {
+  color: var(--dim-text-color);
+  background-color: var(--light-bg-hover);
+}
+
+
+
+
+
+
+

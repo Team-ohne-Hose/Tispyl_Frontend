@@ -1,5 +1,5 @@
 import {Schema, ArraySchema, MapSchema, type} from '@colyseus/schema';
-import {VoteConfiguration} from '../../game/interface/vote-system/VoteConfiguration';
+import {VoteConfiguration} from '../../components/game/interface/menu-bar/vote-system/helpers/VoteConfiguration';
 
 
 export enum VoteStage {

@@ -1,4 +1,4 @@
-import {VoteConfiguration} from '../game/interface/vote-system/VoteConfiguration';
+import {VoteConfiguration} from '../components/game/interface/menu-bar/vote-system/helpers/VoteConfiguration';
 
 export type WsData = OtherMessage |
                       ServerMessage |

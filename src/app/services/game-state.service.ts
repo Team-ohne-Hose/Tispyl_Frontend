@@ -11,7 +11,7 @@ import { MessageType } from '../model/WsData';
 import { GameInitialisationService } from './game-initialisation.service';
 import { Data } from '@angular/router';
 import { VoteStage, VoteState } from '../model/state/VoteState';
-import { VoteEntry } from '../game/interface/vote-system/VoteEntry';
+import { VoteEntry } from '../components/game/interface/menu-bar/vote-system/helpers/VoteEntry';
 
 
 @Injectable({

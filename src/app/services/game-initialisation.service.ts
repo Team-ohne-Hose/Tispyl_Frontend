@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { ViewportComponent } from '../game/viewport/viewport.component';
+import { ViewportComponent } from '../components/game/viewport/viewport.component';
 import { ObjectLoaderService } from './object-loader.service';
-import { BoardItemManagement } from '../game/viewport/BoardItemManagement';
-import { PhysicsCommands } from '../game/viewport/PhysicsCommands';
+import { BoardItemManagement } from '../components/game/viewport/helpers/BoardItemManagement';
+import { PhysicsCommands } from '../components/game/viewport/helpers/PhysicsCommands';
 import { BoardTilesService } from './board-tiles.service';
 import * as THREE from 'three';
-import { GameComponent } from '../game/game.component';
+import { GameComponent } from '../components/game/game.component';
 import { ChatService } from './chat.service';
 import { GameStateService } from './game-state.service';
 import { ItemService } from './item.service';

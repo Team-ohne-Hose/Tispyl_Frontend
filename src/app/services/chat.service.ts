@@ -2,7 +2,7 @@ import {EventEmitter, Injectable, Output} from '@angular/core';
 import {ColyseusNotifyable} from './game-initialisation.service';
 import {MessageType, WsData} from '../model/WsData';
 import {GameStateService} from './game-state.service';
-import {ChatMessage} from '../home-register/ChatMessage';
+import {ChatMessage} from '../components/game/interface/menu-bar/home-register/helpers/ChatMessage';
 
 @Injectable({
   providedIn: 'root'
