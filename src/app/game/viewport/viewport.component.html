@@ -1,9 +1,0 @@
-<div #view id="viewport-container" (window:resize)="onWindowResize($event)"
-     [ngStyle]="{'cursor': (this.itemService.targetingItem ? 'url(\'assets/crosshair.svg\') 64 64, auto' : '')}"
-     (mousedown)="mouseInteract.mouseDown($event)"
-     (mouseup)="mouseInteract.mouseUp($event)"
-     (mousemove)="mouseInteract.mouseMoved($event)"
-     (keydown)="keyDown($event)"
-     (keyup)="keyUp($event)">
-
-</div>

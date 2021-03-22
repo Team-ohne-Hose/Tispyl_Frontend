@@ -13,16 +13,16 @@ export interface MessageCallback {
   filterSubType: number; // -1/undefined for no filter, otherwise the subtype to filter for
   f: (data: WsData) => void;
 }
+
 @Injectable({
   providedIn: 'root'
 })
 export class ColyseusClientService {
 
+  myLoginName: string;
   private readonly prodBackendWStarget = 'wss://tispyl.uber.space:41920';
   private readonly devBackendWStarget = 'ws://localhost:25670';
   private backendWStarget = environment.production ? this.prodBackendWStarget : this.devBackendWStarget;
-  myLoginName: string;
-
   private client: Client = new Client(this.backendWStarget);
   private activeRoom: BehaviorSubject<Room<GameState>>;
   private availableRooms: BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>;
@@ -32,7 +32,7 @@ export class ColyseusClientService {
     this.onDataChange.bind(this)
   ];
 
-  constructor(private router: Router) { 
+  constructor(private router: Router) {
     this.activeRoom = new BehaviorSubject<Room<GameState>>(undefined);
     this.availableRooms = new BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>([]);
   }
@@ -61,7 +61,7 @@ export class ColyseusClientService {
     console.info('connected to new active Room', newRoom);
     this.activeRoom.next(newRoom);
   }
-  
+
   createRoom(roomName: string, author: string, loginName: string, displayName: string, skin: string, randomizeTiles: boolean) {
     const options = {
       name: roomName,
@@ -73,7 +73,7 @@ export class ColyseusClientService {
     };
 
     if (roomName !== undefined) {
-      this.client.create('game', options).then( suc => {
+      this.client.create('game', options).then(suc => {
         this.setActiveRoom(suc);
         this.updateAvailableRooms();
         this.myLoginName = loginName;
@@ -81,7 +81,7 @@ export class ColyseusClientService {
       });
     }
   }
-  
+
   joinActiveRoom(roomAva: RoomAvailable<RoomMetaInfo>, loginName: string, displayName: string) {
     const options = {
       name: undefined,
@@ -114,6 +114,10 @@ export class ColyseusClientService {
     });
   }
 
+  addOnChangeCallback(cb: (changes: DataChange<any>[]) => void) {
+    this.onChangeCallbacks.push(cb);
+  }
+
   /**
    * Will distribute WsData to callbacks based on the WsData type.
    * @note: Excluded from directly being located inside the "updateRoomCallbacks()" to avoid function nesting.
@@ -140,9 +144,6 @@ export class ColyseusClientService {
     }
   }
 
-  addOnChangeCallback(cb: (changes: DataChange<any>[]) => void) {
-    this.onChangeCallbacks.push(cb);
-  }
   private distributeOnChange(changes: DataChange<any>[]) {
     this.onChangeCallbacks.map(f => f(changes));
   }

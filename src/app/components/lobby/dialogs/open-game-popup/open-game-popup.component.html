@@ -1,0 +1,31 @@
+<div class="base-flex">
+  <div class="head-container">
+    <span class="head">Host a new round</span>
+  </div>
+
+  <div class="content">
+    <div class="element">
+      <label>
+        Lobby name:
+        <input [(ngModel)]="roomName">
+      </label>
+    </div>
+    <div class="element">
+      <label>
+        Randomize Tiles?:
+        <input [(ngModel)]="randomizeTiles" type="checkbox">
+      </label>
+    </div>
+    <div class="element">
+      <label>
+        Skin(leave empty for default):
+        <input [(ngModel)]="skinName">
+      </label>
+    </div>
+  </div>
+
+  <div class="foot">
+    <button (click)="closeMe()">Cancel</button>
+    <button (click)="createGame()">Create</button>
+  </div>
+</div>

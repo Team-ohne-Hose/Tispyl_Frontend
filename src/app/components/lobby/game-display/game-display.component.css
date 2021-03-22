@@ -1,0 +1,127 @@
+
+.ornamental-box {
+  height: auto;
+  width: 8px;
+  background-color: grey;
+  margin-right: 8px;
+
+  -webkit-box-shadow: 3px 3px 11px 0px rgb(0, 0, 0);
+  -moz-box-shadow: 3px 3px 11px 0px rgb(0, 0, 0);
+  box-shadow: 3px 3px 11px 0px rgb(0, 0, 0);
+}
+
+.empty-ornamental-box {
+  height: 64px;
+  width: 8px;
+  background-color: transparent;
+  border: grey solid 1px;
+  margin-right: 8px;
+}
+
+.empty-bounding-box {
+  display: flex;
+  height: 64px;
+  justify-content: center;
+  background-color: transparent;
+  border: dimgrey solid 1px;
+  width: 100%;
+}
+
+.empty-bounding-box span {
+  align-self: center;
+  color: dimgrey;
+}
+
+.component-box {
+  margin-bottom: 8px;
+}
+
+.component-box:hover .ornamental-box {
+  background-color: lightgrey;
+}
+
+.component-box:hover .bounding-box {
+  background-color: #4b4b4b;
+}
+
+
+.heading {
+  font-size: large;
+  margin-right: 4px;
+}
+
+.trailing {
+  font-size: small;
+  margin-left: 8px;
+  color: grey;
+}
+
+.naming {
+  flex-direction: column
+}
+
+.date {
+  font-size: small;
+  margin-top: 8px;
+  color: grey;
+}
+
+.delete-game {
+  align-self: center;
+
+}
+
+.blue-text {
+  color: lightskyblue;
+}
+
+
+.controls {
+  display: flex;
+  align-items: center;
+}
+
+.controls button {
+  margin-left: 16px;
+  font-size: large;
+  -webkit-box-shadow: 0 0 0 0;
+  -moz-box-shadow: 0 0 0 0;
+  box-shadow: 0 0 0 0;
+  background-color: transparent;
+}
+
+
+.controls .enter {
+  color: rgb(205, 238, 200);
+}
+
+.controls .enter:hover {
+  color: #8cff00;
+}
+
+.controls .enter:active {
+  color: darkgreen;
+}
+
+.controls .leave {
+  color: #f3ccc9;
+}
+
+.controls .leave:hover {
+  color: red;
+}
+
+.controls .leave:active {
+  color: darkred;
+}
+
+.count {
+  align-self: center;
+  margin-left: auto;
+  margin-right: 8px;
+}
+
+.count i {
+  margin-right: 8px;
+}
+

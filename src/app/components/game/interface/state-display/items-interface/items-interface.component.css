@@ -1,0 +1,120 @@
+.Item-Display {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  color: var(--dim-text-color);
+  pointer-events: all;
+}
+
+.round-avatar {
+  height: 60px;
+  width: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  margin-left: 1px;
+  margin-right: 1px;
+}
+
+.round-avatar img {
+  border: var(--accent-color) solid 1px;
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  object-fit: contain;
+}
+
+.golden-border {
+  border-radius: 50%;
+  padding: 5px;
+  background: radial-gradient(ellipse farthest-corner at left bottom, #FEDB37 0%, #FDB931 8%, #9f7928 30%, #8A6E2F 40%, transparent 80%),
+  radial-gradient(ellipse farthest-corner at right top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%);
+}
+
+.Item-Display div i {
+  /*color: black;*/
+  font-size: x-large;
+}
+
+.tooltip {
+  visibility: hidden;
+  width: 25vw;
+  background-color: #3c3c3c;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+
+  /* Position the tooltip text */
+  position: absolute;
+  z-index: 1;
+  margin-left: -18vw;
+  margin-top: 65px;
+
+  /* Fade in tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* Tooltip arrow */
+/*.tooltip:after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #3c3c3c transparent;
+  filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, 0.7));
+}*/
+.tooltip-arrow {
+  width: 50px;
+  height: 25px;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s;
+  position: absolute;
+  z-index: 1;
+  margin-left: -25px;
+  margin-top: 40px;
+  background-color: #3c3c3c;
+  clip-path: polygon(50% 0, 0% 100%, 100% 100%);
+}
+
+.Item-Display:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.Item-Display:hover .tooltip-arrow {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip-container {
+  position: relative;
+  left: -50%;
+  filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, 0.7));
+}
+
+.itemName {
+  font-size: x-large;
+}
+
+.itemDescription {
+  white-space: pre-wrap;
+}
+
+.separator {
+  width: 88%;
+  margin-left: 6%;
+  margin-top: 3px;
+  margin-bottom: 6px;
+  border: solid 1px #2c2c2c;
+}
+
+.itemCrosshair {
+  position: absolute;
+}

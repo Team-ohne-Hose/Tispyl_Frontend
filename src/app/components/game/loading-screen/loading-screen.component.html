@@ -1,0 +1,12 @@
+<div class="center">
+  <div class="progressBarContainer">
+    <div [style.width.%]="progress * .9 + 10" class="progressBar">
+      <div class="centerText">
+        {{progress}} %
+      </div>
+    </div>
+  </div>
+</div>
+<div #tips class="tips">
+  {{currentTip}}
+</div>

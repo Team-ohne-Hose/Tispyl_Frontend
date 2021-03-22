@@ -1,0 +1,16 @@
+<div class="padding">
+  <div class="title-bar"><span>Trink-Buddies:</span><i (click)="refreshChart()" class="fas fa-redo"></i></div>
+  <div #chart id="chart"></div>
+  <div class="add-bar">
+    <div (click)="removeLink(inputFrom, inputTo)" class="modify-button right-margin"><i class="fas fa-minus"></i></div>
+    <div class="text-input-container">
+      <input #inputFrom placeholder="Trinker ..." type="text">
+    </div>
+    <div class="text-input-container">
+      <input #inputTo placeholder="Trink-Freund! ..." type="text">
+    </div>
+    <div (click)="addLink(inputFrom, inputTo)" class="modify-button"><i class="fas fa-plus"></i></div>
+  </div>
+  <div class="error-text">{{errorText}}</div>
+</div>
+

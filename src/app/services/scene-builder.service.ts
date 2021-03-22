@@ -1,6 +1,6 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import * as THREE from 'three';
-import {GameBoardOrbitControl} from '../game/viewport/GameBoardOrbitControl';
+import { GameBoardOrbitControl } from '../components/game/viewport/helpers/GameBoardOrbitControl';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +16,7 @@ export class SceneBuilderService {
 
     return light;
   }
+
   generateGameBoardOrbitControls(cam: THREE.PerspectiveCamera, domElem: HTMLElement): GameBoardOrbitControl {
     const orbitCtrl = new GameBoardOrbitControl(cam, domElem);
     orbitCtrl.enablePan = false;

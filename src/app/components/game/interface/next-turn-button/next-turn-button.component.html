@@ -1,0 +1,6 @@
+<div *ngIf="!disabled"
+     [ngClass]="{'nextTurn-Wrapper': true, 'turnNotFinished': (this.action !== 'EXECUTE' && !this.hidden), 'hidden': this.hidden}">
+  <button (click)="nextTurn($event)" class="nextTurn-Button">
+    Next Turn
+  </button>
+</div>

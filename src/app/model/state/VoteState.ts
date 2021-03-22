@@ -1,5 +1,5 @@
-import {Schema, ArraySchema, MapSchema, type} from '@colyseus/schema';
-import {VoteConfiguration} from '../../game/interface/vote-system/VoteConfiguration';
+import { Schema, ArraySchema, MapSchema, type } from '@colyseus/schema';
+import { VoteConfiguration } from '../../components/game/interface/menu-bar/vote-system/helpers/VoteConfiguration';
 
 
 export enum VoteStage {
@@ -16,7 +16,7 @@ export class VoteState extends Schema {
   @type('number')
   voteStage: number = VoteStage.IDLE;
 
-  @type( VoteConfiguration )
+  @type(VoteConfiguration)
   voteConfiguration: VoteConfiguration = undefined;
 
   @type('number')

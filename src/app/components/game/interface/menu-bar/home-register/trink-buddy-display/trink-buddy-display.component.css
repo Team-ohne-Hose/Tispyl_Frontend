@@ -1,0 +1,85 @@
+
+.padding {
+  padding: 0.5rem;
+}
+
+.title-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: var(--dim-text-color);
+}
+
+.title-bar i {
+  margin-left: auto;
+}
+
+.title-bar i:hover {
+  color: var(--text-color);
+}
+
+#chart {
+  margin: 0;
+  height: 12vh;
+}
+
+.add-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-width: 0;
+}
+
+.add-text {
+  margin-right: 0.5rem;
+  color: var(--dim-text-color);
+}
+
+input {
+  flex: 1;
+  color: var(--text-color);
+  border-bottom: var(--dim-text-color);
+  min-width: 0;
+}
+
+input::placeholder {
+  color: var(--dim-text-color);
+}
+
+.text-input-container {
+  background-color: var(--accent-color);
+  display: flex;
+  border: var(--accent-color) 1px solid;
+  border-radius: 1rem;
+  margin-right: 0.5rem;
+  padding: 0.2rem 0.8rem;
+  min-width: 0;
+}
+
+.right-margin {
+  margin-right: 0.5rem;
+}
+
+.text-input-container:focus-within {
+  border: var(--dim-text-color) 1px solid;
+}
+
+.modify-button {
+  background-color: var(--accent-color);
+  color: var(--dim-text-color);
+  padding: 0.35rem;
+  border: var(--accent-color) 1px solid;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  font-size: small;
+}
+
+.modify-button:hover {
+  background-color: var(--register-hover-background);
+}
+
+.error-text {
+  font-size: small;
+  color: #ff5a5b;
+}

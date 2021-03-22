@@ -1,6 +1,6 @@
-import { LoginUser, User } from "./User";
+import { LoginUser, User } from './User';
 
 export class UserResponse {
-    status : 'string';
-    data : LoginUser
+  status: 'string';
+  data: LoginUser;
 }

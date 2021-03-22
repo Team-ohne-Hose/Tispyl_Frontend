@@ -1,0 +1,91 @@
+
+.connected-player-box {
+  display: flex;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, 0.7));
+}
+
+.img-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-items: center;
+  justify-content: center;
+}
+
+.img-container .host {
+  color: rgb(232, 183, 4);
+  font-size: x-small;
+  position: absolute;
+  bottom: 0;
+  right: -15%;
+}
+
+.img-container .disconnected {
+  color: rgb(217, 0, 0);
+  font-size: large;
+  position: absolute;
+  bottom: -13%;
+  right: -21%;
+}
+
+.player-displays {
+  align-self: center;
+}
+
+.avatar-img {
+  height: 2em;
+  width: 2em;
+  border-radius: 50%;
+  object-fit: cover;
+  border: gold solid 1px;
+}
+
+.display {
+  padding: 4px 8px 4px 5em;
+  display: flex;
+  align-items: center;
+  background-color: rgba(61, 61, 61, 0.8);
+}
+
+.display-wrap {
+  transition: all 0.3s ease-in-out;
+  display: inline-block;
+  margin-left: -4em;
+  padding: 0.15em;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  position: relative;
+  background: transparent;
+}
+
+.active {
+  margin-left: -2em;
+  background: radial-gradient(ellipse farthest-corner at left bottom, #FEDB37 0%, #FDB931 8%, #9f7928 30%, #8A6E2F 40%, transparent 80%),
+  radial-gradient(ellipse farthest-corner at right top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%);
+}
+
+.active .display {
+  background-color: rgba(61, 61, 61, 0.65);
+}
+
+.name {
+  margin-left: 8px;
+  margin-right: 4px;
+}
+
+.name .index {
+  color: grey;
+}
+
+.name .spacer {
+  margin-left: 8px;
+  margin-right: 16px;
+  height: 2em;
+  width: 0;
+  border: solid 1px black;
+}

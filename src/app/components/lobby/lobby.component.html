@@ -1,0 +1,36 @@
+<div class="lobby-body">
+  <div class="headlineContainer">
+    <app-language-selector (changeLang)="changeLanguage($event)"
+                           class="languageContainer top-level-box"></app-language-selector>
+  </div>
+
+  <div class="top-level-box split-box">
+    <div *ngIf="currentUser === undefined" class="column-box">
+      <app-login [languageObjects]="translation.text"></app-login>
+    </div>
+    <div *ngIf="currentUser !== undefined">
+      <app-profile-display #profileDisplay [user]="currentUser"></app-profile-display>
+    </div>
+    <div class="top-level-splitter"></div>
+    <app-gif-viewer [languageObjects]="translation.text"></app-gif-viewer>
+  </div>
+
+  <div *ngIf="currentUser !== undefined" class="top-level-box">
+    <div class="top-level-head">
+      <button (click)="create()" [disabled]="activeLobby !== undefined">{{translation.text.gamesListCreate}}</button>
+      <span *ngIf="activeLobby !== undefined" class="blue-text"><i class="fas fa-exclamation-triangle"></i><span>You are in a lobby and won't be able to host a new game.</span></span>
+      <button (click)="refresh()"><i class="fas fa-redo"></i></button>
+    </div>
+    <app-game-display *ngIf="availableLobbies.length <= 0" [isDummy]="true"
+                      [languageObjects]="translation.text"></app-game-display>
+    <div *ngIf="availableLobbies.length > 0">
+      <app-game-display (enter)="onEnterGame()" (join)="joinGame($event)" (leave)="onLeaveLobby($event)"
+                        *ngFor="let game of availableLobbies" [game]="game" [isActive]="isActive(game)"
+                        [languageObjects]="translation.text"></app-game-display>
+    </div>
+  </div>
+
+  <div class="top-level-box">
+    <app-rules [languageObjects]="translation.text"></app-rules>
+  </div>
+</div>

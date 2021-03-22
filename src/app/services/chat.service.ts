@@ -1,21 +1,24 @@
-import {EventEmitter, Injectable, Output} from '@angular/core';
-import {ColyseusNotifyable} from './game-initialisation.service';
-import {MessageType, WsData} from '../model/WsData';
-import {GameStateService} from './game-state.service';
-import {ChatMessage} from '../home-register/ChatMessage';
+import { EventEmitter, Injectable, Output } from '@angular/core';
+import { ColyseusNotifyable } from './game-initialisation.service';
+import { MessageType, WsData } from '../model/WsData';
+import { GameStateService } from './game-state.service';
+import { ChatMessage } from '../components/game/interface/menu-bar/home-register/helpers/ChatMessage';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatService implements ColyseusNotifyable {
 
-  constructor() { }
-
   messageCallback: () => void;
   private gameState: GameStateService;
   private chatMessages: ChatMessage[] = [];
 
-  attachColyseusStateCallbacks(gameState: GameStateService): void {}
+  constructor() {
+  }
+
+  attachColyseusStateCallbacks(gameState: GameStateService): void {
+  }
+
   attachColyseusMessageCallbacks(gameState: GameStateService): void {
     this.gameState = gameState;
 
@@ -59,7 +62,7 @@ export class ChatService implements ColyseusNotifyable {
 
   sendMessage(currentMessage: string) {
     if (this.gameState !== undefined) {
-      this.gameState.sendMessage(MessageType.CHAT_MESSAGE, {type: MessageType.CHAT_MESSAGE, message: currentMessage });
+      this.gameState.sendMessage(MessageType.CHAT_MESSAGE, {type: MessageType.CHAT_MESSAGE, message: currentMessage});
     }
   }
 
@@ -69,6 +72,7 @@ export class ChatService implements ColyseusNotifyable {
       this.messageCallback();
     }
   }
+
   getChatMessages(): ChatMessage[] {
     return this.chatMessages;
   }

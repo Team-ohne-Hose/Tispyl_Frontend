@@ -1,5 +1,5 @@
-import {MapSchema, Schema, type} from '@colyseus/schema';
-import {PlayerModel} from '../WsData';
+import { MapSchema, Schema, type } from '@colyseus/schema';
+import { PlayerModel } from '../WsData';
 
 export class Player extends Schema {
   @type('string')
@@ -22,7 +22,7 @@ export class Player extends Schema {
   isConnected: boolean;
   @type('boolean')
   hasLeft: boolean;
-  @type( {map: 'number'} )
+  @type({map: 'number'})
   itemList: MapSchema<number>;
 
   constructor(displayName: string, loginName: string, isCurrentHost: boolean) {

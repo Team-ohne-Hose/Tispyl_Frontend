@@ -1,13 +1,12 @@
-import { Injectable } from "@angular/core";
-import { Player } from "../model/state/Player";
+import { Injectable } from '@angular/core';
+import { Player } from '../model/state/Player';
 
 @Injectable({
-    providedIn: 'root'
-  })
-  export class PlayerService {
+  providedIn: 'root'
+})
+export class PlayerService {
 
-    playerList: Player[];
+  playerList: Player[];
 
-  }
+}
 
-    

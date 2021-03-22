@@ -1,0 +1,36 @@
+<div class="outer-box">
+  <div (click)="fileInput.click()" *ngIf="user !== undefined" class="round-avatar golden-border">
+    <img #profilePic [src]="profileSource" alt="'Profile'">
+  </div>
+  <div class="text">Name: {{user.display_name}}<span class="user-name"> #{{user.login_name}}</span></div>
+  <div class="text">Played: {{getTimePlayed()}} </div>
+  <div class="text">Since: {{(getDate() | date:'medium') || "undefined"}}</div>
+  <div class="selectionDiv">
+    <mat-form-field>
+      <mat-label>Select default figure(currently not working)</mat-label>
+      <mat-select [(value)]="selectedFigure" disabled>
+        <mat-option *ngFor="let figure of figureList" [value]="figure.value">
+          {{figure.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Environment</mat-label>
+      <mat-select [(value)]="selectedEnv">
+        <mat-option *ngFor="let env of envList" [value]="env.value">
+          <div class="envListEntry">
+            <img [src]="'/assets' + env.thumb" height="44" width="44"/>
+            {{env.name}}
+          </div>
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="text">
+    <button (click)="logout()"><i class="fas fa-door-open"></i> Logout</button>
+  </div>
+  <input
+    #fileInput
+    (change)="onFileChanged($event)" style="display: none"
+    type="file">
+</div>

@@ -1,0 +1,94 @@
+
+.outer-register-bounds {
+
+  pointer-events: visibleFill;
+
+  --register-background: rgba(60, 60, 60, 0.8);
+  --register-unselected-background: rgba(30, 30, 30, 0.6);
+  --register-hover-background: rgba(45, 45, 45, 0.7);
+
+  background-color: transparent;
+  display: flex;
+  flex-direction: row;
+  position: fixed;
+  height: 100vh;
+  right: 0;
+  z-index: 30;
+}
+
+.register-tab-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.register-icon-box {
+  background-color: var(--register-unselected-background);
+  font-size: small;
+  padding: 1rem 0.2rem;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.register-tab:hover .corner {
+  background-color: var(--register-hover-background);
+}
+
+.register-tab:hover .register-icon-box {
+  background-color: var(--register-hover-background);
+}
+
+.corner {
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+  height: 1.5rem;
+  background-color: var(--register-unselected-background);
+}
+
+.reverse-corner {
+  clip-path: polygon(100% 0, 0% 100%, 100% 100%);
+  height: 1.5rem;
+  background-color: var(--register-unselected-background);
+}
+
+.register-edge {
+  min-width: 0.2rem;
+  background-color: var(--register-unselected-background)
+}
+
+.register-edge.selected {
+  background-color: var(--register-background);
+}
+
+.footer-box {
+  height: 2rem;
+  width: 1.5rem;
+  background-color: var(--register-unselected-background);
+}
+
+.register-tab-footer {
+  margin-top: auto;
+  margin-bottom: 0;
+}
+
+.register-tab-footer.selected .footer-box {
+  background-color: var(--register-background);
+}
+
+.register-tab-footer.selected .reverse-corner {
+  background-color: var(--register-background);
+}
+
+.register-tab.selected .corner {
+  background-color: var(--register-background);
+}
+
+.register-tab.selected .register-icon-box {
+  background-color: var(--register-background);
+}
+
+.register-content {
+  background-color: var(--register-background);
+}
+
+.avoid-clicks {
+  pointer-events: none;
+}

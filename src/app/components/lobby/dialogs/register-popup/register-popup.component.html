@@ -1,0 +1,40 @@
+<div class="base-flex">
+  <div class="head-container">
+    <span class="head">Register a new User</span>
+  </div>
+  <div class="content">
+    <div class="element">
+      <label>
+        Login Name
+        <input [(ngModel)]="login_name" class="to-right" placeholder="dennis7773" type="text">
+      </label>
+    </div>
+    <div class="element">
+      <label>
+        Display Name
+        <input [(ngModel)]="display_name" class="to-right" placeholder="Dennis Mustermann" type="text">
+      </label>
+    </div>
+    <div class="element">
+      <label>
+        Password
+        <input [(ngModel)]="password_0" class="to-right" type="password">
+      </label>
+    </div>
+    <div class="info">
+      <i class="fas fa-info-circle"></i>
+      <span>Passwords should have some amount of characters.</span>
+    </div>
+    <div class="element">
+      <label>
+        Re-enter password
+        <input [(ngModel)]="password_1" class="to-right" type="password">
+      </label>
+    </div>
+    <div></div>
+  </div>
+  <div class="foot">
+    <button (click)="close()">Close</button>
+    <button (click)="registerUser()">Register</button>
+  </div>
+</div>

@@ -1,15 +1,16 @@
-import {Schema, ArraySchema, MapSchema, type} from '@colyseus/schema';
-import {PhysicsState} from './PhysicsState';
-import {Player} from './Player';
-import {BoardLayoutState} from './BoardLayoutState';
-import {VoteState} from './VoteState';
-import {Link} from './Link';
+import { Schema, ArraySchema, MapSchema, type } from '@colyseus/schema';
+import { PhysicsState } from './PhysicsState';
+import { Player } from './Player';
+import { BoardLayoutState } from './BoardLayoutState';
+import { VoteState } from './VoteState';
+import { Link } from './Link';
 
 export enum Actions {
   ROLL,
   MOVE,
   EXECUTE
 }
+
 export class GameState extends Schema {
 
   @type('number')
@@ -30,10 +31,10 @@ export class GameState extends Schema {
   @type({map: Player})
   playerList = new MapSchema<Player>();
 
-  @type([ 'string' ])
+  @type(['string'])
   rules = new ArraySchema<string>();
 
-  @type([ Link ])
+  @type([Link])
   drinkBuddyLinks = new ArraySchema<Link>();
 
   @type('string')

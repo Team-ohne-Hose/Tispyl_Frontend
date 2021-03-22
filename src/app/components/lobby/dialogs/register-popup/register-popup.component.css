@@ -1,0 +1,51 @@
+
+.base-flex {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.head-container {
+  margin-top: 16px;
+}
+
+.head {
+  font-size: x-large;
+  padding-left: 15%;
+  padding-right: 5%;
+  border-bottom: solid black 2px;
+}
+
+.content {
+  flex-grow: 1;
+  margin-left: 32px;
+  margin-right: 32px;
+  display: flex;
+  flex-direction: column;
+}
+
+.element {
+  padding-top: 32px;
+}
+
+.foot {
+  display: flex;
+  justify-content: space-between;
+  margin: 16px;
+  margin-top: 32px;
+}
+
+.to-right {
+  float: right;
+}
+
+.info {
+  padding-top: 8px;
+  color: grey;
+  font-size: small;
+}
+
+.info span {
+  margin-left: 8px;
+}
+

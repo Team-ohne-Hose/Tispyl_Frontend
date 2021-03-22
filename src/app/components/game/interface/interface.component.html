@@ -1,0 +1,31 @@
+<div class="interface-bounds">
+  <app-state-display
+    [action]="gameState.getAction()"
+    [currentPlayerDisplayName]="gameState.getCurrentPlayerDisplayName()"
+    [round]="gameState.getRound()">
+  </app-state-display>
+  <app-pregame-banner *ngIf="!gameState.hasStarted()"
+                      [players]="gameState.getPlayerArray()">
+  </app-pregame-banner>
+  <app-connected-players
+    #connectedPlayers
+    [currentPlayerDisplayName]="gameState.getCurrentPlayerDisplayName()"
+    [players]="gameState.getPlayerArray()">
+  </app-connected-players>
+  <app-menu-bar
+    (executeNewChatCommand)="executeChatCommand($event)"
+    [playerList]="gameState.getPlayerArray()"
+    [ruleList]="gameState.getRules()">
+  </app-menu-bar>
+  <app-next-turn-button #nextTurn
+                        [action]="gameState.getAction()"
+                        [disabled]="!gameState.hasStarted">
+  </app-next-turn-button>
+  <app-turn-overlay #turnOverlay
+                    [currentPlayerName]="gameState.getCurrentPlayerDisplayName()" [ownTurn]="this.gameState.isMyTurn()">
+  </app-turn-overlay>
+  <app-tile-overlay #tileOverlay
+                    (printer)="print($event, 'Tiles')"
+                    [playerName]="gameState.getCurrentPlayerDisplayName()">
+  </app-tile-overlay>
+</div>

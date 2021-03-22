@@ -1,35 +1,40 @@
-import {Injectable} from '@angular/core';
-import {GLTF, GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
+import { Injectable } from '@angular/core';
+import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
-import {PhysicsEntity, PhysicsEntityVariation, PlayerModel} from '../model/WsData';
-import {Texture} from 'three';
-import {Observable, Subject, Subscription} from 'rxjs';
+import { PhysicsEntity, PhysicsEntityVariation, PlayerModel } from '../model/WsData';
+import { Texture } from 'three';
+import { Observable, Subject, Subscription } from 'rxjs';
 
 interface ResourceData {
   cname: string;
   fname: string;
   objectCache: THREE.Object3D;
 }
+
 export interface DiceVariations<T> {
   default: T;
   dice: T;
   dice2: T;
 }
+
 export interface FigureVariations<T> {
   default: T;
 }
+
 export interface EntityList<T> {
   dice: DiceVariations<T>;
   figure: FigureVariations<T>;
 }
+
 interface PlayerModelData {
   texFName: string;
   specFName: string;
   lowResTex: THREE.Texture;
   tex: THREE.Texture;
   spec: THREE.Texture;
-  subject: Subject<{tex: THREE.Texture, spec: THREE.Texture}>;
+  subject: Subject<{ tex: THREE.Texture, spec: THREE.Texture }>;
 }
+
 export class Color {
   r: number;
   g: number;
@@ -42,10 +47,12 @@ export class Color {
     this.b = b;
     this.a = a;
   }
+
   toCSStext(): string {
     return `rgba(${Math.round(this.r * 255)},${Math.round(this.g * 255)},${Math.round(this.b * 255)},${this.a})`;
   }
 }
+
 export interface CubeMap {
   name: string;
   tex: THREE.CubeTexture;
@@ -57,56 +64,94 @@ export interface CubeMap {
   ny: string;
   nz: string;
 }
+
 @Injectable({
   providedIn: 'root'
 })
 export class ObjectLoaderService {
   cubeMaps: CubeMap[] = [
-    {name: 'Ryfjallet', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Ryfjallet/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
-    {name: 'Maskonaive1', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Maskonaive/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
-    {name: 'Maskonaive2', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Maskonaive2/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
-    {name: 'Maskonaive3', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Maskonaive3/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
-    {name: 'Nalovardo', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Nalovardo/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
-    {name: 'Teide', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Teide/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
-    {name: 'ForbiddenCity', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/ForbiddenCity/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
-    {name: 'GamlaStan', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/GamlaStan/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
-    {name: 'Medborgarplatsen', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/Medborgarplatsen/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
-    {name: 'Roundabout', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/Roundabout/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
-    {name: 'SaintLazarusChurch', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/SaintLazarusChurch/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
-    {name: 'SaintLazarusChurch2', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/SaintLazarusChurch2/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
-    {name: 'SaintLazarusChurch3', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/SaintLazarusChurch3/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
-    {name: 'UnionSquare', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/UnionSquare/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
-    {name: 'Bridge', tex: undefined, path: '/assets/cubemaps/bridge-skyboxes/Bridge/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
-    {name: 'Bridge2', tex: undefined, path: '/assets/cubemaps/bridge-skyboxes/Bridge2/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'},
+    {
+      name: 'Ryfjallet', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Ryfjallet/',
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+    },
+    {
+      name: 'Maskonaive1', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Maskonaive/',
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+    },
+    {
+      name: 'Maskonaive2', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Maskonaive2/',
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+    },
+    {
+      name: 'Maskonaive3', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Maskonaive3/',
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+    },
+    {
+      name: 'Nalovardo', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Nalovardo/',
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+    },
+    {
+      name: 'Teide', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Teide/',
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+    },
+    {
+      name: 'ForbiddenCity', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/ForbiddenCity/',
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+    },
+    {
+      name: 'GamlaStan', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/GamlaStan/',
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+    },
+    {
+      name: 'Medborgarplatsen', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/Medborgarplatsen/',
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+    },
+    {
+      name: 'Roundabout', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/Roundabout/',
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+    },
+    {
+      name: 'SaintLazarusChurch', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/SaintLazarusChurch/',
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+    },
+    {
+      name: 'SaintLazarusChurch2', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/SaintLazarusChurch2/',
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+    },
+    {
+      name: 'SaintLazarusChurch3', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/SaintLazarusChurch3/',
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+    },
+    {
+      name: 'UnionSquare', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/UnionSquare/',
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+    },
+    {
+      name: 'Bridge', tex: undefined, path: '/assets/cubemaps/bridge-skyboxes/Bridge/',
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+    },
+    {
+      name: 'Bridge2', tex: undefined, path: '/assets/cubemaps/bridge-skyboxes/Bridge2/',
+      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+    },
   ];
   currentCubeMap = 2;
+  tLoader = new THREE.TextureLoader();
+  defaultTileTexture: THREE.Texture;
+  defaultTileTexturePath = '/assets/board/default.png';
+  gameBoardTextureURL = '/assets/tischspiel_clear.png';
   private readonly resourcePath = '/assets/models/';
   private readonly lowResSuffix = '_256'; // set the suffix for the lower resolution/faster loading playermodels, currently _128 or _256 or nothing
   private texMapEntry = ((texFName: string, specFName?: string) =>
-    ({texFName: texFName,
+    ({
+      texFName: texFName,
       specFName: (specFName || 'default_spec'),
       lowResTex: undefined,
       tex: undefined,
       spec: undefined,
-      subject: new Subject<{tex: THREE.Texture, spec: THREE.Texture}>(),
-      objectList: []}));
-
+      subject: new Subject<{ tex: THREE.Texture, spec: THREE.Texture }>(),
+      objectList: []
+    }));
   // we are currently not using specific specular maps, to use those, the subject has to also update those
   private texList: Map<PlayerModel, PlayerModelData> = new Map<PlayerModel, PlayerModelData>([
     [PlayerModel.bcap_NukaCola, this.texMapEntry('default')],
@@ -156,11 +201,6 @@ export class ObjectLoaderService {
       }
     }
   };
-  tLoader = new THREE.TextureLoader();
-  defaultTileTexture: THREE.Texture;
-  defaultTileTexturePath = '/assets/board/default.png';
-  gameBoardTextureURL = '/assets/tischspiel_clear.png';
-
   private gameBoardGeo = new THREE.BoxBufferGeometry(100, 1, 100);
   private gameTileGeo = new THREE.BoxBufferGeometry(10, 1, 10);
 
@@ -202,6 +242,7 @@ export class ObjectLoaderService {
 
     return myPromise;
   }
+
   async loadHiResTex() {
     console.log('this is:', this, this.texList);
     this.texList.forEach((val: PlayerModelData, key: PlayerModel) => {
@@ -224,45 +265,32 @@ export class ObjectLoaderService {
       this.gameBoardMat.needsUpdate = true;
     }
   }
+
   getCubeMap(cubeMapId?: number): THREE.CubeTexture {
     cubeMapId = cubeMapId || this.currentCubeMap;
     if (this.cubeMaps[cubeMapId].tex === undefined) {
       const tex = new THREE.CubeTextureLoader()
         .setPath(this.cubeMaps[cubeMapId].path)
-        .load( [ this.cubeMaps[cubeMapId].px,
+        .load([this.cubeMaps[cubeMapId].px,
           this.cubeMaps[cubeMapId].nx,
           this.cubeMaps[cubeMapId].py,
           this.cubeMaps[cubeMapId].ny,
           this.cubeMaps[cubeMapId].pz,
-          this.cubeMaps[cubeMapId].nz ]);
+          this.cubeMaps[cubeMapId].nz]);
       this.cubeMaps[cubeMapId].tex = tex;
     }
     return this.cubeMaps[cubeMapId].tex;
   }
+
   getBCapCount(): number {
     return this.texList.size;
   }
+
   getBCapTextureThumbPath(sel: number) {
     const entry = this.texList.get(sel);
     return '../assets/models/otherTex/' + (entry === undefined ? 'default' : entry.texFName) + '_128.png';
   }
 
-  private getResourceData(obj: PhysicsEntity, variation: PhysicsEntityVariation): ResourceData {
-    switch (obj) {
-      case PhysicsEntity.dice:
-        switch (variation) {
-          case PhysicsEntityVariation.default:
-            return this.objectResourceList.dice.default;
-        }
-        break;
-      case PhysicsEntity.figure:
-        switch (variation) {
-          case PhysicsEntityVariation.default:
-            return this.objectResourceList.figure.default;
-        }
-        break;
-    }
-  }
   loadObject(obj: PhysicsEntity, variation: PhysicsEntityVariation, callback: (model: THREE.Object3D) => void) {
     const resource = this.getResourceData(obj, variation);
     if (resource.objectCache !== undefined) {
@@ -277,25 +305,7 @@ export class ObjectLoaderService {
       });
     }
   }
-  private getTexture(model: PlayerModel) {
-    let texData: PlayerModelData = this.texList.get(model);
-    if (texData === undefined) {
-      texData = this.texList.get(PlayerModel.bcap_NukaCola);
-    }
 
-    if (texData.spec !== undefined && texData.tex !== undefined) {
-      return texData.tex;
-    } else if (texData.spec !== undefined && texData.lowResTex !== undefined) {
-      return texData.lowResTex;
-    } else {
-      this.loadBcapTex(model, (tex, spec) => {
-        if (tex === undefined) {
-          console.error('Error loading bcap texture', model);
-        }
-      });
-    }
-  }
-  
   switchTex(obj: THREE.Object3D, model: PlayerModel) {
     if (model === undefined) {
       return;
@@ -324,7 +334,7 @@ export class ObjectLoaderService {
         subscription.unsubscribe();
       }
       mesh.userData['textureSubscription'] = this.texList.get(model).subject.subscribe({
-        next: (newTexture: {tex: THREE.Texture, spec: THREE.Texture}) => {
+        next: (newTexture: { tex: THREE.Texture, spec: THREE.Texture }) => {
           mesh.material = (mesh.material as THREE.Material).clone();
           mesh.material['map'] = tex;
           // mesh.material['spec'] = newTexture.spec;
@@ -333,14 +343,16 @@ export class ObjectLoaderService {
 
     }
   }
-  loadTex(fname: string, fnameSpec: string): {tex: THREE.Texture, spec: THREE.Texture} {
-    const texture = new THREE.TextureLoader().load( '/assets/models/otherTex/' + fname + '.png' );
+
+  loadTex(fname: string, fnameSpec: string): { tex: THREE.Texture, spec: THREE.Texture } {
+    const texture = new THREE.TextureLoader().load('/assets/models/otherTex/' + fname + '.png');
     texture.encoding = THREE.sRGBEncoding;
     texture.anisotropy = 16;
-    const gloss = new THREE.TextureLoader().load( '/assets/models/otherTex/' + fnameSpec + '.png' );
+    const gloss = new THREE.TextureLoader().load('/assets/models/otherTex/' + fnameSpec + '.png');
     gloss.encoding = THREE.LinearEncoding;
     return {tex: texture, spec: gloss};
   }
+
   loadBcapLowRes(model: PlayerModel, onDone: (tex: Texture, spec: Texture) => void): void {
     const texData: PlayerModelData = this.texList.get(model);
     if (texData !== undefined) {
@@ -361,6 +373,7 @@ export class ObjectLoaderService {
       onDone(undefined, undefined);
     }
   }
+
   loadBcapTex(model: PlayerModel, onDone: (tex: Texture, spec: Texture) => void): void {
     const texData: PlayerModelData = this.texList.get(model);
     if (texData !== undefined) {
@@ -395,6 +408,7 @@ export class ObjectLoaderService {
     });
     return gameBoard;
   }
+
   loadGameTileTexture(texUrl: string, onLoad: (tex: THREE.Texture) => void) {
     this.tLoader.load(texUrl, (texture) => {
       texture.encoding = THREE.sRGBEncoding;
@@ -405,6 +419,7 @@ export class ObjectLoaderService {
       onLoad(this.defaultTileTexture);
     });
   }
+
   loadGameTile(): THREE.Mesh {
     const gameTileMat = new THREE.MeshStandardMaterial({color: 0xffffff});
     gameTileMat.roughness = .8;
@@ -417,6 +432,7 @@ export class ObjectLoaderService {
     gameTileMat.needsUpdate = true;
     return gameTile;
   }
+
   createBoundary(length: number, rotatedLandscape: boolean, center: THREE.Vector2) {
     let w = .3, d = .3;
     if (rotatedLandscape) {
@@ -439,8 +455,9 @@ export class ObjectLoaderService {
   updateLabelSpriteText(sprite: THREE.Sprite, text: string) {
     sprite.userData.text = ' ' + text + ' ';
     this.drawCanvas(sprite.userData.canvas, sprite.userData.text, sprite.userData.fontSize, sprite.userData.font, sprite.userData.textColor,
-    sprite.userData.backgroundColor, sprite.userData.borderColor, sprite.userData.borderThickness, sprite.userData.radius);
+      sprite.userData.backgroundColor, sprite.userData.borderColor, sprite.userData.borderThickness, sprite.userData.radius);
   }
+
   createLabelSprite(text: string,
                     fontSize?: number,
                     font?: string,
@@ -468,9 +485,9 @@ export class ObjectLoaderService {
     const spriteMap: THREE.CanvasTexture = new THREE.CanvasTexture(canvas);
     spriteMap.anisotropy = 16;
     // canvas contents will be used for a texture
-    const spriteMaterial = new THREE.SpriteMaterial( { map: spriteMap } );
+    const spriteMaterial = new THREE.SpriteMaterial({map: spriteMap});
     spriteMaterial.transparent = true;
-    const sprite = new THREE.Sprite( spriteMaterial );
+    const sprite = new THREE.Sprite(spriteMaterial);
     sprite.scale.set(canvas.width / 75, canvas.height / 75, 1);
     // console.log(canvas, context, context.font, textWidth + borderThickness, fontSize * 1.4 + borderThickness);
     // document.body.appendChild(canvas);
@@ -485,6 +502,43 @@ export class ObjectLoaderService {
     sprite.userData.radius = radius;
     return sprite;
   }
+
+  private getResourceData(obj: PhysicsEntity, variation: PhysicsEntityVariation): ResourceData {
+    switch (obj) {
+      case PhysicsEntity.dice:
+        switch (variation) {
+          case PhysicsEntityVariation.default:
+            return this.objectResourceList.dice.default;
+        }
+        break;
+      case PhysicsEntity.figure:
+        switch (variation) {
+          case PhysicsEntityVariation.default:
+            return this.objectResourceList.figure.default;
+        }
+        break;
+    }
+  }
+
+  private getTexture(model: PlayerModel) {
+    let texData: PlayerModelData = this.texList.get(model);
+    if (texData === undefined) {
+      texData = this.texList.get(PlayerModel.bcap_NukaCola);
+    }
+
+    if (texData.spec !== undefined && texData.tex !== undefined) {
+      return texData.tex;
+    } else if (texData.spec !== undefined && texData.lowResTex !== undefined) {
+      return texData.lowResTex;
+    } else {
+      this.loadBcapTex(model, (tex, spec) => {
+        if (tex === undefined) {
+          console.error('Error loading bcap texture', model);
+        }
+      });
+    }
+  }
+
   private drawCanvas(canvas: HTMLCanvasElement,
                      text: string,
                      fontSize: number,
@@ -498,13 +552,13 @@ export class ObjectLoaderService {
     context.font = 'Bold ' + fontSize + 'px ' + font;
 
     // get size data (height depends only on font size)
-    const metrics = context.measureText( text );
+    const metrics = context.measureText(text);
     const textWidth = metrics.width;
     canvas.width = textWidth + borderThickness;
     context.font = fontSize + 'px ' + font; // 'Bold ' +
 
     // background color
-    context.fillStyle   = backgroundColor.toCSStext();
+    context.fillStyle = backgroundColor.toCSStext();
     // border color
     context.strokeStyle = borderColor.toCSStext();
 
@@ -529,6 +583,6 @@ export class ObjectLoaderService {
     // text color
     context.fillStyle = textColor.toCSStext();
 
-    context.fillText( text, borderThickness, fontSize + borderThickness);
+    context.fillText(text, borderThickness, fontSize + borderThickness);
   }
 }

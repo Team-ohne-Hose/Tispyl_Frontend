@@ -1,7 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 
 .component-box {
-  display:flex;
+  display: flex;
   width: 100%;
 }
 
@@ -50,16 +50,16 @@ button:hover:enabled {
 
 button:active:enabled {
   background-color: #3d3d3d;
-  -webkit-box-shadow: inset 0px 0px 10px 0px rgba(0,0,0,0.75);
-  -moz-box-shadow: inset 0px 0px 10px 0px rgba(0,0,0,0.75);
-  box-shadow: inset 0px 0px 10px 0px rgba(0,0,0,0.75);
+  -webkit-box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, 0.75);
+  box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, 0.75);
 }
 
 button:disabled {
   color: dimgrey;
-  -webkit-box-shadow: inset 0px 0px 10px 0px rgba(0,0,0,0.75);
-  -moz-box-shadow: inset 0px 0px 10px 0px rgba(0,0,0,0.75);
-  box-shadow: inset 0px 0px 10px 0px rgba(0,0,0,0.75);
+  -webkit-box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, 0.75);
+  box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, 0.75);
 }
 
 input {
@@ -72,11 +72,11 @@ input:focus {
   border-bottom: solid 1px grey;
 }
 
-input:hover{
+input:hover {
   border-bottom: solid 1px lightgrey;
 }
 
-label input::placeholder{
+label input::placeholder {
   color: grey;
 }
 
@@ -84,7 +84,9 @@ label input, select, textarea {
   color: whitesmoke;
 }
 
-html, body { height: 100%; }
+html, body {
+  height: 100%;
+}
 
 
 .seperator {
@@ -101,12 +103,13 @@ html, body { height: 100%; }
 }
 
 /* modals since angular is finicky with styles for modals. TODO: Fix this.*/
-.modalbox-base .mat-dialog-container{
+.modalbox-base .mat-dialog-container {
   background-color: #3d3d3d;
   border-radius: 0;
   color: whitesmoke;
   padding: 0;
 }
+
 .playerList .mat-chip-list .mat-chip-list-wrapper .mat-standard-chip {
   flex-direction: row;
   min-height: 18px;
@@ -121,6 +124,7 @@ html, body { height: 100%; }
   background: radial-gradient(ellipse farthest-corner at right top, #e0e0e0c0 0%, #c0c0c0c0 8%, #959595c0 25%, #7f7f7fc0 97%, #727272c0 100%);
   color: #ffffff;
 }
+
 .optionsList .mat-chip-list .mat-chip-list-wrapper .mat-standard-chip {
   flex-direction: row;
   min-height: 18px;
@@ -133,6 +137,7 @@ html, body { height: 100%; }
   background: radial-gradient(ellipse farthest-corner at right top, #e0e0e0c0 0%, #c0c0c0c0 8%, #959595c0 25%, #7f7f7fc0 97%, #727272c0 100%);
   color: #ffffff;
 }
+
 .playerList .mat-chip-list .mat-chip-list-wrapper {
   flex-direction: column;
   justify-items: start;
@@ -143,9 +148,9 @@ html, body { height: 100%; }
 
 .disable-user-select {
   -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none;   /* Chrome/Safari/Opera */
-  -khtml-user-select: none;    /* Konqueror */
-  -moz-user-select: none;      /* Firefox */
-  -ms-user-select: none;       /* Internet Explorer/Edge */
-  user-select: none;           /* Non-prefixed version, currently supported by any browser but < IE9 */
+  -webkit-user-select: none; /* Chrome/Safari/Opera */
+  -khtml-user-select: none; /* Konqueror */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by any browser but < IE9 */
 }

@@ -1,0 +1,7 @@
+<div class="list-box">
+  <div class="wrapper">
+    <div *ngIf="isloading" class="centered-on-gif"><i class="fas fa-spinner fa-spin"></i></div>
+    <img (click)="getNewGif()" (load)="isloading = false"
+         (loadstart)="isloading = true" [class]="isloading ? 'animated-gif darken' : 'animated-gif'" src="{{contentUrl}}"/>
+  </div>
+</div>

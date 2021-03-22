@@ -1,0 +1,10 @@
+<div class="icon-container">
+  <div [ngStyle]="{'width': size, 'height': size, 'padding': borderThickness}" class="round-avatar golden-border">
+    <img [src]="currentSource" alt="icon">
+  </div>
+  <div (click)="fileInput.click()" *ngIf="enableUpload" class="upload-icon"><i class="fas fa-file-upload"></i></div>
+  <input
+    #fileInput
+    (change)="uploadImageFile($event)" style="display: none"
+    type="file">
+</div>

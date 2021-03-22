@@ -1,0 +1,68 @@
+<div class="register-card-base">
+
+  <div class="user-info-box">
+
+    <div class="avatar-section">
+      <div class="round-avatar golden-border">
+        <img [src]="profileSource" alt="'Profile'">
+      </div>
+      <div (click)="fileInput.click()" class="upload-icon"><i class="fas fa-file-upload"></i></div>
+    </div>
+
+    <div class="info-section">
+      <div>
+        <div class="user-name">{{myPlayer?.displayName || 'Not connected'}}</div>
+        <div class="sub-script">Role: {{getRole()}}</div>
+        <div class="sub-script">Time played: {{getTimePlayed()}}</div>
+      </div>
+    </div>
+
+    <div class="bottle-cap-section">
+      <div (click)="prevBCap($event)"><i class="fas fa-chevron-left"></i></div>
+      <div class="round-avatar golden-border bottle-cap">
+        <div class="bottle-cap-cover">
+          <img [src]="bottleCapSource" alt="'Profile'">
+        </div>
+      </div>
+      <div (click)="nextBCap($event)"><i class="fas fa-chevron-right"></i></div>
+    </div>
+
+  </div>
+
+  <div class="seperator"></div>
+
+  <app-trink-buddy-display></app-trink-buddy-display>
+
+  <div class="seperator"></div>
+
+  <div class="chat-box">
+
+    <div #textSection class="text-section">
+      <div *ngFor="let msg of chatMessages" [ngClass]="{'move-right': msg.sender === myPlayer?.displayName}">
+        <div class="chat-message">
+          <div class="head-row">
+            <div class="sender"><i class="fas fa-user"></i>{{msg.sender}}</div>
+            <div class="time">{{msg.timestamp | date: 'shortTime'}}</div>
+          </div>
+          <div class="body chat-message-text">{{msg.text}}</div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="seperator"></div>
+
+    <div class="input-section">
+      <div class="command-hint"><i class="fas fa-terminal"></i></div>
+      <div (keyup)="sendChatMessageByKey($event, chatInput)" class="text-input-container">
+        <input #chatInput placeholder="Type here ..." type="text">
+      </div>
+      <div (click)="sendChatMessage(chatInput)" class="post-button"><i class="fas fa-share"></i></div>
+    </div>
+
+  </div>
+  <input
+    #fileInput
+    (change)="newProfilePic($event)" style="display: none"
+    type="file">
+</div>

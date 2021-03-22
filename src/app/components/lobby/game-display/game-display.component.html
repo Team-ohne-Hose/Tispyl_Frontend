@@ -1,0 +1,34 @@
+<div>
+  <div *ngIf="!isDummy" class="component-box">
+    <span class="ornamental-box"></span>
+    <div class="bounding-box">
+      <div class="naming">
+        <div><span class="heading">{{game.metadata.roomName || "undefined"}}</span><span
+          class="trailing">{{languageObjects.gamesListBy || "undefined"}} {{game.metadata.author ||
+        "undefined"}}</span></div>
+        <div class="date">{{languageObjects.gamesListCreateAt || "undefined"}} {{(game.createdAt | date:' h:mm a') ||
+        "undefined"}}</div>
+      </div>
+      <div [ngClass]="isActive ? 'count blue-text' : 'count'">
+        <i class="fas fa-users"></i>
+        {{game.clients || "undefined"}}{{game.maxClients ? (' / ' + game.maxClients) : ''}}
+      </div>
+      <div class="controls">
+        <div *ngIf="!isActive">
+          <button (click)="join()" class="enter"><i class="fas fa-sign-in-alt"></i></button>
+        </div>
+        <div *ngIf="isActive">
+          <button (click)="enter()" class="enter"><i class="fas fa-share"></i></button>
+        </div>
+        <div *ngIf="isActive">
+          <button (click)="leave()" class="leave"><i class="fas fa-door-open"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="isDummy" class="component-box">
+    <span class="empty-ornamental-box"></span>
+    <div class="empty-bounding-box"><span>{{languageObjects.gamesListNoGame}}</span></div>
+  </div>
+</div>

@@ -1,5 +1,11 @@
 export class GameLobby {
 
+  name: string;
+  author: string;
+  creationDate: Date;
+  roomId: string;
+  playerCount: number;
+
   constructor(name: string, author: string, creationDate: Date, roomId: string, playerCount: number) {
     this.name = name;
     this.author = author;
@@ -7,10 +13,4 @@ export class GameLobby {
     this.roomId = roomId;
     this.playerCount = playerCount;
   }
-
-  name: string;
-  author: string;
-  creationDate: Date;
-  roomId: string;
-  playerCount: number;
 }

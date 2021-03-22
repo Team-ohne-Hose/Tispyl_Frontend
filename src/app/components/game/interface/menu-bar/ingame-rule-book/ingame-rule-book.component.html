@@ -1,0 +1,41 @@
+<div class="register-card-base">
+
+  <div class="top tray">
+    <div class="top gold-border">
+      <div class="top paper-body">
+        <div class="rule-list">
+          <div class="headline-text">
+            Special Rules
+          </div>
+          <div *ngFor="let r of rules; let i = index" class="rule">
+            <div class="rule-mover">
+              <i class="fas fa-sort-up move-button"></i>
+              <i class="fas fa-gavel"></i>
+              <i class="fas fa-sort-down move-button"></i>
+            </div>
+            <div class="rule-text">
+              <!--<span class="author">by {{r.author}}</span>
+              <span class="text">{{r.text}}</span>-->
+              <span class="author">by undefined</span>
+              <span class="text">{{r}}</span>
+            </div>
+            <div (click)="removeRule(i)" class="delete-rule"><i class="fas fa-ban"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div (keyup)="addRuleByKey($event, textInput)" class="tray">
+    <div class="gold-border">
+      <div class="paper-body">
+        <div class="input-section">
+          <textarea #textInput placeholder="Add new rule here ..." rows="4"></textarea>
+          <div class="vertical-seperator"></div>
+          <div (click)="addRule(textInput)" class="add-button"><i class="fas fa-share"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
