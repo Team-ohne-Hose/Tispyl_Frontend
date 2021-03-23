@@ -30,7 +30,7 @@ jobs:
     - name: rsync deployments
       uses: burnett01/rsync-deployments@4.1
       with:
-        switches: -avzr --delete
+        switches: -avczr --delete
         path: dist/BrettSpiel/
         remote_path: ~/testAction/2/
         remote_host: ${{ secrets.DEPLOY_HOST }}
