@@ -10,22 +10,29 @@ jobs:
   build_and_sync:
 
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [14.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
+    env:
+      NODE_VERSION: 14.x
+      # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    # strategy:
+      # matrix:
+        # node-version: [14.x]
+        
     steps:
     - uses: actions/checkout@v2
     
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: currently Commit
+      run: git log -n 1
+    
+    - name: Use Node.js ${{ env.node-version }}
       uses: actions/setup-node@v1
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: ${{ env.node-version }}
         
     - run: npm install
     - run: npm run "build prod"
+    
+    - name: copy .htaccess
+      run: cp .htaccess dist/BrettSpiel/.htaccess
     
     - name: rsync deployments
       uses: burnett01/rsync-deployments@4.1
