@@ -1,0 +1,117 @@
+
+<div class="layout">
+  <header>
+    <div class="banner-container">
+
+      <div class="banner-box">
+        <div class="banner" #banner>
+          <div *ngFor="let isrc of imageSources; let i = index"
+               [ngClass]="{
+                'slide':true,
+                'active':activeSlide == i
+             }"
+          >
+            <img [src]=isrc alt="{{isrc}} - {{i}}" height=100%>
+          </div>
+        </div>
+      </div>
+
+      <div class="anchor-box">
+        <a *ngFor="let isrc of imageSources; let i = index"
+           [ngClass]="{
+            'anchor':true,
+            'active':activeSlide % originalSourceCount == i % originalSourceCount,
+            'noDisplay':i <= 1 || i > originalSourceCount + 1
+         }"
+           (click)="onAnchorClick(i)"
+        ></a>
+      </div>
+    </div>
+
+
+    <div class="nav-bar">
+      <div class="logo-box">
+        <img [src]=logoSource alt="Logo">
+      </div>
+      <div class="nav-box">
+        <button class="nav-button">
+          <i class="fas fa-home"></i>
+          <span>Home</span>
+        </button>
+        <button class="nav-button">
+          <i class="fas fa-gamepad"></i>
+          <span>Lobby</span>
+        </button>
+        <button class="nav-button" (click)="isLoggedIn = !isLoggedIn">
+          <i class="fas fa-gavel"></i>
+          <span>FAQ</span>
+        </button>
+        <button class="nav-button">
+          <i class="fas fa-user-circle"></i>
+          <span>Profile</span>
+        </button>
+        <button class="nav-button">
+          <i class="far fa-clipboard"></i>
+          <span>Updates</span>
+        </button>
+        <button class="nav-button">
+          <i class="fas fa-star"></i>
+          <span>Custom</span>
+        </button>
+      </div>
+
+
+      <div *ngIf="isLoggedIn" class="user-box dropdown-anchor">
+        <div class="img-clipper">
+          <img [src]=userSource alt="user">
+        </div>
+        <div class="dropdown-menu">
+          <button class="dropdown-item">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+          </button>
+          <button class="dropdown-item">
+            <i class="fas fa-door-open"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="!isLoggedIn" class="login-box">
+        <div class="img-clipper noSelect">
+            <div class="border">
+              <div class="img-clipper-second">
+                <div class="internal">
+                  <span>Login</span><i class="fas fa-sign-in-alt"></i>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <main>
+     <div>
+       bubbi
+     </div>
+  </main>
+
+  <footer>
+    <div class="foot-notes">
+      <div class="info">
+        <span><i class="fas fa-bug bug"></i>Found a bug?</span><i class="fas fa-circle"></i>
+        <span>Impressum</span><i class="fas fa-circle"></i>
+        <span>Credits</span><i class="fas fa-circle"></i>
+        <span>About</span>
+      </div>
+
+      <div class="small-logo-box">
+        <img [src]=logoSource alt="Logo">
+      </div>
+    </div>
+  </footer>
+</div>
+
+
