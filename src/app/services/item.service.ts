@@ -21,67 +21,67 @@ export class ItemService implements ColyseusNotifyable {
     0: {
       id: 0, weight: 1, name: 'Wirt',
       desc: 'Verteile 3 Rationen',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute
+      imgUrl: '../assets/items/wirt.png', executeType: executeTypes.targetedExecute
     },
     1: {
       id: 1, weight: 1, name: 'Diplomat',
       desc: 'Stelle eine Regel auf',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute
+      imgUrl: '../assets/items/diplomat.png', executeType: executeTypes.untargetedExecute
     },
     2: {
       id: 2, weight: 1, name: 'Klon',
       desc: 'Ein anderer Mitspieler muss deine nächste Aufgabe auch machen',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute
+      imgUrl: '../assets/items/klon.png', executeType: executeTypes.targetedExecute
     },
     3: {
       id: 3, weight: 1, name: 'Beste Freunde Gulasch',
       desc: 'Wähle einen Trinkbuddy',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute
+      imgUrl: '../assets/items/BesteFreundeGulasch.png', executeType: executeTypes.targetedExecute
     },
     4: {
       id: 4, weight: 1, name: 'Todfeind',
       desc: 'Löse eine Trinkbuddy Verbindung auf',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute
+      imgUrl: '../assets/items/todfeind.png', executeType: executeTypes.untargetedExecute
     },
     5: {
       id: 5, weight: 1, name: 'Joker',
       desc: 'Führe ein beliebiges Feld aus',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute
+      imgUrl: '../assets/items/joker.png', executeType: executeTypes.untargetedExecute
     },
     6: {
       id: 6, weight: 1, name: 'MOAB',
       desc: 'Alle rücken 10 Felder zurück',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute
+      imgUrl: '../assets/items/moab.png', executeType: executeTypes.untargetedExecute
     },
     7: {
       id: 7, weight: 1, name: 'Assasin',
       desc: 'Ein Spieler muss einen Ring nach unten',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute
+      imgUrl: '../assets/items/assasin.png', executeType: executeTypes.targetedExecute
     },
     8: {
       id: 8, weight: 1, name: 'Sabotage',
       desc: 'Ein Spieler muss 5 Felder zurück',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute
+      imgUrl: '../assets/items/sabotage.png', executeType: executeTypes.targetedExecute
     },
     9: {
       id: 9, weight: 1, name: 'Ah shit, here we go again',
       desc: 'Spielt danach noch eine Runde Tischspiel',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute
+      imgUrl: '../assets/items/ASHWGA.png', executeType: executeTypes.untargetedExecute
     },
     10: {
       id: 10, weight: 1, name: 'Trittbrettfahrer',
       desc: 'Exe dein Getränk. Schaffst du es müssen alle anderen dir gleich tun.(Dein Getränk muss mindestens halb voll sein wenn du dieses Item nutzt.)',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute
+      imgUrl: '../assets/items/Trittbrettfahrer.png', executeType: executeTypes.untargetedExecute
     },
     11: {
       id: 11, weight: 1, name: 'Losing is Fun',
       desc: 'Gehe zurück zum Start',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.untargetedExecute
+      imgUrl: '../assets/items/lachweinler.png', executeType: executeTypes.untargetedExecute
     },
     12: {
       id: 12, weight: 1, name: 'Anonymer Tipp',
       desc: 'ein Spieler muss nächste Runde aussetzen',
-      imgUrl: '../assets/defaultImage.jpg', executeType: executeTypes.targetedExecute
+      imgUrl: '../assets/items/anonym.png', executeType: executeTypes.targetedExecute
     },
     count: 13,
   };

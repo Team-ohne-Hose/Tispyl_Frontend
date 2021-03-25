@@ -1,6 +1,6 @@
 <div class="Item-Display">
   <div (click)="prevItem($event)" *ngIf="scrollable"><i class="fas fa-chevron-left"></i></div>
-  <div (click)="activateItem($event)" class="round-avatar golden-border">
+  <div (click)="activateItem($event)" class="round-image golden-border">
     <img [src]="itemThumbnail" alt="'Item'">
   </div>
   <div (click)="nextItem($event)" *ngIf="scrollable"><i class="fas fa-chevron-right"></i></div>
