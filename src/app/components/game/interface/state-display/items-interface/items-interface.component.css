@@ -6,9 +6,13 @@
   pointer-events: all;
 }
 
-.round-avatar {
-  height: 60px;
-  width: 60px;
+.round-image {
+  height: 5vw;
+  width: 5vw;
+  min-height: 60px;
+  min-width: 60px;
+  max-height: 110px;
+  max-width: 110px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -17,7 +21,7 @@
   margin-right: 1px;
 }
 
-.round-avatar img {
+.round-image img {
   border: var(--accent-color) solid 1px;
   height: 100%;
   width: 100%;
@@ -27,7 +31,7 @@
 
 .golden-border {
   border-radius: 50%;
-  padding: 5px;
+  padding: 8px;
   background: radial-gradient(ellipse farthest-corner at left bottom, #FEDB37 0%, #FDB931 8%, #9f7928 30%, #8A6E2F 40%, transparent 80%),
   radial-gradient(ellipse farthest-corner at right top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%);
 }
