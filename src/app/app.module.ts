@@ -55,13 +55,15 @@ import { HistoricResultsDisplayComponent } from './components/game/interface/men
 import { VoteCreatorComponent } from './components/game/interface/menu-bar/vote-system/vote-creator/vote-creator.component';
 import { PlayerIconComponent } from './components/framework/player-icon/player-icon.component';
 import { AuthInterceptor } from './modules/AuthInterceptor';
+import { HomeComponent } from './home/home.component';
 
 const appRoutes: Routes = [
-  {path: 'lobby', component: LobbyComponent},
-  {path: 'debug', component: DebugdummyComponent},
-  {path: 'game', component: GameComponent},
-  {path: '', redirectTo: '/lobby', pathMatch: 'full'},
-  {path: '**', component: PageNotFoundComponent}
+  { path: 'lobby', component: LobbyComponent},
+  { path: '_dev', component: HomeComponent},
+  { path: '_debug', component: DebugdummyComponent},
+  { path: 'game', component: GameComponent},
+  { path: '', redirectTo: '/lobby', pathMatch: 'full'},
+  { path: '**', component: PageNotFoundComponent }
 ];
 
 @NgModule({
@@ -98,7 +100,8 @@ const appRoutes: Routes = [
     ItemsInterfaceComponent,
     HistoricResultsDisplayComponent,
     VoteCreatorComponent,
-    PlayerIconComponent
+    PlayerIconComponent,
+    HomeComponent
   ],
   imports: [
     RouterModule.forRoot(
