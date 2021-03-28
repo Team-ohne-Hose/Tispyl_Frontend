@@ -55,6 +55,7 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
     {k: '/respawn', f: this.respawn.bind(this), h: 'Respawn your figure'},
     {k: '/ask', f: this.askGame.bind(this), h: '<Question> Ask the Game a Yes/No-Question'},
     {k: '/random', f: this.randomNum.bind(this), h: '<number> get a random number between 1 and <number>'},
+    {k: '/coinflip', f: this.coinflip.bind(this), h: 'Flip a coin'},
     {k: '/hires', f: this.objectLoader.loadHiResTex.bind(this.objectLoader), h: 'loads HiRes Textures'}
 
 
@@ -242,6 +243,13 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
       type: MessageType.CHAT_COMMAND,
       subType: ChatCommandType.commandRandom,
       limit: limit
+    });
+  }
+
+  private coinflip(args) {
+    this.gameState.sendMessage(MessageType.CHAT_COMMAND, {
+      type: MessageType.CHAT_COMMAND,
+      subType: ChatCommandType.commandCoinFlip
     });
   }
 
