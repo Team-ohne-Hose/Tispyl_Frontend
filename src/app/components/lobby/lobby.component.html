@@ -1,14 +1,7 @@
 <div class="lobby-body">
 
-  <div class="top-level-box split-box">
-    <div *ngIf="currentUser === undefined" class="column-box">
-      <app-login [languageObjects]="translation.text"></app-login>
-    </div>
-    <div *ngIf="currentUser !== undefined">
-      <app-profile-display #profileDisplay [user]="currentUser"></app-profile-display>
-    </div>
-    <div class="top-level-splitter"></div>
-    <app-gif-viewer [languageObjects]="translation.text"></app-gif-viewer>
+  <div *ngIf="currentUser !== undefined">
+    <app-profile-display #profileDisplay [user]="currentUser"></app-profile-display>
   </div>
 
   <div *ngIf="currentUser !== undefined" class="top-level-box">
@@ -26,5 +19,5 @@
     </div>
   </div>
 
-
+  <div *ngIf="currentUser === undefined">You shouldnt be here =(</div>
 </div>

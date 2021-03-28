@@ -129,6 +129,7 @@ export class HomeComponent implements OnInit, AfterContentInit {
 
   public onLogOut(): void {
     this.AuthService.logout();
+    this.navigate('./news');
   }
 
   /** Dropdown menu close event */
