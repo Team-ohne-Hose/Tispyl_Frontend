@@ -7,6 +7,7 @@ import { LoginUser } from '../model/User';
 import { UserService } from './user.service';
 import moment from 'moment';
 import { RegisterOptions } from '../model/RegisterOptions';
+import * as hash from 'object-hash';
 
 @Injectable({providedIn: 'root'})
 export class JwtTokenService {
@@ -16,7 +17,7 @@ export class JwtTokenService {
   private readonly devUserEndpoint = 'http://localhost:25670/api/user';
   private endpoint = environment.production ? this.prodUserEndpoint : this.devUserEndpoint;
 
-  constructor(private http: HttpClient, private UserService: UserService) {
+  constructor(private http: HttpClient, private userService: UserService) {
   }
 
   login(username: string, password: string) {
@@ -26,9 +27,9 @@ export class JwtTokenService {
         console.debug('Enter Subscribe');
         this.setSession(res, username);
 
-        this.UserService.getUserByLoginName(username).subscribe(userResponse => {
+        this.userService.getUserByLoginName(username).subscribe(userResponse => {
           console.debug('US', userResponse);
-          this.UserService.setActiveUser(userResponse.payload as LoginUser);
+          this.userService.setActiveUser(userResponse.payload as LoginUser);
           console.debug('LOGGED IN AS:', userResponse.payload);
         });
       }
@@ -37,7 +38,7 @@ export class JwtTokenService {
 
   register(registerOptions: RegisterOptions) {
     this.http.post<APIResponse<JwtResponse>>(this.endpoint, registerOptions).subscribe(res => {
-      this.login(registerOptions.username, registerOptions.password);
+      this.login(registerOptions.username, hash.MD5(registerOptions.password));
     });
   }
 

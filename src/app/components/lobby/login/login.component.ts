@@ -2,10 +2,9 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { RegisterPopupComponent } from '../dialogs/register-popup/register-popup.component';
 import { TextContainer } from '../../../model/TextContainer';
-import { LoginUser, User } from '../../../model/User';
+import { User } from '../../../model/User';
 import * as hash from 'object-hash';
 import { UserService } from '../../../services/user.service';
-import { APIResponse } from '../../../model/APIResponse';
 import { JwtTokenService } from 'src/app/services/jwttoken.service';
 
 

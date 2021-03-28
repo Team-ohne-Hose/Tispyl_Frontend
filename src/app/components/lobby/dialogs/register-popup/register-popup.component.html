@@ -31,7 +31,11 @@
         <input [(ngModel)]="password_1" class="to-right" type="password">
       </label>
     </div>
-    <div></div>
+    <div *ngIf="this.errorMsg.length > 0" class="errorDisplay">
+      <div *ngFor="let err of this.errorMsg" class="errorDisplayLine">
+        {{err}}
+      </div>
+    </div>
   </div>
   <div class="foot">
     <button (click)="close()">Close</button>
