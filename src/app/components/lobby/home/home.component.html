@@ -34,51 +34,51 @@
         <img [src]=logoSource alt="Logo">
       </div>
       <div class="nav-box">
-        <button class="nav-button">
+        <button class="nav-button" [routerLink]="['./news']">
           <i class="fas fa-home"></i>
-          <span>Home</span>
+          <span>News</span>
         </button>
-        <button class="nav-button">
+        <button *ngIf="isLoggedIn" class="nav-button" [routerLink]="['./lobby']">
           <i class="fas fa-gamepad"></i>
           <span>Lobby</span>
         </button>
-        <button class="nav-button" (click)="isLoggedIn = !isLoggedIn">
+        <button class="nav-button" [routerLink]="['./faq']">
           <i class="fas fa-gavel"></i>
           <span>FAQ</span>
         </button>
-        <button class="nav-button">
+        <button *ngIf="isLoggedIn" class="nav-button" [routerLink]="['./profile']">
           <i class="fas fa-user-circle"></i>
           <span>Profile</span>
         </button>
-        <button class="nav-button">
+        <button class="nav-button" [routerLink]="['./updates']">
           <i class="far fa-clipboard"></i>
           <span>Updates</span>
         </button>
-        <button class="nav-button">
+        <button *ngIf="isLoggedIn" class="nav-button" [routerLink]="['./custom']">
           <i class="fas fa-star"></i>
           <span>Custom</span>
         </button>
       </div>
 
 
-      <div *ngIf="isLoggedIn" class="user-box dropdown-anchor">
-        <div class="img-clipper">
-          <img [src]=userSource alt="user">
-        </div>
-        <div class="dropdown-menu">
-          <button class="dropdown-item">
-            <i class="fas fa-cog"></i>
-            <span>Settings</span>
-          </button>
-          <button class="dropdown-item">
-            <i class="fas fa-door-open"></i>
-            <span>Logout</span>
-          </button>
-        </div>
+      <div *ngIf="isLoggedIn" class="user-box dropdown-anchor"  #dropdown (click)="onProfileClick()">
+          <div class="img-clipper">
+            <img [src]=userSource alt="user">
+          </div>
+          <div class="dropdown-menu">
+            <button class="dropdown-item" [routerLink]="['./settings']">
+              <i class="fas fa-cog"></i>
+              <span>Settings</span>
+            </button>
+            <button class="dropdown-item" (click)="onLogOut()">
+              <i class="fas fa-door-open"></i>
+              <span>Logout</span>
+            </button>
+          </div>
       </div>
 
       <div *ngIf="!isLoggedIn" class="login-box">
-        <div class="img-clipper noSelect">
+        <div class="img-clipper noSelect" (click)="navigate('./login')">
             <div class="border">
               <div class="img-clipper-second">
                 <div class="internal">
@@ -93,9 +93,7 @@
   </header>
 
   <main>
-     <div>
-       bubbi
-     </div>
+    <router-outlet></router-outlet>
   </main>
 
   <footer>

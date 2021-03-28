@@ -1,8 +1,4 @@
 <div class="lobby-body">
-  <div class="headlineContainer">
-    <app-language-selector (changeLang)="changeLanguage($event)"
-                           class="languageContainer top-level-box"></app-language-selector>
-  </div>
 
   <div class="top-level-box split-box">
     <div *ngIf="currentUser === undefined" class="column-box">
@@ -30,7 +26,5 @@
     </div>
   </div>
 
-  <div class="top-level-box">
-    <app-rules [languageObjects]="translation.text"></app-rules>
-  </div>
+
 </div>

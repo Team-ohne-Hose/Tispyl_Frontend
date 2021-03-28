@@ -40,7 +40,7 @@ export class GameComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.colyseus.getActiveRoom().subscribe((myRoom) => {
       if (myRoom === undefined) {
-        this.router.navigateByUrl('/lobby');
+        this.router.navigateByUrl('/home/lobby');
         this.loadGame = false;
       } else {
         const msg: GameAction = {
@@ -51,7 +51,7 @@ export class GameComponent implements OnInit, AfterViewInit {
       }
     }, (errRoom) => {
       console.log('ErrorRoom is', errRoom);
-      this.router.navigateByUrl('/lobby');
+      this.router.navigateByUrl('');
     });
   }
 

@@ -6,6 +6,7 @@ import { User } from '../../../model/User';
 import * as hash from 'object-hash';
 import { UserService } from '../../../services/user.service';
 import { JwtTokenService } from 'src/app/services/jwttoken.service';
+import { TranslationService } from '../../../services/translation.service';
 
 
 @Component({
@@ -15,7 +16,7 @@ import { JwtTokenService } from 'src/app/services/jwttoken.service';
 })
 export class LoginComponent {
 
-  @Input() languageObjects: TextContainer;
+  @Input() languageObjects: TextContainer = TranslationService.getTranslations('en').text;
   login_name = '';
   password_plain = '';
   errorMessage = '';
