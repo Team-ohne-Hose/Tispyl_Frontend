@@ -1,19 +1,14 @@
 import {
   AfterContentInit,
-  AfterViewChecked,
-  AfterViewInit,
   Component,
-  ElementRef,
+  ElementRef, HostListener,
   OnInit,
-  QueryList,
   ViewChild,
-  ViewChildren,
-  ViewContainerRef
 } from '@angular/core';
-import {ActivatedRoute, UrlSegment} from '@angular/router';
-import { Location } from '@angular/common';
-import {concat} from 'rxjs';
-import {flatMap, map} from 'rxjs/operators';
+import { ActivatedRoute, Router } from '@angular/router';
+import { LoginUser } from '../../../model/User';
+import { JwtTokenService } from '../../../services/jwttoken.service';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-home',
@@ -22,7 +17,12 @@ import {flatMap, map} from 'rxjs/operators';
 })
 export class HomeComponent implements OnInit, AfterContentInit {
 
-  constructor() { }
+  constructor(
+    public router: Router,
+    private route: ActivatedRoute,
+    private AuthService: JwtTokenService,
+    private userManagement: UserService
+  ) {}
 
   /** Images displayed in the header carousel (expects 16:9 images) */
   imageSources: string[] = [
@@ -42,7 +42,11 @@ export class HomeComponent implements OnInit, AfterContentInit {
   /** Navbar auxiliaries */
   logoSource = 'assets/logo.png';
   userSource = 'assets/defaultImage.jpg';
+  @ViewChild('dropdown') dropDown: ElementRef;
   isLoggedIn = false;
+
+  /** State values */
+  activeUser = this.userManagement.getActiveUser();
 
   /**
    * Prepares {@link imageSources} for infinite scrolling by pre- and appending new elements. Example:
@@ -62,6 +66,19 @@ export class HomeComponent implements OnInit, AfterContentInit {
 
   ngOnInit(): void {
     this.imageSources = HomeComponent.extendForWrapping<string>(this.imageSources);
+
+    /** Check for active JWT Token */
+    if (this.AuthService.isLoggedIn) {
+      this.userManagement.getUserByLoginName(localStorage.getItem('username')).subscribe(userResponse => {
+        this.userManagement.setActiveUser(userResponse.payload as LoginUser);
+      });
+    } else {
+      this.AuthService.logout();
+    }
+
+    this.activeUser.subscribe(u => {
+      this.isLoggedIn = u !== undefined;
+    });
   }
 
   ngAfterContentInit(): void {
@@ -70,6 +87,10 @@ export class HomeComponent implements OnInit, AfterContentInit {
 
     /** Activate auto scrolling */
     setInterval(() => { this.nextSlide('right'); }, this.scrollInterval);
+  }
+
+  public navigate(target: string) {
+    this.router.navigate([target], { relativeTo: this.route });
   }
 
   private scrollToSlide(idx: number, behavior: 'auto' | 'smooth'): void {
@@ -104,5 +125,29 @@ export class HomeComponent implements OnInit, AfterContentInit {
   public onAnchorClick(idx: number): void {
     this.activeSlide = idx;
     this.scrollToSlide(idx, 'smooth');
+  }
+
+  public onLogOut(): void {
+    this.AuthService.logout();
+  }
+
+  /** Dropdown menu close event */
+  @HostListener('document:click', ['$event'])
+  clickOutside(event) {
+    if ( !this.dropDown.nativeElement.contains(event.target) ) {
+      const classes = this.dropDown.nativeElement.classList;
+      if ( classes.contains('open') ) {
+        classes.remove('open');
+      }
+    }
+  }
+
+  public onProfileClick(): void {
+    const classes = this.dropDown.nativeElement.classList;
+    if ( classes.contains('open') ) {
+      classes.remove('open');
+    } else {
+      classes.add('open');
+    }
   }
 }
