@@ -8,6 +8,8 @@ export class Tile extends Schema {
   @type('string')
   translationKey: string;
   @type('string')
+  title: string;
+  @type('string')
   description: string;
 }
 

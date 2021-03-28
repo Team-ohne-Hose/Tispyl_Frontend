@@ -27,7 +27,10 @@ export class TileOverlayComponent implements ColyseusNotifyable {
       filterSubType: GameActionType.showTile,
       f: (data: GameShowTile) => {
         if (data.action === GameActionType.showTile) {
-          const msg = `${this.playerName} ist auf Feld ${data.tile} gelandet: ${this.descriptionOf(data.tile)}`;
+          const header = `${this.playerName} ist auf Feld ${data.tile} gelandet:`;
+          const title = `${this.titleOf(data.tile).toUpperCase()}`;
+          const desc = `${this.descriptionOf(data.tile)}`;
+          const msg = `${header}\n${title}\n\n${desc}`;
           console.log(`[EVENT]: ${msg}`);
           this.printer.emit(msg);
         }
@@ -35,6 +38,10 @@ export class TileOverlayComponent implements ColyseusNotifyable {
     });
   }
 
+  titleOf(index: number) {
+    const tile = this.boardTiles.getTile(index);
+    return tile === undefined ? 'ERROR!' : tile.title;
+  }
   descriptionOf(index: number) {
     const tile = this.boardTiles.getTile(index);
     return tile === undefined ? 'ERROR!' : tile.description;
