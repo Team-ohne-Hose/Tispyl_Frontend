@@ -7,7 +7,6 @@ import { GameDisplayComponent } from './components/lobby/game-display/game-displ
 import { LoginComponent } from './components/lobby/login/login.component';
 import { RulesComponent } from './components/lobby/rules/rules.component';
 import { GifViewerComponent } from './components/lobby/gif-viewer/gif-viewer.component';
-import { LanguageSelectorComponent } from './components/lobby/language-selector/language-selector.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 
@@ -95,7 +94,6 @@ const appRoutes: Routes = [
     LoginComponent,
     RulesComponent,
     GifViewerComponent,
-    LanguageSelectorComponent,
     RegisterPopupComponent,
     ProfileDisplayComponent,
     LobbyComponent,
