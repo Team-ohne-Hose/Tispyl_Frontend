@@ -1,9 +1,10 @@
-import { Component, Inject, Injectable, Output } from '@angular/core';
+import { Component, Inject, Injectable, Output, ViewChild } from '@angular/core';
 
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { RegisterOptions } from 'src/app/model/RegisterOptions';
 import { JwtTokenService } from 'src/app/services/jwttoken.service';
 import { User } from '../../../../model/User';
+import { createViewChild } from '@angular/compiler/src/core';
 
 @Component({
   templateUrl: './register-popup.component.html',
@@ -16,6 +17,8 @@ export class RegisterPopupComponent {
   password_0: string = '';
   password_1: string = '';
 
+  errorMsg: string[] = [];
+
   constructor(private dialogRef: MatDialogRef<RegisterPopupComponent, User>, private AuthService: JwtTokenService, @Inject(MAT_DIALOG_DATA) public data: any) {
   }
 
@@ -24,8 +27,14 @@ export class RegisterPopupComponent {
   }
 
   registerUser() {
-    this.AuthService.register({username: this.login_name, displayname: this.display_name, password: this.password_0} as RegisterOptions);
-    this.dialogRef.close();
+    const passwordChecks = this.validateInput();
+    if (passwordChecks.length <= 0) {
+      this.AuthService.register({username: this.login_name, displayname: this.display_name, password: this.password_0} as RegisterOptions);
+      this.dialogRef.close();
+    } else {
+      console.warn('Registration violation: ' + passwordChecks);
+      this.errorMsg = passwordChecks;
+    }
   }
 
   validateInput(): string[] {

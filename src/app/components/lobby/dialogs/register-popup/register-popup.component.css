@@ -49,3 +49,15 @@
   margin-left: 8px;
 }
 
+.errorDisplay {
+  padding: 2px 0px;
+  margin-top: 15px;
+  background-color: whitesmoke;
+  border-radius: 5px;
+}
+
+.errorDisplayLine {
+  color: red;
+  padding: 5px 5px;
+}
+
