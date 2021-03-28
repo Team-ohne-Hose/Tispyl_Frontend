@@ -240,7 +240,7 @@
   overflow-y: hidden;
 }
 
-.dropdown-anchor:hover > .dropdown-menu {
+.open > .dropdown-menu {
   max-height: 100px;
 }
 

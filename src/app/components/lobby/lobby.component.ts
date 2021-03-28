@@ -21,14 +21,13 @@ import { JwtTokenService } from '../../services/jwttoken.service';
 })
 export class LobbyComponent implements OnInit {
 
-  //currentUser: User;
   currentUser: LoginUser;
   activeLobby: Room<GameState>;
   gameClient: Client;
 
   availableLobbies: RoomAvailable<RoomMetaInfo>[] = [];
 
-  translation: Translation;
+  translation: Translation = TranslationService.getTranslations('en');
 
   @ViewChild('profileDisplay') profileDisplay: ProfileDisplayComponent;
 
@@ -51,10 +50,6 @@ export class LobbyComponent implements OnInit {
     } else {
       this.AuthService.logout();
     }
-
-    // enable scrollbars
-    document.documentElement.setAttribute('style', 'overflow: scrollbars');
-    this.translation = TranslationService.getTranslations('en');
 
     // TODO: shouldnt query user here oninit before login
     this.userManagement.getActiveUser().subscribe(u => {

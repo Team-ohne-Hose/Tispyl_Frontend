@@ -7,7 +7,6 @@ import { GameDisplayComponent } from './components/lobby/game-display/game-displ
 import { LoginComponent } from './components/lobby/login/login.component';
 import { RulesComponent } from './components/lobby/rules/rules.component';
 import { GifViewerComponent } from './components/lobby/gif-viewer/gif-viewer.component';
-import { LanguageSelectorComponent } from './components/lobby/language-selector/language-selector.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 
@@ -55,14 +54,36 @@ import { HistoricResultsDisplayComponent } from './components/game/interface/men
 import { VoteCreatorComponent } from './components/game/interface/menu-bar/vote-system/vote-creator/vote-creator.component';
 import { PlayerIconComponent } from './components/framework/player-icon/player-icon.component';
 import { AuthInterceptor } from './modules/AuthInterceptor';
-import { HomeComponent } from './home/home.component';
+import { HomeComponent } from './components/lobby/home/home.component';
+import { FaqComponent } from './components/lobby/faq/faq.component';
+import { NewsComponent } from './components/lobby/news/news.component';
+import { UpdatesComponent } from './components/lobby/updates/updates.component';
+import { ProfileComponent } from './components/lobby/profile/profile.component';
+import { SettingsComponent } from './components/lobby/settings/settings.component';
+import { CustomEditorComponent } from './components/lobby/custom-editor/custom-editor.component';
 
 const appRoutes: Routes = [
-  { path: 'lobby', component: LobbyComponent},
-  { path: '_dev', component: HomeComponent},
-  { path: '_debug', component: DebugdummyComponent},
+  { path: 'home', component: HomeComponent,
+    children: [
+      { path: '', redirectTo: 'news', pathMatch: 'full' },
+      { path: 'news', component: NewsComponent},
+      { path: 'lobby', component: LobbyComponent},
+      { path: 'faq', component: FaqComponent},
+      { path: 'profile', component: ProfileComponent},
+      { path: 'updates', component: UpdatesComponent},
+      { path: 'custom', component: CustomEditorComponent},
+      { path: 'login', component: LoginComponent},
+      { path: 'register', component: PageNotFoundComponent},
+      { path: 'settings', component: SettingsComponent},
+      { path: 'report', component: PageNotFoundComponent},
+      { path: 'imprint', component: PageNotFoundComponent},
+      { path: 'about', component: PageNotFoundComponent},
+      { path: 'credits', component: PageNotFoundComponent},
+      { path: '_debug', component: DebugdummyComponent}
+    ]
+  },
   { path: 'game', component: GameComponent},
-  { path: '', redirectTo: '/lobby', pathMatch: 'full'},
+  { path: '', redirectTo: '/home/news', pathMatch: 'full'},
   { path: '**', component: PageNotFoundComponent }
 ];
 
@@ -73,7 +94,6 @@ const appRoutes: Routes = [
     LoginComponent,
     RulesComponent,
     GifViewerComponent,
-    LanguageSelectorComponent,
     RegisterPopupComponent,
     ProfileDisplayComponent,
     LobbyComponent,
@@ -101,7 +121,13 @@ const appRoutes: Routes = [
     HistoricResultsDisplayComponent,
     VoteCreatorComponent,
     PlayerIconComponent,
-    HomeComponent
+    HomeComponent,
+    FaqComponent,
+    NewsComponent,
+    UpdatesComponent,
+    ProfileComponent,
+    SettingsComponent,
+    CustomEditorComponent
   ],
   imports: [
     RouterModule.forRoot(

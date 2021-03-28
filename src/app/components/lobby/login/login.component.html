@@ -1,25 +1,33 @@
-<div class="login-box">
-  <span>{{languageObjects.logInTitle}}</span>
-  <div class="spacer"></div>
-  <div>
-    <label>
-      {{languageObjects.logInUser}}
-      <input (keyup)="enter($event)" [(ngModel)]="login_name" placeholder="{{languageObjects.logInUser}}">
-    </label>
+<div class="top-level-box split-box">
+
+  <div class="login-box">
+    <span>{{languageObjects.logInTitle}}</span>
+    <div class="spacer"></div>
+    <div>
+      <label>
+        {{languageObjects.logInUser}}
+        <input (keyup)="enter($event)" [(ngModel)]="login_name" placeholder="{{languageObjects.logInUser}}">
+      </label>
+    </div>
+    <div>
+      <label>
+        {{languageObjects.logInPass}}
+        <input (keyup)="enter($event)" [(ngModel)]="password_plain" placeholder="{{languageObjects.logInPass}}"
+               type="password">
+      </label>
+    </div>
+    <div class="buttons">
+      <button (click)="onLogin()">{{languageObjects.logInSubmit}}</button>
+      <span></span>
+      <span (click)="openRegisterDialog()" class="register-link">{{languageObjects.logInRegister}} <i
+        class="fas fa-angle-double-right"></i></span>
+    </div>
+    <div class="error-text"><i *ngIf="errorMessage.length > 0" class="fas fa-exclamation-triangle"></i><span
+      *ngIf="errorMessage.length > 0" [innerHTML]="errorMessage"></span></div>
   </div>
-  <div>
-    <label>
-      {{languageObjects.logInPass}}
-      <input (keyup)="enter($event)" [(ngModel)]="password_plain" placeholder="{{languageObjects.logInPass}}"
-             type="password">
-    </label>
-  </div>
-  <div class="buttons">
-    <button (click)="onLogin()">{{languageObjects.logInSubmit}}</button>
-    <span></span>
-    <span (click)="openRegisterDialog()" class="register-link">{{languageObjects.logInRegister}} <i
-      class="fas fa-angle-double-right"></i></span>
-  </div>
-  <div class="error-text"><i *ngIf="errorMessage.length > 0" class="fas fa-exclamation-triangle"></i><span
-    *ngIf="errorMessage.length > 0" [innerHTML]="errorMessage"></span></div>
+
+  <div class="top-level-splitter"></div>
+
+  <app-gif-viewer [languageObjects]=languageObjects></app-gif-viewer>
+
 </div>

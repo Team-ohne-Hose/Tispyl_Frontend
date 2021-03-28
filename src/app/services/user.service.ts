@@ -29,12 +29,12 @@ export class UserService {
     return this.activeUser.asObservable();
   }
 
+  // REQUESTS
+
   getUserById(user_id: number): Observable<User> {
     const requestUrl = this.userEndpoint + '?user_id=' + user_id;
     return this.httpClient.get<User[]>(requestUrl).pipe(map(users => users[0]));
   }
-
-  // REQUESTS
 
   getUserByLoginName(login_name: string): Observable<APIResponse<LoginUser>> {
     return this.httpClient.get<APIResponse<LoginUser>>(this.userEndpoint + '?login_name=' + login_name);
