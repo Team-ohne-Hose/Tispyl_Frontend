@@ -1,9 +1,7 @@
 #viewport-container {
   display: block;
   height: 100%;
+  overflow: hidden;
 }
 
-.viewPortRenderer {
-  display: block;
-}
 

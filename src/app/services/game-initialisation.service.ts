@@ -116,12 +116,20 @@ export class GameInitialisationService {
     const spritesPending = this.viewPort.boardItemManager.getSpritesPending();
     const queued = 64 + initPending + spritesPending;
     console.info('loading: 64 Tiles, ', initPending, ' phys Pending ', spritesPending, ' sprites Pending');
+
     const doneCallback = () => {
+      /** Resize viewport right before removing loading screen to avoid space where scrollbars would have been previously */
+      this.game.viewRef.onWindowResize(undefined);
+
+      /** Remove loading screen and stop loading screen tips from looping */
       this.game.loadingScreenRef.stopTips();
       this.game.loadingScreenVisible = false;
       console.info('loading done. Entering Game..');
+
+      /** Start render loop */
       this.viewPort.startRendering();
     };
+
     const onProgress = () => {
       progress++;
       console.debug('loading instance specific files: ' + progress + '/' + queued, ((progress / queued) * 50 + 50) + '%');

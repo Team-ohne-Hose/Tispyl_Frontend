@@ -38,6 +38,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   labelSpritesHidden = true;
   @ViewChild('view') view: HTMLDivElement;
   @Output() registerViewport = new EventEmitter<[CameraControl, BoardItemManagement, AudioControl]>();
+
   // Utilities
   scene: Scene;
   camera: PerspectiveCamera;
@@ -65,8 +66,6 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   }
 
   async ngAfterViewInit() {
-    // disable scrollbars
-    document.documentElement.setAttribute('style', 'overflow: hidden');
     const width = this.view['nativeElement'].offsetWidth;
     const height = this.view['nativeElement'].offsetHeight;
 
@@ -79,14 +78,11 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.camera.position.set(0, 70, -30);
     this.renderer = new THREE.WebGLRenderer({antialias: true, powerPreference: 'high-performance'});
     this.renderer.setSize(width, height);
-    const viewPortRenderer: HTMLCanvasElement = this.renderer.domElement;
-    viewPortRenderer.setAttribute('style', viewPortRenderer.getAttribute('style') + 'display_name: block;');
-    document.getElementById('viewport-container').appendChild(viewPortRenderer);
 
-    // add Stats Overlay
     this.stats = Stats();
-    document.getElementById('viewport-container').appendChild(this.stats.dom);
-
+    document
+      .getElementById('viewport-container')
+      .append(this.renderer.domElement, this.stats.dom);
 
     const spotlight = this.sceneBuilder.generateSpotLight();
     this.scene.add(spotlight);
