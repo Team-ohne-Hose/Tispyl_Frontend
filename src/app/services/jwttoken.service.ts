@@ -8,6 +8,8 @@ import { UserService } from './user.service';
 import moment from 'moment';
 import { RegisterOptions } from '../model/RegisterOptions';
 import * as hash from 'object-hash';
+import { Observable, throwError } from 'rxjs';
+import {flatMap, map, tap} from 'rxjs/operators';
 
 @Injectable({providedIn: 'root'})
 export class JwtTokenService {
@@ -20,26 +22,50 @@ export class JwtTokenService {
   constructor(private http: HttpClient, private userService: UserService) {
   }
 
-  login(username: string, password: string) {
+  /** Tries to retrieves expires_at value from local storage */
+  private getExpiration(): moment.Moment {
+    const expiration = localStorage.getItem('expires_at');
+    const expiresAt = JSON.parse(expiration);
+    return moment(expiresAt);
+  }
 
-    this.http.post<APIResponse<JwtResponse>>(this.endpoint + '/token', {username, password}).subscribe(
-      res => {
-        console.debug('Enter Subscribe');
-        this.setSession(res, username);
+  /** Stores jwt-token for a given user name in the local storage */
+  private storeToken(authResult: JwtResponse, username: string): void {
+    console.info('Session-Key saved.');
+    const expiresAt = moment().add(authResult.expiresIn, 'second');
+    localStorage.setItem('jwt_token', authResult.jwtToken);
+    localStorage.setItem('username', username);
+    localStorage.setItem('expires_at', JSON.stringify(expiresAt.valueOf()));
+  }
 
-        this.userService.getUserByLoginName(username).subscribe(userResponse => {
-          console.debug('US', userResponse);
-          this.userService.setActiveUser(userResponse.payload as LoginUser);
-          console.debug('LOGGED IN AS:', userResponse.payload);
-        });
-      }
+  login(username: string, password: string): Observable<LoginUser> {
+    return this.http.post<APIResponse<JwtResponse>>(this.endpoint + '/token', {username, password}).pipe(
+      map( (jwt: APIResponse<JwtResponse>) => {
+        if (jwt.success) {
+          this.storeToken(jwt.payload, username);
+          return jwt;
+        } else {
+          throwError(jwt);
+        }
+      }),
+      flatMap( () => this.userService.getUserByLoginName(username) ),
+      map( (usr: APIResponse<LoginUser>) => {
+        this.userService.setActiveUser(usr.payload as LoginUser);
+        return usr.payload;
+      })
     );
   }
 
-  register(registerOptions: RegisterOptions) {
-    this.http.post<APIResponse<JwtResponse>>(this.endpoint, registerOptions).subscribe(res => {
-      this.login(registerOptions.username, hash.MD5(registerOptions.password));
-    });
+  register(registerOptions: RegisterOptions): Observable<Boolean> {
+    return this.http.post<APIResponse<JwtResponse>>(this.endpoint, registerOptions).pipe(
+      map( (jwt: APIResponse<JwtResponse>) => {
+        if (jwt.success) {
+          return true;
+        } else {
+          throwError(jwt);
+        }
+      })
+    );
   }
 
   logout() {
@@ -65,19 +91,7 @@ export class JwtTokenService {
     return this.JwtToken;
   }
 
-  private getExpiration() {
-    const expiration = localStorage.getItem('expires_at');
-    const expiresAt = JSON.parse(expiration);
-    return moment(expiresAt);
-  }
 
-  private setSession(authResult: APIResponse<JwtResponse>, username: string) {
-    console.info('Session-Key saved.');
-    const expiresAt = moment().add(authResult.payload.expiresIn, 'second');
-    localStorage.setItem('jwt_token', authResult.payload.jwtToken);
-    localStorage.setItem('username', username);
 
-    localStorage.setItem('expires_at', JSON.stringify(expiresAt.valueOf()));
-    return authResult;
-  }
+
 }
