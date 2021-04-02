@@ -1,4 +1,13 @@
 import { Injectable } from '@angular/core';
+import { ChatCommandType, GameActionType, ItemMessageType, MessageType } from '../model/WsData';
+import { Player } from '../model/state/Player';
+import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
+import { GameStateService } from './game-state.service';
+import { ChatService } from './chat.service';
+import { ItemService } from './item.service';
+import { HintsService } from './hints.service';
+import { GameComponent } from '../components/game/game.component';
+import { ObjectLoaderService } from './object-loader.service';
 
 export interface Command {
   cmd: string;
@@ -103,13 +112,210 @@ export class CommandService {
       prototype: '/addFigure'}*/
   ];
 
-  constructor() { }
+  private gameComponent: GameComponent;
 
-  registerInterface() {
+  constructor(private gameState: GameStateService,
+              private chat: ChatService,
+              private items: ItemService,
+              private hints: HintsService,
+              private objectLoader: ObjectLoaderService) { }
 
+  registerGame(gameComponent: GameComponent) {
+    this.gameComponent = gameComponent;
   }
 
-  registerGame() {
+  private print(msg: string, senderCmd: string) {
+    this.chat.addLocalMessage(msg, 'Console: ' + senderCmd);
+  }
+  executeChatCommand(fullCommand: string) {
+    const args = fullCommand.split(' ');
+    const command = this.commandList.find(e => {
+      return e.cmd.trim().toString() === args[0].trim().toString();
+    });
+    if (command !== undefined) {
+      command.function(fullCommand, args);
+    } else {
+      console.log('Unknown command: ', args);
+    }
+  }
 
+  private giveItem(fullCMD: string, parameters: string[]) {
+    if (parameters.length < 3) {
+      return;
+    }
+    const playerTag = parameters.slice(1, parameters.length - 1).join(' ');
+
+    const sendGiveMessage = (playerLogin: string) => {
+      const itemId: number = Number(parameters[parameters.length - 1]);
+      this.print('Trying to give ' + playerLogin + ' Item ' + itemId, '/giveItem');
+      this.gameState.sendMessage(MessageType.ITEM_MESSAGE, {
+        type: MessageType.ITEM_MESSAGE,
+        subType: ItemMessageType.giveItem,
+        playerLoginName: playerLogin,
+        itemId: itemId,
+      });
+    };
+
+    // first try login names
+    let targetPlayer: Player = this.gameState.getByLoginName(playerTag);
+    // afterwards try display names
+    if (targetPlayer === undefined) {
+      targetPlayer = this.gameState.getByDisplayName(playerTag);
+    }
+    // send out
+    if (targetPlayer !== undefined) {
+      sendGiveMessage(targetPlayer.loginName);
+    }
+  }
+  private showItems(fullCMD: string, parameters: string[]) {
+    const myPlayer: Player = this.gameState.getMe();
+    if (myPlayer !== undefined) {
+      let list = '';
+      myPlayer.itemList.forEach((value: number, key: string) => {
+        if (value > 0) {
+          if (list !== '') {
+            list = list + '\r\n';
+          }
+          list = list + value + 'x ' + this.items.getItemName(Number(key)) + '(' + key + '): ' + this.items.getItemDesc(Number(key));
+        }
+      });
+      if (list === '') {
+        this.print('You have no Item', '/showItems');
+      } else {
+        this.print(list, '/showItems');
+      }
+    }
+  }
+  private useItem(fullCMD: string, parameters: string[]) {
+    const sendUseMessage = (targetLogin: string) => {
+      const itemId: number = Number(parameters[1]);
+      this.print('Trying to use Item ' + itemId + ((targetLogin === '') ? '' : ' on ' + targetLogin), '/useItem');
+      this.gameState.sendMessage(MessageType.ITEM_MESSAGE, {
+        type: MessageType.ITEM_MESSAGE,
+        subType: ItemMessageType.useItem,
+        playerLoginName: this.gameState.getMyLoginName(),
+        targetLoginName: targetLogin,
+        itemId: itemId,
+        param: '',
+      });
+    };
+    if (parameters.length < 2) {
+      return;
+    } else if (parameters.length < 3) {
+      sendUseMessage('');
+    }
+    const playerTag = parameters.slice(2).join(' ');
+
+    // first try login names
+    let targetPlayer: Player = this.gameState.getByLoginName(playerTag);
+    // afterwards try display names
+    if (targetPlayer === undefined) {
+      targetPlayer = this.gameState.getByDisplayName(playerTag);
+    }
+    // send out
+    if (targetPlayer !== undefined) {
+      sendUseMessage(targetPlayer.loginName);
+    }
+  }
+  private printHint(fullCMD: string, parameters: string[]): void {
+    this.print('TIPP: ' + this.hints.getRandomHint(), '/hint');
+  }
+  private dlScene(fullCMD: string, parameters: string[]) {
+    if (this.gameComponent !== undefined) {
+      const exporter = new GLTFExporter();
+
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      document.body.appendChild(link); // Firefox workaround, see #6594
+      const save = (blob, filename) => {
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+        // URL.revokeObjectURL( url ); breaks Firefox...
+      };
+
+      // Parse the input and generate the glTF output
+      exporter.parse(this.gameComponent.boardItemControl.scene, function (result) {
+        console.log(result);
+        if (result instanceof ArrayBuffer) {
+          save(new Blob([result], {type: 'application/octet-stream'}), 'scene.glb');
+        } else {
+          const output = JSON.stringify(result, null, 2);
+          console.log(output);
+          save(new Blob([output], {type: 'text/plain'}), 'scene.gltf');
+
+        }
+      }, {});
+    }
+  }
+  private respawn(fullCMD: string, parameters: string[]) {
+    this.gameComponent.boardItemControl.respawnMyFigure();
+  }
+  private askGame(fullCMD: string, parameters: string[]) {
+    const question = parameters.slice(1).join(' ');
+
+    this.gameState.sendMessage(MessageType.CHAT_COMMAND, {
+      type: MessageType.CHAT_COMMAND,
+      subType: ChatCommandType.commandAsk,
+      question: question,
+      authorDisplayName: this.gameState.getMe().displayName
+    });
+  }
+  private randomNum(fullCMD: string, parameters: string[]) {
+    const limit: number = (parameters[1] !== undefined) ? Math.round(Number(parameters[1].trim())) : 10;
+    this.gameState.sendMessage(MessageType.CHAT_COMMAND, {
+      type: MessageType.CHAT_COMMAND,
+      subType: ChatCommandType.commandRandom,
+      limit: limit
+    });
+  }
+  private coinflip(fullCMD: string, parameters: string[]) {
+    this.gameState.sendMessage(MessageType.CHAT_COMMAND, {
+      type: MessageType.CHAT_COMMAND,
+      subType: ChatCommandType.commandCoinFlip
+    });
+  }
+  private playAnthem(fullCMD: string, parameters: string[]) {
+    if (this.gameComponent !== undefined) {
+      this.gameComponent.audioCtrl.playAudio();
+    }
+  }
+  private addRule(fullCMD: string, parameters: string[]) {
+    console.log(parameters);
+    const msgArray: any[] = parameters.slice(1);
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
+      type: MessageType.GAME_MESSAGE,
+      action: GameActionType.addRule,
+      text: msgArray.join(' ')
+    });
+  }
+  private deleteRule(fullCMD: string, parameters: string[]) {
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE,
+      {type: MessageType.GAME_MESSAGE, action: GameActionType.deleteRule, id: parameters[1]});
+  }
+  private showLocalState(fullCMD: string, parameters: string[]) {
+    console.log(`State`, this.gameState.getState());
+  }
+  private advanceAction(fullCMD: string, parameters: string[]) {
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.advanceAction});
+  }
+  private advanceTurn(fullCMD: string, parameters: string[]) {
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.advanceTurn});
+  }
+  private reverseTurnOrder(fullCMD: string, parameters: string[]) {
+    this.print('The Turn-Order was reversed!', '/perspectiveChange');
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.reverseTurnOrder});
+  }
+  private toggleFpsDisplay(fullCMD: string, parameters: string[]) {
+    if (this.gameComponent !== undefined) {
+      this.gameComponent.viewRef.stats.dom.hidden = !this.gameComponent.viewRef.stats.dom.hidden;
+    }
+  }
+  private start(fullCMD: string, parameters: string[]) {
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.setStartingCondition});
+  }
+  private printHelpCommand(fullCMD: string, parameters: string[]) {
+    const commands: string[] = this.commandList.map(a => `${a.prototype} ${a.description}`);
+    this.print(commands.join('\n'), '/help');
   }
 }

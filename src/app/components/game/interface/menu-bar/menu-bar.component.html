@@ -26,7 +26,7 @@
   <div #tabEdge class="register-edge"></div>
 
   <div class="register-content">
-    <app-home-register (chatCommand)="executeNewChatCommand.emit($event)" *ngIf="tabIndex === 0"
+    <app-home-register *ngIf="tabIndex === 0"
                        [playerlist]="this.playerList"></app-home-register>
     <app-ingame-rule-book *ngIf="tabIndex === 1" [rules]="ruleList"></app-ingame-rule-book>
     <app-vote-system (notifyPlayer)="tabIndex = 2" *ngIf="tabIndex === 2"></app-vote-system>

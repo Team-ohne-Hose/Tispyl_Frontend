@@ -14,6 +14,7 @@ import {
 import { GameStateService } from '../../../../../services/game-state.service';
 import { Player } from '../../../../../model/state/Player';
 import { ChatService } from '../../../../../services/chat.service';
+import { CommandService } from '../../../../../services/command.service';
 
 @Component({
   selector: 'app-home-register',
@@ -29,7 +30,6 @@ export class HomeRegisterComponent {
   user: LoginUser;
   myPlayer: Player;
   @Input() playerlist: Player[];
-  @Output() chatCommand = new EventEmitter<string[]>();
 
   @ViewChild('textSection') textSection: ElementRef;
   chatMessages: ChatMessage[] = [];
@@ -40,7 +40,8 @@ export class HomeRegisterComponent {
               private fileManagement: FileService,
               public gameState: GameStateService,
               private loader: ObjectLoaderService,
-              private chatService: ChatService) {
+              private chatService: ChatService,
+              private commandService: CommandService) {
 
     this.myPlayer = this.gameState.getMe();
     this.profileSource = this.fileManagement.profilePictureSource(this.myPlayer?.loginName) || '../assets/defaultImage.jpg';
@@ -89,8 +90,7 @@ export class HomeRegisterComponent {
   }
 
   executeCommand(cmdStr: string) {
-    const args = cmdStr.split(' ');
-    this.chatCommand.emit(args);
+    this.commandService.executeChatCommand(cmdStr);
   }
 
   nextBCap($event: Event) {
