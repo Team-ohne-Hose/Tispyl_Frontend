@@ -2,11 +2,9 @@ import * as THREE from 'three';
 import { Object3D } from 'three';
 import {
   MessageType,
-  PhysicsCommand,
   PhysicsCommandAngular,
   PhysicsCommandKinematic,
   PhysicsCommandPosition,
-  PhysicsCommandQuat,
   PhysicsCommandRemove,
   PhysicsCommandType,
   PhysicsCommandVelocity, PhysicsCommandWakeAll,
@@ -19,8 +17,6 @@ import { PhysicsObjectState, PhysicsState } from '../../../../model/state/Physic
 import { Player } from '../../../../model/state/Player';
 import { GameStateService } from '../../../../services/game-state.service';
 import { ColyseusNotifyable } from '../../../../services/game-initialisation.service';
-import { NodeLib } from 'three/examples/jsm/nodes/core/NodeLib';
-import add = NodeLib.add;
 
 export enum ClickedTarget {
   other,

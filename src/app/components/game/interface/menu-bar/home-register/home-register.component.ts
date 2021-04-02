@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { UserService } from '../../../../../services/user.service';
+import { UserService, LoginUser } from '../../../../../services/user.service';
 import { FileService } from '../../../../../services/file.service';
 import { ChatMessage } from './helpers/ChatMessage';
 import { ObjectLoaderService } from '../../../../../services/object-loader.service';
@@ -12,7 +12,6 @@ import {
   SetFigure
 } from '../../../../../model/WsData';
 import { GameStateService } from '../../../../../services/game-state.service';
-import { LoginUser } from '../../../../../model/User';
 import { Player } from '../../../../../model/state/Player';
 import { ChatService } from '../../../../../services/chat.service';
 
@@ -34,6 +33,8 @@ export class HomeRegisterComponent {
 
   @ViewChild('textSection') textSection: ElementRef;
   chatMessages: ChatMessage[] = [];
+
+  showChatCmdDropdown = false;
 
   constructor(private userManagement: UserService,
               private fileManagement: FileService,

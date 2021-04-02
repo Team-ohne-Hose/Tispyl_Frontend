@@ -1,13 +1,12 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { TranslationService } from '../../services/translation.service';
-import { LoginUser, User } from '../../model/User';
-import { Translation } from '../../model/Translation';
+import { Translation } from '../../services/translation.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { OpenGamePopupComponent } from './dialogs/open-game-popup/open-game-popup.component';
 import { ColyseusClientService } from '../../services/colyseus-client.service';
 import { Client, Room, RoomAvailable } from 'colyseus.js';
 import { Router } from '@angular/router';
-import { UserService } from '../../services/user.service';
+import { UserService, LoginUser } from '../../services/user.service';
 import { RoomMetaInfo } from '../../model/RoomMetaInfo';
 import { JoinGameComponent } from './dialogs/join-game/join-game.component';
 import { GameState } from '../../model/state/GameState';
@@ -21,7 +20,6 @@ import { JwtTokenService } from '../../services/jwttoken.service';
 })
 export class LobbyComponent implements OnInit {
 
-  currentUser: LoginUser;
   activeLobby: Room<GameState>;
   gameClient: Client;
 
@@ -54,8 +52,7 @@ export class LobbyComponent implements OnInit {
     // TODO: shouldnt query user here oninit before login
     this.userManagement.getActiveUser().subscribe(u => {
       console.log('USER: ', u);
-      this.currentUser = u;
-      if (this.currentUser !== undefined) {
+      if (u !== undefined) {
         this.refresh();
       }
     });
@@ -70,16 +67,17 @@ export class LobbyComponent implements OnInit {
         maxWidth: '500px',
         height: '70%',
         maxHeight: '350px',
-        data: {user: this.currentUser},
+        data: {user: this.userManagement.activeUser.value},
         panelClass: 'modalbox-base'
       });
 
     dialogRef.afterClosed().subscribe(results => {
       if (results !== undefined) {
+        const currentUser = this.userManagement.activeUser.value;
         this.colyseus.createRoom(results.roomName,
-          this.currentUser.display_name,
-          this.currentUser.login_name,
-          this.currentUser.display_name,
+          currentUser.display_name,
+          currentUser.login_name,
+          currentUser.display_name,
           results.skinName,
           results.randomizeTiles);
       } else {
@@ -88,7 +86,7 @@ export class LobbyComponent implements OnInit {
     });
   }
 
-  onLeaveLobby() {
+  onLeaveLobby( event ) {
     this.activeLobby.leave(true);
     this.colyseus.setActiveRoom(undefined);
     this.colyseus.updateAvailableRooms();
@@ -107,7 +105,8 @@ export class LobbyComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(s => console.log('closed dialog'));
-    this.colyseus.joinActiveRoom(lobby, this.currentUser.login_name, this.currentUser.display_name);
+    const currentUser = this.userManagement.activeUser.value;
+    this.colyseus.joinActiveRoom(lobby, currentUser.login_name, currentUser.display_name);
   }
 
   changeLanguage(lang: string) {

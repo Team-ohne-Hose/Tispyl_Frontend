@@ -11,7 +11,6 @@ import { TileOverlayComponent } from './tile-overlay/tile-overlay.component';
 import { ColyseusNotifyable } from '../../../services/game-initialisation.service';
 import { TurnOverlayComponent } from './turn-overlay/turn-overlay.component';
 import { HintsService } from '../../../services/hints.service';
-import { VoteSystemComponent } from './menu-bar/vote-system/vote-system.component';
 import { ObjectLoaderService } from '../../../services/object-loader.service';
 import { ConnectedPlayersComponent } from './connected-players/connected-players.component';
 import { ChatService } from '../../../services/chat.service';
@@ -30,7 +29,6 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
   @ViewChild('nextTurn') nextTurnRef: NextTurnButtonComponent;
   @ViewChild('tileOverlay') tileOverlayRef: TileOverlayComponent;
   @ViewChild('turnOverlay') turnOverlayRef: TurnOverlayComponent;
-  @ViewChild('voteSystem') voteSystemRef: VoteSystemComponent;
   @ViewChild('connectedPlayers') connectedPlayersRef: ConnectedPlayersComponent;
   knownCommands: any[] = [
     {k: '/help', f: this.printHelpCommand.bind(this), h: 'displays this help'},

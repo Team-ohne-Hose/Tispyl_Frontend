@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Client, Room, RoomAvailable } from 'colyseus.js';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { RoomMetaInfo } from '../model/RoomMetaInfo';
 import { GameState } from '../model/state/GameState';
-import { MessageType, PhysicsCommandType, WsData } from '../model/WsData';
+import { MessageType, WsData } from '../model/WsData';
 import { DataChange } from '@colyseus/schema';
 import { environment } from '../../environments/environment';
-import { Player } from '../model/state/Player';
 import { Router } from '@angular/router';
 
 export interface MessageCallback {

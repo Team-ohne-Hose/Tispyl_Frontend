@@ -1,17 +1,17 @@
 <div class="lobby-body">
 
   <div class="top-level-box split-box">
-    <div *ngIf="currentUser === undefined" class="column-box">
+    <div *ngIf="userManagement.activeUser.value === undefined" class="column-box">
       <app-login [languageObjects]="translation.text"></app-login>
     </div>
-    <div *ngIf="currentUser !== undefined">
-      <app-profile-display #profileDisplay [user]="currentUser"></app-profile-display>
+    <div *ngIf="userManagement.activeUser.value !== undefined">
+      <app-profile-display #profileDisplay [user]="userManagement.activeUser.value"></app-profile-display>
     </div>
     <div class="top-level-splitter"></div>
-    <app-gif-viewer [languageObjects]="translation.text"></app-gif-viewer>
+    <app-gif-viewer></app-gif-viewer>
   </div>
 
-  <div *ngIf="currentUser !== undefined" class="top-level-box">
+  <div *ngIf="userManagement.activeUser.value !== undefined" class="top-level-box">
     <div class="top-level-head">
       <button (click)="create()" [disabled]="activeLobby !== undefined">{{translation.text.gamesListCreate}}</button>
       <span *ngIf="activeLobby !== undefined" class="blue-text"><i class="fas fa-exclamation-triangle"></i><span>You are in a lobby and won't be able to host a new game.</span></span>

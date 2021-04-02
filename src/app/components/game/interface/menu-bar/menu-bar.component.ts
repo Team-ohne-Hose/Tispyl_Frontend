@@ -15,7 +15,6 @@ import {
   trigger
 } from '@angular/animations';
 import { Player } from '../../../../model/state/Player';
-import { VoteSystemState } from './vote-system/helpers/VoteSystemState';
 
 @Component({
   selector: 'app-menu-bar',

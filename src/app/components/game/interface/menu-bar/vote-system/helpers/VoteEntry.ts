@@ -1,5 +1,5 @@
 import { Player } from '../../../../../../model/state/Player';
-import { Schema, ArraySchema, MapSchema, type } from '@colyseus/schema';
+import { Schema, ArraySchema, type } from '@colyseus/schema';
 
 export class VoteEntry extends Schema {
 

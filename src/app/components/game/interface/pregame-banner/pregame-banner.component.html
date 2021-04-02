@@ -5,8 +5,9 @@
     </div>
     <div class="banner-interaction-box">
       <div class="element-wrapper">
-        <div [ngClass]="{'slight-green': isReady, 'slight-red': !isReady}">{{countReadyPlayers()}}
-          /{{players.length}}</div>
+        <div [ngClass]="{'slight-green': isReady, 'slight-red': !isReady}">
+          {{countReadyPlayers()}}/{{players.length}}
+        </div>
       </div>
       <div class="element-wrapper">
         <div [ngClass]="{'icon-wrapper':true, 'green-icon': isReady, 'red-icon': !isReady}"><i *ngIf="isReady"
