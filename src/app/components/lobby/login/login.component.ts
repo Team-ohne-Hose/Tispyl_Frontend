@@ -70,7 +70,6 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  // TODO: Build a smooth fade out and fade in animation so that the switching is seamless
   /** Basic layout switching with a 90% good looking animation */
   switch(): void {
     this.resetInfoText();
