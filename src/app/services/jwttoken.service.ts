@@ -2,14 +2,17 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { APIResponse } from '../model/APIResponse';
-import { JwtResponse } from '../model/JwtToken';
-import { LoginUser } from '../model/User';
-import { UserService } from './user.service';
+import { UserService, LoginUser } from './user.service';
 import moment from 'moment';
 import { RegisterOptions } from '../model/RegisterOptions';
 import * as hash from 'object-hash';
 import { Observable, throwError } from 'rxjs';
 import {flatMap, map, tap} from 'rxjs/operators';
+
+export class JwtResponse {
+  jwtToken: string;
+  expiresIn: string;
+}
 
 @Injectable({providedIn: 'root'})
 export class JwtTokenService {

@@ -12,6 +12,7 @@ import { BoardTilesService } from '../../services/board-tiles.service';
 import { LoadingScreenComponent } from './loading-screen/loading-screen.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ShowAttribComponent } from './show-attrib/show-attrib.component';
+import { CommandService } from '../../services/command.service';
 
 @Component({
   selector: 'app-game',
@@ -34,7 +35,9 @@ export class GameComponent implements OnInit, AfterViewInit {
               private router: Router,
               private colyseus: ColyseusClientService,
               private gameInit: GameInitialisationService,
-              private boardTilesService: BoardTilesService) {
+              private boardTilesService: BoardTilesService,
+              private commandService: CommandService) {
+    commandService.registerGame(this);
   }
 
   ngOnInit(): void {

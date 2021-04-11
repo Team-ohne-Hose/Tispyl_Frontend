@@ -6,9 +6,8 @@ import {
   ViewChild,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LoginUser } from '../../../model/User';
 import { JwtTokenService } from '../../../services/jwttoken.service';
-import { UserService } from '../../../services/user.service';
+import { UserService, LoginUser } from '../../../services/user.service';
 import { APIResponse } from '../../../model/APIResponse';
 
 @Component({

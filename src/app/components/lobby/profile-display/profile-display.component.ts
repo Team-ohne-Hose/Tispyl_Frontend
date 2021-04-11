@@ -1,6 +1,5 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
-import { User } from '../../../model/User';
-import { UserService } from '../../../services/user.service';
+import { Component, Input } from '@angular/core';
+import { UserService, User } from '../../../services/user.service';
 import { FileService } from '../../../services/file.service';
 import { PlayerModel } from '../../../model/WsData';
 import { ObjectLoaderService } from '../../../services/object-loader.service';

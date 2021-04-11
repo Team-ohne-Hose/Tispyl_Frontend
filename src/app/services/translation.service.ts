@@ -1,7 +1,14 @@
 import { Injectable } from '@angular/core';
+import { TextContainer } from '../model/TextContainer';
 // @ts-ignore
 import translationData from '../resources/translations.json';
-import { Translation } from '../model/Translation';
+
+export class Translation {
+  id: String;
+  cname: String;
+  text: TextContainer;
+}
+
 
 @Injectable({
   providedIn: 'root'

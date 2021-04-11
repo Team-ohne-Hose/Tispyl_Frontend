@@ -3,7 +3,7 @@ import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
 import { PhysicsEntity, PhysicsEntityVariation, PlayerModel } from '../model/WsData';
 import { Texture } from 'three';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 
 interface ResourceData {
   cname: string;

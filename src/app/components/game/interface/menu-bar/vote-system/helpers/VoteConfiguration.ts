@@ -1,6 +1,5 @@
 import { VoteEntry } from './VoteEntry';
-import { VoteResult } from './VoteResult';
-import { Schema, ArraySchema, MapSchema, type } from '@colyseus/schema';
+import { Schema, ArraySchema, type } from '@colyseus/schema';
 
 export class VoteConfiguration extends Schema {
 

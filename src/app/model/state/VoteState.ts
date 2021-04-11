@@ -1,4 +1,4 @@
-import { Schema, ArraySchema, MapSchema, type } from '@colyseus/schema';
+import { Schema, type } from '@colyseus/schema';
 import { VoteConfiguration } from '../../components/game/interface/menu-bar/vote-system/helpers/VoteConfiguration';
 
 
