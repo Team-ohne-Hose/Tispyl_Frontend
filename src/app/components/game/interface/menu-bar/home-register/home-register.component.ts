@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { UserService, LoginUser } from '../../../../../services/user.service';
 import { FileService } from '../../../../../services/file.service';
 import { ChatMessage } from './helpers/ChatMessage';
@@ -65,6 +65,7 @@ export class HomeRegisterComponent {
     setTimeout(() => {
       const htmlNode = this.textSection.nativeElement;
       htmlNode.scrollTop = htmlNode.scrollHeight;
+      this.chatInput.nativeElement.focus();
     }, 20);
   }
 
