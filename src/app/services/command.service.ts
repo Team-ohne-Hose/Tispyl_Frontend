@@ -13,7 +13,7 @@ export interface Command {
   cmd: string;
   /* fullCMD is the full text, parameters are the parameters, parsed by using space as delimiter.
      parameters[0] is therefore the command name */
-  function: (fullCMD: string, parameters: string[]) => void;
+  function: (rawCMD: string, parameters: string[]) => void;
   description: string;
   // command prototype to show in text
   prototype: string;
@@ -139,7 +139,7 @@ export class CommandService {
     }
   }
 
-  private giveItem(fullCMD: string, parameters: string[]) {
+  private giveItem(rawCMD: string, parameters: string[]) {
     if (parameters.length < 3) {
       return;
     }
@@ -167,7 +167,7 @@ export class CommandService {
       sendGiveMessage(targetPlayer.loginName);
     }
   }
-  private showItems(fullCMD: string, parameters: string[]) {
+  private showItems(rawCMD: string, parameters: string[]) {
     const myPlayer: Player = this.gameState.getMe();
     if (myPlayer !== undefined) {
       let list = '';
@@ -186,7 +186,7 @@ export class CommandService {
       }
     }
   }
-  private useItem(fullCMD: string, parameters: string[]) {
+  private useItem(rawCMD: string, parameters: string[]) {
     const sendUseMessage = (targetLogin: string) => {
       const itemId: number = Number(parameters[1]);
       this.print('Trying to use Item ' + itemId + ((targetLogin === '') ? '' : ' on ' + targetLogin), '/useItem');
@@ -217,10 +217,10 @@ export class CommandService {
       sendUseMessage(targetPlayer.loginName);
     }
   }
-  private printHint(fullCMD: string, parameters: string[]): void {
+  private printHint(rawCMD: string, parameters: string[]): void {
     this.print('TIPP: ' + this.hints.getRandomHint(), '/hint');
   }
-  private dlScene(fullCMD: string, parameters: string[]) {
+  private dlScene(rawCMD: string, parameters: string[]) {
     if (this.gameComponent !== undefined) {
       const exporter = new GLTFExporter();
 
@@ -248,10 +248,10 @@ export class CommandService {
       }, {});
     }
   }
-  private respawn(fullCMD: string, parameters: string[]) {
+  private respawn(rawCMD: string, parameters: string[]) {
     this.gameComponent.boardItemControl.respawnMyFigure();
   }
-  private askGame(fullCMD: string, parameters: string[]) {
+  private askGame(rawCMD: string, parameters: string[]) {
     const question = parameters.slice(1).join(' ');
 
     this.gameState.sendMessage(MessageType.CHAT_COMMAND, {
@@ -261,7 +261,7 @@ export class CommandService {
       authorDisplayName: this.gameState.getMe().displayName
     });
   }
-  private randomNum(fullCMD: string, parameters: string[]) {
+  private randomNum(rawCMD: string, parameters: string[]) {
     const limit: number = (parameters[1] !== undefined) ? Math.round(Number(parameters[1].trim())) : 10;
     this.gameState.sendMessage(MessageType.CHAT_COMMAND, {
       type: MessageType.CHAT_COMMAND,
@@ -269,18 +269,18 @@ export class CommandService {
       limit: limit
     });
   }
-  private coinflip(fullCMD: string, parameters: string[]) {
+  private coinflip(rawCMD: string, parameters: string[]) {
     this.gameState.sendMessage(MessageType.CHAT_COMMAND, {
       type: MessageType.CHAT_COMMAND,
       subType: ChatCommandType.commandCoinFlip
     });
   }
-  private playAnthem(fullCMD: string, parameters: string[]) {
+  private playAnthem(rawCMD: string, parameters: string[]) {
     if (this.gameComponent !== undefined) {
       this.gameComponent.audioCtrl.playAudio();
     }
   }
-  private addRule(fullCMD: string, parameters: string[]) {
+  private addRule(rawCMD: string, parameters: string[]) {
     console.log(parameters);
     const msgArray: any[] = parameters.slice(1);
     this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
@@ -289,32 +289,32 @@ export class CommandService {
       text: msgArray.join(' ')
     });
   }
-  private deleteRule(fullCMD: string, parameters: string[]) {
+  private deleteRule(rawCMD: string, parameters: string[]) {
     this.gameState.sendMessage(MessageType.GAME_MESSAGE,
       {type: MessageType.GAME_MESSAGE, action: GameActionType.deleteRule, id: parameters[1]});
   }
-  private showLocalState(fullCMD: string, parameters: string[]) {
+  private showLocalState(rawCMD: string, parameters: string[]) {
     console.log(`State`, this.gameState.getState());
   }
-  private advanceAction(fullCMD: string, parameters: string[]) {
+  private advanceAction(rawCMD: string, parameters: string[]) {
     this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.advanceAction});
   }
-  private advanceTurn(fullCMD: string, parameters: string[]) {
+  private advanceTurn(rawCMD: string, parameters: string[]) {
     this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.advanceTurn});
   }
-  private reverseTurnOrder(fullCMD: string, parameters: string[]) {
+  private reverseTurnOrder(rawCMD: string, parameters: string[]) {
     this.print('The Turn-Order was reversed!', '/perspectiveChange');
     this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.reverseTurnOrder});
   }
-  private toggleFpsDisplay(fullCMD: string, parameters: string[]) {
+  private toggleFpsDisplay(rawCMD: string, parameters: string[]) {
     if (this.gameComponent !== undefined) {
       this.gameComponent.viewRef.stats.dom.hidden = !this.gameComponent.viewRef.stats.dom.hidden;
     }
   }
-  private start(fullCMD: string, parameters: string[]) {
+  private start(rawCMD: string, parameters: string[]) {
     this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.setStartingCondition});
   }
-  private printHelpCommand(fullCMD: string, parameters: string[]) {
+  private printHelpCommand(rawCMD: string, parameters: string[]) {
     const commands: string[] = this.commandList.map(a => `${a.prototype} ${a.description}`);
     this.print(commands.join('\n'), '/help');
   }
