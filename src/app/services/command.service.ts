@@ -11,7 +11,7 @@ import { ObjectLoaderService } from './object-loader.service';
 
 export interface Command {
   cmd: string;
-  /* fullCMD is the full text, parameters are the parameters, parsed by using space as delimiter.
+  /* rawCMD is the full text, parameters are the parameters, parsed by using space as delimiter.
      parameters[0] is therefore the command name */
   function: (rawCMD: string, parameters: string[]) => void;
   description: string;
