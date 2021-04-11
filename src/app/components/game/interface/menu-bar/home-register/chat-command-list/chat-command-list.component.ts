@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Command, CommandService } from '../../../../../../services/command.service';
 
 @Component({
@@ -8,13 +8,15 @@ import { Command, CommandService } from '../../../../../../services/command.serv
 })
 export class ChatCommandListComponent implements OnInit {
 
+  @Output() selectCmdEmitter = new EventEmitter<Command>();
+
   constructor(public commandService: CommandService) { }
 
   ngOnInit(): void {
   }
 
   selectCMD(c: Command): void {
-    console.log(`clicked on ${c.cmd}`);
+    this.selectCmdEmitter.emit(c);
   }
 
 }

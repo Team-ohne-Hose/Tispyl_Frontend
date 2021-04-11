@@ -1,7 +1,8 @@
-<div class="tooltip-arrow"></div>
+<svg width="50" height="25" class="tooltip-arrow-svg">
+  <polygon points="-2,-2 52,-2 25,25 -2,-2"/>
+</svg>
 <div class="tooltip">
   <div class="cmd-entry" *ngFor="let cmd of this.commandService.commandList" (click)="this.selectCMD(cmd)">
     {{cmd.prototype}}
   </div>
 </div>
-<p>chat-command-list works!</p>

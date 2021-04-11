@@ -1,12 +1,31 @@
-.tooltip-arrow {
+
+.tooltip-arrow-svg {
   position: absolute;
-  width: 50px;
-  height: 25px;
-  visibility: hidden;
-  opacity: 0;
+  fill: #3c3c3c;
+  stroke: gray;
+  stroke-width: 1px;
   z-index: 1;
-  margin-left: -25px;
-  margin-top: 40px;
+  bottom: 3px;
+  left: -25px;
+}
+
+.tooltip {
+  position: absolute;
   background-color: #3c3c3c;
-  clip-path: polygon(50% 0, 0% 100%, 100% 100%);
+  bottom: 27px;
+  left: -3rem;
+  color: whitesmoke;
+  padding: 8px 2px;
+  border-radius: 4px;
+  border: 1px gray solid;
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
+}
+.tooltip div {
+  padding: 3px 14px 3px 10px;
+  cursor: default;
+}
+.tooltip div:hover {
+  background-color: #565656;
 }

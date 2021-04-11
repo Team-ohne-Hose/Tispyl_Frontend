@@ -14,7 +14,7 @@ import {
 import { GameStateService } from '../../../../../services/game-state.service';
 import { Player } from '../../../../../model/state/Player';
 import { ChatService } from '../../../../../services/chat.service';
-import { CommandService } from '../../../../../services/command.service';
+import { Command, CommandService } from '../../../../../services/command.service';
 
 @Component({
   selector: 'app-home-register',
@@ -32,7 +32,12 @@ export class HomeRegisterComponent {
   @Input() playerlist: Player[];
 
   @ViewChild('textSection') textSection: ElementRef;
+  @ViewChild('chatInput') chatInput: ElementRef;
   chatMessages: ChatMessage[] = [];
+
+  private commandHistory: String[] = [];
+  private curCmdHistoryOffset = -1; // -1 means no selection has been made
+  private readonly maxCmdHistory = 32;
 
   showChatCmdDropdown = false;
 
@@ -64,17 +69,46 @@ export class HomeRegisterComponent {
   }
 
   sendChatMessageByKey(event: KeyboardEvent, inputField: HTMLInputElement) {
-    if (event.code === 'Enter') {
+    if (event.key === 'Enter') {
       this.sendChatMessage(inputField);
+    } else if (event.key === 'ArrowUp') {
+      this.curCmdHistoryOffset += 1;
+      if (this.curCmdHistoryOffset < Math.min(this.maxCmdHistory, this.commandHistory.length)) {
+        this.showCmdHistory(this.curCmdHistoryOffset);
+      } else {
+        this.curCmdHistoryOffset = Math.min(this.maxCmdHistory, this.commandHistory.length) - 1;
+      }
+    } else if (event.key === 'ArrowDown') {
+      this.curCmdHistoryOffset -= 1;
+      if (this.curCmdHistoryOffset >= -1) {
+        this.showCmdHistory(this.curCmdHistoryOffset);
+      } else {
+        this.curCmdHistoryOffset = -1;
+      }
     }
+  }
+  private showCmdHistory(cmdHistoryOffset: number) {
+    const nativeElem = this.chatInput.nativeElement;
+    nativeElem.value = cmdHistoryOffset < 0 ? '' : this.commandHistory[cmdHistoryOffset];
+    nativeElem.focus();
   }
 
   sendChatMessage(inputField: HTMLInputElement) {
-    const userInput: String = String(inputField.value).trim();
+    this.curCmdHistoryOffset = -1;
+
+    const userInput: string = String(inputField.value).trim();
     inputField.value = '';
     if (userInput !== '') {
       if (userInput.charAt(0) === '/') {
-        this.executeCommand(userInput.substring(1));
+        // add to commandhistory
+        this.commandHistory.unshift(userInput);
+        if (this.commandHistory.length > this.maxCmdHistory) {
+          this.commandHistory.pop();
+        }
+
+        // execute
+        this.executeCommand(userInput);
+
       } else {
         this.chatService.sendMessage(String(userInput));
       }
@@ -154,5 +188,12 @@ export class HomeRegisterComponent {
       playerModel: this.myBCapIndex
     };
     this.gameState.sendMessage(MessageType.PLAYER_MESSAGE, msg);
+  }
+
+  selectCmd(c: Command) {
+    console.log(`clicked on ${c.cmd}`);
+    const nativeElem = this.chatInput.nativeElement;
+    nativeElem.value = c.prototype;
+    nativeElem.focus();
   }
 }

@@ -53,10 +53,12 @@
     <div class="seperator"></div>
 
     <div class="input-section">
-      <div class="command-hint" (click)="showChatCmdDropdown = !showChatCmdDropdown"><i class="fas fa-terminal"></i></div>
-      <app-chat-command-list *ngIf="showChatCmdDropdown"></app-chat-command-list>
+      <div class="command-hint" (click)="showChatCmdDropdown = !showChatCmdDropdown">
+        <i class="fas fa-terminal"></i>
+        <app-chat-command-list *ngIf="showChatCmdDropdown" (selectCmdEmitter)="selectCmd($event)"></app-chat-command-list>
+      </div>
       <div (keyup)="sendChatMessageByKey($event, chatInput)" class="text-input-container">
-        <input #chatInput placeholder="Type here ..." type="text">
+        <input #chatInput placeholder="Type here ..." type="text" spellcheck="false">
       </div>
       <div (click)="sendChatMessage(chatInput)" class="post-button"><i class="fas fa-share"></i></div>
     </div>
