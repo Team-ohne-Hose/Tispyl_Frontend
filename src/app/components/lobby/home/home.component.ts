@@ -8,6 +8,7 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { JwtTokenService } from '../../../services/jwttoken.service';
 import { UserService, LoginUser } from '../../../services/user.service';
+import { APIResponse } from '../../../model/APIResponse';
 
 @Component({
   selector: 'app-home',
@@ -68,9 +69,10 @@ export class HomeComponent implements OnInit, AfterContentInit {
 
     /** Check for active JWT Token */
     if (this.AuthService.isLoggedIn) {
-      this.userManagement.getUserByLoginName(localStorage.getItem('username')).subscribe(userResponse => {
-        this.userManagement.setActiveUser(userResponse.payload as LoginUser);
-      });
+      this.userManagement.getUserByLoginName(localStorage.getItem('username')).subscribe(
+        (usr: APIResponse<LoginUser>) => { this.userManagement.setActiveUser(usr.payload as LoginUser); },
+      (err) => { console.error('Found JWT token indicating a logged in user, but could not retrieve LoginUser object from server', err); }
+      );
     } else {
       this.AuthService.logout();
     }
@@ -128,12 +130,13 @@ export class HomeComponent implements OnInit, AfterContentInit {
 
   public onLogOut(): void {
     this.AuthService.logout();
+    this.navigate('./news');
   }
 
   /** Dropdown menu close event */
   @HostListener('document:click', ['$event'])
   clickOutside(event) {
-    if ( !this.dropDown.nativeElement.contains(event.target) ) {
+    if ( this.dropDown !== undefined && !this.dropDown.nativeElement.contains(event.target) ) {
       const classes = this.dropDown.nativeElement.classList;
       if ( classes.contains('open') ) {
         classes.remove('open');

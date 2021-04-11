@@ -1,33 +1,163 @@
-<div class="top-level-box split-box">
+<div class="positioning">
+  <div class="sizing">
+    <div [ngClass]="{
+        'base': true,
+        'swapped': swapLayout
+        }">
 
-  <div class="login-box">
-    <span>{{languageObjects.logInTitle}}</span>
-    <div class="spacer"></div>
-    <div>
-      <label>
-        {{languageObjects.logInUser}}
-        <input (keyup)="enter($event)" [(ngModel)]="login_name" placeholder="{{languageObjects.logInUser}}">
-      </label>
+      <div class="content-section">
+
+        <div *ngIf="!swapContent" class="content-content-A">
+          <h1>{{languageObjects.logInTitle}}</h1>
+
+          <div class="input-container">
+            <i class="far fa-smile"></i>
+            <input (keyup)="keyPressed($event)" [(ngModel)]="login_name" placeholder="{{languageObjects.logInUser}}">
+          </div>
+          <div class="input-container">
+            <i class="fas fa-key"></i>
+            <input (keyup)="keyPressed($event)" [(ngModel)]="password_plain" placeholder="{{languageObjects.logInPass}}"
+                   type="password">
+          </div>
+
+          <button class="submit-button" (click)="onLogin()">
+            <mat-spinner *ngIf="isRequesting" diameter="20"></mat-spinner>
+            <span>{{languageObjects.logInSubmit}}</span>
+          </button>
+
+          <div [ngClass]="{
+            'info-container': true,
+            'warning': !isSuccessText && infoMessage.length !== 0,
+            'hidden': infoMessage.length === 0,
+            'outdated': outdatedErrors
+            }">
+            <i class="fas fa-exclamation-circle"></i>
+            <div class="info-text">{{infoMessage}}</div>
+          </div>
+        </div>
+
+        <div *ngIf="swapContent" class="content-content-B">
+          <form [formGroup]="registration" class="register-sheet">
+            <h1>Please enter your information</h1>
+
+            <div class="register-input">
+              <span>Enter a login name:</span>
+              <div class="slim-input-container">
+                <i class="far fa-smile"></i>
+                <input (keyup)="keyPressed($event)" formControlName="new_login_name" placeholder="Login name">
+              </div>
+            </div>
+            <div class="requirements">
+              <i [ngClass]="{
+              'far fa-question-circle': true,
+               'violated': !this.registration.get('new_login_name').valid
+               }"></i>
+              <div class="requirement-tooltip">
+                <div class="tooltip-text">The login name wont be visible to other players</div>
+                <span class="tooltip-arrow"></span>
+              </div>
+            </div>
+
+            <div class="register-input">
+              <span>Enter a display name:</span>
+              <div class="slim-input-container">
+                <i class="far fa-smile"></i>
+                <input (keyup)="keyPressed($event)" formControlName="new_display_name" placeholder="Display name">
+              </div>
+            </div>
+            <div class="requirements">
+              <i [ngClass]="{
+              'far fa-question-circle': true,
+               'violated': !this.registration.get('new_display_name').valid
+               }"></i>
+              <div class="requirement-tooltip">
+                <div class="tooltip-text">The display name is the name shown to other players</div>
+                <span class="tooltip-arrow"></span>
+              </div>
+            </div>
+
+
+            <div class="register-input">
+              <span>Enter your password:</span>
+              <div class="slim-input-container">
+                <i class="fas fa-key"></i>
+                <input (keyup)="keyPressed($event)" formControlName="new_password_plain0" placeholder="Password"
+                       type="password">
+              </div>
+            </div>
+            <div class="requirements">
+              <i [ngClass]="{
+              'far fa-question-circle': true,
+               'violated': !this.registration.get('new_password_plain0').valid
+               }"></i>
+              <div class="requirement-tooltip">
+                <div class="tooltip-text">A password needs to be between 4 and 64 characters</div>
+                <span class="tooltip-arrow"></span>
+              </div>
+            </div>
+
+            <div class="register-input">
+              <span>Re-Enter your password:</span>
+              <div class="slim-input-container">
+                <i class="fas fa-key"></i>
+                <input (keyup)="keyPressed($event)" formControlName="new_password_plain1" placeholder="Password"
+                       type="password">
+              </div>
+            </div>
+            <div class="requirements">
+              <i [ngClass]="{
+              'far fa-question-circle': true,
+               'violated': this.registration.errors !== null && this.registration.errors['equality'] !== undefined
+               }"></i>
+              <div class="requirement-tooltip">
+                <div class="tooltip-text">Both passwords need to be equal.</div>
+                <span class="tooltip-arrow"></span>
+              </div>
+            </div>
+
+            <button [disabled]="!registration.valid" class="submit-button" (click)="registerUser()">
+              <mat-spinner *ngIf="isRequesting" diameter="20"></mat-spinner>
+              <span>Register</span>
+            </button>
+
+            <div [ngClass]="{
+            'info-container': true,
+            'warning': !isSuccessText && infoMessage.length !== 0,
+            'success': isSuccessText && infoMessage.length !== 0,
+            'hidden': infoMessage.length === 0,
+            'outdated': outdatedErrors
+            }">
+              <i class="fas fa-exclamation-circle"></i>
+              <div class="info-text">{{infoMessage}}</div>
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+      <div class="color-section">
+
+        <div *ngIf="!swapContent" class="color-content-A">
+          <h1>New here ?</h1>
+          <p>Create a new account, open a cold beer or cider and have fun with your friends!</p>
+
+          <button class="swap-button" (click)="switch()">Register now</button>
+          <p class="hint">Tipp: Get your friends into Discord or Skype so that you can talk to them playing.</p>
+        </div>
+
+        <div *ngIf="swapContent" class="color-content-B">
+          <h1>Already been here ?</h1>
+          <p>Login instead, open a cold beer or cider and have fun with your friends!</p>
+
+          <button class="swap-button" (click)="switch()">Login now</button>
+          <p class="hint">Tipp: Get your friends into Discord or Skype so that you can talk to them while playing.</p>
+        </div>
+      </div>
+
+
+
     </div>
-    <div>
-      <label>
-        {{languageObjects.logInPass}}
-        <input (keyup)="enter($event)" [(ngModel)]="password_plain" placeholder="{{languageObjects.logInPass}}"
-               type="password">
-      </label>
-    </div>
-    <div class="buttons">
-      <button (click)="onLogin()">{{languageObjects.logInSubmit}}</button>
-      <span></span>
-      <span (click)="openRegisterDialog()" class="register-link">{{languageObjects.logInRegister}} <i
-        class="fas fa-angle-double-right"></i></span>
-    </div>
-    <div class="error-text"><i *ngIf="errorMessage.length > 0" class="fas fa-exclamation-triangle"></i><span
-      *ngIf="errorMessage.length > 0" [innerHTML]="errorMessage"></span></div>
   </div>
-
-  <div class="top-level-splitter"></div>
-
-  <app-gif-viewer></app-gif-viewer>
-
 </div>
+
+

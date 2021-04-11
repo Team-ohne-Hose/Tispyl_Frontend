@@ -1,7 +1,7 @@
 
 .layout {
   display: grid;
-  grid-template-columns: 10vw auto 10vw;
+  grid-template-columns: 10% 80% 10%;
   grid-template-rows: auto 1fr auto;
   grid-template-areas:  "h h h"
                         ". m ."
@@ -54,16 +54,6 @@
   display: block;
   height: 100%;
   object-fit: contain;
-}
-
-.fade-left {
-  -webkit-mask-image:-webkit-gradient(linear, right top, left top, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));
-  mask-image: linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0));
-}
-
-.fade-right {
-  -webkit-mask-image:-webkit-gradient(linear, left top, right top, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));
-  mask-image: linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0));
 }
 
 .anchor-box {

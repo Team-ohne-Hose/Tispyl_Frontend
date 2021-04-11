@@ -1,30 +1,44 @@
 <div class="lobby-body">
 
-  <div class="top-level-box split-box">
-    <div *ngIf="userManagement.activeUser.value === undefined" class="column-box">
-      <app-login [languageObjects]="translation.text"></app-login>
-    </div>
-    <div *ngIf="userManagement.activeUser.value !== undefined">
-      <app-profile-display #profileDisplay [user]="userManagement.activeUser.value"></app-profile-display>
-    </div>
-    <div class="top-level-splitter"></div>
-    <app-gif-viewer></app-gif-viewer>
-  </div>
+  <div *ngIf="currentUser !== undefined" class="top-level">
 
-  <div *ngIf="userManagement.activeUser.value !== undefined" class="top-level-box">
-    <div class="top-level-head">
-      <button (click)="create()" [disabled]="activeLobby !== undefined">{{translation.text.gamesListCreate}}</button>
+    <div class="environment-selector box">
+      <div>Where to drink ?</div>
+      <div class="switch-arrow previous" (click)="nextEnvironment('left')">
+        <i *ngIf="!(currentEnvironmentIdx <= 0)" class="fas fa-chevron-left"></i>
+        <i *ngIf="currentEnvironmentIdx <= 0" class="fas fa-grip-lines-vertical non-interactive"></i>
+      </div>
+      <img src="assets{{environments[currentEnvironmentIdx].thumb}}">
+      <div class="switch-arrow next" (click)="nextEnvironment('right')">
+        <i *ngIf="!(currentEnvironmentIdx >= environments.length - 1)" class="fas fa-chevron-right"></i>
+        <i *ngIf="currentEnvironmentIdx >= environments.length - 1" class="fas fa-grip-lines-vertical  non-interactive"></i>
+      </div>
+    </div>
+
+    <div class="controls box">
+      <button (click)="createGame()" [disabled]="activeLobby !== undefined">{{translation.text.gamesListCreate}}</button>
       <span *ngIf="activeLobby !== undefined" class="blue-text"><i class="fas fa-exclamation-triangle"></i><span>You are in a lobby and won't be able to host a new game.</span></span>
       <button (click)="refresh()"><i class="fas fa-redo"></i></button>
     </div>
-    <app-game-display *ngIf="availableLobbies.length <= 0" [isDummy]="true"
-                      [languageObjects]="translation.text"></app-game-display>
-    <div *ngIf="availableLobbies.length > 0">
-      <app-game-display (enter)="onEnterGame()" (join)="joinGame($event)" (leave)="onLeaveLobby($event)"
-                        *ngFor="let game of availableLobbies" [game]="game" [isActive]="isActive(game)"
-                        [languageObjects]="translation.text"></app-game-display>
-    </div>
+
   </div>
 
+    <app-game-display *ngIf="availableLobbies.length <= 0"
+                      [isDummy]="true"
+                      [languageObjects]="translation.text">
+    </app-game-display>
 
+    <div *ngIf="availableLobbies.length > 0">
+      <app-game-display *ngFor="let game of availableLobbies"
+        (enter)="onEnterGame()"
+        (join)="onJoinGame($event)"
+        (leave)="onLeaveGame()"
+        [game]="game"
+        [isActive]="isActive(game)"
+        [languageObjects]="translation.text">
+      </app-game-display>
+    </div>
+
+
+  <div *ngIf="currentUser === undefined">You shouldnt be here =(</div>
 </div>

@@ -13,6 +13,15 @@ export interface MessageCallback {
   f: (data: WsData) => void;
 }
 
+export interface CreateRoomOpts {
+  roomName: string;
+  author: string;
+  login: string;
+  displayName: string;
+  skin: string;
+  randomizeTiles: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -24,7 +33,7 @@ export class ColyseusClientService {
   private backendWStarget = environment.production ? this.prodBackendWStarget : this.devBackendWStarget;
   private client: Client = new Client(this.backendWStarget);
   private activeRoom: BehaviorSubject<Room<GameState>>;
-  private availableRooms: BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>;
+  availableRooms: BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>;
 
   private messageCallbacks: Map<MessageType, MessageCallback[]> = new Map<MessageType, MessageCallback[]>([]);
   private onChangeCallbacks: ((changes: DataChange<any>[]) => void)[] = [
@@ -61,21 +70,12 @@ export class ColyseusClientService {
     this.activeRoom.next(newRoom);
   }
 
-  createRoom(roomName: string, author: string, loginName: string, displayName: string, skin: string, randomizeTiles: boolean) {
-    const options = {
-      name: roomName,
-      author: author,
-      login: loginName,
-      displayName: displayName,
-      skin: skin,
-      randomizeTiles: randomizeTiles
-    };
-
-    if (roomName !== undefined) {
-      this.client.create('game', options).then(suc => {
+  createRoom(opts: CreateRoomOpts) {
+    if (opts.roomName !== undefined) {
+      this.client.create('game', opts).then(suc => {
         this.setActiveRoom(suc);
         this.updateAvailableRooms();
-        this.myLoginName = loginName;
+        this.myLoginName = opts.login;
         this.router.navigateByUrl('/game');
       });
     }
