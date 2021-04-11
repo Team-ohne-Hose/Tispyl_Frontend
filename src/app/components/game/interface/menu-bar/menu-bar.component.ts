@@ -24,51 +24,32 @@ import { Player } from '../../../../model/state/Player';
 })
 export class MenuBarComponent {
 
-  selectionClass = 'selected';
-  registerTabClass = 'register-tab';
-
-
   @Input() playerList: Player[];
   @Input() ruleList = [];
 
   @ViewChild('registerFooter') registerFooter: ElementRef;
   @ViewChild('tabEdge') tabEdge: ElementRef;
 
-  tabIndex = undefined;
+  tabIndex = 0;
 
   constructor() {
   }
 
-  toggleTab(event): void {
-    if (event.target.parentElement.classList.contains(this.selectionClass)) {
-      this.unselectTab(event);
+  toggleTab(targetTabIndex: number): void {
+    if (this.tabIndex === targetTabIndex) {
+      this.unselectTab(targetTabIndex);
     } else {
-      this.selectTab(event);
+      this.selectTab(targetTabIndex);
     }
   }
 
-  private selectTab(event): void {
-    const tabs = document.getElementsByClassName(this.registerTabClass);
-    const elements = document.getElementsByClassName(this.registerTabClass);
-    for (let i = 0; i < elements.length; i++) {
-      elements[i].classList.remove(this.selectionClass);
-    }
-
-    this.registerFooter.nativeElement.classList.add(this.selectionClass);
-    this.tabEdge.nativeElement.classList.add(this.selectionClass);
-    event.target.parentElement.classList.add(this.selectionClass);
-
-    for (let i = 0; i < tabs.length; i++) {
-      if (tabs[i].classList.contains(this.selectionClass)) {
-        this.tabIndex = i;
-      }
-    }
+  private selectTab(targetTabIndex: number): void {
+    this.tabIndex = targetTabIndex;
   }
 
-  private unselectTab(event): void {
-    event.target.parentElement.classList.remove(this.selectionClass);
-    this.tabIndex = undefined;
-    this.registerFooter.nativeElement.classList.remove(this.selectionClass);
-    this.tabEdge.nativeElement.classList.remove(this.selectionClass);
+  private unselectTab(targetTabIndex: number): void {
+    if (this.tabIndex === targetTabIndex) {
+      this.tabIndex = 0;
+    }
   }
 }
