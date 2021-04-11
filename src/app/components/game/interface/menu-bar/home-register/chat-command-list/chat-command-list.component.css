@@ -1,0 +1,12 @@
+.tooltip-arrow {
+  position: absolute;
+  width: 50px;
+  height: 25px;
+  visibility: hidden;
+  opacity: 0;
+  z-index: 1;
+  margin-left: -25px;
+  margin-top: 40px;
+  background-color: #3c3c3c;
+  clip-path: polygon(50% 0, 0% 100%, 100% 100%);
+}

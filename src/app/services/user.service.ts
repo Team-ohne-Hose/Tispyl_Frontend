@@ -7,10 +7,6 @@ import { APIResponse } from '../model/APIResponse';
 import { environment } from '../../environments/environment';
 import { JwtResponse } from './jwttoken.service';
 
-@Injectable({
-  providedIn: 'root'
-})
-
 export class User {
   login_name: string;
   display_name: string;
@@ -40,6 +36,9 @@ export class LoginUser {
   is_dev: boolean;
 }
 
+@Injectable({
+  providedIn: 'root'
+})
 export class UserService {
 
   activeUser: BehaviorSubject<LoginUser>;

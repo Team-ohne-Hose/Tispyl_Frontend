@@ -1,0 +1,184 @@
+[33md9447cfb521b2f9c6c6ef1200748508d8a58ca23[m implemented commandService. NOT TESTED, yet
+[33mb4ef800ea172025e7d41bcaab10d05dde786d08b[m add general structure for command-service
+[33mff946aa168b37c0b8a8b35fe1d0f4a52c9eab550[m Merge pull request #75 from Saphs/fixTileDescriptions
+[33me6b40d3e9a8a9cf65dafc29f81eed5d2bb4d4f91[m fix chrome issues
+[33m0e5c724bdf49eff6a03cc1b8ff86762d874b3910[m Add resizing right before loading screen ends
+[33m35684f7e06ae969256965bc410ec22bf01a92e26[m merged from master
+[33m002a8907eb6b2192ef2942d077939576b422a704[m update Tilelist, Tileoverlay and add /coinflip
+[33m3ae8415820691ec216fd51a97645d5c3c017703f[m Remove Languageselector component as it is no longer supported
+[33mf3a650956409dbe0a0a7bb491a24bb9e52fb6ba0[m Add new routes and update the introduced base page
+[33m0e9727f1ab0d38126247dc888604153bf6ad5ae1[m fixed register bug, added errordisplay. Still needs rework into a reactive form with form validiation
+[33me2245a9656f61abbf6d70bfbc99b680f41a6beb6[m added pictures for items
+[33m91d5a20a890d8536a16f0e7617b77976d5c17b35[m Introduce new base page
+[33me1215b662b00ae9be89e53bdba5d85cba472a486[m Update build_and_sync.yml
+[33me8ad9c01e51939d5468136c4eff8dec0cb408b4c[m Update build_and_sync.yml
+[33m07a4c0f11363360575f40a12d0fd0206e50747ef[m Update build_and_sync.yml
+[33m89c6bceb18e34f9743021542ea840a7e8ac3cac0[m Update build_and_sync.yml
+[33m3193ab133133e42787be4e51c4b6d2a2be97a11e[m Update build_and_sync.yml
+[33m9dd4ab3ec36deb170499e97bd32fd6ed7347891f[m Update build_and_sync.yml
+[33m382b7ce23246bd036df6a90ac66f2ffd90547bc8[m Update build_and_sync.yml
+[33mfef781283275705156cef5471671ff6fce9420b6[m Update build_and_sync.yml
+[33mc15637de9cf70d48c49a3de8916507159d5acf64[m Create build_and_sync.yml
+[33m3be319937fc0e8ed400481268c581e2a93887daf[m Merge pull request #68 from Saphs/refactorStructure
+[33m43b115b00b421ece1edb67c7a4cc424bc973c1a6[m Create lint.yml
+[33m708c1bfe63f0f8693a4fe8c079fe4467288dce83[m fix typo, add tslint rule for imports, autoformat all
+[33mf144816a44fc182d13ac8500cd0e09adf9400bfb[m refactored folder structure
+[33mcdfc150f3422a2a4e98c8c664a7f18b26bdeebd0[m Merge pull request #67 from Saphs/variousFrontendBugfixes
+[33m93286a2ce6c998520db64f2b933a6926e6f19a21[m use constant from WSData instead of hardcoded number
+[33mb72e3aace12b6e4f499fc3a08a834f25d9df459b[m make more readable and add undefined checks
+[33m051bc32c9501ef5fc492f57f6dd4517bb980832d[m implemented voteSystem cancel button
+[33mf0812a4082374efeb3f1dbd0c67b8abd4f049840[m fixing Bottlecap menu
+[33me8df4169c5505996dda63a8756bcb0a2f3a9b161[m change TileOverlay to use Displayname
+[33m6b38e124f570f5eb219666de014a80ef6b62ac29[m fixing scrolling of chat when switching registers
+[33m4b99156206382641f59e4de62d341e2aebd8769d[m remove old import
+[33m0a27855b6e104d38c34c75758271322769294a63[m Merge pull request #65 from Saphs/physicsBcapImprovements
+[33m99209122f49eacd72423364348bb9aaaaeb4d7b3[m Merge branch 'physicsBcapImprovements' of github.com:Saphs/BrettSpiel into physicsBcapImprovements
+[33m4da5085bcced86ded120beab67e91c11f236febb[m added PR RFCs
+[33mc68519198f265e908f83b1a1e33abc5c6292819e[m Merge branch 'master' into physicsBcapImprovements
+[33m5c7b308125718a215bf2f5a36a74764ebc6e3153[m Merge pull request #64 from Saphs/AUFRÄUMAKTION
+[33m2d22a1057af818c94fa5c8121add91c45ec7a591[m fix loadingscreen bug, fix hostbug, other minor improvements
+[33m5edc9cd6d7da5449d6b3b3e8dde11ba487f8e0d0[m should fixxed a minior login bug
+[33m251a8b7b85c3ddde557105a9cdbc7b5f95032792[m Merge pull request #63 from Saphs/AUFRÄUMAKTION
+[33mf67eec313955c490e9c148e1ffecd5ceb5a7be05[m change requests
+[33m2132fc5d8ae550159bc16eecfcba090b058f0347[m refactoring and implementation of instant login to game
+[33m7fee5211cca10234b9c69344e08817996a393290[m fix login redirect
+[33mfa6eb72872e97210270c3d36b713c282723d337b[m Merge pull request #62 from Saphs/changes_for_orm_db
+[33mf92d3e48745531aeafa72b852614d689783529e6[m Merge branch 'master' into changes_for_orm_db
+[33m1d4af59bb486b9b29eb69f79abfce4234bbc7e33[m awesome stuff
+[33m60516a117b0fbf3ad59bd31bc64050e8945e99a1[m Merge pull request #61 from Saphs/fixLoadingScreen
+[33mfe0e2d233ce19c44a5342da77beff8920f458a75[m changed minor stuff for PR
+[33md5cc79f212967d7d4cf3394823035c8219b21602[m added scaled down Versions of the Playertextures, optional hires mode available via cmd. This speeds loading up a bunch
+[33me800080b7d958defcb942c1cd403eca462cba5fc[m reuse APIResponse
+[33m21a7d1bbb53a9a30464debf5d4801f09518fbf4c[m implement prototype for jwt and change endpoints of fileserver and user
+[33m1c83c90d5e46c9ad24456cfd4a0a3640f11d429b[m display name
+[33m4b0b4296e13bb38e4e2c3e723f4d884edba72fa0[m fuck off, yeah
+[33m28fc37ec5b267bb570a40f8e07220c4de62f1501[m three-stinks
+[33m85577675f972a89ba26a816e3ef34bb7f123722c[m fixxed typo
+[33mb4461d40194fbf62e17ea877820b6b7eabf87a16[m give rules more discipline
+[33m8f236420c12e6a056e8046ca6e07a01fc1c3a413[m remove console log
+[33m1c4f321dcb87bbcc4150354a4462503a6e773657[m fuck off, yeah
+[33m9f882ecefa5fc79c1682cecc94d207d652f96443[m three-stinks
+[33m67fb7d6daeec94c2d1d55aee6fe8e7490ded32b3[m fixxed typo
+[33meaf5e58966aa0d24e09e2e9801b5a4711eebb534[m give rules more discipline
+[33m105ab6491bb5704e0b02c340c82b3056dbd9c11b[m remove console log
+[33m120caa630af839078fa403a1d4176136a9dcdf05[m Merge pull request #58 from Saphs/bugFixing
+[33md4b938dceab9fe78f715dc248b440529c9a41e5c[m added changes from PR
+[33m6b954630faa6d1050f7145088d7a796d02d0bf09[m added autoselect for items
+[33m957ec4c4a832353720241aadd7406059e33706b6[m fixed voting system not working due to missing propagation of colyseus. Added VoteStage as a 'Serverside vote state'
+[33m4f3a1ed0580d5c13ebdc38a295dcb3f0d3c6f444[m added script for installing on deployed, fix switchTex for new models
+[33m3446d6ae2819a4bb7fcfa2a39547ab219e35e6c2[m added wakeAll, used before teleporting objects, to make sure asleep objects are updated again
+[33m132c86efe38b7dcdd094c89e7c5f493c8bcf2062[m remove old code
+[33md275b1c181ccf311759a88564f1ab19447e82780[m had to change models to make models axis-aligned and match origin with center of object. Also change the way dice throwing works
+[33mdabd18633cbba2271d9b5c1913e3ef709967d2b8[m fixed issues due to colyseus, reworked GameStateService
+[33mc86faab0682bb96a7a9ae45687053b579490a365[m fixed physics not being updated
+[33m318e5e1644163e33f5587dfb641384b11cce4ae9[m tried refactoring all for loops for new colyseus
+[33m26fe5479e996ccbf311c07e8a7a4badcbe1d8c7d[m try fixing merge
+[33maa4ef6bcd39d33daf87b03711ce215cc28cb8f32[m Update all npm modules except ammojs-typed.js
+[33m7a7d12c2bae7fd1eb1daa2c91a93fdc260639c52[m merged
+[33me04e3131a70727cf49fc9ca7db03e436892fb14a[m added raw version of items
+[33m0048596b4d3b8c4c2e2e9592f6753a247e1a15c5[m Add temporary guard to prevent the vote host from deselecting him self
+[33m7884047f9dc71f35a0c912082cf5cd843383cf89[m Fix minor buggs and performance issues
+[33m6655ddd0fc72fdcd7c4e2095cb3d7870f8c109c5[m Overhaul voting system to fit it into the new Menu-bar
+[33m25e155d3e79cee81022bed5d682ae96b86b340e8[m Fix potential bug relating to default behavior in the home register component
+[33mf2ccb4bf01106743acd38ee9216e7f992320767d[m Fix lieblers treachery relating to default values and log messages.
+[33m587dfd084d1bcb76e430c2b563b2fe15f4d67ab7[m changes to the display of the items in chat
+[33mc03066c27e181ee3254252a2dc6668238491087d[m Items are working with chatcommands
+[33mdd935884098056b9533184dec0e2200c1377e0d0[m Merge branch 'master' of github.com:Saphs/BrettSpiel
+[33m4023dee312a34eb67ff4fee2e7a6d78d91161489[m working on items
+[33m65266e4196566faa30362002b039ca40d3fe58d4[m Add unpolished websocket communication
+[33m2153b0bee4c4da778ef627581c13731d5926e219[m cleanup chat component in interface.html, move menubar to z-top, maybe needs slight color change
+[33mb527c9ef0a07cfaf2e2c75f6fa7c8b4c04456e8b[m refactored logs, fix chat
+[33mfc809c2d38c517a0814a4538d90df85e17802aef[m merging, fix dice roll bug
+[33m05c078c8ccf0f002107faf29c150dd61f167c9ed[m fixed bcap not displaying the selected one after reopening, reworked logging on startup
+[33mfb8ba2492ccb49583091dcadd669bd54dc7d2c34[m Add initial graph display
+[33mce18b08ee33e945d788c8d9a5dac6ffe33d95ce8[m implement new rules, but without author
+[33m703765b038100c78945ccac63f77b1cb8e0c5a62[m implement interface title bar with picture & bcap selection
+[33m10b2852a0e1039841aa7ca9e6af1f4833f05dd8a[m Implement Rulebook in updated fashion in the new MenuBar
+[33m4337d0d69faaa3272d4b2a1a220c8bd99c686f38[m remove bcap selection from commands
+[33m1cdeb84d189853166690f72776423d5079631958[m implement bcap selection
+[33m153a2177287ff33b88db548ec3ac7c64d4a5767b[m Port new menu into game view
+[33md923cbfee28b8589b4fbf6ee6a0290a41eefecc4[m Fix chat scrolling
+[33m094913cf5f3dfe3495d29d9208e8fc3df10f96bc[m Add even more fixes
+[33m8ff6081af6eac69bf96c2f6c86796b3248462824[m Add missing type values
+[33mbf1d0b1ac82827f0991c14b92d0cf455782c5b6e[m Merge branch 'master' of https://github.com/Saphs/BrettSpiel
+[33m6c386a7305ce843e0b9f12315a5f3cc9c0b2182f[m Temp fix colyseus frontend
+[33md48dec2104e20535fc6d268c36d005766c3d3f08[m Temp fix colyseus frontend
+[33mffa4e37ebeb1c3f0970857b625cdc3c93b46d9e9[m merged and added some hints
+[33mbfd2cfe1132b8413c6428c8f637c5a722f4e4e3f[m Fix #39. added Attribution.
+[33ma50840a1691129e97d7f51bcca57d0362dbe607f[m Add prototype menu interface
+[33m90a7b74732ff047f45dcafa82fd0c2679b22537b[m fix #16 added message when server not reachable
+[33md8d9a5a86386d36aafe3a7b8878b7a7a6de3eb31[m added logo for uptime page
+[33m467b8a6041bb363a9b33fd6da6188aebdfdf6a92[m modified next turn button, added new bcaps
+[33m954e903741e4b2ab2561dc2f6f66d0e9f3272502[m added 2 bcaps, fixed voteSystem
+[33m0ae945e817231a0ff4ed523b06215f7f5867d6c9[m fixed typo with /, fixed not removing temp folder for deployment
+[33m82bf4a62ad35968195ae644f795272effec606e7[m updated uploading scripts
+[33mc35073b03d9c32d2fd7094a7f0cf81da8905c513[m added selection for environments
+[33ma891cec54ef95d333cd7b4779799d483e7c67b3c[m added selection for environment
+[33m9dc8e4387bff41575f64a5bad73417550107f7b1[m fixed another minor bug for highlighting the winner correctly
+[33m485c0dfda8b84563d2986b12b702204e335adeae[m fixed minor bug when being not eligible
+[33m2ecc8757e91d4fd02a39cf153852c5eabef7a67c[m added VoteSystem. Works now, but not still needs design work. But do this after reworking windows
+[33m824ee5698d163c5b1dcb4529509c42f220fa54d3[m first working Voting system
+[33maf32b9c72146f0f045b174ae79b4f0de09d80fc9[m changes for voting
+[33m69019fd9c5eef1b7c0f57a25ad50dd5ca752a579[m use .glb file now
+[33m1c4136587584e71917f665dd88d288d7e06a18d7[m added game randomisation
+[33m510e9592a4ffe5077dead184ece2bf1de0460480[m added loading screen tips
+[33m9117cc0c2e832c264edeb20d96461d742bf334d7[m fix chime bug
+[33m581b9d532a958e9137635035e77c487aea9bce17[m refactor interface into game, fix playerlist number bug
+[33m962a3fe79df5e870e8d2fbe3fe540f48c94ac950[m added loadingscreen
+[33mcebc15de805ea28907a6e3b4170434bc0b9eb74d[m restructure loading and initializing
+[33m78f9005d65999be58fdf7d73f26f856d6e237d32[m Merge branch 'master' of github.com:Saphs/BrettSpiel
+[33mabb2ac28f4e217d6fd32621ea1c5c80134ae6dfc[m new Favico
+[33m6356f29aff6cad9485947831a558d5b952647c52[m Fix ingame profilepictures and added gold border
+[33m13377c0a06fbf3e920e6affb1ffaf2c4d63d8fd5[m fix double click Bug
+[33md23821fe772acd81fae60004d21c4fa14d954016[m Merge branch 'master' of github.com:Saphs/BrettSpiel
+[33m6d859d3f60cacd410b5496f7272bc9d9fd7d9d53[m added played time readout & fix scroll bug
+[33m742cd2a345da36300fd2978dd8b4107d3872d82a[m Add PerspectiveChange command
+[33m54f785d836f2f0a5fa7152be1e5309611fa2f7eb[m Merge branch 'master' of github.com:Saphs/BrettSpiel
+[33m37797bbfc1f236eb7edede691224d80ad3cf3fe2[m huge visual overhaul!!1!
+[33m555a67fdce6a35b36a7e69794aee7638ed568835[m Implement multiple steps to enable profile pictures
+[33m43be1c1a5a47d6838a447d1e11fd45d6584e58c4[m added Boundary for Gamefields
+[33me1e039f8fceb5bacf35205cc6deabed196c52848[m change Textures
+[33m9dc47d8cef8d258183a238820b83c39a09ba816a[m change gameboard to tiled board. Server handles Layout
+[33m846c84048d9cc9278e6ff5439ea28974eade6cc5[m added Playername over figure. is shown while Tab pressed on Viewport
+[33meff3da5b4942b10729bfc3a1fd887a1c9b1337e5[m added Database changes, fixing #18
+[33mdebcdf3f3ce3ddc9775ae8a4764eb89bae35610c[m Merge branch 'master' of github.com:Saphs/BrettSpiel
+[33mde9292bcf2be8ceabcdc48f73cb12773d077ad5e[m added .htaccess to fix #42
+[33m82fcdc8ddd835a07012caa3f9c843d17226f4cc5[m Fix small chat buggs
+[33m2ffed3d01f1d0af0648331071f14b709a91708a0[m Merge pull request #41 from Saphs/Add_Tile_Overlay
+[33m3681aa2bf244dda5bf5ec9b81f90714deaf4b16e[m Implement Tile overlay and shit on liebler
+[33m536a8603f72647101ea8b158a6c79825bd3f6cd5[m fix merging
+[33m92e16c4d28832617d588e20caf708a3d7a62d292[m make initializing correctly, add 2 new BCap Textures
+[33mf020588d3223e3149387005385f69da11aa7e9a8[m added nextTurn Button, made /next do nextTurn
+[33me05617431b9e8abc3fbb68e6c4e55b2244a08660[m Hot fix last PR before liebler catches my mistake
+[33m8d7c111b280986e7c5c01c94349b24a7f72a4f8d[m Merge pull request #40 from Saphs/Komischer_audiomist_und_ganz_coole_animaitonen
+[33m4833937bf2e0b0997905a1d50eb43f08f20c3f57[m Add sound as a service
+[33me4d12f7418d6bdbf6326847a35af373522160b8d[m Meh stuff und zeug (WIP)
+[33mc56f718af09135095d3a446ab26ceb5aab8903f2[m added diceRoll Message, and relocated diceroll logic into backend
+[33mf11a1befaf1b0d8d41731751b159b3189946d6cc[m Merge branch 'master' of github.com:Saphs/BrettSpiel
+[33m688cea7a6c001e54df6256211cc94311ac603fce[m added Restrictions to rolling dice and moving figure
+[33mbf7ed9a9f54feffbbfbee521ee64d7c48769d376[m Add frontend deployment script
+[33me704c8655a7f8ac97ebef5590fc26ff632e9876b[m fix chat
+[33mcdf4ffcf1b603994c1d1593f2af0c33acba9bea9[m added gracePeriod and getting kicked if no rejoin in gracePeriod
+[33mea48a59c4455c62f7e51d32bd6bb31d14a4198aa[m made reconnect work, fix playing order calculations
+[33m1d33569613c6b738fc4f2b70bfda8e6328df014e[m make models load if u yoin later too
+[33mb5f4d222a96685e81606e85c92ed0906fc33140e[m Merged
+[33m28a8cf21a582953afc55c75024a519081224bfe6[m added Textures. Manu wants some Gulag. Fancy Schmancy, UwU
+[33m988e1e4d33a5ae517a7d3c75f97280775c5c0023[m Merge pull request #31 from Saphs/Add_rules
+[33me9909a78f5f3f9b58e51613e70ecf9482ff0e1e3[m Add rule component and messages
+[33m8035c05a04464224ed32ad2dc50380f68fe38e71[m fix dice bug
+[33m0e2a749d83196af6e90a70fc5c18b29b164969c3[m fixed Mouse, added changing of textures
+[33m647568b7028665f6d0d2603265023b66bb2ab3c2[m prevented loading a model again while it is being loaded
+[33m76ede87b3b10c0d1f8c728342bb9de4f159572e7[m added loadAllObjects to be able to prefetsch al models
+[33ma7ba2fc771775444efe2f7b4c8f10df10fef1133[m added Caching
+[33ma8b5c58aa0dabdf64e060256e4d1f560477b6b60[m Merge pull request #30 from Saphs/PhysicsId
+[33maa0299130b29e7cd20edd47db65aa1c1537492d3[m removed old model
+[33m0a1829a441f4185eddc897aaf4de6fe509285f73[m mvp of serverPhysics
+[33mfacdf7b586e46033fcd63a5d2413a15bc54c1084[m enable tiz to work
+[33m41bc93983c291cf8b79d7bd436c1fb54d4a41478[m not working state
+[33ma52bac24003615c3cb266b1766f31b70b4e7a872[m Merge pull request #29 from Saphs/Add_ready_check_to_start_the_game
+[33m984a3018435fbc14273e59de3479493664ad14d3[m Finish implementing the pregame banner
+[33mb1f9c16a0f419bcc4767857563cabf9557fbed95[m Further steps to to build stuff
+[33m4dd84ba63ff98fd076d63c5e476bfa27cafee3cc[m Hot fix active player display
+[33mb51301dc024ee888fd2fc560c6abdbcaabe359f3[m Add host session to user interface and update command structrue to keep backend compatibility
+[33m1088e264c7534f65a9fee6f98f007e4ebb6c2d0b[m fixed physics inertia
+[33m18b3aca556b2dac5acfc59ef80aff291b412e021[m Merge pull request #28 from Saphs/imOnAMission

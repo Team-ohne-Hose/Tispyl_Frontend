@@ -54,14 +54,7 @@
 
     <div class="input-section">
       <div class="command-hint" (click)="showChatCmdDropdown = !showChatCmdDropdown"><i class="fas fa-terminal"></i></div>
-      <div class="cmdHint-dropdown-container" *ngIf="showChatCmdDropdown">
-        <div class="tooltip-arrow"></div>
-        <div class="tooltip">
-          <div *ngFor="">
-
-          </div>
-        </div>
-      </div>
+      <app-chat-command-list *ngIf="showChatCmdDropdown"></app-chat-command-list>
       <div (keyup)="sendChatMessageByKey($event, chatInput)" class="text-input-container">
         <input #chatInput placeholder="Type here ..." type="text">
       </div>

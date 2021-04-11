@@ -245,3 +245,7 @@
   padding: var(--base-padding);
   display: flex;
 }
+
+app-chat-command-list {
+  position: absolute;
+}

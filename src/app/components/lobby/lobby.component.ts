@@ -34,7 +34,7 @@ export class LobbyComponent implements OnInit {
     private colyseus: ColyseusClientService,
     private router: Router,
     private AuthService: JwtTokenService,
-    private userManagement: UserService) {
+    public userManagement: UserService) {
     this.gameClient = colyseus.getClient();
   }
 
