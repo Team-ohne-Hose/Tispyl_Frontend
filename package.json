@@ -28,6 +28,7 @@
     "@types/d3": "^5.16.3",
     "ammojs-typed": "1.0.2",
     "axios": "^0.21.1",
+    "bootstrap": "^4.6.0",
     "colyseus.js": "^0.14.0",
     "core-js": "^3.6.4",
     "d3": "^6.2.0",
