@@ -1,5 +1,5 @@
-export type RegisterOptions = {
-  username: string,
-  password: string,
-  displayname: string
+export interface RegisterOptions {
+  username: string;
+  password: string;
+  displayname: string;
 }

@@ -13,10 +13,11 @@ import { ChatService } from '../../../../services/chat.service';
 })
 export class TileOverlayComponent implements ColyseusNotifyable {
 
-  @Output() printer: EventEmitter<string> = new EventEmitter<string>();
   @Input() playerName: string;
 
-  constructor(private gameState: GameStateService, private boardTiles: BoardTilesService, private chatService: ChatService) {
+  constructor(private gameState: GameStateService,
+              private boardTiles: BoardTilesService,
+              private chatService: ChatService) {
   }
 
   attachColyseusStateCallbacks(gameState: GameStateService): void {
@@ -32,7 +33,7 @@ export class TileOverlayComponent implements ColyseusNotifyable {
           const desc = `${this.descriptionOf(data.tile)}`;
           const msg = `${header}\n${title}\n\n${desc}`;
           console.log(`[EVENT]: ${msg}`);
-          this.printer.emit(msg);
+          this.print(msg, 'Tiles');
         }
       }
     });
@@ -45,6 +46,10 @@ export class TileOverlayComponent implements ColyseusNotifyable {
   descriptionOf(index: number) {
     const tile = this.boardTiles.getTile(index);
     return tile === undefined ? 'ERROR!' : tile.description;
+  }
+
+  private print(msg: string, senderCmd: string) {
+    this.chatService.addLocalMessage(msg, 'Console: ' + senderCmd);
   }
 
 }

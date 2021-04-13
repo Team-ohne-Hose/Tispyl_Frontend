@@ -202,6 +202,7 @@
   display: flex;
   align-items: center;
   font-size: small;
+  position: relative;
 }
 
 .command-hint:hover {
@@ -213,6 +214,9 @@
   margin: 0.2rem 0.8rem;
   color: var(--text-color);
   border-bottom: var(--dim-text-color);
+}
+.input-section input:focus {
+  outline:none !important;
 }
 
 .input-section input::placeholder {
@@ -231,6 +235,13 @@
 
 .text-input-container:focus-within {
   border: var(--dim-text-color) 1px solid;
+}
+
+app-chat-command-list {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  filter: drop-shadow(0px 5px 8px rgba(0, 0, 0, 0.4));
 }
 
 /*===========================MISC======================*/

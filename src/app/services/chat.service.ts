@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable, Output } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { ColyseusNotifyable } from './game-initialisation.service';
 import { MessageType, WsData } from '../model/WsData';
 import { GameStateService } from './game-state.service';

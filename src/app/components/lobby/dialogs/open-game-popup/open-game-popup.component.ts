@@ -1,7 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { User } from '../../../../model/User';
-import { RegisterPopupComponent } from '../register-popup/register-popup.component';
 
 @Component({
   templateUrl: './open-game-popup.component.html',

@@ -61,6 +61,7 @@ import { UpdatesComponent } from './components/lobby/updates/updates.component';
 import { ProfileComponent } from './components/lobby/profile/profile.component';
 import { SettingsComponent } from './components/lobby/settings/settings.component';
 import { CustomEditorComponent } from './components/lobby/custom-editor/custom-editor.component';
+import { ChatCommandListComponent } from './components/game/interface/menu-bar/home-register/chat-command-list/chat-command-list.component';
 import { ReactiveFormsModule } from '@angular/forms';
 
 const appRoutes: Routes = [
@@ -128,7 +129,8 @@ const appRoutes: Routes = [
     UpdatesComponent,
     ProfileComponent,
     SettingsComponent,
-    CustomEditorComponent
+    CustomEditorComponent,
+    ChatCommandListComponent
   ],
   imports: [
     RouterModule.forRoot(

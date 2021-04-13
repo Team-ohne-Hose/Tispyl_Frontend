@@ -1,4 +1,4 @@
-import { Schema, ArraySchema, type } from '@colyseus/schema';
+import { Schema, type } from '@colyseus/schema';
 
 export class Link extends Schema {
 

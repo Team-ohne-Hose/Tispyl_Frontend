@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { SceneBuilderService } from '../../../../services/scene-builder.service';
 import { PhysicsCommands } from './PhysicsCommands';
-import { GameActionType, GameSetTile, MessageType, WsData } from '../../../../model/WsData';
+import { GameActionType, GameSetTile, MessageType } from '../../../../model/WsData';
 import { Color, ObjectLoaderService } from '../../../../services/object-loader.service';
 import { MapSchema } from '@colyseus/schema';
 import { Player } from '../../../../model/state/Player';
