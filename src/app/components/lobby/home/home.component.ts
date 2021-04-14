@@ -24,7 +24,7 @@ export class HomeComponent implements OnInit, AfterContentInit {
     private AuthService: JwtTokenService,
     private userManagement: UserService,
     private fileService: FileService
-  ) {}
+  ) { }
 
   /** Images displayed in the header carousel (expects 16:9 images) */
   imageSources: string[] = [
@@ -74,7 +74,7 @@ export class HomeComponent implements OnInit, AfterContentInit {
     if (this.AuthService.isLoggedIn) {
       this.userManagement.getUserByLoginName(localStorage.getItem('username')).subscribe(
         (usr: APIResponse<LoginUser>) => { this.userManagement.setActiveUser(usr.payload as LoginUser); },
-      (err) => { console.error('Found JWT token indicating a logged in user, but could not retrieve LoginUser object from server', err); }
+        (err) => { console.error('Found JWT token indicating a logged in user, but could not retrieve LoginUser object from server', err); }
       );
     } else {
       this.AuthService.logout();
@@ -82,11 +82,10 @@ export class HomeComponent implements OnInit, AfterContentInit {
 
     this.activeUser.subscribe(u => {
       if (u !== undefined) {
-        //this.isLoggedIn = u !== undefined;
         this.isLoggedIn = true;
         this.profileSource = this.fileService.profilePictureSource(u.login_name, true);
       }
-      
+
     });
   }
 
@@ -104,7 +103,7 @@ export class HomeComponent implements OnInit, AfterContentInit {
 
   private scrollToSlide(idx: number, behavior: 'auto' | 'smooth'): void {
     const img_width = this.banner.nativeElement.scrollWidth / this.imageSources.length;
-    this.banner.nativeElement.scrollTo({ top: 0, left: (idx - 1) * img_width, behavior: behavior});
+    this.banner.nativeElement.scrollTo({ top: 0, left: (idx - 1) * img_width, behavior: behavior });
   }
 
   /**
@@ -119,10 +118,10 @@ export class HomeComponent implements OnInit, AfterContentInit {
     const lowerBoarder = first + 1;
     const upperBoarder = last - 1;
 
-    if (this.activeSlide <= lowerBoarder ) {
+    if (this.activeSlide <= lowerBoarder) {
       this.activeSlide = upperBoarder - 1;
       this.scrollToSlide(this.activeSlide, 'auto');
-    } else if (this.activeSlide >= upperBoarder ) {
+    } else if (this.activeSlide >= upperBoarder) {
       this.activeSlide = lowerBoarder + 1;
       this.scrollToSlide(this.activeSlide, 'auto');
     }
@@ -144,9 +143,9 @@ export class HomeComponent implements OnInit, AfterContentInit {
   /** Dropdown menu close event */
   @HostListener('document:click', ['$event'])
   clickOutside(event) {
-    if ( this.dropDown !== undefined && !this.dropDown.nativeElement.contains(event.target) ) {
+    if (this.dropDown !== undefined && !this.dropDown.nativeElement.contains(event.target)) {
       const classes = this.dropDown.nativeElement.classList;
-      if ( classes.contains('open') ) {
+      if (classes.contains('open')) {
         classes.remove('open');
       }
     }
@@ -154,7 +153,7 @@ export class HomeComponent implements OnInit, AfterContentInit {
 
   public onProfileClick(): void {
     const classes = this.dropDown.nativeElement.classList;
-    if ( classes.contains('open') ) {
+    if (classes.contains('open')) {
       classes.remove('open');
     } else {
       classes.add('open');
