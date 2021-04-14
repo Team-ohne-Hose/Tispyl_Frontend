@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { GameDisplayComponent } from './components/lobby/game-display/game-display.component';
@@ -128,7 +128,8 @@ const appRoutes: Routes = [
     UpdatesComponent,
     ProfileComponent,
     SettingsComponent,
-    CustomEditorComponent
+    CustomEditorComponent,
+
   ],
   imports: [
     RouterModule.forRoot(
@@ -153,13 +154,15 @@ const appRoutes: Routes = [
     MatProgressSpinnerModule,
     MatStepperModule,
     MatSlideToggleModule,
-    CdkStepperModule
+    CdkStepperModule,
+    
   ],
   providers: [{
     provide: HTTP_INTERCEPTORS,
     useClass: AuthInterceptor,
     multi: true
-  }],
+  },
+  {provide: LOCALE_ID, useValue: 'de'}],
   bootstrap: [AppComponent]
 })
 export class AppModule {

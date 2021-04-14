@@ -1,0 +1,27 @@
+.body-content {
+    margin: 0 auto;
+    margin-top: 2rem;
+}
+
+.user-profile {
+    border: 1px;
+    border-style: dashed;
+    border-color: aliceblue;
+}
+
+.box {
+    background-color: rgba(48, 48, 48, 0.58);
+    box-shadow: 3px 3px 11px 0px rgb(0, 0, 0);
+    -webkit-box-shadow: 3px 3px 11px 0px rgb(0, 0, 0);
+    -moz-box-shadow: 3px 3px 11px 0px rgb(0, 0, 0);
+    padding: 1rem !important;
+}
+
+.icon {
+    position: absolute;
+    display: flex;
+    width: 256px;
+    top: 99%;
+    left: 99%;
+    transform: translate(-55%, -55%);
+}

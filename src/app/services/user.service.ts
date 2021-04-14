@@ -25,6 +25,7 @@ export class UserService {
     this.activeUser.next(user);
   }
 
+  //depri weil observa
   getActiveUser(): Observable<LoginUser> {
     return this.activeUser.asObservable();
   }

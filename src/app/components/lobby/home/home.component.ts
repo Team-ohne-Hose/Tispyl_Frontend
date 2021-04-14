@@ -10,6 +10,7 @@ import { LoginUser } from '../../../model/User';
 import { JwtTokenService } from '../../../services/jwttoken.service';
 import { UserService } from '../../../services/user.service';
 import { APIResponse } from '../../../model/APIResponse';
+import { FileService } from 'src/app/services/file.service';
 
 @Component({
   selector: 'app-home',
@@ -22,7 +23,8 @@ export class HomeComponent implements OnInit, AfterContentInit {
     public router: Router,
     private route: ActivatedRoute,
     private AuthService: JwtTokenService,
-    private userManagement: UserService
+    private userManagement: UserService,
+    private fileService: FileService
   ) {}
 
   /** Images displayed in the header carousel (expects 16:9 images) */
@@ -48,6 +50,7 @@ export class HomeComponent implements OnInit, AfterContentInit {
 
   /** State values */
   activeUser = this.userManagement.getActiveUser();
+  profileSource: string;
 
   /**
    * Prepares {@link imageSources} for infinite scrolling by pre- and appending new elements. Example:
@@ -79,7 +82,12 @@ export class HomeComponent implements OnInit, AfterContentInit {
     }
 
     this.activeUser.subscribe(u => {
-      this.isLoggedIn = u !== undefined;
+      if (u !== undefined) {
+        //this.isLoggedIn = u !== undefined;
+        this.isLoggedIn = true;
+        this.profileSource = this.fileService.profilePictureSource(u.login_name, true);
+      }
+      
     });
   }
 
