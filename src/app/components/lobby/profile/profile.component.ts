@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { LoginUser, User } from 'src/app/model/User';
 import { FileService } from 'src/app/services/file.service';
-import { UserService } from 'src/app/services/user.service';
+import { LoginUser, User, UserService } from 'src/app/services/user.service';
 
 
 class ImageSnippet {
