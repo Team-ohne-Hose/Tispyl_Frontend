@@ -44,7 +44,7 @@ export class ProfileComponent implements OnInit {
         const min = user.time_played;
         this.timePlayed = `${Math.floor(min / 60)} hours ${Math.floor(min % 60)} minutes`;
       }
-    })
+    });
   }
 
   processFile(imageInput: any) {
@@ -58,13 +58,13 @@ export class ProfileComponent implements OnInit {
       this.fileService.uploadProfilePicture(this.selectedFile.file, this.currentUser).subscribe(
         (user: LoginUser) => {
           console.log(user);
-          this.userService.setActiveUser(user)
-          this.profileSource = this.fileService.profilePictureSource(this.currentUser.login_name, true)
+          this.userService.setActiveUser(user);
+          this.profileSource = this.fileService.profilePictureSource(this.currentUser.login_name, true);
           this.onSuccess();
         },
         (err) => {
           this.onError();
-        })
+        });
     });
     reader.readAsDataURL(file);
   }
