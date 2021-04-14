@@ -1,107 +1,104 @@
 <div class="layout">
-    <header>
-        <div class="banner-container">
-
-            <div class="banner-box">
-                <div class="banner" #banner>
-                    <div *ngFor="let isrc of imageSources; let i = index" [ngClass]="{
-                'slide':true,
-                'active':activeSlide == i
-             }">
-                        <img [src]=isrc alt="{{isrc}} - {{i}}" height=100%>
-                    </div>
-                </div>
-            </div>
-
-            <div class="anchor-box">
-                <a *ngFor="let isrc of imageSources; let i = index" [ngClass]="{
-            'anchor':true,
-            'active':activeSlide % originalSourceCount == i % originalSourceCount,
-            'noDisplay':i <= 1 || i > originalSourceCount + 1
-         }" (click)="onAnchorClick(i)"></a>
-            </div>
+  <header>
+    <div class="banner-container">
+      <div class="banner-box">
+        <div class="banner" #banner>
+          <div *ngFor="let isrc of imageSources; let i = index" [ngClass]="{
+              slide: true,
+              active: activeSlide == i
+            }">
+            <img [src]="isrc" alt="{{ isrc }} - {{ i }}" height="100%" />
+          </div>
         </div>
+      </div>
 
+      <div class="anchor-box">
+        <a *ngFor="let isrc of imageSources; let i = index" [ngClass]="{
+            anchor: true,
+            active:
+              activeSlide % originalSourceCount == i % originalSourceCount,
+            noDisplay: i <= 1 || i > originalSourceCount + 1
+          }" (click)="onAnchorClick(i)"></a>
+      </div>
+    </div>
 
-        <div class="nav-bar">
-            <div class="logo-box">
-                <img [src]=logoSource alt="Logo">
-            </div>
-            <div class="nav-box">
-                <button class="nav-button" [routerLink]="['./news']">
+    <div class="nav-bar">
+      <div class="logo-box">
+        <img [src]="logoSource" alt="Logo" />
+      </div>
+      <div class="nav-box">
+        <button class="nav-button" [routerLink]="['./news']">
           <i class="fas fa-home"></i>
           <span>News</span>
         </button>
-                <button *ngIf="isLoggedIn" class="nav-button" [routerLink]="['./lobby']">
+        <button *ngIf="isLoggedIn" class="nav-button" [routerLink]="['./lobby']">
           <i class="fas fa-gamepad"></i>
           <span>Lobby</span>
         </button>
-                <button class="nav-button" [routerLink]="['./faq']">
+        <button class="nav-button" [routerLink]="['./faq']">
           <i class="fas fa-gavel"></i>
           <span>FAQ</span>
         </button>
-                <button *ngIf="isLoggedIn" class="nav-button" [routerLink]="['./profile']">
+        <button *ngIf="isLoggedIn" class="nav-button" [routerLink]="['./profile']">
           <i class="fas fa-user-circle"></i>
           <span>Profile</span>
         </button>
-                <button class="nav-button" [routerLink]="['./updates']">
+        <button class="nav-button" [routerLink]="['./updates']">
           <i class="far fa-clipboard"></i>
           <span>Updates</span>
         </button>
-                <button *ngIf="isLoggedIn" class="nav-button" [routerLink]="['./custom']">
+        <button *ngIf="isLoggedIn" class="nav-button" [routerLink]="['./custom']">
           <i class="fas fa-star"></i>
           <span>Custom</span>
         </button>
-            </div>
+      </div>
 
-
-            <div *ngIf="isLoggedIn" class="user-box dropdown-anchor" #dropdown (click)="onProfileClick()">
-                <div class="img-clipper">
-                    <img [src]="profileSource" alt="user">
-                </div>
-                <div class="dropdown-menu">
-                    <button class="dropdown-item" [routerLink]="['./settings']">
-              <i class="fas fa-cog"></i>
-              <span>Settings</span>
-            </button>
-                    <button class="dropdown-item" (click)="onLogOut()">
-              <i class="fas fa-door-open"></i>
-              <span>Logout</span>
-            </button>
-                </div>
-            </div>
-
-            <div *ngIf="!isLoggedIn" class="login-box">
-                <div class="img-clipper noSelect" (click)="navigate('./login')">
-                    <div class="border">
-                        <div class="img-clipper-second">
-                            <div class="internal">
-                                <span>Login</span><i class="fas fa-sign-in-alt"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+      <div *ngIf="isLoggedIn" class="user-box dropdown-anchor" #dropdown (click)="onProfileClick()">
+        <div class="img-clipper">
+          <img [src]="profileSource" alt="user" />
         </div>
-    </header>
-
-    <main>
-        <router-outlet></router-outlet>
-    </main>
-
-    <footer>
-        <div class="foot-notes">
-            <div class="info">
-                <span><i class="fas fa-bug bug"></i>Found a bug?</span><i class="fas fa-circle"></i>
-                <span>Impressum</span><i class="fas fa-circle"></i>
-                <span>Credits</span><i class="fas fa-circle"></i>
-                <span>About</span>
-            </div>
-
-            <div class="small-logo-box">
-                <img [src]=logoSource alt="Logo">
-            </div>
+        <div class="dropdown-menu">
+          <button class="dropdown-item" [routerLink]="['./settings']">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+          </button>
+          <button class="dropdown-item" (click)="onLogOut()">
+            <i class="fas fa-door-open"></i>
+            <span>Logout</span>
+          </button>
         </div>
-    </footer>
+      </div>
+
+      <div *ngIf="!isLoggedIn" class="login-box">
+        <div class="img-clipper noSelect" (click)="navigate('./login')">
+          <div class="border">
+            <div class="img-clipper-second">
+              <div class="internal">
+                <span>Login</span><i class="fas fa-sign-in-alt"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer>
+    <div class="foot-notes">
+      <div class="info">
+        <span><i class="fas fa-bug bug"></i>Found a bug?</span>
+        <i class="fas fa-circle"></i> <span>Impressum</span>
+        <i class="fas fa-circle"></i> <span>Credits</span>
+        <i class="fas fa-circle"></i> <span>About</span>
+      </div>
+
+      <div class="small-logo-box">
+        <img [src]="logoSource" alt="Logo" />
+      </div>
+    </div>
+  </footer>
 </div>
