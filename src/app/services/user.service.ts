@@ -54,7 +54,9 @@ export class UserService {
     this.activeUser.next(user);
   }
 
-  //depri weil observa
+  /**
+   * @deprecated The method should not be used
+   */
   getActiveUser(): Observable<LoginUser> {
     return this.activeUser.asObservable();
   }
@@ -80,7 +82,7 @@ export class UserService {
   }
 
   loginUser(login_name: string, password_hash: string): Observable<APIResponse<JwtResponse>> {
-    return this.httpClient.post<APIResponse<JwtResponse>>(this.userEndpoint + '/token', {username: login_name, password: password_hash});
+    return this.httpClient.post<APIResponse<JwtResponse>>(this.userEndpoint + '/token', { username: login_name, password: password_hash });
   }
 
   syncUserData(user: User): void {
