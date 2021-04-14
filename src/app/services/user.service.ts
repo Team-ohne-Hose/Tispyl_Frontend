@@ -1,11 +1,40 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { LoginUser, User } from '../model/User';
+import * as hash from 'object-hash';
 import { map } from 'rxjs/operators';
 import { APIResponse } from '../model/APIResponse';
 import { environment } from '../../environments/environment';
-import { JwtResponse } from '../model/JwtToken';
+import { JwtResponse } from './jwttoken.service';
+
+export class User {
+  login_name: string;
+  display_name: string;
+  password_hash: string;
+  user_creation: string;
+  time_played: number;
+  profile_picture: string;
+  last_figure: string;
+  is_connected: boolean;
+  is_dev: boolean;
+
+  constructor(login: string, display: string, password: string) {
+    this.login_name = login;
+    this.display_name = display;
+    this.password_hash = hash.MD5(password);
+  }
+}
+
+export class LoginUser {
+  login_name: string;
+  display_name: string;
+  user_creation: string;
+  time_played: number;
+  profile_picture: string;
+  last_figure: string;
+  is_connected: boolean;
+  is_dev: boolean;
+}
 
 @Injectable({
   providedIn: 'root'

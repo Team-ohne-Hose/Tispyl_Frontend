@@ -1,8 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { TextContainer } from '../../../model/TextContainer';
-import { LoginUser } from '../../../model/User';
 import * as hash from 'object-hash';
-import { UserService } from '../../../services/user.service';
+import { UserService, LoginUser } from '../../../services/user.service';
 import { JwtTokenService } from 'src/app/services/jwttoken.service';
 import { TranslationService } from '../../../services/translation.service';
 import { ActivatedRoute, Router } from '@angular/router';

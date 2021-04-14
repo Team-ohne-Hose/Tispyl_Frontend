@@ -13,7 +13,6 @@
     [players]="gameState.getPlayerArray()">
   </app-connected-players>
   <app-menu-bar
-    (executeNewChatCommand)="executeChatCommand($event)"
     [playerList]="gameState.getPlayerArray()"
     [ruleList]="gameState.getRules()">
   </app-menu-bar>
@@ -25,7 +24,6 @@
                     [currentPlayerName]="gameState.getCurrentPlayerDisplayName()" [ownTurn]="this.gameState.isMyTurn()">
   </app-turn-overlay>
   <app-tile-overlay #tileOverlay
-                    (printer)="print($event, 'Tiles')"
                     [playerName]="gameState.getCurrentPlayerDisplayName()">
   </app-tile-overlay>
 </div>

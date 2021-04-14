@@ -1,8 +1,7 @@
-import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { GameStateService } from '../../../../../../services/game-state.service';
 import { Player } from '../../../../../../model/state/Player';
 import { VoteEntry } from '../helpers/VoteEntry';
-import { UserService } from '../../../../../../services/user.service';
 import { VoteConfiguration } from '../helpers/VoteConfiguration';
 import { GameActionType, MessageType } from '../../../../../../model/WsData';
 

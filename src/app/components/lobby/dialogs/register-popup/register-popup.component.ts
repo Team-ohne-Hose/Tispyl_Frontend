@@ -1,10 +1,9 @@
-import { Component, Inject, Injectable, Output, ViewChild } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { RegisterOptions } from 'src/app/model/RegisterOptions';
 import { JwtTokenService } from 'src/app/services/jwttoken.service';
-import { User } from '../../../../model/User';
-import { createViewChild } from '@angular/compiler/src/core';
+import { User } from '../../../../services/user.service';
 
 @Component({
   templateUrl: './register-popup.component.html',

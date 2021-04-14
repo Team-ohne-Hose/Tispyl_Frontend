@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { RoomAvailable } from 'colyseus.js';
 import { RoomMetaInfo } from '../../../model/RoomMetaInfo';
 import { Router } from '@angular/router';

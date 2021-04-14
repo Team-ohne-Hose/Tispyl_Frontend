@@ -1,13 +1,11 @@
 import { Component, OnInit, } from '@angular/core';
-import { TranslationService } from '../../services/translation.service';
-import { LoginUser } from '../../model/User';
-import { Translation } from '../../model/Translation';
+import { TranslationService, Translation } from '../../services/translation.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { OpenGamePopupComponent } from './dialogs/open-game-popup/open-game-popup.component';
 import { ColyseusClientService, CreateRoomOpts } from '../../services/colyseus-client.service';
 import { Client, Room, RoomAvailable } from 'colyseus.js';
 import { Router } from '@angular/router';
-import { UserService } from '../../services/user.service';
+import { UserService, LoginUser } from '../../services/user.service';
 import { RoomMetaInfo } from '../../model/RoomMetaInfo';
 import { JoinGameComponent } from './dialogs/join-game/join-game.component';
 import { GameState } from '../../model/state/GameState';
@@ -65,6 +63,7 @@ export class LobbyComponent implements OnInit {
     this.colyseus.getActiveRoom().subscribe(r => this.activeLobby = r);
     this.colyseus.availableRooms.subscribe(arr => this.availableLobbies = arr);
   }
+
 
   changeLanguage(lang: string): void {
     this.translation = TranslationService.getTranslations(lang);
@@ -125,7 +124,8 @@ export class LobbyComponent implements OnInit {
       panelClass: 'modalbox-base'
     });
     dialogRef.afterClosed().subscribe(s => console.log('closed dialog'));
-    this.colyseus.joinActiveRoom(lobby, this.currentUser.login_name, this.currentUser.display_name);
+    const currentUser = this.userManagement.activeUser.value;
+    this.colyseus.joinActiveRoom(lobby, currentUser.login_name, currentUser.display_name);
   }
 
   /** Enter a game (switch to in game view) you are already assigned to */

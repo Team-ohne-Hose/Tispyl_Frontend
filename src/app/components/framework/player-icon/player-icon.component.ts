@@ -1,10 +1,9 @@
-import { Component, Input, AfterViewInit, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Player } from '../../../model/state/Player';
 import { FileService } from '../../../services/file.service';
 import { GameStateService } from '../../../services/game-state.service';
 import { MessageType, RefreshCommandType, RefreshProfilePics } from '../../../model/WsData';
 import { UserService } from '../../../services/user.service';
-import { UserResponse } from 'src/app/model/UserResponse';
 
 @Component({
   selector: 'app-player-icon',

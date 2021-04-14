@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Translation } from '../../../model/Translation';
+import { Translation } from '../../../services/translation.service';
 import { TranslationService } from '../../../services/translation.service';
 
 @Component({

@@ -1,5 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { SpecialRule } from './helpers/SpecialRule';
+import { Component, Input } from '@angular/core';
 import { GameActionType, MessageType } from '../../../../../model/WsData';
 import { GameStateService } from '../../../../../services/game-state.service';
 
@@ -11,8 +10,6 @@ import { GameStateService } from '../../../../../services/game-state.service';
 export class IngameRuleBookComponent {
 
   @Input() rules = [];
-
-  //rules: SpecialRule[] = [];
 
   constructor(private gameState: GameStateService) {
   }
