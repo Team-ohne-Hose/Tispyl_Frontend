@@ -54,20 +54,19 @@
         </button>
       </div>
 
-
       <div *ngIf="isLoggedIn" class="user-box dropdown-anchor" #dropdown (click)="onProfileClick()">
         <div class="img-clipper">
           <img [src]=userSource alt="user">
         </div>
         <div class="dropdown-menu">
           <button class="dropdown-item" [routerLink]="['./settings']">
-              <i class="fas fa-cog"></i>
-              <span>Settings</span>
-            </button>
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+          </button>
           <button class="dropdown-item" (click)="onLogOut()">
-              <i class="fas fa-door-open"></i>
-              <span>Logout</span>
-            </button>
+            <i class="fas fa-door-open"></i>
+            <span>Logout</span>
+          </button>
         </div>
       </div>
 
