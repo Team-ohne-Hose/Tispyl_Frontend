@@ -42,9 +42,7 @@ export class LoginUser {
 export class UserService {
 
   activeUser: BehaviorSubject<LoginUser>;
-  private readonly prodUserEndpoint = 'https://tispyl.uber.space:41920/api/user';
-  private readonly devUserEndpoint = 'http://localhost:25670/api/user';
-  private userEndpoint = environment.production ? this.prodUserEndpoint : this.devUserEndpoint;
+  private userEndpoint = environment.endpoint + 'user';
 
   constructor(private httpClient: HttpClient) {
     this.activeUser = new BehaviorSubject<LoginUser>(undefined);

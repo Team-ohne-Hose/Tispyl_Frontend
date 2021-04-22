@@ -16,12 +16,32 @@
         <input [(ngModel)]="randomizeTiles" type="checkbox">
       </label>
     </div>
+    <div class="card-deck-select">
+      <span>Deck</span>
+      <div id="deck-carousel">
+        <div class="carousel-inner">
+          <div [class]="{'carousel-item': true, 'active': i === this.selectedIndex}" *ngFor="let deck of this.deckList; let i = index">
+            {{deck.name}}
+          </div>
+        </div>
+        <a class="carousel-control-prev" href="#deck-carousel" role="button" data-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#deck-carousel" role="button" data-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div>
+    </div>
+    <!--
     <div class="element">
       <label>
         Skin(leave empty for default):
         <input [(ngModel)]="skinName">
       </label>
     </div>
+    -->
   </div>
 
   <div class="foot">
