@@ -4,6 +4,7 @@
       <div class="banner-box">
         <div class="banner" #banner>
           <div *ngFor="let isrc of imageSources; let i = index" [ngClass]="{
+
               slide: true,
               active: activeSlide == i
             }">
@@ -14,11 +15,13 @@
 
       <div class="anchor-box">
         <a *ngFor="let isrc of imageSources; let i = index" [ngClass]="{
+
             anchor: true,
             active:
               activeSlide % originalSourceCount == i % originalSourceCount,
             noDisplay: i <= 1 || i > originalSourceCount + 1
           }" (click)="onAnchorClick(i)"></a>
+
       </div>
     </div>
 
@@ -90,10 +93,10 @@
   <footer>
     <div class="foot-notes">
       <div class="info">
-        <span><i class="fas fa-bug bug"></i>Found a bug?</span>
-        <i class="fas fa-circle"></i> <span>Impressum</span>
-        <i class="fas fa-circle"></i> <span>Credits</span>
-        <i class="fas fa-circle"></i> <span>About</span>
+        <span><i class="fas fa-bug bug"></i>Käferbericht einreichen</span><i class="fas fa-circle"></i>
+        <span>Impressum</span><i class="fas fa-circle"></i>
+        <span>Credits</span><i class="fas fa-circle"></i>
+        <span>About</span>
       </div>
 
       <div class="small-logo-box">
