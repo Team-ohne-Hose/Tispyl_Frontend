@@ -45,7 +45,7 @@ export class LobbyComponent implements OnInit {
     maxWidth: '500px',
     height: '70%',
     maxHeight: '350px',
-    data: {user: this.currentUser},
+    data: {},
     panelClass: 'modalbox-base'
   };
 
