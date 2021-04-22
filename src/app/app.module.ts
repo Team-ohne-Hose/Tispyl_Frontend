@@ -133,9 +133,8 @@ const appRoutes: Routes = [
     ChatCommandListComponent
   ],
   imports: [
-    RouterModule.forRoot(
-      appRoutes // ,{ enableTracing: true } // <-- debugging purposes only
-    ),
+    RouterModule.forRoot(appRoutes // ,{ enableTracing: true } // <-- debugging purposes only
+, { relativeLinkResolution: 'legacy' }),
     ReactiveFormsModule,
     DragDropModule,
     BrowserModule,
