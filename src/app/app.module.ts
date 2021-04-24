@@ -63,6 +63,7 @@ import { SettingsComponent } from './components/lobby/settings/settings.componen
 import { CustomEditorComponent } from './components/lobby/custom-editor/custom-editor.component';
 import { ChatCommandListComponent } from './components/game/interface/menu-bar/home-register/chat-command-list/chat-command-list.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NgbCarouselModule, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
 
 const appRoutes: Routes = [
   { path: 'home', component: HomeComponent,
@@ -134,7 +135,7 @@ const appRoutes: Routes = [
   ],
   imports: [
     RouterModule.forRoot(appRoutes // ,{ enableTracing: true } // <-- debugging purposes only
-, { relativeLinkResolution: 'legacy' }),
+      , {relativeLinkResolution: 'legacy'}),
     ReactiveFormsModule,
     DragDropModule,
     BrowserModule,
@@ -154,7 +155,9 @@ const appRoutes: Routes = [
     MatProgressSpinnerModule,
     MatStepperModule,
     MatSlideToggleModule,
-    CdkStepperModule
+    CdkStepperModule,
+    NgbCarouselModule,
+    NgbPopoverModule
   ],
   providers: [{
     provide: HTTP_INTERCEPTORS,

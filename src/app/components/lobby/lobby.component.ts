@@ -42,9 +42,9 @@ export class LobbyComponent implements OnInit {
   /** Pop-up config */
   dialogConfig = {
     width: '80%',
-    maxWidth: '500px',
+    maxWidth: '1000px',
     height: '70%',
-    maxHeight: '350px',
+    maxHeight: '900px',
     data: {},
     panelClass: 'modalbox-base'
   };

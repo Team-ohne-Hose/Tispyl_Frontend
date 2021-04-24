@@ -17,35 +17,119 @@
       </label>
     </div>
     <div class="card-deck-select">
-      <span>Deck</span>
-      <div id="deck-carousel">
-        <div class="carousel-inner">
-          <div [class]="{'carousel-item': true, 'active': i === this.selectedIndex}" *ngFor="let deck of this.deckList; let i = index">
-            {{deck.name}}
-          </div>
-        </div>
-        <a class="carousel-control-prev" href="#deck-carousel" role="button" data-slide="prev">
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <div class="carousel-container">
+        <ngb-carousel #deckCarousel (slide)="slide($event)">
+          <ng-template ngbSlide id="deckSlide-{{deck.id}}" *ngFor="let deck of this.deckList; let i = index" (slid)='slid($event, i)'>
+            <div class="carousel-deck-item">
+              <img [src]="deck.thumbnailPath" alt="{{deck.name}}">
+              <div class="deck-info-container container">
+                <div class="deck-info-header row">
+                  <div class="col-3"><h3>{{deck.name}}</h3></div>
+                  <div class="col-3 font-italic my-auto ml-auto"><h5 class="text-right">{{deck.author.display_name}}</h5></div>
+                </div>
+                <div class="deck-info-tag-container my-2 mx-1 row">
+                  <span *ngFor="let tag of deck.tags" class="badge badge-pill badge-dark" >{{tag.tag}}</span>
+                </div>
+                <p class="row">{{deck.description}}</p>
+                <div class="row">
+                  <div class="ml-auto showTileListButtonContainer">
+                    <button type="button" (click)="this.popoverVisible = !this.popoverVisible">Show</button>
+                    <div class="showTileListPopoverArrow" *ngIf="this.popoverVisible" (click)="this.popoverVisible = false;">
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </ngb-carousel>
+        <a role="button" class="carousel-control-prev ng-star-inserted" (click)="this.deckCarousel.prev()"
+           *ngIf="!this.popoverVisible || this.selectedDeckExt === undefined">
+          <span aria-hidden="true" class="carousel-control-prev-icon"></span>
           <span class="sr-only">Previous</span>
         </a>
-        <a class="carousel-control-next" href="#deck-carousel" role="button" data-slide="next">
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <a role="button" class="carousel-control-next ng-star-inserted" (click)="this.deckCarousel.next()"
+           *ngIf="!this.popoverVisible || this.selectedDeckExt === undefined">
+          <span aria-hidden="true" class="carousel-control-next-icon"></span>
           <span class="sr-only">Next</span>
         </a>
       </div>
+      <div class="deck-list container customScrollBarContainer">
+        <div [class]="{'disable-user-select':true, 'deck-list-entry':true, 'py-2':true, 'row':true, 'active': this.selectedDeck === i}"
+             id="deck-list-entry-{{i}}"
+             *ngFor="let deck of this.deckList; let i = index"
+             (click)="selectCarousel(deck.id)">
+          <div class="col-3">
+            <img [src]="deck.thumbnailPath" alt="{{deck.name}}" draggable="false">
+          </div>
+          <div class="col-9 deck-list-item-info">
+            <div class="row deck-list-item-info-header">
+              <div class="col-3"><h3>{{deck.name}}</h3></div>
+              <div class="col-3 font-italic my-auto ml-auto"><h5 class="text-right">{{deck.author.display_name}}</h5></div>
+            </div>
+            <div class="row deck-info-tag-container my-2 mx-1">
+              <span *ngFor="let tag of deck.tags" class="badge badge-pill badge-dark" >{{tag.tag}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <!--
-    <div class="element">
-      <label>
-        Skin(leave empty for default):
-        <input [(ngModel)]="skinName">
-      </label>
-    </div>
-    -->
   </div>
 
   <div class="foot">
     <button (click)="closeMe()">Cancel</button>
     <button (click)="createGame()">Create</button>
+  </div>
+</div>
+
+<div class="tile-list-popover customScrollBarContainer px-auto" *ngIf="this.popoverVisible && this.selectedDeckExt !== undefined" (click)="this.popoverVisible = false;">
+  <div class="popTileListContentTile" *ngFor="let tile of this.tileListAsSet | keyvalue">
+    <img [src]="tile.value.bt.path" alt="{{tile.value.bt.name}}" draggable="false">
+    <div class="popTileListCounter">
+      <svg width="40px" height="40px" viewBox="0 0 1000 1000">
+        <path d="M 0 500
+        c 0 10, -2.6 -9.6, 90 110
+        s -5 -8.66, -23 140
+        s -7.1 -7.1, 133 50
+        s -8.66 -5, 50 133
+        s -9.6 -2.6, 140 -23
+        s -10 0, 110 90
+        s -9.6 2.6, 110 -90
+        s -8.66 5, 140 23
+        s -7.1 7.1, 50 -133
+        s -5 8.66, 133 -50
+        s -2.6 9.6, -23 -140
+        s 0 10, 90 -110
+        s 2.6 9.6, -90 -110
+        s 5 8.66, 23 -140
+        s 7.1 7.1, -133 -50
+        s 8.66 5, -50 -133
+        s 9.6 2.6, -140 23
+        s 10 0, -110 -90
+        s 9.6 -2.6, -110 90
+        s 8.66 -5, -140 -23
+        s 7.1 -7.1, -50 133
+        s 5 -8.66, -133 50
+        s 2.6 -9.6, 23 140
+        s 0 -10, -90 110" stroke="red" fill="red"/>
+        <text x="550" y="550" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="400">x{{tile.value.count}}</text>
+      </svg>
+
+      <!--
+        Star points
+        0 500
+        67 750
+        250 933
+        500 1000
+        750 933
+        933 750
+        1000 500
+        933 250
+        750 67
+        500 0
+        250 67
+        67 250
+      -->
+    </div>
   </div>
 </div>
