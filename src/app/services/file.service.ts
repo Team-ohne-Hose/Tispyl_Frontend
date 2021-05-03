@@ -3,6 +3,8 @@ import { LoginUser, User } from '../services/user.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { APIResponse } from '../model/APIResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -13,16 +15,14 @@ export class FileService {
   private readonly devProfilePictureEndpoint = 'http://localhost:25670/api/profile';
   private profilePictureEndpoint = environment.production ? this.prodProfilePictureEndpoint : this.devProfilePictureEndpoint;
 
-  constructor(private httpClient: HttpClient) {
-  }
+  constructor(private httpClient: HttpClient) { }
 
-  uploadProfilePicture(file: File, user: LoginUser): Observable<any> {
+  uploadProfilePicture(file: File, user: LoginUser): Observable<User> {
     const formData: FormData = new FormData();
     formData.append('img', file, file.name);
-    //formData.append('hash', user.password_hash);
     formData.append('login_name', user.login_name);
 
-    return this.httpClient.post(this.profilePictureEndpoint, formData);
+    return this.httpClient.post<APIResponse<User>>(this.profilePictureEndpoint, formData).pipe(map(apiResponse => apiResponse.payload));
   }
 
   removeProfilePicture(user: User): Observable<any> {

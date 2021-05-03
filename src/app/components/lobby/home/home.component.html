@@ -1,31 +1,33 @@
 <div class="layout">
   <header>
     <div class="banner-container">
-
       <div class="banner-box">
         <div class="banner" #banner>
           <div *ngFor="let isrc of imageSources; let i = index" [ngClass]="{
-                'slide':true,
-                'active':activeSlide == i
-             }">
-            <img [src]=isrc alt="{{isrc}} - {{i}}" height=100%>
+
+              slide: true,
+              active: activeSlide == i
+            }">
+            <img [src]="isrc" alt="{{ isrc }} - {{ i }}" height="100%" />
           </div>
         </div>
       </div>
 
       <div class="anchor-box">
         <a *ngFor="let isrc of imageSources; let i = index" [ngClass]="{
-            'anchor':true,
-            'active':activeSlide % originalSourceCount == i % originalSourceCount,
-            'noDisplay':i <= 1 || i > originalSourceCount + 1
-         }" (click)="onAnchorClick(i)"></a>
+
+            anchor: true,
+            active:
+              activeSlide % originalSourceCount == i % originalSourceCount,
+            noDisplay: i <= 1 || i > originalSourceCount + 1
+          }" (click)="onAnchorClick(i)"></a>
+
       </div>
     </div>
 
-
     <div class="nav-bar">
       <div class="logo-box">
-        <img [src]=logoSource alt="Logo">
+        <img [src]="logoSource" alt="Logo" />
       </div>
       <div class="nav-box">
         <button class="nav-button" [routerLink]="['./news']">
@@ -56,7 +58,7 @@
 
       <div *ngIf="isLoggedIn" class="user-box dropdown-anchor" #dropdown (click)="onProfileClick()">
         <div class="img-clipper">
-          <img [src]=userSource alt="user">
+          <img [src]="profileSource" alt="user" />
         </div>
         <div class="dropdown-menu">
           <button class="dropdown-item" [routerLink]="['./settings']">
@@ -81,7 +83,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </header>
 
@@ -99,7 +100,7 @@
       </div>
 
       <div class="small-logo-box">
-        <img [src]=logoSource alt="Logo">
+        <img [src]="logoSource" alt="Logo" />
       </div>
     </div>
   </footer>
