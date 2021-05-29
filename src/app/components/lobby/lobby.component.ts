@@ -1,4 +1,4 @@
-import { Component, OnInit, } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TranslationService, Translation } from '../../services/translation.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { OpenGamePopupComponent } from './dialogs/open-game-popup/open-game-popup.component';
@@ -12,7 +12,6 @@ import { GameState } from '../../model/state/GameState';
 import { environmentList } from './lobbyLUTs';
 import { ObjectLoaderService } from '../../services/object-loader.service';
 
-
 interface DialogResult {
   roomName: string;
   skinName: string;
@@ -22,10 +21,9 @@ interface DialogResult {
 @Component({
   selector: 'app-lobby',
   templateUrl: './lobby.component.html',
-  styleUrls: ['./lobby.component.css']
+  styleUrls: ['./lobby.component.css'],
 })
 export class LobbyComponent implements OnInit {
-
   /** General constants */
   translation: Translation = TranslationService.getTranslations('en');
   environments = environmentList;
@@ -46,7 +44,7 @@ export class LobbyComponent implements OnInit {
     height: '70%',
     maxHeight: '900px',
     data: {},
-    panelClass: 'modalbox-base'
+    panelClass: 'modalbox-base',
   };
 
   constructor(
@@ -54,16 +52,16 @@ export class LobbyComponent implements OnInit {
     private colyseus: ColyseusClientService,
     private objectLoader: ObjectLoaderService,
     private router: Router,
-    private userManagement: UserService) {
+    private userManagement: UserService
+  ) {
     this.gameClient = colyseus.getClient();
   }
 
-  ngOnInit() {
-    this.userManagement.getActiveUser().subscribe(u => this.currentUser = u);
-    this.colyseus.getActiveRoom().subscribe(r => this.activeLobby = r);
-    this.colyseus.availableRooms.subscribe(arr => this.availableLobbies = arr);
+  ngOnInit(): void {
+    this.userManagement.getActiveUser().subscribe((u) => (this.currentUser = u));
+    this.colyseus.getActiveRoom().subscribe((r) => (this.activeLobby = r));
+    this.colyseus.availableRooms.subscribe((arr) => (this.availableLobbies = arr));
   }
-
 
   changeLanguage(lang: string): void {
     this.translation = TranslationService.getTranslations(lang);
@@ -73,13 +71,13 @@ export class LobbyComponent implements OnInit {
     this.colyseus.updateAvailableRooms();
   }
 
-  isActive(lobby: RoomAvailable<RoomMetaInfo>) {
+  isActive(lobby: RoomAvailable<RoomMetaInfo>): boolean {
     return this.activeLobby ? this.activeLobby.id === lobby.roomId : false;
   }
 
   nextEnvironment(direction: 'left' | 'right'): void {
     const value = this.currentEnvironmentIdx + (direction === 'right' ? 1 : -1);
-    if ( value < this.environments.length && value >= 0 ) {
+    if (value < this.environments.length && value >= 0) {
       this.currentEnvironmentIdx = value;
     }
   }
@@ -90,24 +88,24 @@ export class LobbyComponent implements OnInit {
 
   /** Host a new game */
   createGame(): void {
-    const dialogRef: MatDialogRef<OpenGamePopupComponent, DialogResult> =
-      this.dialog.open(OpenGamePopupComponent, this.dialogConfig);
+    const dialogRef: MatDialogRef<OpenGamePopupComponent, DialogResult> = this.dialog.open(
+      OpenGamePopupComponent,
+      this.dialogConfig
+    );
 
-    dialogRef.afterClosed().subscribe( (res: DialogResult) => {
+    dialogRef.afterClosed().subscribe((res: DialogResult) => {
       if (res !== undefined) {
-
         const opts: CreateRoomOpts = {
           roomName: res.roomName,
           author: this.currentUser.display_name,
           login: this.currentUser.login_name,
           displayName: this.currentUser.display_name,
           skin: res.skinName,
-          randomizeTiles: res.randomizeTiles
+          randomizeTiles: res.randomizeTiles,
         };
 
         this.prepareGameConfiguration();
         this.colyseus.createRoom(opts);
-
       } else {
         console.log('closed Dialog without result');
       }
@@ -120,10 +118,10 @@ export class LobbyComponent implements OnInit {
     const dialogRef: MatDialogRef<JoinGameComponent, void> = this.dialog.open(JoinGameComponent, {
       width: '60%',
       maxWidth: '400px',
-      data: {lobby: lobby, lobbyComponent: this},
-      panelClass: 'modalbox-base'
+      data: { lobby: lobby, lobbyComponent: this },
+      panelClass: 'modalbox-base',
     });
-    dialogRef.afterClosed().subscribe(s => console.log('closed dialog'));
+    dialogRef.afterClosed().subscribe((s) => console.log('closed dialog'));
     const currentUser = this.userManagement.activeUser.value;
     this.colyseus.joinActiveRoom(lobby, currentUser.login_name, currentUser.display_name);
   }
@@ -139,5 +137,4 @@ export class LobbyComponent implements OnInit {
     this.colyseus.setActiveRoom(undefined);
     this.colyseus.updateAvailableRooms();
   }
-
 }

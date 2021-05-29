@@ -1,37 +1,33 @@
-
 <div class="layout">
   <header>
     <div class="banner-container">
-
       <div class="banner-box">
         <div class="banner" #banner>
-          <div *ngFor="let isrc of imageSources; let i = index"
-               [ngClass]="{
-                'slide':true,
-                'active':activeSlide == i
-             }"
-          >
-            <img [src]=isrc alt="{{isrc}} - {{i}}" height=100%>
+          <div *ngFor="let isrc of imageSources; let i = index" [ngClass]="{
+
+              slide: true,
+              active: activeSlide == i
+            }">
+            <img [src]="isrc" alt="{{ isrc }} - {{ i }}" height="100%" />
           </div>
         </div>
       </div>
 
       <div class="anchor-box">
-        <a *ngFor="let isrc of imageSources; let i = index"
-           [ngClass]="{
-            'anchor':true,
-            'active':activeSlide % originalSourceCount == i % originalSourceCount,
-            'noDisplay':i <= 1 || i > originalSourceCount + 1
-         }"
-           (click)="onAnchorClick(i)"
-        ></a>
+        <a *ngFor="let isrc of imageSources; let i = index" [ngClass]="{
+
+            anchor: true,
+            active:
+              activeSlide % originalSourceCount == i % originalSourceCount,
+            noDisplay: i <= 1 || i > originalSourceCount + 1
+          }" (click)="onAnchorClick(i)"></a>
+
       </div>
     </div>
 
-
     <div class="nav-bar">
       <div class="logo-box">
-        <img [src]=logoSource alt="Logo">
+        <img [src]="logoSource" alt="Logo" />
       </div>
       <div class="nav-box">
         <button class="nav-button" [routerLink]="['./news']">
@@ -60,35 +56,33 @@
         </button>
       </div>
 
-
-      <div *ngIf="isLoggedIn" class="user-box dropdown-anchor"  #dropdown (click)="onProfileClick()">
-          <div class="img-clipper">
-            <img [src]=userSource alt="user">
-          </div>
-          <div class="dropdown-menu">
-            <button class="dropdown-item" [routerLink]="['./settings']">
-              <i class="fas fa-cog"></i>
-              <span>Settings</span>
-            </button>
-            <button class="dropdown-item" (click)="onLogOut()">
-              <i class="fas fa-door-open"></i>
-              <span>Logout</span>
-            </button>
-          </div>
+      <div *ngIf="isLoggedIn" class="user-box dropdown-anchor" #dropdown (click)="onProfileClick()">
+        <div class="img-clipper">
+          <img [src]="profileSource" alt="user" />
+        </div>
+        <div class="dropdown-menu">
+          <button class="dropdown-item" [routerLink]="['./settings']">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+          </button>
+          <button class="dropdown-item" (click)="onLogOut()">
+            <i class="fas fa-door-open"></i>
+            <span>Logout</span>
+          </button>
+        </div>
       </div>
 
       <div *ngIf="!isLoggedIn" class="login-box">
         <div class="img-clipper noSelect" (click)="navigate('./login')">
-            <div class="border">
-              <div class="img-clipper-second">
-                <div class="internal">
-                  <span>Login</span><i class="fas fa-sign-in-alt"></i>
-                </div>
+          <div class="border">
+            <div class="img-clipper-second">
+              <div class="internal">
+                <span>Login</span><i class="fas fa-sign-in-alt"></i>
               </div>
             </div>
+          </div>
         </div>
       </div>
-
     </div>
   </header>
 
@@ -99,17 +93,15 @@
   <footer>
     <div class="foot-notes">
       <div class="info">
-        <span><i class="fas fa-bug bug"></i>Found a bug?</span><i class="fas fa-circle"></i>
+        <span><i class="fas fa-bug bug"></i>Käferbericht einreichen</span><i class="fas fa-circle"></i>
         <span>Impressum</span><i class="fas fa-circle"></i>
         <span>Credits</span><i class="fas fa-circle"></i>
         <span>About</span>
       </div>
 
       <div class="small-logo-box">
-        <img [src]=logoSource alt="Logo">
+        <img [src]="logoSource" alt="Logo" />
       </div>
     </div>
   </footer>
 </div>
-
-

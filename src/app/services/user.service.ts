@@ -37,10 +37,9 @@ export class LoginUser {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
-
   activeUser: BehaviorSubject<LoginUser>;
   private userEndpoint = environment.endpoint + 'user';
 
@@ -52,6 +51,9 @@ export class UserService {
     this.activeUser.next(user);
   }
 
+  /**
+   * @deprecated The method should not be used
+   */
   getActiveUser(): Observable<LoginUser> {
     return this.activeUser.asObservable();
   }
@@ -60,7 +62,7 @@ export class UserService {
 
   getUserById(user_id: number): Observable<User> {
     const requestUrl = this.userEndpoint + '?user_id=' + user_id;
-    return this.httpClient.get<User[]>(requestUrl).pipe(map(users => users[0]));
+    return this.httpClient.get<User[]>(requestUrl).pipe(map((users) => users[0]));
   }
 
   getUserByLoginName(login_name: string): Observable<APIResponse<LoginUser>> {
@@ -77,13 +79,16 @@ export class UserService {
   }
 
   loginUser(login_name: string, password_hash: string): Observable<APIResponse<JwtResponse>> {
-    return this.httpClient.post<APIResponse<JwtResponse>>(this.userEndpoint + '/token', {username: login_name, password: password_hash});
+    return this.httpClient.post<APIResponse<JwtResponse>>(this.userEndpoint + '/token', {
+      username: login_name,
+      password: password_hash,
+    });
   }
 
   syncUserData(user: User): void {
     this.httpClient
       .get<APIResponse<User>>(this.userEndpoint + '?login_name=' + user.login_name)
-      .subscribe(response => {
+      .subscribe((response) => {
         if (response.payload !== undefined) {
           this.setActiveUser(response.payload as LoginUser);
         } else {
@@ -91,5 +96,4 @@ export class UserService {
         }
       });
   }
-
 }

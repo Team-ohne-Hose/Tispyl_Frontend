@@ -10,8 +10,21 @@
     "deploy": "deployment.cmd deployment_rsa",
     "uploadassets": "uploadAssets.cmd deployment_rsa",
     "test": "ng test",
-    "lint": "ng lint",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
     "e2e": "ng e2e"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{ts,json,css,md}": [
+      "prettier --write",
+      "eslint --fix",
+      "git add -A"
+    ]
   },
   "private": true,
   "dependencies": {
@@ -58,8 +71,20 @@
     "karma-chrome-launcher": "~3.1.0",
     "karma-coverage-istanbul-reporter": "~3.0.2",
     "karma-jasmine": "~4.0.0",
-    "karma-jasmine-html-reporter": "^1.5.0",
+    "karma-jasmine-html-reporter": "^1.5.4",
     "protractor": "~7.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^2.0.0",
+    "eslint": "^7.24.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-config-wesbos": "^1.0.1",
+    "eslint-plugin-html": "^6.1.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.4.0",
+    "husky": "^3.1.0",
+    "lint-staged": "^10.5.4",
+    "prettier": "^2.2.1",
     "ts-node": "~8.8.2",
     "tslint": "~6.1.0",
     "typescript": "~4.0.7"

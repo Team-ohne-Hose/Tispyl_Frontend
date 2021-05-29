@@ -9,14 +9,12 @@ import { RegisterOptions } from '../../../model/RegisterOptions';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { EqualityValidator } from './EqualityValidator';
 
-
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
-
   @Input() languageObjects: TextContainer = TranslationService.getTranslations('en').text;
 
   /** Login input values */
@@ -30,9 +28,10 @@ export class LoginComponent implements OnInit {
   isRequesting = false;
 
   /** Registration form */
-  registration = new FormGroup({
-    new_login_name: new FormControl('', Validators.required),
-    new_display_name: new FormControl('', Validators.required),
+  registration = new FormGroup(
+    {
+      new_login_name: new FormControl('', Validators.required),
+      new_display_name: new FormControl('', Validators.required),
       new_password_plain0: new FormControl('', [
         Validators.required,
         Validators.minLength(4),
@@ -42,8 +41,8 @@ export class LoginComponent implements OnInit {
         Validators.required,
         Validators.minLength(4),
         Validators.maxLength(64),
-      ])
-  },
+      ]),
+    },
     EqualityValidator('new_password_plain0', 'new_password_plain1')
   );
 
@@ -61,10 +60,9 @@ export class LoginComponent implements OnInit {
     private jwtTokenService: JwtTokenService
   ) {}
 
-
   ngOnInit(): void {
     /** Redirect to targetRoute if already logged in */
-    if ( this.jwtTokenService.isLoggedIn() ) {
+    if (this.jwtTokenService.isLoggedIn()) {
       this.router.navigate([this.targetRoute], { relativeTo: this.route });
     }
   }
@@ -73,7 +71,9 @@ export class LoginComponent implements OnInit {
   switch(): void {
     this.resetInfoText();
     this.swapLayout = !this.swapLayout;
-    setTimeout(() => { this.swapContent = !this.swapContent; }, 300);
+    setTimeout(() => {
+      this.swapContent = !this.swapContent;
+    }, 300);
   }
 
   private resetInfoText(): void {
@@ -82,7 +82,12 @@ export class LoginComponent implements OnInit {
   }
 
   private setInfoText(text: string, delay: boolean): void {
-    setTimeout(() => { this.infoMessage = text; }, delay ? 500 : 0);
+    setTimeout(
+      () => {
+        this.infoMessage = text;
+      },
+      delay ? 500 : 0
+    );
   }
 
   /** Login function that respects error handling and user feedback */
@@ -116,11 +121,12 @@ export class LoginComponent implements OnInit {
             this.setInfoText('Unknown error.', hadError);
           }
         }
-      });
+      }
+    );
   }
 
   /** Event listener set on all input fields to react on key strokes */
-  keyPressed(keyEvent): void {
+  keyPressed(keyEvent: KeyboardEvent): void {
     if (this.isSuccessText) {
       this.isSuccessText = false;
       this.resetInfoText();
@@ -139,7 +145,6 @@ export class LoginComponent implements OnInit {
    */
   registerUser(): void {
     if (this.registration.valid) {
-
       const formData: RegisterOptions = {
         username: this.registration.value['new_login_name'],
         displayname: this.registration.value['new_display_name'],
@@ -156,8 +161,10 @@ export class LoginComponent implements OnInit {
           this.registration.reset();
           this.isSuccessText = true;
           this.infoMessage = 'Awesome! Your account was successfully created.';
-          setTimeout(() => { this.switch(); }, 1500);
-      },
+          setTimeout(() => {
+            this.switch();
+          }, 1500);
+        },
         (err) => {
           this.isRequesting = false;
           switch (err.status) {
@@ -166,7 +173,7 @@ export class LoginComponent implements OnInit {
               break;
             }
             case 400: {
-              this.setInfoText( err, hadError);
+              this.setInfoText(err, hadError);
               break;
             }
             default: {
@@ -174,7 +181,8 @@ export class LoginComponent implements OnInit {
               this.setInfoText('Unknown error.', hadError);
             }
           }
-      });
+        }
+      );
     }
   }
 }

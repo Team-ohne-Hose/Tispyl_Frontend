@@ -1,27 +1,22 @@
-import {
-  AfterContentInit,
-  Component,
-  ElementRef, HostListener,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { AfterContentInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JwtTokenService } from '../../../services/jwttoken.service';
 import { UserService, LoginUser } from '../../../services/user.service';
 import { APIResponse } from '../../../model/APIResponse';
+import { FileService } from 'src/app/services/file.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnInit, AfterContentInit {
-
   constructor(
     public router: Router,
     private route: ActivatedRoute,
     private AuthService: JwtTokenService,
-    private userManagement: UserService
+    private userManagement: UserService,
+    private fileService: FileService
   ) {}
 
   /** Images displayed in the header carousel (expects 16:9 images) */
@@ -30,7 +25,7 @@ export class HomeComponent implements OnInit, AfterContentInit {
     'assets/carousel/kazuend-NmvMhov1sYc-unsplash.jpg',
     'assets/carousel/radovan-46Yad80Ynp4-unsplash.jpg',
     'assets/carousel/radovan-rgJ1xwQsoJc-unsplash.jpg',
-    'assets/carousel/wil-stewart-UErWoQEoMrc-unsplash.jpg'
+    'assets/carousel/wil-stewart-UErWoQEoMrc-unsplash.jpg',
   ];
 
   /** Carousel auxiliaries */
@@ -47,6 +42,7 @@ export class HomeComponent implements OnInit, AfterContentInit {
 
   /** State values */
   activeUser = this.userManagement.getActiveUser();
+  profileSource: string;
 
   /**
    * Prepares {@link imageSources} for infinite scrolling by pre- and appending new elements. Example:
@@ -70,33 +66,47 @@ export class HomeComponent implements OnInit, AfterContentInit {
     /** Check for active JWT Token */
     if (this.AuthService.isLoggedIn) {
       this.userManagement.getUserByLoginName(localStorage.getItem('username')).subscribe(
-        (usr: APIResponse<LoginUser>) => { this.userManagement.setActiveUser(usr.payload as LoginUser); },
-      (err) => { console.error('Found JWT token indicating a logged in user, but could not retrieve LoginUser object from server', err); }
+        (usr: APIResponse<LoginUser>) => {
+          this.userManagement.setActiveUser(usr.payload as LoginUser);
+        },
+        (err) => {
+          console.error(
+            'Found JWT token indicating a logged in user, but could not retrieve LoginUser object from server',
+            err
+          );
+        }
       );
     } else {
       this.AuthService.logout();
     }
 
-    this.activeUser.subscribe(u => {
-      this.isLoggedIn = u !== undefined;
+    this.activeUser.subscribe((u) => {
+      if (u !== undefined) {
+        this.isLoggedIn = true;
+        this.profileSource = this.fileService.profilePictureSource(u.login_name, true);
+      }
     });
   }
 
   ngAfterContentInit(): void {
     /** Align initial slide by scrolling forward once to get into a defined state */
-    setTimeout(() => { this.nextSlide('right'); }, 50);
+    setTimeout(() => {
+      this.nextSlide('right');
+    }, 50);
 
     /** Activate auto scrolling */
-    setInterval(() => { this.nextSlide('right'); }, this.scrollInterval);
+    setInterval(() => {
+      this.nextSlide('right');
+    }, this.scrollInterval);
   }
 
-  public navigate(target: string) {
+  public navigate(target: string): void {
     this.router.navigate([target], { relativeTo: this.route });
   }
 
   private scrollToSlide(idx: number, behavior: 'auto' | 'smooth'): void {
     const img_width = this.banner.nativeElement.scrollWidth / this.imageSources.length;
-    this.banner.nativeElement.scrollTo({ top: 0, left: (idx - 1) * img_width, behavior: behavior});
+    this.banner.nativeElement.scrollTo({ top: 0, left: (idx - 1) * img_width, behavior: behavior });
   }
 
   /**
@@ -104,17 +114,16 @@ export class HomeComponent implements OnInit, AfterContentInit {
    * @param direction weather to scroll left or right
    */
   public nextSlide(direction: 'left' | 'right'): void {
-
     const step = direction === 'left' ? -1 : 1;
     const first = 0;
     const last = this.imageSources.length - 1;
     const lowerBoarder = first + 1;
     const upperBoarder = last - 1;
 
-    if (this.activeSlide <= lowerBoarder ) {
+    if (this.activeSlide <= lowerBoarder) {
       this.activeSlide = upperBoarder - 1;
       this.scrollToSlide(this.activeSlide, 'auto');
-    } else if (this.activeSlide >= upperBoarder ) {
+    } else if (this.activeSlide >= upperBoarder) {
       this.activeSlide = lowerBoarder + 1;
       this.scrollToSlide(this.activeSlide, 'auto');
     }
@@ -135,10 +144,10 @@ export class HomeComponent implements OnInit, AfterContentInit {
 
   /** Dropdown menu close event */
   @HostListener('document:click', ['$event'])
-  clickOutside(event) {
-    if ( this.dropDown !== undefined && !this.dropDown.nativeElement.contains(event.target) ) {
+  clickOutside(event: Event): void {
+    if (this.dropDown !== undefined && !this.dropDown.nativeElement.contains(event.target)) {
       const classes = this.dropDown.nativeElement.classList;
-      if ( classes.contains('open') ) {
+      if (classes.contains('open')) {
         classes.remove('open');
       }
     }
@@ -146,7 +155,7 @@ export class HomeComponent implements OnInit, AfterContentInit {
 
   public onProfileClick(): void {
     const classes = this.dropDown.nativeElement.classList;
-    if ( classes.contains('open') ) {
+    if (classes.contains('open')) {
       classes.remove('open');
     } else {
       classes.add('open');
