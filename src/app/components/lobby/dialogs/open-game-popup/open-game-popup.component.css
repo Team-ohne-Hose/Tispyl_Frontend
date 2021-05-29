@@ -23,12 +23,161 @@
   flex-direction: column;
 }
 
-.element {
-  padding-top: 32px;
-}
-
 .foot {
   display: flex;
   justify-content: space-between;
   margin: 16px;
+}
+
+.carousel-deck-item {
+  display: flex;
+  background: hsl(0, 0%, 80%);
+  border-radius: 8px;
+  filter: drop-shadow(0px 5px 8px rgba(0, 0, 0, 0.4));
+  margin: 5px;
+}
+.carousel-deck-item img {
+  border-radius: 12px;
+  margin: 10px;
+  max-height: 200px;
+  max-width: 400px;
+}
+.deck-info-container {
+  color: black;
+  margin: 8px 16px;
+}
+.deck-info-tag-container span {
+  margin: 1px;
+  font-size: medium;
+}
+.deck-list {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  height: 400px;
+  max-height: 400px;
+}
+.deck-list {
+  --scrollbarBG: hsl(0, 0%, 24%);
+  --thumbBG: hsl(0, 0%, 90%);
+}
+.customScrollBarContainer {
+  /* for Firefox Scrollbars */
+  scrollbar-width: thin;
+  scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+}
+
+/* for Chrome/Edge/Safari Scrollbars */
+.customScrollBarContainer::-webkit-scrollbar {
+  width: 12px;
+}
+.customScrollBarContainer::-webkit-scrollbar-track {
+  background: var(--scrollbarBG);
+}
+.customScrollBarContainer::-webkit-scrollbar-thumb {
+  background-color: var(--thumbBG) ;
+  border-radius: 8px;
+  border: 3px solid var(--scrollbarBG);
+}
+/* End Scrollbars */
+
+
+.deck-list-entry {
+  background-color: hsl(0, 0%, 80%);
+  margin: 3px 0px;
+  border-radius: 8px;
+}
+.deck-list-entry img {
+  height: 80px;
+  border-radius: 8px;
+}
+.deck-list-entry.active {
+  background-color: hsl(0, 72%, 47%);
+}
+.carousel-container {
+  position: relative;
+  padding: 0px 28px;
+}
+.carousel-control-prev,.carousel-control-next {
+  width: 40px;
+}
+
+.tile-list-popover {
+  position: absolute;
+  top: 4%;
+  bottom: 4%;
+  left: 1%;
+  max-width: 98%;
+  background-color: whitesmoke;
+  border-radius: 10px;
+  display: flex;
+  flex-flow: row wrap;
+  overflow-y: scroll;
+  color: black;
+  padding: 5px;
+  justify-content: center;
+  --scrollbarBG: transparent;
+  --thumbBG: hsl(0, 0%, 45%);
+}
+.popTileListContentTile {
+  position: relative;
+}
+.popTileListCounter {
+  position: absolute;
+  right: -3%;
+  top: -1%;
+  z-index: 1;
+}
+.popTileListContentTile img {
+  width: 160px;
+  height: 160px;
+  border-radius: 2px;
+}
+.showTileListButtonContainer {
+  position: relative;
+}
+.showTileListPopoverArrow {
+  position: absolute;
+  bottom: 0px;
+  right: 100%;
+  width: 20vw;
+  height: 10vh;
+  background-color: whitesmoke;
+  clip-path: polygon(0 0, 100% 90%, 100% 95%, 0 100%);
+  z-index: 1;
+}
+.switchContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+.switchContainer:last-child {
+  margin-right: 0rem;
+}
+.switch {
+  margin-right: 1rem;
+  padding: .4rem .8rem;
+  background-color: #676767;
+  border-radius: 1rem;
+  color: #161616;
+  height: fit-content;
+}
+.switch.switchActive:enabled {
+  background-color: lightgray;
+  color: #161616;
+}
+.lobbySettings {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  margin-top: 3rem;
+  margin-bottom: 2rem;
+}
+.lobbyNameContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.lobbyNameContainer label {
+  margin-bottom: -0.3rem;
 }

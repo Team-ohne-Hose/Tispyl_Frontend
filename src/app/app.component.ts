@@ -6,14 +6,13 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: []
+  styleUrls: [],
 })
 export class AppComponent {
-
   routes;
 
   constructor(public router: Router) {
-    this.routes = router.config.filter(route => route.path !== '**' && route.path.length > 0);
+    this.routes = router.config.filter((route) => route.path !== '**' && route.path.length > 0);
     registerLocaleData(localeDe);
   }
 }

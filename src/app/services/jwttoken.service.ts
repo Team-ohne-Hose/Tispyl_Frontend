@@ -39,23 +39,21 @@ export class JwtTokenService {
   }
 
   login(username: string, password: string): Observable<LoginUser> {
-    return this.http
-      .post<APIResponse<JwtResponse>>(this.endpoint + '/token', { username, password })
-      .pipe(
-        map((jwt: APIResponse<JwtResponse>) => {
-          if (jwt.success) {
-            this.storeToken(jwt.payload, username);
-            return jwt;
-          } else {
-            throwError(jwt);
-          }
-        }),
-        flatMap(() => this.userService.getUserByLoginName(username)),
-        map((usr: APIResponse<LoginUser>) => {
-          this.userService.setActiveUser(usr.payload as LoginUser);
-          return usr.payload;
-        })
-      );
+    return this.http.post<APIResponse<JwtResponse>>(this.endpoint + '/token', { username, password }).pipe(
+      map((jwt: APIResponse<JwtResponse>) => {
+        if (jwt.success) {
+          this.storeToken(jwt.payload, username);
+          return jwt;
+        } else {
+          throwError(jwt);
+        }
+      }),
+      flatMap(() => this.userService.getUserByLoginName(username)),
+      map((usr: APIResponse<LoginUser>) => {
+        this.userService.setActiveUser(usr.payload as LoginUser);
+        return usr.payload;
+      })
+    );
   }
 
   register(registerOptions: RegisterOptions): Observable<boolean> {

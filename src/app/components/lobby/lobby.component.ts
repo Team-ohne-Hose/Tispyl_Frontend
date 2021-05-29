@@ -40,10 +40,10 @@ export class LobbyComponent implements OnInit {
   /** Pop-up config */
   dialogConfig = {
     width: '80%',
-    maxWidth: '500px',
+    maxWidth: '1000px',
     height: '70%',
-    maxHeight: '350px',
-    data: { user: this.currentUser },
+    maxHeight: '900px',
+    data: {},
     panelClass: 'modalbox-base',
   };
 
@@ -57,7 +57,7 @@ export class LobbyComponent implements OnInit {
     this.gameClient = colyseus.getClient();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.userManagement.getActiveUser().subscribe((u) => (this.currentUser = u));
     this.colyseus.getActiveRoom().subscribe((r) => (this.activeLobby = r));
     this.colyseus.availableRooms.subscribe((arr) => (this.availableLobbies = arr));
@@ -71,7 +71,7 @@ export class LobbyComponent implements OnInit {
     this.colyseus.updateAvailableRooms();
   }
 
-  isActive(lobby: RoomAvailable<RoomMetaInfo>) {
+  isActive(lobby: RoomAvailable<RoomMetaInfo>): boolean {
     return this.activeLobby ? this.activeLobby.id === lobby.roomId : false;
   }
 

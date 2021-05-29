@@ -4,28 +4,124 @@
   </div>
 
   <div class="content">
-    <div class="element">
-      <label>
-        Lobby name:
-        <input [(ngModel)]="roomName">
-      </label>
+    <div class="lobbySettings">
+      <div class="lobbyNameContainer">
+        <label>
+          Lobby name:
+          <input [(ngModel)]="roomName">
+        </label>
+      </div>
+      <div class="switchContainer">
+        <button class="switch" [class.switchActive]="randomizeTiles" (click)="randomizeTiles = !randomizeTiles">
+          Randomize Tiles
+        </button>
+        <button class="switch" [class.switchActive]="enableItems" (click)="enableItems = !enableItems" disabled>
+          Enable Items
+        </button>
+        <button class="switch" [class.switchActive]="enableMultipleItems" (click)="enableMultipleItems = !enableMultipleItems" [disabled]="!enableItems ? true : null">
+          Multiple Items
+        </button>
+      </div>
     </div>
-    <div class="element">
-      <label>
-        Randomize Tiles?:
-        <input [(ngModel)]="randomizeTiles" type="checkbox">
-      </label>
-    </div>
-    <div class="element">
-      <label>
-        Skin(leave empty for default):
-        <input [(ngModel)]="skinName">
-      </label>
+    <div class="card-deck-select">
+      <div class="carousel-container">
+        <ngb-carousel #deckCarousel (slide)="slide($event)">
+          <ng-template ngbSlide id="deckSlide-{{deck.id}}" *ngFor="let deck of this.deckList; let i = index" (slid)='slid($event, i)'>
+            <div class="carousel-deck-item">
+              <img [src]="deck.thumbnailPath" alt="{{deck.name}}">
+              <div class="deck-info-container container">
+                <div class="deck-info-header row">
+                  <div class="col-3"><h3>{{deck.name}}</h3></div>
+                  <div class="col-3 font-italic my-auto ml-auto"><h5 class="text-right">{{deck.author.display_name}}</h5></div>
+                </div>
+                <div class="deck-info-tag-container my-2 mx-1 row">
+                  <span *ngFor="let tag of deck.tags" class="badge badge-pill badge-dark" >{{tag.tag}}</span>
+                </div>
+                <p class="row">{{deck.description}}</p>
+                <div class="row">
+                  <div class="ml-auto showTileListButtonContainer">
+                    <button type="button" (click)="this.popoverVisible = !this.popoverVisible">Show</button>
+                    <div class="showTileListPopoverArrow" *ngIf="this.popoverVisible" (click)="this.popoverVisible = false;">
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </ngb-carousel>
+        <a role="button" class="carousel-control-prev ng-star-inserted" (click)="this.deckCarousel.prev()"
+           *ngIf="!this.popoverVisible || this.selectedDeckExt === undefined">
+          <span aria-hidden="true" class="carousel-control-prev-icon"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+        <a role="button" class="carousel-control-next ng-star-inserted" (click)="this.deckCarousel.next()"
+           *ngIf="!this.popoverVisible || this.selectedDeckExt === undefined">
+          <span aria-hidden="true" class="carousel-control-next-icon"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div>
+      <div class="deck-list container customScrollBarContainer">
+        <div [class]="{'disable-user-select':true, 'deck-list-entry':true, 'py-2':true, 'row':true, 'active': this.selectedDeck === i}"
+             id="deck-list-entry-{{i}}"
+             *ngFor="let deck of this.deckList; let i = index"
+             (click)="selectCarousel(deck.id)">
+          <div class="col-3">
+            <img [src]="deck.thumbnailPath" alt="{{deck.name}}" draggable="false">
+          </div>
+          <div class="col-9 deck-list-item-info">
+            <div class="row deck-list-item-info-header">
+              <div class="col-3"><h3>{{deck.name}}</h3></div>
+              <div class="col-3 font-italic my-auto ml-auto"><h5 class="text-right">{{deck.author.display_name}}</h5></div>
+            </div>
+            <div class="row deck-info-tag-container my-2 mx-1">
+              <span *ngFor="let tag of deck.tags" class="badge badge-pill badge-dark" >{{tag.tag}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <div class="foot">
     <button (click)="closeMe()">Cancel</button>
     <button (click)="createGame()">Create</button>
+  </div>
+</div>
+
+<div class="tile-list-popover customScrollBarContainer px-auto" *ngIf="this.popoverVisible && this.selectedDeckExt !== undefined" (click)="this.popoverVisible = false;">
+  <div class="popTileListContentTile" *ngFor="let tile of this.tileListAsSet | keyvalue">
+    <img [src]="tile.value.bt.path" alt="{{tile.value.bt.name}}" draggable="false">
+    <div class="popTileListCounter">
+      <svg width="40px" height="40px" viewBox="0 0 1000 1000">
+        <!-- 12 pointed-star with radi 500/420, ctrl-point distance 40 -->
+        <path d="M 0 500
+        c 0.0 -40.0 83.96 -70.07, 94.31 -108.7
+        s -47.32 -106.65, -27.32 -141.3
+        s 107.74 -18.7, 136.03 -46.98
+        s 12.34 -116.03, 46.98 -136.03
+        s 102.66 37.68, 141.3 27.32
+        s 68.7 -94.31, 108.7 -94.31
+        s 70.07 83.96, 108.7 94.31
+        s 106.65 -47.32, 141.3 -27.32
+        s 18.7 107.74, 46.98 136.03
+        s 116.03 12.34, 136.03 46.98
+        s -37.68 102.66, -27.32 141.3
+        s 94.31 68.7, 94.31 108.7
+        s -83.96 70.07, -94.31 108.7
+        s 47.32 106.65, 27.32 141.3
+        s -107.74 18.7, -136.03 46.98
+        s -12.34 116.03, -46.98 136.03
+        s -102.66 -37.68, -141.3 -27.32
+        s -68.7 94.31, -108.7 94.31
+        s -70.07 -83.96, -108.7 -94.31
+        s -106.65 47.32, -141.3 27.32
+        s -18.7 -107.74, -46.98 -136.03
+        s -116.03 -12.34, -136.03 -46.98
+        s 37.68 -102.66, 27.32 -141.3
+        s -94.31 -68.7, -94.31 -108.7" stroke="red" fill="red"/>
+        <text x="550" y="550" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="400">x{{tile.value.count}}</text>
+      </svg>
+    </div>
   </div>
 </div>

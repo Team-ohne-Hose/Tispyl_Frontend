@@ -126,7 +126,7 @@ export class LoginComponent implements OnInit {
   }
 
   /** Event listener set on all input fields to react on key strokes */
-  keyPressed(keyEvent): void {
+  keyPressed(keyEvent: KeyboardEvent): void {
     if (this.isSuccessText) {
       this.isSuccessText = false;
       this.resetInfoText();

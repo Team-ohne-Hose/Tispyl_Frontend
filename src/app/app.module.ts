@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LOCALE_ID, NgModule } from '@angular/core';
@@ -63,30 +64,33 @@ import { SettingsComponent } from './components/lobby/settings/settings.componen
 import { CustomEditorComponent } from './components/lobby/custom-editor/custom-editor.component';
 import { ChatCommandListComponent } from './components/game/interface/menu-bar/home-register/chat-command-list/chat-command-list.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NgbCarouselModule, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
 
 const appRoutes: Routes = [
-  { path: 'home', component: HomeComponent,
+  {
+    path: 'home',
+    component: HomeComponent,
     children: [
       { path: '', redirectTo: 'news', pathMatch: 'full' },
-      { path: 'news', component: NewsComponent},
-      { path: 'lobby', component: LobbyComponent},
-      { path: 'faq', component: FaqComponent},
-      { path: 'profile', component: ProfileComponent},
-      { path: 'updates', component: UpdatesComponent},
-      { path: 'custom', component: CustomEditorComponent},
-      { path: 'login', component: LoginComponent},
-      { path: 'register', component: PageNotFoundComponent},
-      { path: 'settings', component: SettingsComponent},
-      { path: 'report', component: PageNotFoundComponent},
-      { path: 'imprint', component: PageNotFoundComponent},
-      { path: 'about', component: PageNotFoundComponent},
-      { path: 'credits', component: PageNotFoundComponent},
-      { path: '_debug', component: DebugdummyComponent}
-    ]
+      { path: 'news', component: NewsComponent },
+      { path: 'lobby', component: LobbyComponent },
+      { path: 'faq', component: FaqComponent },
+      { path: 'profile', component: ProfileComponent },
+      { path: 'updates', component: UpdatesComponent },
+      { path: 'custom', component: CustomEditorComponent },
+      { path: 'login', component: LoginComponent },
+      { path: 'register', component: PageNotFoundComponent },
+      { path: 'settings', component: SettingsComponent },
+      { path: 'report', component: PageNotFoundComponent },
+      { path: 'imprint', component: PageNotFoundComponent },
+      { path: 'about', component: PageNotFoundComponent },
+      { path: 'credits', component: PageNotFoundComponent },
+      { path: '_debug', component: DebugdummyComponent },
+    ],
   },
-  { path: 'game', component: GameComponent},
-  { path: '', redirectTo: '/home/news', pathMatch: 'full'},
-  { path: '**', component: PageNotFoundComponent }
+  { path: 'game', component: GameComponent },
+  { path: '', redirectTo: '/home/news', pathMatch: 'full' },
+  { path: '**', component: PageNotFoundComponent },
 ];
 
 @NgModule({
@@ -130,11 +134,12 @@ const appRoutes: Routes = [
     ProfileComponent,
     SettingsComponent,
     CustomEditorComponent,
-    ChatCommandListComponent
+    ChatCommandListComponent,
   ],
   imports: [
     RouterModule.forRoot(
-      appRoutes // ,{ enableTracing: true } // <-- debugging purposes only
+      appRoutes, // ,{ enableTracing: true } // <-- debugging purposes only
+      { relativeLinkResolution: 'legacy' }
     ),
     ReactiveFormsModule,
     DragDropModule,
@@ -156,15 +161,17 @@ const appRoutes: Routes = [
     MatStepperModule,
     MatSlideToggleModule,
     CdkStepperModule,
-    
+    NgbCarouselModule,
+    NgbPopoverModule,
   ],
-  providers: [{
-    provide: HTTP_INTERCEPTORS,
-    useClass: AuthInterceptor,
-    multi: true
-  },
-  {provide: LOCALE_ID, useValue: 'de'}],
-  bootstrap: [AppComponent]
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true,
+    },
+    { provide: LOCALE_ID, useValue: 'de' },
+  ],
+  bootstrap: [AppComponent],
 })
-export class AppModule {
-}
+export class AppModule {}

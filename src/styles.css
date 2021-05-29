@@ -154,3 +154,10 @@ html, body {
   -ms-user-select: none; /* Internet Explorer/Edge */
   user-select: none; /* Non-prefixed version, currently supported by any browser but < IE9 */
 }
+
+
+.popover-body-class {
+  width: 30vw;
+  height: 90vh;
+  max-width: 50vw;
+}

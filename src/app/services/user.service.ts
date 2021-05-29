@@ -37,14 +37,11 @@ export class LoginUser {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
-
   activeUser: BehaviorSubject<LoginUser>;
-  private readonly prodUserEndpoint = 'https://tispyl.uber.space:41920/api/user';
-  private readonly devUserEndpoint = 'http://localhost:25670/api/user';
-  private userEndpoint = environment.production ? this.prodUserEndpoint : this.devUserEndpoint;
+  private userEndpoint = environment.endpoint + 'user';
 
   constructor(private httpClient: HttpClient) {
     this.activeUser = new BehaviorSubject<LoginUser>(undefined);
@@ -65,7 +62,7 @@ export class UserService {
 
   getUserById(user_id: number): Observable<User> {
     const requestUrl = this.userEndpoint + '?user_id=' + user_id;
-    return this.httpClient.get<User[]>(requestUrl).pipe(map(users => users[0]));
+    return this.httpClient.get<User[]>(requestUrl).pipe(map((users) => users[0]));
   }
 
   getUserByLoginName(login_name: string): Observable<APIResponse<LoginUser>> {
@@ -82,13 +79,16 @@ export class UserService {
   }
 
   loginUser(login_name: string, password_hash: string): Observable<APIResponse<JwtResponse>> {
-    return this.httpClient.post<APIResponse<JwtResponse>>(this.userEndpoint + '/token', { username: login_name, password: password_hash });
+    return this.httpClient.post<APIResponse<JwtResponse>>(this.userEndpoint + '/token', {
+      username: login_name,
+      password: password_hash,
+    });
   }
 
   syncUserData(user: User): void {
     this.httpClient
       .get<APIResponse<User>>(this.userEndpoint + '?login_name=' + user.login_name)
-      .subscribe(response => {
+      .subscribe((response) => {
         if (response.payload !== undefined) {
           this.setActiveUser(response.payload as LoginUser);
         } else {
@@ -96,5 +96,4 @@ export class UserService {
         }
       });
   }
-
 }
