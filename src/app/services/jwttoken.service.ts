@@ -5,25 +5,22 @@ import { APIResponse } from '../model/APIResponse';
 import { UserService, LoginUser } from './user.service';
 import moment from 'moment';
 import { RegisterOptions } from '../model/RegisterOptions';
-import * as hash from 'object-hash';
 import { Observable, throwError } from 'rxjs';
-import {flatMap, map, tap} from 'rxjs/operators';
+import { flatMap, map } from 'rxjs/operators';
 
 export class JwtResponse {
   jwtToken: string;
   expiresIn: string;
 }
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class JwtTokenService {
-
   private JwtToken: string = null;
   private readonly prodUserEndpoint = 'https://tispyl.uber.space:41920/api/user';
   private readonly devUserEndpoint = 'http://localhost:25670/api/user';
   private endpoint = environment.production ? this.prodUserEndpoint : this.devUserEndpoint;
 
-  constructor(private http: HttpClient, private userService: UserService) {
-  }
+  constructor(private http: HttpClient, private userService: UserService) {}
 
   /** Tries to retrieves expires_at value from local storage */
   private getExpiration(): moment.Moment {
@@ -42,26 +39,28 @@ export class JwtTokenService {
   }
 
   login(username: string, password: string): Observable<LoginUser> {
-    return this.http.post<APIResponse<JwtResponse>>(this.endpoint + '/token', {username, password}).pipe(
-      map( (jwt: APIResponse<JwtResponse>) => {
-        if (jwt.success) {
-          this.storeToken(jwt.payload, username);
-          return jwt;
-        } else {
-          throwError(jwt);
-        }
-      }),
-      flatMap( () => this.userService.getUserByLoginName(username) ),
-      map( (usr: APIResponse<LoginUser>) => {
-        this.userService.setActiveUser(usr.payload as LoginUser);
-        return usr.payload;
-      })
-    );
+    return this.http
+      .post<APIResponse<JwtResponse>>(this.endpoint + '/token', { username, password })
+      .pipe(
+        map((jwt: APIResponse<JwtResponse>) => {
+          if (jwt.success) {
+            this.storeToken(jwt.payload, username);
+            return jwt;
+          } else {
+            throwError(jwt);
+          }
+        }),
+        flatMap(() => this.userService.getUserByLoginName(username)),
+        map((usr: APIResponse<LoginUser>) => {
+          this.userService.setActiveUser(usr.payload as LoginUser);
+          return usr.payload;
+        })
+      );
   }
 
-  register(registerOptions: RegisterOptions): Observable<Boolean> {
+  register(registerOptions: RegisterOptions): Observable<boolean> {
     return this.http.post<APIResponse<JwtResponse>>(this.endpoint, registerOptions).pipe(
-      map( (jwt: APIResponse<JwtResponse>) => {
+      map((jwt: APIResponse<JwtResponse>) => {
         if (jwt.success) {
           return true;
         } else {
@@ -71,30 +70,26 @@ export class JwtTokenService {
     );
   }
 
-  logout() {
+  public logout(): void {
     localStorage.removeItem('jwt_token');
     localStorage.removeItem('expires_at');
     localStorage.removeItem('username');
     this.userService.setActiveUser(undefined);
   }
 
-  public isLoggedIn() {
+  public isLoggedIn(): boolean {
     return moment().isBefore(this.getExpiration());
   }
 
-  isLoggedOut() {
+  public isLoggedOut(): boolean {
     return !this.isLoggedIn();
   }
 
-  setJwtToken(token: string): void {
+  public setJwtToken(token: string): void {
     this.JwtToken = token;
   }
 
-  getJwtToken(): string {
+  public getJwtToken(): string {
     return this.JwtToken;
   }
-
-
-
-
 }
