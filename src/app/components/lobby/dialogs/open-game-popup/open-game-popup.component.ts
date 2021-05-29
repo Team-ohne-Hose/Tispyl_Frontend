@@ -60,7 +60,9 @@ export class OpenGamePopupComponent implements OnInit {
   private static readonly requestUrl = environment.endpoint + 'gameboard/tileset/';
   roomName;
   skinName: string;
-  randomizeTiles;
+  randomizeTiles = false;
+  enableItems = false;
+  enableMultipleItems = false;
   deckList: TileSet[];
   selectedDeck = 0;
 
