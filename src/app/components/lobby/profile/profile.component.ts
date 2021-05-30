@@ -45,7 +45,7 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  processFile(imageInput: DataTransfer) {
+  processFile(imageInput: DataTransfer): void {
     const file: File = imageInput.files[0];
     const reader = new FileReader();
 
