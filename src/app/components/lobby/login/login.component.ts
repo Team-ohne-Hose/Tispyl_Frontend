@@ -64,6 +64,8 @@ export class LoginComponent implements OnInit {
     /** Redirect to targetRoute if already logged in */
     if (this.jwtTokenService.isLoggedIn()) {
       this.router.navigate([this.targetRoute], { relativeTo: this.route });
+    } else {
+      this.jwtTokenService.logout();
     }
   }
 
@@ -95,10 +97,15 @@ export class LoginComponent implements OnInit {
     const hadError = this.infoMessage.length > 0;
     this.isRequesting = true;
     this.resetInfoText();
+
+    // remove old token from webstorage
+    if (!this.jwtTokenService.isLoggedIn()) {
+      this.jwtTokenService.logout();
+    }
+
     this.jwtTokenService.login(this.login_name, hash.MD5(this.password_plain)).subscribe(
       (usr: LoginUser) => {
         this.isRequesting = false;
-        console.debug('Logged in as: ', usr);
         this.router.navigate([this.targetRoute], { relativeTo: this.route });
       },
       (err) => {

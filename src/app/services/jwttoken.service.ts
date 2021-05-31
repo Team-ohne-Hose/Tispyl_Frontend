@@ -69,9 +69,7 @@ export class JwtTokenService {
   }
 
   public logout(): void {
-    localStorage.removeItem('jwt_token');
-    localStorage.removeItem('expires_at');
-    localStorage.removeItem('username');
+    localStorage.clear();
     this.userService.setActiveUser(undefined);
   }
 

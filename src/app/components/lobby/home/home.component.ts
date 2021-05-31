@@ -64,7 +64,7 @@ export class HomeComponent implements OnInit, AfterContentInit {
     this.imageSources = HomeComponent.extendForWrapping<string>(this.imageSources);
 
     /** Check for active JWT Token */
-    if (this.AuthService.isLoggedIn) {
+    if (this.AuthService.isLoggedIn()) {
       this.userManagement.getUserByLoginName(localStorage.getItem('username')).subscribe(
         (usr: APIResponse<LoginUser>) => {
           this.userManagement.setActiveUser(usr.payload as LoginUser);
@@ -76,8 +76,6 @@ export class HomeComponent implements OnInit, AfterContentInit {
           );
         }
       );
-    } else {
-      this.AuthService.logout();
     }
 
     this.activeUser.subscribe((u) => {
