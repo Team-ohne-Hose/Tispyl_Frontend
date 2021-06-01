@@ -56,20 +56,26 @@
         </button>
       </div>
 
-      <div *ngIf="isLoggedIn" class="user-box dropdown-anchor" #dropdown (click)="onProfileClick()">
+      <div *ngIf="isLoggedIn" class="user-box" [matMenuTriggerFor]="settingsMenu">
         <div class="img-clipper">
           <img [src]="profileSource" alt="user" />
         </div>
-        <div class="dropdown-menu">
-          <button class="dropdown-item" [routerLink]="['./settings']">
-            <i class="fas fa-cog"></i>
-            <span>Settings</span>
-          </button>
-          <button class="dropdown-item" (click)="onLogOut()">
-            <i class="fas fa-door-open"></i>
-            <span>Logout</span>
-          </button>
-        </div>
+        <!-- Material Menu -->
+        <mat-menu #settingsMenu>
+          <menu mat-menu-item>
+            <a class="text-secondary" [routerLink]="['./settings']">
+              <i class="fas fa-cog"></i>
+              <span> Settings</span>
+            </a>
+          </menu>
+          <menu mat-menu-item>
+            <a class="text-secondary" (click)="onLogOut()">
+              <i class="fas fa-door-open"></i>
+              <span> Logout</span>
+            </a>
+          </menu>
+        </mat-menu>
+        <!-- End Material Menu -->
       </div>
 
       <div *ngIf="!isLoggedIn" class="login-box">

@@ -1,17 +1,16 @@
-
 .layout {
   display: grid;
   grid-template-columns: 10% 80% 10%;
   grid-template-rows: auto 1fr auto;
-  grid-template-areas:  "h h h"
-                        ". m ."
-                        "f f f";
+  grid-template-areas:
+    'h h h'
+    '. m .'
+    'f f f';
   height: 100vh;
 }
 
 .layout > header {
   grid-area: h;
-
 }
 
 .layout > main {
@@ -36,7 +35,7 @@
 
 .banner {
   width: 100vw;
-  height: calc( (100.1vw/3) * 9/16 );
+  height: calc((100.1vw / 3) * 9 / 16);
 
   display: flex;
 
@@ -85,14 +84,14 @@
 .nav-bar {
   display: grid;
   grid-template-columns: 25vw auto 30vw auto 25vw;
-  grid-template-rows: calc( min((100.1vw/9) * 9/16, 5rem) );
+  grid-template-rows: calc(min((100.1vw/9) * 9/16, 5rem));
 
   background: #3d3d3d;
 }
 
 .nav-box {
   grid-column: 3;
-  display:flex;
+  display: flex;
 }
 
 .nav-button {
@@ -253,10 +252,11 @@
 
   display: grid;
   grid-template-columns: 25% auto 25%;
-  grid-template-rows: calc( min((100.1vw/12) * 9/16, 5rem) ) auto calc( min((100.1vw/12) * 9/16, 5rem) );
-  grid-template-areas:  ". . l"
-                        ". i ."
-                        ". . .";
+  grid-template-rows: calc(min((100.1vw/12) * 9/16, 5rem)) auto calc(min((100.1vw/12) * 9/16, 5rem));
+  grid-template-areas:
+    '. . l'
+    '. i .'
+    '. . .';
 
   justify-items: center;
 }
@@ -294,8 +294,6 @@
   max-height: 80%;
   max-width: 80%;
 }
-
-
 
 @media only screen and (max-width: 1000px) {
   .nav-bar {
