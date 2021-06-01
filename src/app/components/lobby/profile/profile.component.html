@@ -6,11 +6,12 @@
     Image Upload Failed!
   </div>
 
-  <div class="row justify-content-around">
-    <div class="col-md-5 col-xl-4 box">
+  <div *ngIf="false" class="row justify-content-around">
+    <div class="col-md-5 col-xl-4 transparent">
       <div class="row justify-content-center">
         <div class="col-md-12 p-3">
-          <img class="img-fluid rounded mx-auto d-block" (click)="imageInput.click()" *ngIf="currentUser" #profilePic [src]="profileSource" alt="'Profile'" />
+          <img class="img-fluid rounded mx-auto d-block" (click)="imageInput.click()" *ngIf="currentUser" #profilePic
+            [src]="profileSource" alt="'Profile'" />
           <input #imageInput type="file" accept="image/*" (change)="processFile(imageInput)" style="display: none" />
         </div>
 
@@ -39,11 +40,188 @@
         </div>
       </div>
     </div>
-    <div class="col-md-6 col-xl-7 box">
+    <div class="col-md-6 col-xl-7 transparent">
       <p>Game History</p>
     </div>
   </div>
   <div *ngIf="selectedFile?.pending" class="img-loading-overlay">
     <div class="img-spinning-circle"></div>
+  </div>
+</div>
+
+
+<div class="container-fluid">
+  <div class="main-body">
+    <div class="row gutters-sm">
+      <!-- Left Side-->
+      <div class="col-md-4 mb-3">
+        <!-- User Profile -->
+        <div class="card transparent">
+          <div class="card-body">
+            <div class="d-flex flex-column align-items-center text-center">
+              <img (click)="imageInput.click()" *ngIf="currentUser" #profilePic [src]="profileSource" alt="'Profile'"
+                class="rounded-circle" width="200">
+              <div class="mt-3">
+                <h4>{{ currentUser?.display_name }}</h4>
+                <p class="text-secondary mb-1">Role (coming soon)</p>
+                <p class="text-muted font-size-sm">Level (coming soon)</p>
+
+                <a class="btn btn-primary profile-btn" [routerLink]="['./edit']">Edit</a>
+                <a class="btn btn-outline-primary profile-btn" [routerLink]="['./']">Message</a>
+              </div>
+            </div>
+          </div>
+
+          <p class="small mr-3 text-right">dabei seit: {{ currentUser?.user_creation | date: "d. MMMM y" }}</p>
+
+        </div>
+        <!-- End User Profile -->
+        <div class="card mt-3 transparent">
+          <ul class="list-group list-group-flush">
+
+            <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+              <h6 class="mb-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="feather feather-instagram mr-2 icon-inline text-danger">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>Instagram</h6>
+              <span class="text-secondary">coming soon</span>
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+              <h6 class="mb-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="feather feather-facebook mr-2 icon-inline text-primary">
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                </svg>Facebook
+              </h6>
+              <span class="text-secondary">coming soon</span>
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+              <h6 class="mb-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="feather feather-twitch mr-2 icon-inline">
+                  <path d="M21 2H3v16h5v4l4-4h5l4-4V2zm-10 9V7m5 4V7"></path>
+                </svg>Twitch
+              </h6>
+              <span class="text-secondary">coming soon</span>
+            </li>
+
+          </ul>
+        </div>
+      </div>
+      <!-- End Left Side-->
+
+      <!--Right Side-->
+      <div class="col-md-8">
+
+        <div *ngIf="false" class="card mb-3 transparent">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-sm-3">
+                <h6 class="mb-0">Full Name</h6>
+              </div>
+              <div class="col-sm-9 text-secondary">
+                Kenneth Valdez
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <h6 class="mb-0">Email</h6>
+              </div>
+              <div class="col-sm-9 text-secondary">
+                fip@jukmuh.al
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <h6 class="mb-0">Phone</h6>
+              </div>
+              <div class="col-sm-9 text-secondary">
+                (239) 816-9029
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <h6 class="mb-0">Mobile</h6>
+              </div>
+              <div class="col-sm-9 text-secondary">
+                (320) 380-4539
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <h6 class="mb-0">Address</h6>
+              </div>
+              <div class="col-sm-9 text-secondary">
+                Bay Area, San Francisco, CA
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-12">
+                <a class="btn btn-info " target="__blank"
+                  href="https://www.bootdey.com/snippets/view/profile-edit-data-and-skills">Edit</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row gutters-sm">
+          <div class="col-sm-12 mb-3">
+            <div class="card h-100 transparent">
+              <div class="card-body">
+                <h6 class="d-flex align-items-center mb-3"><i
+                    class="material-icons text-info mr-2">assignment</i>Vergangene Spiele</h6>
+
+                <ul class="list-group">
+                  <div class="list-group-item transparent mb-2">
+                    <div class="mt-1">
+                      <h6>{{ currentUser?.display_name }}</h6>
+                      <p class="text-secondary mb-1">Dauer: {{randomNumber(1, 90)}} Minuten</p>
+                      <p class="text-muted font-size-sm">Spieleranzahl: {{randomNumber(1, 16)}}</p>
+                    </div>
+                  </div>
+                  <div class="list-group-item transparent mb-2">
+                    <div class="mt-1">
+                      <h6>{{ currentUser?.display_name }}</h6>
+                      <p class="text-secondary mb-1">Dauer: {{randomNumber(1, 90)}} Minuten</p>
+                      <p class="text-muted font-size-sm">Spieleranzahl: {{randomNumber(1, 16)}}</p>
+                    </div>
+                  </div>
+                  <div class="list-group-item transparent mb-2">
+                    <div class="mt-1">
+                      <h6>{{ currentUser?.display_name }}</h6>
+                      <p class="text-secondary mb-1">Dauer: {{randomNumber(1, 90)}} Minuten</p>
+                      <p class="text-muted font-size-sm">Spieleranzahl: {{randomNumber(1, 16)}}</p>
+                    </div>
+                  </div>
+                  <div class="list-group-item transparent mb-2">
+                    <div class="mt-1">
+                      <h6>{{ currentUser?.display_name }}</h6>
+                      <p class="text-secondary mb-1">Dauer: {{randomNumber(1, 90)}} Minuten</p>
+                      <p class="text-muted font-size-sm">Spieleranzahl: {{randomNumber(1, 16)}}</p>
+                    </div>
+                  </div>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--End Right Side-->
+
+
+      </div>
+    </div>
+
   </div>
 </div>

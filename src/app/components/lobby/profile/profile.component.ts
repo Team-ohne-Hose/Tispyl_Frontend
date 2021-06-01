@@ -66,4 +66,8 @@ export class ProfileComponent implements OnInit {
     });
     reader.readAsDataURL(file);
   }
+
+  randomNumber(min: number, max: number): number {
+    return Math.random() * (max - min) + min;
+  }
 }
