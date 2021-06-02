@@ -70,18 +70,14 @@ export class OpenGamePopupComponent {
   randomizeTiles = false;
   enableItems = false;
   enableMultipleItems = false;
-  deckList: TileSet[];
-  selectedDeck = 0;
+  tileSetList: TileSet[];
+  selectedTileSetId = 0;
 
-  selectedDeckExt: TileSet = undefined;
+  selectedTileSet: TileSet = undefined;
   tileListAsSet: Map<number, { bt: BoardTile; count: number }> = new Map<number, { bt: BoardTile; count: number }>();
   popoverVisible = false;
 
   @ViewChild('deckCarousel', { static: true }) deckCarousel: NgbCarousel;
-
-  // Onclick FieldList
-  //  multiples as x2 - tag
-  //  only list of pictures
 
   constructor(
     private dialogRef: MatDialogRef<OpenGamePopupComponent, DialogResult>,
@@ -101,8 +97,8 @@ export class OpenGamePopupComponent {
             val.thumbnailPath = OpenGamePopupComponent.defaultThumbPath;
           }
         });
-        this.deckList = ts;
-        this.loadTileSetData(this.deckList[0].id);
+        this.tileSetList = ts;
+        this.loadTileSetData(this.tileSetList[0].id);
       },
       (error: any) => {
         console.error('couldnt retrieve list of available decks', error);
@@ -112,7 +108,7 @@ export class OpenGamePopupComponent {
 
   private generateTileListAsSet() {
     this.tileListAsSet.clear();
-    this.selectedDeckExt.__fields__.forEach((val: SetField) => {
+    this.selectedTileSet.__fields__.forEach((val: SetField) => {
       const bt = val.boardTile;
       const entry = this.tileListAsSet.get(bt.id);
       if (entry === undefined) {
@@ -129,12 +125,12 @@ export class OpenGamePopupComponent {
     req.subscribe(
       (res: APIResponse<TileSet>) => {
         const ts = res.payload;
-        this.selectedDeckExt = ts;
-        console.log('set data', this.selectedDeckExt);
+        this.selectedTileSet = ts;
+        console.log('set data', this.selectedTileSet);
         this.generateTileListAsSet();
       },
       (error: any) => {
-        this.selectedDeckExt = undefined;
+        this.selectedTileSet = undefined;
         console.error('couldnt retrieve list of available decks', error);
       }
     );
@@ -148,7 +144,7 @@ export class OpenGamePopupComponent {
     if (this.roomName !== undefined) {
       this.dialogRef.close({
         roomName: this.roomName,
-        tileSetId: this.deckList[this.selectedDeck].id || 1,
+        tileSetId: this.tileSetList[this.selectedTileSetId].id || 1,
         randomizeTiles: this.randomizeTiles || false,
         enableItems: this.enableItems || false,
         enableMultipleItems: this.enableMultipleItems || false,
@@ -161,7 +157,7 @@ export class OpenGamePopupComponent {
 
   slid(evt: NgbSingleSlideEvent, slide: number): void {
     if (evt.isShown) {
-      this.selectedDeck = slide;
+      this.selectedTileSetId = slide;
       const elmnt = document.getElementById('deck-list-entry-' + slide);
       console.log('elmnt is', elmnt);
       // elmnt.scrollIntoView();
@@ -176,7 +172,7 @@ export class OpenGamePopupComponent {
   slide(evt: NgbSlideEvent): void {
     // search for the element in deckList with matching html-id
     let i: number;
-    const ts: TileSet = this.deckList.find((val: TileSet, index: number) => {
+    const ts: TileSet = this.tileSetList.find((val: TileSet, index: number) => {
       if (`deckSlide-${val.id}` === evt.current) {
         i = index;
         return true;
@@ -184,8 +180,8 @@ export class OpenGamePopupComponent {
     });
     // if found, select the correct one
     if (ts !== undefined) {
-      this.loadTileSetData(this.deckList[i].id);
-      this.selectedDeck = i;
+      this.loadTileSetData(this.tileSetList[i].id);
+      this.selectedTileSetId = i;
       const elmnt = document.getElementById('deck-list-entry-' + i);
       console.log('elmnt is', elmnt);
       elmnt.scrollIntoView({ behavior: 'smooth', block: 'nearest' });

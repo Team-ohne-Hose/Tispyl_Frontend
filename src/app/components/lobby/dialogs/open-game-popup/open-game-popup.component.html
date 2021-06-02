@@ -26,7 +26,7 @@
     <div class="card-deck-select">
       <div class="carousel-container">
         <ngb-carousel #deckCarousel (slide)="slide($event)">
-          <ng-template ngbSlide id="deckSlide-{{deck.id}}" *ngFor="let deck of this.deckList; let i = index" (slid)='slid($event, i)'>
+          <ng-template ngbSlide id="deckSlide-{{deck.id}}" *ngFor="let deck of this.tileSetList; let i = index" (slid)='slid($event, i)'>
             <div class="carousel-deck-item">
               <img [src]="deck.thumbnailPath" alt="{{deck.name}}">
               <div class="deck-info-container container">
@@ -51,20 +51,20 @@
           </ng-template>
         </ngb-carousel>
         <a role="button" class="carousel-control-prev ng-star-inserted" (click)="this.deckCarousel.prev()"
-           *ngIf="!this.popoverVisible || this.selectedDeckExt === undefined">
+           *ngIf="!this.popoverVisible || this.selectedTileSet === undefined">
           <span aria-hidden="true" class="carousel-control-prev-icon"></span>
           <span class="sr-only">Previous</span>
         </a>
         <a role="button" class="carousel-control-next ng-star-inserted" (click)="this.deckCarousel.next()"
-           *ngIf="!this.popoverVisible || this.selectedDeckExt === undefined">
+           *ngIf="!this.popoverVisible || this.selectedTileSet === undefined">
           <span aria-hidden="true" class="carousel-control-next-icon"></span>
           <span class="sr-only">Next</span>
         </a>
       </div>
       <div class="deck-list container customScrollBarContainer">
-        <div [class]="{'disable-user-select':true, 'deck-list-entry':true, 'py-2':true, 'row':true, 'active': this.selectedDeck === i}"
+        <div [class]="{'disable-user-select':true, 'deck-list-entry':true, 'py-2':true, 'row':true, 'active': this.selectedTileSetId === i}"
              id="deck-list-entry-{{i}}"
-             *ngFor="let deck of this.deckList; let i = index"
+             *ngFor="let deck of this.tileSetList; let i = index"
              (click)="selectCarousel(deck.id)">
           <div class="col-3">
             <img [src]="deck.thumbnailPath" alt="{{deck.name}}" draggable="false">
@@ -89,7 +89,7 @@
   </div>
 </div>
 
-<div class="tile-list-popover customScrollBarContainer px-auto" *ngIf="this.popoverVisible && this.selectedDeckExt !== undefined" (click)="this.popoverVisible = false;">
+<div class="tile-list-popover customScrollBarContainer px-auto" *ngIf="this.popoverVisible && this.selectedTileSet !== undefined" (click)="this.popoverVisible = false;">
   <div class="popTileListContentTile" *ngFor="let tile of this.tileListAsSet | keyvalue">
     <img [src]="tile.value.bt.path" alt="{{tile.value.bt.name}}" draggable="false">
     <div class="popTileListCounter">
