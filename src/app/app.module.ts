@@ -66,6 +66,7 @@ import { CustomEditorComponent } from './components/lobby/custom-editor/custom-e
 import { ChatCommandListComponent } from './components/game/interface/menu-bar/home-register/chat-command-list/chat-command-list.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgbCarouselModule, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
+import { GamehistoryComponent } from './components/lobby/profile/gamehistory/gamehistory.component';
 
 const appRoutes: Routes = [
   {
@@ -136,6 +137,7 @@ const appRoutes: Routes = [
     SettingsComponent,
     CustomEditorComponent,
     ChatCommandListComponent,
+    GamehistoryComponent,
   ],
   imports: [
     RouterModule.forRoot(

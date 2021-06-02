@@ -209,12 +209,12 @@
   filter: brightness(90%);
 }
 
-.dropdown-anchor {
+.dropdown-anchors {
   transition: height 8s;
   position: relative;
 }
 
-.dropdown-menu {
+.dropdown-menus {
   display: grid;
   flex-direction: column;
   position: absolute;
@@ -231,17 +231,17 @@
   overflow-y: hidden;
 }
 
-.open > .dropdown-menu {
+.open > .dropdown-menus {
   max-height: 100px;
 }
 
-.dropdown-item {
+.dropdown-items {
   display: grid;
   align-items: center;
   grid-template-columns: auto 70%;
   grid-column-gap: 1%;
 }
-.dropdown-item > span {
+.dropdown-items > span {
   justify-self: start;
 }
 

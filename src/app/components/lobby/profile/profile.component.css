@@ -30,3 +30,7 @@
 .profile-btn::after {
   margin-right: 0.3rem;
 }
+
+.img-fit {
+  object-fit: cover;
+}
