@@ -18,15 +18,16 @@ export interface CreateRoomOpts {
   author: string;
   login: string;
   displayName: string;
-  skin: string;
+  tileSetId: number;
   randomizeTiles: boolean;
+  enableItems: boolean;
+  enableMultipleItems: boolean;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ColyseusClientService {
-
   myLoginName: string;
   private readonly prodBackendWStarget = 'wss://tispyl.uber.space:41920';
   private readonly devBackendWStarget = 'ws://localhost:25670';
@@ -36,17 +37,15 @@ export class ColyseusClientService {
   availableRooms: BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>;
 
   private messageCallbacks: Map<MessageType, MessageCallback[]> = new Map<MessageType, MessageCallback[]>([]);
-  private onChangeCallbacks: ((changes: DataChange<any>[]) => void)[] = [
-    this.onDataChange.bind(this)
-  ];
+  private onChangeCallbacks: ((changes: DataChange<any>[]) => void)[] = [this.onDataChange.bind(this)];
 
   constructor(private router: Router) {
     this.activeRoom = new BehaviorSubject<Room<GameState>>(undefined);
     this.availableRooms = new BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>([]);
   }
 
-  onDataChange(changes: DataChange<any>[]) {
-    changes.forEach(change => {
+  onDataChange(changes: DataChange<any>[]): void {
+    changes.forEach((change) => {
       switch (change.field) {
         case 'action':
           break;
@@ -70,9 +69,9 @@ export class ColyseusClientService {
     this.activeRoom.next(newRoom);
   }
 
-  createRoom(opts: CreateRoomOpts) {
+  createRoom(opts: CreateRoomOpts): void {
     if (opts.roomName !== undefined) {
-      this.client.create('game', opts).then(suc => {
+      this.client.create('game', opts).then((suc) => {
         this.setActiveRoom(suc);
         this.updateAvailableRooms();
         this.myLoginName = opts.login;
@@ -81,12 +80,12 @@ export class ColyseusClientService {
     }
   }
 
-  joinActiveRoom(roomAva: RoomAvailable<RoomMetaInfo>, loginName: string, displayName: string) {
+  joinActiveRoom(roomAva: RoomAvailable<RoomMetaInfo>, loginName: string, displayName: string): void {
     const options = {
       name: undefined,
       author: undefined,
       login: loginName,
-      displayName: displayName
+      displayName: displayName,
     };
     this.client.joinById(roomAva.roomId, options).then((myRoom: Room) => {
       this.setActiveRoom(myRoom);
@@ -99,12 +98,12 @@ export class ColyseusClientService {
   }
 
   updateAvailableRooms(): void {
-    this.client.getAvailableRooms('game').then(rooms => {
+    this.client.getAvailableRooms('game').then((rooms) => {
       this.availableRooms.next(rooms);
     });
   }
 
-  registerMessageCallback(type: MessageType, cb: MessageCallback) {
+  registerMessageCallback(type: MessageType, cb: MessageCallback): void {
     this.getActiveRoom().subscribe((activeRoom) => {
       if (activeRoom !== undefined) {
         activeRoom.onMessage(type, cb.f);
@@ -113,7 +112,7 @@ export class ColyseusClientService {
     });
   }
 
-  addOnChangeCallback(cb: (changes: DataChange<any>[]) => void) {
+  addOnChangeCallback(cb: (changes: DataChange<any>[]) => void): void {
     this.onChangeCallbacks.push(cb);
   }
 
@@ -128,10 +127,7 @@ export class ColyseusClientService {
     if (list !== undefined && list.length > 0) {
       list.forEach((value: MessageCallback, index: number) => {
         if (value.filterSubType >= 0) {
-          if (
-            (data['subType'] === value.filterSubType) ||
-            (data['action'] === value.filterSubType)
-          ) {
+          if (data['subType'] === value.filterSubType || data['action'] === value.filterSubType) {
             value.f(data);
           }
         } else {
@@ -144,7 +140,7 @@ export class ColyseusClientService {
   }
 
   private distributeOnChange(changes: DataChange<any>[]) {
-    this.onChangeCallbacks.map(f => f(changes));
+    this.onChangeCallbacks.map((f) => f(changes));
   }
 
   private updateRoomCallbacks(currentRoom?: Room<GameState>) {
@@ -161,5 +157,4 @@ export class ColyseusClientService {
       currentRoom.state.onChange = this.distributeOnChange.bind(this);
     }
   }
-
 }

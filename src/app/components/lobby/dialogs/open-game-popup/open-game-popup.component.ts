@@ -49,13 +49,20 @@ interface TileSet {
   createdAt: Date;
   updatedAt: Date;
 }
+export interface DialogResult {
+  roomName: string;
+  tileSetId: number;
+  randomizeTiles: boolean;
+  enableItems: boolean;
+  enableMultipleItems: boolean;
+}
 
 @Component({
   templateUrl: './open-game-popup.component.html',
   styleUrls: ['./open-game-popup.component.css'],
-  providers: [NgbCarouselConfig]
+  providers: [NgbCarouselConfig],
 })
-export class OpenGamePopupComponent implements OnInit {
+export class OpenGamePopupComponent {
   private static readonly defaultThumbPath = '/assets/untitled_ts.png';
   private static readonly requestUrl = environment.endpoint + 'gameboard/tileset/';
   roomName;
@@ -67,37 +74,40 @@ export class OpenGamePopupComponent implements OnInit {
   selectedDeck = 0;
 
   selectedDeckExt: TileSet = undefined;
-  tileListAsSet: Map<number, {bt: BoardTile, count: number}> = new Map<number, {bt: BoardTile; count: number}>();
+  tileListAsSet: Map<number, { bt: BoardTile; count: number }> = new Map<number, { bt: BoardTile; count: number }>();
   popoverVisible = false;
 
-  @ViewChild('deckCarousel', {static : true}) deckCarousel: NgbCarousel;
-
+  @ViewChild('deckCarousel', { static: true }) deckCarousel: NgbCarousel;
 
   // Onclick FieldList
   //  multiples as x2 - tag
   //  only list of pictures
 
-  constructor(private dialogRef: MatDialogRef<OpenGamePopupComponent, { roomName: string, skinName: string, randomizeTiles: boolean}>,
-              @Inject(MAT_DIALOG_DATA) public data: any,
-              private httpClient: HttpClient,
-              config: NgbCarouselConfig) {
+  constructor(
+    private dialogRef: MatDialogRef<OpenGamePopupComponent, DialogResult>,
+    private httpClient: HttpClient,
+    config: NgbCarouselConfig
+  ) {
     config.interval = 0;
     config.showNavigationIndicators = false;
     config.showNavigationArrows = false;
 
     const req = this.httpClient.get<APIResponse<TileSet[]>>(OpenGamePopupComponent.requestUrl);
-    req.subscribe((res: APIResponse<TileSet[]>) => {
-      const ts = res.payload;
-      ts.forEach((val: TileSet) => {
-        if (val.thumbnailPath === undefined || val.thumbnailPath === null) {
-          val.thumbnailPath = OpenGamePopupComponent.defaultThumbPath;
-        }
-      });
-      this.deckList = ts;
-      this.loadTileSetData(this.deckList[0].id);
-    }, (error: any) => {
-      console.error('couldnt retrieve list of available decks', error);
-    });
+    req.subscribe(
+      (res: APIResponse<TileSet[]>) => {
+        const ts = res.payload;
+        ts.forEach((val: TileSet) => {
+          if (val.thumbnailPath === undefined || val.thumbnailPath === null) {
+            val.thumbnailPath = OpenGamePopupComponent.defaultThumbPath;
+          }
+        });
+        this.deckList = ts;
+        this.loadTileSetData(this.deckList[0].id);
+      },
+      (error: any) => {
+        console.error('couldnt retrieve list of available decks', error);
+      }
+    );
   }
 
   private generateTileListAsSet() {
@@ -106,7 +116,7 @@ export class OpenGamePopupComponent implements OnInit {
       const bt = val.boardTile;
       const entry = this.tileListAsSet.get(bt.id);
       if (entry === undefined) {
-        this.tileListAsSet.set(bt.id, {bt: bt, count: 1});
+        this.tileListAsSet.set(bt.id, { bt: bt, count: 1 });
       } else {
         entry.count++;
       }
@@ -116,18 +126,21 @@ export class OpenGamePopupComponent implements OnInit {
 
   private loadTileSetData(id: number) {
     const req = this.httpClient.get<APIResponse<TileSet>>(OpenGamePopupComponent.requestUrl + `:id?id=${id}`);
-    req.subscribe((res: APIResponse<TileSet>) => {
-      const ts = res.payload;
-      this.selectedDeckExt = ts;
-      console.log('set data', this.selectedDeckExt);
-      this.generateTileListAsSet();
-    }, (error: any) => {
-      this.selectedDeckExt = undefined;
-      console.error('couldnt retrieve list of available decks', error);
-    });
+    req.subscribe(
+      (res: APIResponse<TileSet>) => {
+        const ts = res.payload;
+        this.selectedDeckExt = ts;
+        console.log('set data', this.selectedDeckExt);
+        this.generateTileListAsSet();
+      },
+      (error: any) => {
+        this.selectedDeckExt = undefined;
+        console.error('couldnt retrieve list of available decks', error);
+      }
+    );
   }
 
-  public closeMe() {
+  public closeMe(): void {
     this.dialogRef.close();
   }
 
@@ -135,16 +148,15 @@ export class OpenGamePopupComponent implements OnInit {
     if (this.roomName !== undefined) {
       this.dialogRef.close({
         roomName: this.roomName,
-        skinName: (this.skinName !== undefined && this.skinName.length > 0) ? this.skinName : 'default',
-        randomizeTiles: this.randomizeTiles || false
+        tileSetId: this.deckList[this.selectedDeck].id || 1,
+        randomizeTiles: this.randomizeTiles || false,
+        enableItems: this.enableItems || false,
+        enableMultipleItems: this.enableMultipleItems || false,
       });
     } else {
       console.log('No roomName was entered.');
       this.dialogRef.close();
     }
-  }
-
-  ngOnInit(): void {
   }
 
   slid(evt: NgbSingleSlideEvent, slide: number): void {
@@ -156,12 +168,12 @@ export class OpenGamePopupComponent implements OnInit {
     }
   }
 
-  selectCarousel(id: number) {
+  selectCarousel(id: number): void {
     console.log('selecting', id);
     this.deckCarousel.select('deckSlide-' + id);
   }
 
-  slide(evt) {
+  slide(evt: NgbSlideEvent): void {
     // search for the element in deckList with matching html-id
     let i: number;
     const ts: TileSet = this.deckList.find((val: TileSet, index: number) => {
@@ -176,7 +188,7 @@ export class OpenGamePopupComponent implements OnInit {
       this.selectedDeck = i;
       const elmnt = document.getElementById('deck-list-entry-' + i);
       console.log('elmnt is', elmnt);
-      elmnt.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+      elmnt.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   }
 }
