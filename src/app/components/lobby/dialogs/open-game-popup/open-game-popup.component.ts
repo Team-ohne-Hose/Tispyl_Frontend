@@ -1,11 +1,10 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Component, ViewChild } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { APIResponse } from '../../../../model/APIResponse';
 import { NgbCarousel, NgbCarouselConfig, NgbSlideEvent } from '@ng-bootstrap/ng-bootstrap';
 import { NgbSingleSlideEvent } from '@ng-bootstrap/ng-bootstrap/carousel/carousel';
-import { noUndefined } from '@angular/compiler/src/util';
 
 interface BoardTile {
   id: number;
@@ -117,7 +116,6 @@ export class OpenGamePopupComponent {
         entry.count++;
       }
     });
-    console.log('TileList is', this.tileListAsSet);
   }
 
   private loadTileSetData(id: number) {
@@ -126,7 +124,6 @@ export class OpenGamePopupComponent {
       (res: APIResponse<TileSet>) => {
         const ts = res.payload;
         this.selectedTileSet = ts;
-        console.log('set data', this.selectedTileSet);
         this.generateTileListAsSet();
       },
       (error: any) => {
@@ -159,13 +156,10 @@ export class OpenGamePopupComponent {
     if (evt.isShown) {
       this.selectedTileSetId = slide;
       const elmnt = document.getElementById('deck-list-entry-' + slide);
-      console.log('elmnt is', elmnt);
-      // elmnt.scrollIntoView();
     }
   }
 
   selectCarousel(id: number): void {
-    console.log('selecting', id);
     this.deckCarousel.select('deckSlide-' + id);
   }
 
@@ -183,7 +177,6 @@ export class OpenGamePopupComponent {
       this.loadTileSetData(this.tileSetList[i].id);
       this.selectedTileSetId = i;
       const elmnt = document.getElementById('deck-list-entry-' + i);
-      console.log('elmnt is', elmnt);
       elmnt.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   }
