@@ -13,9 +13,7 @@ export enum SourceDirectory {
   providedIn: 'root',
 })
 export class MarkdownContentService {
-  private readonly prodBaseUrl = 'https://tispyl.uber.space:41920/';
-  private readonly devBaseUrl = 'http://localhost:25670/';
-  private readonly baseUrl = environment.production ? this.prodBaseUrl : this.devBaseUrl;
+  private readonly baseUrl = environment.endpoint;
 
   headlineCache: BehaviorSubject<[string, string][]> = new BehaviorSubject<[string, string][]>(undefined);
 
