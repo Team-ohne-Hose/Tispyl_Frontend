@@ -13,23 +13,24 @@
         <div class="card transparent">
           <div class="card-body">
             <div class="d-flex flex-column align-items-center text-center">
-              <img (click)="imageInput.click()" *ngIf="currentUser" #profilePic [src]="profileSource" alt="'Profile'"
+              <img (click)="isCurrentUser && imageInput.click()" *ngIf="currentUser" #profilePic [src]="profileSource" alt="'Profile'"
                 class="rounded-circle img-fit" width="200" height="200">
 
               <div class="mt-3">
-                <h4>{{ currentUser?.display_name }}</h4>
+                <h4>{{ (isCurrentUser)? currentUser?.display_name : foreignUser?.display_name }}</h4>
                 <p class="text-secondary mb-1">Role (coming soon)</p>
                 <p class="text-muted font-size-sm">Level (coming soon)</p>
 
-                <a class="btn btn-primary profile-btn" [routerLink]="['./edit']">Edit</a>
-                <a class="btn btn-primary profile-btn" (click)="imageInput.click()" *ngIf="currentUser">Upload</a>
-                <a class="btn btn-outline-primary profile-btn" [routerLink]="['./']">Message</a>
+                <a class="btn btn-primary profile-btn" [routerLink]="['./profile', currentUser.id]">Edit</a>
+                <a class="btn btn-primary profile-btn" (click)="imageInput.click()" *ngIf="isCurrentUser">Upload</a>
+                <a class="btn btn-outline-primary profile-btn" [routerLink]="['./profile', currentUser.id]">Message</a>
               </div>
             </div>
           </div>
 
           <input #imageInput type="file" accept="image/*" (change)="processFile(imageInput)" style="display: none" />
-          <p class="small mr-3 text-right">dabei seit: {{ currentUser?.user_creation | date: "d. MMMM y" }}</p>
+          <p class="small mr-3 text-right">dabei seit: {{ (isCurrentUser) ? (currentUser?.user_creation | date: "d. MMMM
+            y") : (foreignUser?.user_creation | date: "d. MMMM y") }}</p>
 
         </div>
         <!-- End User Profile -->
@@ -76,7 +77,7 @@
 
       <!--Game History-->
       <div class="col-md-8">
-        <app-gamehistory [currentUser]="currentUser"></app-gamehistory>
+        <app-gamehistory [currentUser]="foreignUser"></app-gamehistory>
       </div>
       <!--End Game History-->
     </div>

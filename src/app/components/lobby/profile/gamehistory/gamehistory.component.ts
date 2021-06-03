@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { User } from 'src/app/services/user.service';
 
 @Component({
@@ -6,7 +6,7 @@ import { User } from 'src/app/services/user.service';
   templateUrl: './gamehistory.component.html',
   styleUrls: ['../profile.component.css'],
 })
-export class GamehistoryComponent {
+export class GameHistoryComponent {
   @Input() currentUser: User;
 
   randomNumber(min: number, max: number): number {

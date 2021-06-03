@@ -66,7 +66,8 @@ import { CustomEditorComponent } from './components/lobby/custom-editor/custom-e
 import { ChatCommandListComponent } from './components/game/interface/menu-bar/home-register/chat-command-list/chat-command-list.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgbCarouselModule, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
-import { GamehistoryComponent } from './components/lobby/profile/gamehistory/gamehistory.component';
+import { GameHistoryComponent } from './components/lobby/profile/gamehistory/gamehistory.component';
+import { EditProfileComponent } from './components/lobby/profile/edit-profile/edit-profile.component';
 
 const appRoutes: Routes = [
   {
@@ -77,7 +78,16 @@ const appRoutes: Routes = [
       { path: 'news', component: NewsComponent },
       { path: 'lobby', component: LobbyComponent },
       { path: 'faq', component: FaqComponent },
-      { path: 'profile', component: ProfileComponent },
+      {
+        path: 'profile/:userId',
+        component: ProfileComponent,
+        children: [
+          {
+            path: 'gamehistory',
+            component: GameHistoryComponent,
+          },
+        ],
+      },
       { path: 'updates', component: UpdatesComponent },
       { path: 'custom', component: CustomEditorComponent },
       { path: 'login', component: LoginComponent },
@@ -137,7 +147,8 @@ const appRoutes: Routes = [
     SettingsComponent,
     CustomEditorComponent,
     ChatCommandListComponent,
-    GamehistoryComponent,
+    GameHistoryComponent,
+    EditProfileComponent,
   ],
   imports: [
     RouterModule.forRoot(
