@@ -4,10 +4,9 @@ import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 @Pipe({
-  name: 'resolveToHeadline'
+  name: 'resolveToHeadline',
 })
 export class ResolveToHeadlinePipe implements PipeTransform {
-
   constructor(private mdc: MarkdownContentService) {}
 
   /**
@@ -16,8 +15,7 @@ export class ResolveToHeadlinePipe implements PipeTransform {
    */
   transform(markdownName: string): Observable<string> {
     return this.mdc.headlineCache.pipe(
-        map( cache => cache !== undefined ? cache[markdownName] : 'undefined' )
+      map((cache: [string, string][]) => (cache !== undefined ? cache[markdownName] : 'undefined'))
     );
   }
-
 }

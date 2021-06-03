@@ -143,7 +143,7 @@ const appRoutes: Routes = [
     MdContentComponent,
     MdContentDirective,
     MdContentListComponent,
-    ResolveToHeadlinePipe
+    ResolveToHeadlinePipe,
   ],
   imports: [
     RouterModule.forRoot(
@@ -172,7 +172,7 @@ const appRoutes: Routes = [
     CdkStepperModule,
     NgbCarouselModule,
     NgbPopoverModule,
-    MarkdownToHtmlModule
+    MarkdownToHtmlModule,
   ],
   providers: [
     {

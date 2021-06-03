@@ -5,8 +5,9 @@ import {
   ComponentFactoryResolver,
   ComponentRef,
   ElementRef,
-  HostListener, Input,
-  ViewChild
+  HostListener,
+  Input,
+  ViewChild,
 } from '@angular/core';
 import { MdContentDirective } from './md-content.directive';
 import { MarkdownContentService, SourceDirectory } from '../../../services/markdown-content.service';
@@ -15,12 +16,11 @@ import { MdContentComponent } from './md-content/md-content.component';
 @Component({
   selector: 'app-md-content-list',
   templateUrl: './md-content-list.component.html',
-  styleUrls: ['./md-content-list.component.css']
+  styleUrls: ['./md-content-list.component.css'],
 })
 export class MdContentListComponent implements AfterViewInit {
-
   @Input() src: SourceDirectory;
-  @ViewChild(MdContentDirective, {static: true}) newsListRef: MdContentDirective;
+  @ViewChild(MdContentDirective, { static: true }) newsListRef: MdContentDirective;
 
   availableContent = [];
   latestIdx = 0;
@@ -28,7 +28,9 @@ export class MdContentListComponent implements AfterViewInit {
 
   constructor(private factoryResolver: ComponentFactoryResolver, private mcs: MarkdownContentService) {}
 
-  ngAfterViewInit(): void { this.triggerNewsRecursion(); }
+  ngAfterViewInit(): void {
+    this.triggerNewsRecursion();
+  }
 
   /** Initial trigger to load markdown files recursively */
   triggerNewsRecursion(): void {
@@ -40,11 +42,11 @@ export class MdContentListComponent implements AfterViewInit {
 
   /** Recursive call that loads tiles until a tile is outside of the viewport */
   loadNext(contentList: string[], continueLoading: boolean): void {
-    if ( this.latestIdx >= 0 && this.latestIdx < contentList.length ) {
-      this.addContentTile( contentList[this.latestIdx] );
+    if (this.latestIdx >= 0 && this.latestIdx < contentList.length) {
+      this.addContentTile(contentList[this.latestIdx]);
 
       this.latestIdx = this.latestIdx + 1;
-      if ( continueLoading && this.latestIdx < contentList.length ) {
+      if (continueLoading && this.latestIdx < contentList.length) {
         this.loadNext(contentList, this.isBottomInViewport(this.latestRef));
       }
     }
@@ -55,7 +57,8 @@ export class MdContentListComponent implements AfterViewInit {
    * @param mdContentName file name that should be loaded by the DOMElement
    */
   addContentTile(mdContentName: string): void {
-    const factory: ComponentFactory<MdContentComponent> = this.factoryResolver.resolveComponentFactory(MdContentComponent);
+    const factory: ComponentFactory<MdContentComponent> =
+      this.factoryResolver.resolveComponentFactory(MdContentComponent);
     const mdContentRef: ComponentRef<MdContentComponent> = this.newsListRef.viewContainerRef.createComponent(factory);
     mdContentRef.instance.load(this.src, mdContentName);
     this.latestRef = mdContentRef.location;
@@ -65,7 +68,7 @@ export class MdContentListComponent implements AfterViewInit {
   @HostListener('window:scroll', ['$event'])
   onScroll() {
     if (this.latestRef) {
-      if ( this.isBottomInViewport(this.latestRef) && this.latestIdx < this.availableContent.length ) {
+      if (this.isBottomInViewport(this.latestRef) && this.latestIdx < this.availableContent.length) {
         this.loadNext(this.availableContent, true);
       }
     }
