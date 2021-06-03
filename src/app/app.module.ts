@@ -54,7 +54,7 @@ import { ItemsInterfaceComponent } from './components/game/interface/state-displ
 import { HistoricResultsDisplayComponent } from './components/game/interface/menu-bar/vote-system/historic-results-display/historic-results-display.component';
 import { VoteCreatorComponent } from './components/game/interface/menu-bar/vote-system/vote-creator/vote-creator.component';
 import { PlayerIconComponent } from './components/framework/player-icon/player-icon.component';
-import { AuthInterceptor } from './modules/AuthInterceptor';
+import { AuthInterceptor } from './AuthInterceptor';
 import { HomeComponent } from './components/lobby/home/home.component';
 import { FaqComponent } from './components/lobby/faq/faq.component';
 import { NewsComponent } from './components/lobby/news/news.component';

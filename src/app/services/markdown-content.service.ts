@@ -6,7 +6,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 export enum SourceDirectory {
-  NEWS = 'api/news/',
+  NEWS = 'news/',
 }
 
 @Injectable({
