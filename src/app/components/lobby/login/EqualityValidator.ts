@@ -6,18 +6,16 @@ import { AbstractControl, ValidatorFn } from '@angular/forms';
  * @param control_b The name of the second control object in the FormGroup to check for value equality
  */
 export function EqualityValidator(control_a: string, control_b: string): ValidatorFn {
-  return (control: AbstractControl): {[key: string]: any} | null => {
-
-    if ( !(control.get(control_a).value === control.get(control_b).value) ) {
+  return (control: AbstractControl): { [key: string]: any } | null => {
+    if (!(control.get(control_a).value === control.get(control_b).value)) {
       return {
         equality: {
           control_a: control.get(control_a).value,
-          control_b: control.get(control_b).value
-        }
+          control_b: control.get(control_b).value,
+        },
       };
     } else {
       return null;
     }
-
   };
 }

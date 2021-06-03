@@ -6,31 +6,30 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-game-display',
   templateUrl: './game-display.component.html',
-  styleUrls: ['./game-display.component.css']
+  styleUrls: ['./game-display.component.css'],
 })
 export class GameDisplayComponent {
   @Input() game: RoomAvailable<RoomMetaInfo>;
   @Input() isDummy: boolean;
   @Input() isActive: boolean;
-  @Input() languageObjects: {};
+  @Input() languageObjects: any;
 
-  @Output('leave') leaveGame = new EventEmitter<void>();
-  @Output('join') joinGame = new EventEmitter<RoomAvailable<RoomMetaInfo>>();
-  @Output('enter') enterGame = new EventEmitter<void>();
+  @Output() leave = new EventEmitter<void>();
+  @Output() join = new EventEmitter<RoomAvailable<RoomMetaInfo>>();
+  @Output() enter = new EventEmitter<void>();
 
-  constructor(public router: Router) {
+  constructor(public router: Router) {}
+
+  emitLeave(): void {
+    this.leave.emit();
   }
 
-  leave() {
-    this.leaveGame.emit();
-  }
-
-  enter() {
-    this.enterGame.emit();
+  emitEnter(): void {
+    this.enter.emit();
     this.router.navigateByUrl('/game');
   }
 
-  join() {
-    this.joinGame.emit(this.game);
+  emitJoin(): void {
+    this.join.emit(this.game);
   }
 }

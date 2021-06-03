@@ -15,13 +15,13 @@
       </div>
       <div class="controls">
         <div *ngIf="!isActive">
-          <button (click)="join()" class="enter"><i class="fas fa-sign-in-alt"></i></button>
+          <button (click)="emitJoin()" class="enter"><i class="fas fa-sign-in-alt"></i></button>
         </div>
         <div *ngIf="isActive">
-          <button (click)="enter()" class="enter"><i class="fas fa-share"></i></button>
+          <button (click)="emitEnter()" class="enter"><i class="fas fa-share"></i></button>
         </div>
         <div *ngIf="isActive">
-          <button (click)="leave()" class="leave"><i class="fas fa-door-open"></i></button>
+          <button (click)="emitLeave()" class="leave"><i class="fas fa-door-open"></i></button>
         </div>
       </div>
     </div>
