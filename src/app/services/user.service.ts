@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import * as hash from 'object-hash';
-import { map } from 'rxjs/operators';
+import { filter, map, shareReplay } from 'rxjs/operators';
 import { APIResponse } from '../model/APIResponse';
 import { environment } from '../../environments/environment';
 import { JwtResponse } from './jwttoken.service';
 
 export class User {
+  id: number;
   login_name: string;
   display_name: string;
   password_hash: string;
@@ -26,6 +27,7 @@ export class User {
 }
 
 export class LoginUser {
+  id: number;
   login_name: string;
   display_name: string;
   user_creation: string;
@@ -35,12 +37,15 @@ export class LoginUser {
   is_connected: boolean;
   is_dev: boolean;
 }
+export class ForeignUser extends LoginUser {}
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
   activeUser: BehaviorSubject<LoginUser>;
+  profileUser: ForeignUser;
+
   private userEndpoint = environment.endpoint + 'user';
 
   constructor(private httpClient: HttpClient) {
@@ -60,11 +65,6 @@ export class UserService {
 
   // REQUESTS
 
-  getUserById(user_id: number): Observable<User> {
-    const requestUrl = this.userEndpoint + '?user_id=' + user_id;
-    return this.httpClient.get<User[]>(requestUrl).pipe(map((users) => users[0]));
-  }
-
   getUserByLoginName(login_name: string): Observable<APIResponse<LoginUser>> {
     return this.httpClient.get<APIResponse<LoginUser>>(this.userEndpoint + '?login_name=' + login_name);
   }
@@ -72,17 +72,6 @@ export class UserService {
   removeUser(user_id: number): Observable<number> {
     const requestUrl = this.userEndpoint + '?user_id=' + user_id;
     return this.httpClient.delete<number>(requestUrl);
-  }
-
-  addUser(user: User): Observable<any> {
-    return this.httpClient.post(this.userEndpoint, user);
-  }
-
-  loginUser(login_name: string, password_hash: string): Observable<APIResponse<JwtResponse>> {
-    return this.httpClient.post<APIResponse<JwtResponse>>(this.userEndpoint + '/token', {
-      username: login_name,
-      password: password_hash,
-    });
   }
 
   syncUserData(user: User): void {
@@ -95,5 +84,10 @@ export class UserService {
           console.error('Failed to update user: ', response);
         }
       });
+  }
+
+  requestUserDatabyId(userId: number): Observable<APIResponse<ForeignUser>> {
+    const requestUrl = this.userEndpoint + '/byId?userId=' + userId;
+    return this.httpClient.get<APIResponse<ForeignUser>>(requestUrl);
   }
 }
