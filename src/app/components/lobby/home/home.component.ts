@@ -41,7 +41,6 @@ export class HomeComponent implements OnInit, AfterContentInit {
   isLoggedIn = false;
 
   /** State values */
-  activeUser = this.userManagement.getActiveUser();
   profileSource: string;
 
   /**
@@ -78,10 +77,14 @@ export class HomeComponent implements OnInit, AfterContentInit {
       );
     }
 
-    this.activeUser.subscribe((u) => {
+    /** Triggers as soon as a user logs in or out */
+    this.userManagement.activeUser.subscribe((u: LoginUser) => {
       if (u !== undefined) {
         this.isLoggedIn = true;
         this.profileSource = this.fileService.profilePictureSource(u.login_name, true);
+      } else {
+        this.isLoggedIn = false;
+        this.profileSource = null;
       }
     });
   }
