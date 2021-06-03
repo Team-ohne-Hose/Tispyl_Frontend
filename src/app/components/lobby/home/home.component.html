@@ -56,16 +56,16 @@
         </button>
       </div>
 
-      <div *ngIf="isLoggedIn" class="user-box dropdown-anchor" #dropdown (click)="onProfileClick()">
+      <div *ngIf="isLoggedIn" class="user-box custom-dropdown-anchor" #dropdown (click)="onProfileClick()">
         <div class="img-clipper">
           <img [src]="profileSource" alt="user" />
         </div>
-        <div class="dropdown-menu">
-          <button class="dropdown-item" [routerLink]="['./settings']">
+        <div class="custom-dropdown-menu">
+          <button class="custom-dropdown-item" [routerLink]="['./settings']">
             <i class="fas fa-cog"></i>
             <span>Settings</span>
           </button>
-          <button class="dropdown-item" (click)="onLogOut()">
+          <button class="custom-dropdown-item" (click)="onLogOut()">
             <i class="fas fa-door-open"></i>
             <span>Logout</span>
           </button>
@@ -74,7 +74,7 @@
 
       <div *ngIf="!isLoggedIn" class="login-box">
         <div class="img-clipper noSelect" (click)="navigate('./login')">
-          <div class="border">
+          <div class="clipped-border">
             <div class="img-clipper-second">
               <div class="internal">
                 <span>Login</span><i class="fas fa-sign-in-alt"></i>
