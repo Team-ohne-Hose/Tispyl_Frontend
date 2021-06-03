@@ -4,13 +4,11 @@ import { MarkdownContentService, SourceDirectory } from '../../../../services/ma
 @Component({
   selector: 'app-md-content',
   templateUrl: './md-content.component.html',
-  styleUrls: ['./md-content.component.css']
+  styleUrls: ['./md-content.component.css'],
 })
 export class MdContentComponent {
-
   mdText = undefined;
   constructor(private mcs: MarkdownContentService) {}
-
 
   /**
    * Loads a markdown file based on its name and inlines a parsed version as HTML
@@ -21,10 +19,14 @@ export class MdContentComponent {
    * @param dir source directory on the server
    * @param fileName file name of the file in the source directory
    */
-  load(dir: SourceDirectory, fileName: string) {
+  load(dir: SourceDirectory, fileName: string): void {
     this.mcs.getMarkdownFor(dir, fileName).subscribe(
-      (md: any) => { this.mdText = md; },
-    (error: any) => { console.error(error); }
+      (md: string) => {
+        this.mdText = md;
+      },
+      (error) => {
+        console.error(error);
+      }
     );
   }
 }

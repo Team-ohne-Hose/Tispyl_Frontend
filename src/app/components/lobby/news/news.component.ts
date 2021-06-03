@@ -4,15 +4,13 @@ import { MarkdownContentService, SourceDirectory } from '../../../services/markd
 @Component({
   selector: 'app-news',
   templateUrl: './news.component.html',
-  styleUrls: ['./news.component.css']
+  styleUrls: ['./news.component.css'],
 })
 export class NewsComponent {
-
   src = SourceDirectory.NEWS;
   availableNews: string[];
 
-  constructor( private mcs: MarkdownContentService ) {
-    mcs.getAvailableContent(this.src).subscribe(content => this.availableNews = content );
+  constructor(private mcs: MarkdownContentService) {
+    mcs.getAvailableContent(this.src).subscribe((content) => (this.availableNews = content));
   }
-
 }
