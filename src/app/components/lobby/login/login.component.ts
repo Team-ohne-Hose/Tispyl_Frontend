@@ -63,7 +63,11 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     /** Redirect to targetRoute if already logged in */
     if (this.jwtTokenService.isLoggedIn()) {
-      this.router.navigate([this.targetRoute], { relativeTo: this.route });
+      this.router
+        .navigate ([this.targetRoute], { relativeTo: this.route } )
+        .catch ( reason =>
+          console.warn(`Failed to navigate to [${this.targetRoute}] even though the user is logged in. Reason: ${reason}`)
+        );
     } else {
       this.jwtTokenService.logout();
     }
@@ -106,7 +110,12 @@ export class LoginComponent implements OnInit {
     this.jwtTokenService.login(this.login_name, hash.MD5(this.password_plain)).subscribe(
       (usr: LoginUser) => {
         this.isRequesting = false;
-        this.router.navigate([this.targetRoute], { relativeTo: this.route });
+        console.debug('Logged in as: ', usr);
+        this.router
+          .navigate([this.targetRoute], { relativeTo: this.route })
+          .catch ( reason =>
+            console.warn(`Failed to navigate to [${this.targetRoute}] after login. Reason: ${reason}`)
+          );
       },
       (err) => {
         this.isRequesting = false;
@@ -180,7 +189,7 @@ export class LoginComponent implements OnInit {
               break;
             }
             case 400: {
-              this.setInfoText(err, hadError);
+              this.setInfoText( err.error.errors.join('\n') , hadError);
               break;
             }
             default: {
