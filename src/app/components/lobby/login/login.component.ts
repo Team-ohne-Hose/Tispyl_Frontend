@@ -3,7 +3,7 @@ import { TextContainer } from '../../../model/TextContainer';
 import * as hash from 'object-hash';
 import { UserService, LoginUser } from '../../../services/user.service';
 import { JwtTokenService } from 'src/app/services/jwttoken.service';
-import { TranslationService } from '../../../services/translation.service';
+import { TranslationService } from '../../../services/translation/translation.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RegisterOptions } from '../../../model/RegisterOptions';
 import { FormGroup, FormControl, Validators } from '@angular/forms';

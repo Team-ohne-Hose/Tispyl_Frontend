@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TranslationService, Translation } from '../../services/translation.service';
+import { TranslationService, Translation } from '../../services/translation/translation.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { OpenGamePopupComponent } from './dialogs/open-game-popup/open-game-popup.component';
 import { ColyseusClientService, CreateRoomOpts } from '../../services/colyseus-client.service';
