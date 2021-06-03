@@ -1,15 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { MarkdownContentService, SourceDirectory } from '../../../services/markdown-content.service';
 
 @Component({
   selector: 'app-news',
   templateUrl: './news.component.html',
   styleUrls: ['./news.component.css']
 })
-export class NewsComponent implements OnInit {
+export class NewsComponent {
 
-  constructor() { }
+  src = SourceDirectory.NEWS;
+  availableNews: string[];
 
-  ngOnInit(): void {
+  constructor( private mcs: MarkdownContentService ) {
+    mcs.getAvailableContent(this.src).subscribe(content => this.availableNews = content );
   }
 
 }

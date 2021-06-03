@@ -217,3 +217,60 @@ body {
   height: 90vh;
   max-width: 50vw;
 }
+
+/* Basic styles in regards to auto generated html from markdown */
+a {
+  color: lightskyblue;
+}
+
+a:visited {
+  color: #468fbc;
+}
+
+code {
+  background: rgba(150, 150, 150, 0.3);
+  border-radius: 3px;
+  padding: 0.2em;
+}
+
+pre {
+  background: rgba(150, 150, 150, 0.3);
+  border-radius: 3px;
+  padding: 1rem;
+}
+
+pre > code {
+  background: transparent;
+  padding: 0;
+}
+
+blockquote {
+  border-left: 2px solid #4c748d;
+  background: rgba(150, 150, 150, 0.3);
+  padding: 1rem;
+  margin-left: 1rem;
+  margin-right: 0.3rem;
+}
+
+blockquote > p {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+table {
+  border-collapse: collapse;
+  border-left: 2px solid #4c748d;
+  border-bottom: 1px solid  rgba(150, 150, 150, 0.3);
+  margin: 1rem;
+}
+
+th {
+  background: rgba(150, 150, 150, 0.3);
+  padding: 0.5rem;
+}
+
+td {
+  background: rgba(150, 150, 150, 0.1);
+  padding: 0.5rem;
+  border-right: 1px solid  rgba(150, 150, 150, 0.3);
+}

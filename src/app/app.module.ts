@@ -65,6 +65,11 @@ import { CustomEditorComponent } from './components/lobby/custom-editor/custom-e
 import { ChatCommandListComponent } from './components/game/interface/menu-bar/home-register/chat-command-list/chat-command-list.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgbCarouselModule, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
+import { MarkdownToHtmlModule } from 'markdown-to-html-pipe';
+import { MdContentComponent } from './components/lobby/md-content-list/md-content/md-content.component';
+import { MdContentDirective } from './components/lobby/md-content-list/md-content.directive';
+import { MdContentListComponent } from './components/lobby/md-content-list/md-content-list.component';
+import { ResolveToHeadlinePipe } from './components/lobby/news/resolve-to-headline.pipe';
 
 const appRoutes: Routes = [
   {
@@ -135,6 +140,10 @@ const appRoutes: Routes = [
     SettingsComponent,
     CustomEditorComponent,
     ChatCommandListComponent,
+    MdContentComponent,
+    MdContentDirective,
+    MdContentListComponent,
+    ResolveToHeadlinePipe
   ],
   imports: [
     RouterModule.forRoot(
@@ -163,6 +172,7 @@ const appRoutes: Routes = [
     CdkStepperModule,
     NgbCarouselModule,
     NgbPopoverModule,
+    MarkdownToHtmlModule
   ],
   providers: [
     {
