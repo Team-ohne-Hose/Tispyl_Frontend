@@ -10,7 +10,7 @@ import { APIResponse } from '../model/APIResponse';
   providedIn: 'root',
 })
 export class FileService {
-  readonly profilePictureEndpoint = environment.endpoint + 'profile';
+  readonly endpoint = environment.endpoint + 'profile';
 
   constructor(private httpClient: HttpClient) {}
 
@@ -20,19 +20,19 @@ export class FileService {
     formData.append('login_name', user.login_name);
 
     return this.httpClient
-      .post<APIResponse<User>>(this.profilePictureEndpoint, formData)
+      .post<APIResponse<User>>(this.endpoint, formData)
       .pipe(map((apiResponse) => apiResponse.payload));
   }
 
   removeProfilePicture(user: User): Observable<any> {
-    return this.httpClient.delete(this.profilePictureEndpoint + `?login_name=${user.login_name}`);
+    return this.httpClient.delete(this.endpoint + `?login_name=${user.login_name}`);
   }
 
   profilePictureSource(name: string, forceUpdate = false): string {
     if (forceUpdate) {
-      return this.profilePictureEndpoint + `?login_name=${name}&x_rng=${Math.random()}`;
+      return this.endpoint + `?login_name=${name}&x_rng=${Math.random()}`;
     } else {
-      return this.profilePictureEndpoint + `?login_name=${name}`;
+      return this.endpoint + `?login_name=${name}`;
     }
   }
 }

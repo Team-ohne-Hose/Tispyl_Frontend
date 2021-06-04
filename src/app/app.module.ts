@@ -2,7 +2,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LOCALE_ID, NgModule } from '@angular/core';
-
 import { AppComponent } from './app.component';
 import { GameDisplayComponent } from './components/lobby/game-display/game-display.component';
 import { LoginComponent } from './components/lobby/login/login.component';
@@ -10,7 +9,6 @@ import { RulesComponent } from './components/lobby/rules/rules.component';
 import { GifViewerComponent } from './components/lobby/gif-viewer/gif-viewer.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
-
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -65,6 +63,8 @@ import { CustomEditorComponent } from './components/lobby/custom-editor/custom-e
 import { ChatCommandListComponent } from './components/game/interface/menu-bar/home-register/chat-command-list/chat-command-list.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgbCarouselModule, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
+import { GameHistoryComponent } from './components/lobby/profile/gamehistory/gamehistory.component';
+import { EditProfileComponent } from './components/lobby/profile/edit-profile/edit-profile.component';
 import { MarkdownToHtmlModule } from 'markdown-to-html-pipe';
 import { MdContentComponent } from './components/lobby/md-content-list/md-content/md-content.component';
 import { MdContentDirective } from './components/lobby/md-content-list/md-content.directive';
@@ -80,7 +80,16 @@ const appRoutes: Routes = [
       { path: 'news', component: NewsComponent },
       { path: 'lobby', component: LobbyComponent },
       { path: 'faq', component: FaqComponent },
-      { path: 'profile', component: ProfileComponent },
+      {
+        path: 'profile/:userId',
+        component: ProfileComponent,
+        children: [
+          {
+            path: 'gamehistory',
+            component: GameHistoryComponent,
+          },
+        ],
+      },
       { path: 'updates', component: UpdatesComponent },
       { path: 'custom', component: CustomEditorComponent },
       { path: 'login', component: LoginComponent },
@@ -140,6 +149,8 @@ const appRoutes: Routes = [
     SettingsComponent,
     CustomEditorComponent,
     ChatCommandListComponent,
+    GameHistoryComponent,
+    EditProfileComponent,
     MdContentComponent,
     MdContentDirective,
     MdContentListComponent,

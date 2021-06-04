@@ -1,7 +1,7 @@
 import { AfterContentInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JwtTokenService } from '../../../services/jwttoken.service';
-import { UserService, LoginUser } from '../../../services/user.service';
+import { UserService, LoginUser, User } from '../../../services/user.service';
 import { APIResponse } from '../../../model/APIResponse';
 import { FileService } from 'src/app/services/file.service';
 
@@ -15,7 +15,7 @@ export class HomeComponent implements OnInit, AfterContentInit {
     public router: Router,
     private route: ActivatedRoute,
     private AuthService: JwtTokenService,
-    private userManagement: UserService,
+    private userService: UserService,
     private fileService: FileService
   ) {}
 
@@ -38,9 +38,10 @@ export class HomeComponent implements OnInit, AfterContentInit {
   logoSource = 'assets/logo.png';
   userSource = 'assets/defaultImage.jpg';
   @ViewChild('dropdown') dropDown: ElementRef;
-  isLoggedIn = false;
 
   /** State values */
+  currentUser: LoginUser;
+  isLoggedIn = false;
   profileSource: string;
 
   /**
@@ -64,9 +65,9 @@ export class HomeComponent implements OnInit, AfterContentInit {
 
     /** Check for active JWT Token */
     if (this.AuthService.isLoggedIn()) {
-      this.userManagement.getUserByLoginName(localStorage.getItem('username')).subscribe(
+      this.userService.getUserByLoginName(localStorage.getItem('username')).subscribe(
         (usr: APIResponse<LoginUser>) => {
-          this.userManagement.setActiveUser(usr.payload as LoginUser);
+          this.userService.setActiveUser(usr.payload as LoginUser);
         },
         (err) => {
           console.error(
@@ -78,8 +79,9 @@ export class HomeComponent implements OnInit, AfterContentInit {
     }
 
     /** Triggers as soon as a user logs in or out */
-    this.userManagement.activeUser.subscribe((u: LoginUser) => {
+    this.userService.activeUser.subscribe((u: LoginUser) => {
       if (u !== undefined) {
+        this.currentUser = u;
         this.isLoggedIn = true;
         this.profileSource = this.fileService.profilePictureSource(u.login_name, true);
       } else {

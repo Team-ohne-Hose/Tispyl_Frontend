@@ -29,7 +29,7 @@ export interface CreateRoomOpts {
 })
 export class ColyseusClientService {
   myLoginName: string;
-  readonly backendWsTarget = environment.WsEndpoint;
+  readonly backendWsTarget = environment.wsEndpoint;
   private client: Client = new Client(this.backendWsTarget);
   private activeRoom: BehaviorSubject<Room<GameState>>;
   availableRooms: BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>;

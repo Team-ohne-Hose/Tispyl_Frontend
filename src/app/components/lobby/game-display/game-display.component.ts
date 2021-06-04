@@ -13,7 +13,6 @@ export class GameDisplayComponent {
   @Input() isDummy: boolean;
   @Input() isActive: boolean;
   @Input() languageObjects: any;
-
   @Output() leave = new EventEmitter<void>();
   @Output() join = new EventEmitter<RoomAvailable<RoomMetaInfo>>();
   @Output() enter = new EventEmitter<void>();

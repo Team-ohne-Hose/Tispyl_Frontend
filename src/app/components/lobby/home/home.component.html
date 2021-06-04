@@ -42,7 +42,7 @@
           <i class="fas fa-gavel"></i>
           <span>FAQ</span>
         </button>
-        <button *ngIf="isLoggedIn" class="nav-button" [routerLink]="['./profile']">
+        <button *ngIf="isLoggedIn" class="nav-button" [routerLink]="['./profile', currentUser.id]">
           <i class="fas fa-user-circle"></i>
           <span>Profile</span>
         </button>

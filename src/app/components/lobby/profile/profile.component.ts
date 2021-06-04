@@ -1,4 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ActivatedRoute, ParamMap } from '@angular/router';
+import { Observable } from 'rxjs';
 import { FileService } from 'src/app/services/file.service';
 import { LoginUser, User, UserService } from 'src/app/services/user.service';
 
@@ -12,6 +14,7 @@ class ImageSnippet {
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./profile.component.css'],
 })
 export class ProfileComponent implements OnInit {
@@ -19,8 +22,17 @@ export class ProfileComponent implements OnInit {
   currentUser: User;
   profileSource: string;
   selectedFile: ImageSnippet;
+  isCurrentUser: boolean;
+  foreignUser: LoginUser;
 
-  constructor(private userService: UserService, private fileService: FileService) {}
+  user: Observable<User>;
+
+  constructor(
+    private route: ActivatedRoute,
+    private changeDetector: ChangeDetectorRef,
+    private userService: UserService,
+    private fileService: FileService
+  ) {}
 
   private onSuccess() {
     this.selectedFile.pending = false;
@@ -34,6 +46,17 @@ export class ProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const routeParams: ParamMap = this.route.snapshot.paramMap;
+    const userId = Number(routeParams.get('userId'));
+
+    // get foreign user
+    this.userService.requestUserDatabyId(userId).subscribe((response) => {
+      this.foreignUser = response.payload as LoginUser;
+      this.isCurrentUser = this.foreignUser.login_name === this.currentUser.login_name;
+      this.profileSource = this.fileService.profilePictureSource(this.foreignUser.login_name, true);
+      this.changeDetector.markForCheck();
+    });
+
     this.userService.activeUser.subscribe((user: User) => {
       if (user !== undefined) {
         this.currentUser = user;
@@ -42,6 +65,7 @@ export class ProfileComponent implements OnInit {
         const min = user.time_played;
         this.timePlayed = `${Math.floor(min / 60)} hours ${Math.floor(min % 60)} minutes`;
       }
+      this.changeDetector.markForCheck();
     });
   }
 
@@ -54,10 +78,10 @@ export class ProfileComponent implements OnInit {
 
       this.fileService.uploadProfilePicture(this.selectedFile.file, this.currentUser).subscribe(
         (user: LoginUser) => {
-          console.log(user);
           this.userService.setActiveUser(user);
           this.profileSource = this.fileService.profilePictureSource(this.currentUser.login_name, true);
           this.onSuccess();
+          this.changeDetector.detectChanges();
         },
         (err) => {
           this.onError();
