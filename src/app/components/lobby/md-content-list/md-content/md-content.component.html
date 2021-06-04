@@ -1,0 +1,4 @@
+<div class="background-box">
+  <div *ngIf="mdText !== undefined" [innerHTML]="mdText|MarkdownToHtml" class="md"></div>
+  <mat-progress-spinner *ngIf="mdText === undefined" mode="indeterminate"></mat-progress-spinner>
+</div>

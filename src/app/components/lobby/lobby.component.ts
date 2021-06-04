@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TranslationService, Translation } from '../../services/translation.service';
+import { TranslationService, Translation } from '../../services/translation/translation.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { OpenGamePopupComponent } from './dialogs/open-game-popup/open-game-popup.component';
 import { ColyseusClientService, CreateRoomOpts } from '../../services/colyseus-client.service';
@@ -11,12 +11,7 @@ import { JoinGameComponent } from './dialogs/join-game/join-game.component';
 import { GameState } from '../../model/state/GameState';
 import { environmentList } from './lobbyLUTs';
 import { ObjectLoaderService } from '../../services/object-loader.service';
-
-interface DialogResult {
-  roomName: string;
-  skinName: string;
-  randomizeTiles: boolean;
-}
+import { DialogResult } from './dialogs/open-game-popup/open-game-popup.component';
 
 @Component({
   selector: 'app-lobby',
@@ -100,8 +95,10 @@ export class LobbyComponent implements OnInit {
           author: this.currentUser.display_name,
           login: this.currentUser.login_name,
           displayName: this.currentUser.display_name,
-          skin: res.skinName,
+          tileSetId: res.tileSetId,
           randomizeTiles: res.randomizeTiles,
+          enableItems: res.enableItems,
+          enableMultipleItems: res.enableMultipleItems,
         };
 
         this.prepareGameConfiguration();

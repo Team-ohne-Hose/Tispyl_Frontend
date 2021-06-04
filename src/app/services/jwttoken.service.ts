@@ -16,9 +16,7 @@ export class JwtResponse {
 @Injectable({ providedIn: 'root' })
 export class JwtTokenService {
   private JwtToken: string = null;
-  private readonly prodUserEndpoint = 'https://tispyl.uber.space:41920/api/user';
-  private readonly devUserEndpoint = 'http://localhost:25670/api/user';
-  private endpoint = environment.production ? this.prodUserEndpoint : this.devUserEndpoint;
+  readonly endpoint = environment.production + 'user';
 
   constructor(private http: HttpClient, private userService: UserService) {}
 

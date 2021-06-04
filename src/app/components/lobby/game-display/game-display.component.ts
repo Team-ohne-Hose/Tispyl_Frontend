@@ -12,24 +12,23 @@ export class GameDisplayComponent {
   @Input() game: RoomAvailable<RoomMetaInfo>;
   @Input() isDummy: boolean;
   @Input() isActive: boolean;
-  @Input() languageObjects: unknown;
-
-  @Output('leave') leaveGame = new EventEmitter<void>();
-  @Output('join') joinGame = new EventEmitter<RoomAvailable<RoomMetaInfo>>();
-  @Output('enter') enterGame = new EventEmitter<void>();
+  @Input() languageObjects: any;
+  @Output() leave = new EventEmitter<void>();
+  @Output() join = new EventEmitter<RoomAvailable<RoomMetaInfo>>();
+  @Output() enter = new EventEmitter<void>();
 
   constructor(public router: Router) {}
 
-  leave(): void {
-    this.leaveGame.emit();
+  emitLeave(): void {
+    this.leave.emit();
   }
 
-  enter(): void {
-    this.enterGame.emit();
+  emitEnter(): void {
+    this.enter.emit();
     this.router.navigateByUrl('/game');
   }
 
-  join(): void {
-    this.joinGame.emit(this.game);
+  emitJoin(): void {
+    this.join.emit(this.game);
   }
 }

@@ -78,11 +78,16 @@ export class HomeComponent implements OnInit, AfterContentInit {
       );
     }
 
-    this.userService.activeUser.subscribe((u: User) => {
+    /** Triggers as soon as a user logs in or out */
+    this.userService.activeUser.subscribe((u: LoginUser) => {
+
       if (u !== undefined) {
         this.currentUser = u;
         this.isLoggedIn = true;
         this.profileSource = this.fileService.profilePictureSource(u.login_name, true);
+      } else {
+        this.isLoggedIn = false;
+        this.profileSource = null;
       }
     });
   }

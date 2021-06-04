@@ -55,7 +55,7 @@ import { ItemsInterfaceComponent } from './components/game/interface/state-displ
 import { HistoricResultsDisplayComponent } from './components/game/interface/menu-bar/vote-system/historic-results-display/historic-results-display.component';
 import { VoteCreatorComponent } from './components/game/interface/menu-bar/vote-system/vote-creator/vote-creator.component';
 import { PlayerIconComponent } from './components/framework/player-icon/player-icon.component';
-import { AuthInterceptor } from './modules/AuthInterceptor';
+import { AuthInterceptor } from './AuthInterceptor';
 import { HomeComponent } from './components/lobby/home/home.component';
 import { FaqComponent } from './components/lobby/faq/faq.component';
 import { NewsComponent } from './components/lobby/news/news.component';
@@ -68,6 +68,12 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NgbCarouselModule, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
 import { GameHistoryComponent } from './components/lobby/profile/gamehistory/gamehistory.component';
 import { EditProfileComponent } from './components/lobby/profile/edit-profile/edit-profile.component';
+import { MarkdownToHtmlModule } from 'markdown-to-html-pipe';
+import { MdContentComponent } from './components/lobby/md-content-list/md-content/md-content.component';
+import { MdContentDirective } from './components/lobby/md-content-list/md-content.directive';
+import { MdContentListComponent } from './components/lobby/md-content-list/md-content-list.component';
+import { ResolveToHeadlinePipe } from './components/lobby/news/resolve-to-headline.pipe';
+
 
 const appRoutes: Routes = [
   {
@@ -149,6 +155,10 @@ const appRoutes: Routes = [
     ChatCommandListComponent,
     GameHistoryComponent,
     EditProfileComponent,
+    MdContentComponent,
+    MdContentDirective,
+    MdContentListComponent,
+    ResolveToHeadlinePipe,
   ],
   imports: [
     RouterModule.forRoot(
@@ -177,7 +187,7 @@ const appRoutes: Routes = [
     CdkStepperModule,
     NgbCarouselModule,
     NgbPopoverModule,
-    MatMenuModule,
+    MarkdownToHtmlModule,
   ],
   providers: [
     {

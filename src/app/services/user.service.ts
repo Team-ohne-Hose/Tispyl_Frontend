@@ -57,7 +57,8 @@ export class UserService {
   }
 
   /**
-   * @deprecated The method should not be used
+   * @deprecated The method should not be used as it removes the benefits of using a BehaviorSubject
+   * @See {rxjs.BehaviorSubject}
    */
   getActiveUser(): Observable<LoginUser> {
     return this.activeUser.asObservable();
