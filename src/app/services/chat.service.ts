@@ -5,18 +5,15 @@ import { GameStateService } from './game-state.service';
 import { ChatMessage } from '../components/game/interface/menu-bar/home-register/helpers/ChatMessage';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ChatService implements ColyseusNotifyable {
-
   messageCallback: () => void;
   private gameState: GameStateService;
   private chatMessages: ChatMessage[] = [];
 
-  constructor() {
-  }
-
   attachColyseusStateCallbacks(gameState: GameStateService): void {
+    return;
   }
 
   attachColyseusMessageCallbacks(gameState: GameStateService): void {
@@ -29,7 +26,7 @@ export class ChatService implements ColyseusNotifyable {
           const dn = this.gameState.getDisplayName(data.authorLoginName);
           this.onChatMessageReceived(data.message, dn || data.authorLoginName);
         }
-      }
+      },
     });
 
     gameState.registerMessageCallback(MessageType.JOIN_MESSAGE, {
@@ -38,7 +35,7 @@ export class ChatService implements ColyseusNotifyable {
         if (data.type === MessageType.JOIN_MESSAGE) {
           this.onChatMessageReceived(data.message, 'SERVER');
         }
-      }
+      },
     });
 
     gameState.registerMessageCallback(MessageType.LEFT_MESSAGE, {
@@ -47,7 +44,7 @@ export class ChatService implements ColyseusNotifyable {
         if (data.type === MessageType.LEFT_MESSAGE) {
           this.onChatMessageReceived(data.message, 'SERVER');
         }
-      }
+      },
     });
 
     gameState.registerMessageCallback(MessageType.SERVER_MESSAGE, {
@@ -56,17 +53,17 @@ export class ChatService implements ColyseusNotifyable {
         if (data.type === MessageType.SERVER_MESSAGE) {
           this.onChatMessageReceived(data.message, data.origin);
         }
-      }
+      },
     });
   }
 
   sendMessage(currentMessage: string) {
     if (this.gameState !== undefined) {
-      this.gameState.sendMessage(MessageType.CHAT_MESSAGE, {type: MessageType.CHAT_MESSAGE, message: currentMessage});
+      this.gameState.sendMessage(MessageType.CHAT_MESSAGE, { type: MessageType.CHAT_MESSAGE, message: currentMessage });
     }
   }
 
-  addLocalMessage(msg: string, sender: string) {
+  addLocalMessage(msg: string, sender: string): void {
     this.chatMessages.push(new ChatMessage(msg, sender));
     if (this.messageCallback) {
       this.messageCallback();
@@ -77,11 +74,11 @@ export class ChatService implements ColyseusNotifyable {
     return this.chatMessages;
   }
 
-  setMessageCallback(cb: () => void) {
+  setMessageCallback(cb: () => void): void {
     this.messageCallback = cb;
   }
 
-  onChatMessageReceived(msg: string, sender: string) {
+  onChatMessageReceived(msg: string, sender: string): void {
     this.chatMessages.push(new ChatMessage(msg, sender));
     console.log('New Chatmessage: "' + msg + '"', this.chatMessages);
     if (this.messageCallback) {

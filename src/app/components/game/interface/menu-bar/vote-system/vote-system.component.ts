@@ -8,14 +8,12 @@ import { VoteEntry } from './helpers/VoteEntry';
 import { VoteConfiguration } from './helpers/VoteConfiguration';
 import { VoteStage } from '../../../../../model/state/VoteState';
 
-
 @Component({
   selector: 'app-vote-system',
   templateUrl: './vote-system.component.html',
-  styleUrls: ['./vote-system.component.css']
+  styleUrls: ['./vote-system.component.css'],
 })
 export class VoteSystemComponent implements OnInit {
-
   readonly stateEnum = VoteSystemState;
   voteSystemState: VoteSystemState = VoteSystemState.default;
 
@@ -23,11 +21,11 @@ export class VoteSystemComponent implements OnInit {
   resultHistory: VoteResult[] = []; // TODO: (Not used yet) Find way to keep these values without putting them into the state
 
   // Display values
-  currentHistoryResult: number = 0;
+  currentHistoryResult = 0;
   voteHost: string;
   voteEntryPercentileDisplay: number[] = [];
-  timerDisplay: number = -1;
-  hasConcluded: boolean = false;
+  timerDisplay = -1;
+  hasConcluded = false;
 
   // Events
   @Output()
@@ -40,19 +38,22 @@ export class VoteSystemComponent implements OnInit {
      * This recalculates voting percentages
      * for the displayed vote entries to avoid a function call inside of the Angular html template.
      *
-     * This would cause a large performance hit. @see [https://medium.com/showpad-engineering/why-you-should-never-use-function-calls-in-angular-template-expressions-e1a50f9c0496]
+     * This would cause a large performance hit.
+     * @see [https://medium.com/showpad-engineering/why-you-should-never-use-function-calls-in-angular-template-expressions-e1a50f9c0496]
      */
     gameState.addVoteCastCallback(this.calcVotes.bind(this));
 
-    gameState.addVoteSystemCallback(((changes: DataChange<any>[]) => {
-      changes.forEach((change: DataChange) => {
-        switch (change.field) {
-          case 'closingIn':
-            this.timerDisplay = this.gameState.getVoteState().closingIn;
-            break;
-        }
-      });
-    }).bind(this));
+    gameState.addVoteSystemCallback(
+      ((changes: DataChange<any>[]) => {
+        changes.forEach((change: DataChange) => {
+          switch (change.field) {
+            case 'closingIn':
+              this.timerDisplay = this.gameState.getVoteState().closingIn;
+              break;
+          }
+        });
+      }).bind(this)
+    );
   }
 
   /**
@@ -72,7 +73,7 @@ export class VoteSystemComponent implements OnInit {
     }
   }
 
-  previousHistoricResult() {
+  previousHistoricResult(): void {
     this.currentHistoryResult--;
     if (this.currentHistoryResult < 0) {
       this.currentHistoryResult = this.resultHistory.length - 1;
@@ -80,7 +81,7 @@ export class VoteSystemComponent implements OnInit {
     console.log(this.currentHistoryResult, this.resultHistory);
   }
 
-  nextHistoricResult() {
+  nextHistoricResult(): void {
     this.currentHistoryResult++;
     if (this.currentHistoryResult > this.resultHistory.length - 1) {
       this.currentHistoryResult = 0;
@@ -92,7 +93,7 @@ export class VoteSystemComponent implements OnInit {
     const messageData = {
       type: MessageType.GAME_MESSAGE,
       action: GameActionType.beginVotingSession,
-      config: config
+      config: config,
     };
     this.gameState.sendMessage(MessageType.GAME_MESSAGE, messageData);
   }
@@ -102,7 +103,7 @@ export class VoteSystemComponent implements OnInit {
       this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
         type: MessageType.GAME_MESSAGE,
         action: GameActionType.startVoteCreation,
-        author: this.gameState.getMe().displayName
+        author: this.gameState.getMe().displayName,
       });
     }
   }
@@ -110,19 +111,19 @@ export class VoteSystemComponent implements OnInit {
   triggerCloseVotingSession(event: Event): void {
     this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
       type: MessageType.GAME_MESSAGE,
-      action: GameActionType.closeVotingSession
+      action: GameActionType.closeVotingSession,
     });
   }
 
   // Reactions
-  calcVotes() {
+  calcVotes(): void {
     this.voteEntryPercentileDisplay = [];
     for (const votingOption of this.gameState.getVoteState().voteConfiguration.votingOptions) {
       this.voteEntryPercentileDisplay.push(this.getPercentile(votingOption));
     }
   }
 
-  onVoteStageChange(stage: VoteStage) {
+  onVoteStageChange(stage: VoteStage): void {
     switch (stage) {
       case VoteStage.IDLE:
         this.hasConcluded = true;
@@ -174,7 +175,7 @@ export class VoteSystemComponent implements OnInit {
       this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
         type: MessageType.GAME_MESSAGE,
         action: GameActionType.playerCastVote,
-        elementIndex: idx
+        elementIndex: idx,
       });
     }
   }
@@ -190,5 +191,4 @@ export class VoteSystemComponent implements OnInit {
     }
     return percentile;
   }
-
 }

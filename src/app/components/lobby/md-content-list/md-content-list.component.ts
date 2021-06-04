@@ -66,7 +66,7 @@ export class MdContentListComponent implements AfterViewInit {
 
   /** Attach event listener to check if more tiles need to be loaded */
   @HostListener('window:scroll', ['$event'])
-  onScroll() {
+  onScroll(): void {
     if (this.latestRef) {
       if (this.isBottomInViewport(this.latestRef) && this.latestIdx < this.availableContent.length) {
         this.loadNext(this.availableContent, true);

@@ -6,18 +6,19 @@ import { GameStateService } from './game-state.service';
 import { ColyseusNotifyable } from './game-initialisation.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class BoardTilesService implements ColyseusNotifyable {
-
   centerCoords = {
     x: [-30, -20, -10, 0, 10, 20, 30, 40],
-    y: [-35, -25, -15, -5, 5, 15, 25, 35]
+    y: [-35, -25, -15, -5, 5, 15, 25, 35],
   };
+
   borderCoords = {
     x: [-35, -25, -15, -5, 5, 15, 25, 35, 45],
-    y: [-40, -30, -20, -10, 0, 10, 20, 30, 40]
+    y: [-40, -30, -20, -10, 0, 10, 20, 30, 40],
   };
+
   tiles: Tile[] = [];
   tileMeshes: THREE.Mesh[] = [];
   /*
@@ -30,76 +31,75 @@ export class BoardTilesService implements ColyseusNotifyable {
     y: [-42.004, -31.548, -20.873, -10.258, 0.377, 11.329, 21.667, 32.639, 42.024]
   };*/
   private tileCoords = [
-    {x: 7, y: 0, r: 2},
-    {x: 6, y: 0, r: 2},
-    {x: 5, y: 0, r: 2},
-    {x: 4, y: 0, r: 2},
-    {x: 3, y: 0, r: 2},
-    {x: 2, y: 0, r: 2},
-    {x: 1, y: 0, r: 2},
-    {x: 0, y: 0, r: 2},
-    {x: 0, y: 1, r: 3},
-    {x: 0, y: 2, r: 3},
-    {x: 0, y: 3, r: 3},
-    {x: 0, y: 4, r: 3},
-    {x: 0, y: 5, r: 3},
-    {x: 0, y: 6, r: 3},
-    {x: 0, y: 7, r: 0},
-    {x: 1, y: 7, r: 0},
-    {x: 2, y: 7, r: 0},
-    {x: 3, y: 7, r: 0},
-    {x: 4, y: 7, r: 0},
-    {x: 5, y: 7, r: 0},
-    {x: 6, y: 7, r: 0},
-    {x: 7, y: 7, r: 0},
-    {x: 7, y: 6, r: 1},
-    {x: 7, y: 5, r: 1},
-    {x: 7, y: 4, r: 1},
-    {x: 7, y: 3, r: 1},
-    {x: 7, y: 2, r: 1},
-    {x: 7, y: 1, r: 1},
-    {x: 6, y: 1, r: 2},
-    {x: 5, y: 1, r: 2},
-    {x: 4, y: 1, r: 2},
-    {x: 3, y: 1, r: 2},
-    {x: 2, y: 1, r: 2},
-    {x: 1, y: 1, r: 3},
-    {x: 1, y: 2, r: 3},
-    {x: 1, y: 3, r: 3},
-    {x: 1, y: 4, r: 3},
-    {x: 1, y: 5, r: 3},
-    {x: 1, y: 6, r: 3},
-    {x: 2, y: 6, r: 0},
-    {x: 3, y: 6, r: 0},
-    {x: 4, y: 6, r: 0},
-    {x: 5, y: 6, r: 0},
-    {x: 6, y: 6, r: 1},
-    {x: 6, y: 5, r: 1},
-    {x: 6, y: 4, r: 1},
-    {x: 6, y: 3, r: 1},
-    {x: 6, y: 2, r: 1},
-    {x: 5, y: 2, r: 2},
-    {x: 4, y: 2, r: 2},
-    {x: 3, y: 2, r: 2},
-    {x: 2, y: 2, r: 2},
-    {x: 2, y: 3, r: 3},
-    {x: 2, y: 4, r: 3},
-    {x: 2, y: 5, r: 0},
-    {x: 3, y: 5, r: 0},
-    {x: 4, y: 5, r: 0},
-    {x: 5, y: 5, r: 0},
-    {x: 5, y: 4, r: 1},
-    {x: 5, y: 3, r: 2},
-    {x: 4, y: 3, r: 2},
-    {x: 3, y: 3, r: 2},
-    {x: 3, y: 4, r: 3},
-    {x: 4, y: 4, r: 2},
+    { x: 7, y: 0, r: 2 },
+    { x: 6, y: 0, r: 2 },
+    { x: 5, y: 0, r: 2 },
+    { x: 4, y: 0, r: 2 },
+    { x: 3, y: 0, r: 2 },
+    { x: 2, y: 0, r: 2 },
+    { x: 1, y: 0, r: 2 },
+    { x: 0, y: 0, r: 2 },
+    { x: 0, y: 1, r: 3 },
+    { x: 0, y: 2, r: 3 },
+    { x: 0, y: 3, r: 3 },
+    { x: 0, y: 4, r: 3 },
+    { x: 0, y: 5, r: 3 },
+    { x: 0, y: 6, r: 3 },
+    { x: 0, y: 7, r: 0 },
+    { x: 1, y: 7, r: 0 },
+    { x: 2, y: 7, r: 0 },
+    { x: 3, y: 7, r: 0 },
+    { x: 4, y: 7, r: 0 },
+    { x: 5, y: 7, r: 0 },
+    { x: 6, y: 7, r: 0 },
+    { x: 7, y: 7, r: 0 },
+    { x: 7, y: 6, r: 1 },
+    { x: 7, y: 5, r: 1 },
+    { x: 7, y: 4, r: 1 },
+    { x: 7, y: 3, r: 1 },
+    { x: 7, y: 2, r: 1 },
+    { x: 7, y: 1, r: 1 },
+    { x: 6, y: 1, r: 2 },
+    { x: 5, y: 1, r: 2 },
+    { x: 4, y: 1, r: 2 },
+    { x: 3, y: 1, r: 2 },
+    { x: 2, y: 1, r: 2 },
+    { x: 1, y: 1, r: 3 },
+    { x: 1, y: 2, r: 3 },
+    { x: 1, y: 3, r: 3 },
+    { x: 1, y: 4, r: 3 },
+    { x: 1, y: 5, r: 3 },
+    { x: 1, y: 6, r: 3 },
+    { x: 2, y: 6, r: 0 },
+    { x: 3, y: 6, r: 0 },
+    { x: 4, y: 6, r: 0 },
+    { x: 5, y: 6, r: 0 },
+    { x: 6, y: 6, r: 1 },
+    { x: 6, y: 5, r: 1 },
+    { x: 6, y: 4, r: 1 },
+    { x: 6, y: 3, r: 1 },
+    { x: 6, y: 2, r: 1 },
+    { x: 5, y: 2, r: 2 },
+    { x: 4, y: 2, r: 2 },
+    { x: 3, y: 2, r: 2 },
+    { x: 2, y: 2, r: 2 },
+    { x: 2, y: 3, r: 3 },
+    { x: 2, y: 4, r: 3 },
+    { x: 2, y: 5, r: 0 },
+    { x: 3, y: 5, r: 0 },
+    { x: 4, y: 5, r: 0 },
+    { x: 5, y: 5, r: 0 },
+    { x: 5, y: 4, r: 1 },
+    { x: 5, y: 3, r: 2 },
+    { x: 4, y: 3, r: 2 },
+    { x: 3, y: 3, r: 2 },
+    { x: 3, y: 4, r: 3 },
+    { x: 4, y: 4, r: 2 },
   ];
 
-  constructor(private objectLoader: ObjectLoaderService, private gameState: GameStateService) {
-  }
+  constructor(private objectLoader: ObjectLoaderService, private gameState: GameStateService) {}
 
-  initialize(addToScene: (grp: THREE.Group) => void, onProgressCallback: () => void) {
+  initialize(addToScene: (grp: THREE.Group) => void, onProgressCallback: () => void): void {
     const grp: THREE.Group = this.generateField();
     addToScene(grp);
 
@@ -115,15 +115,19 @@ export class BoardTilesService implements ColyseusNotifyable {
   }
 
   attachColyseusStateCallbacks(gameState: GameStateService): void {
-    gameState.addBoardLayoutCallback(((layout: BoardLayoutState) => {
-      this.tiles = this.gameState.getBoardLayoutAsArray();
-      console.info('Tiles are updated:', this.tiles, layout);
-      this.updateField(() => {
-      });
-    }).bind(this));
+    gameState.addBoardLayoutCallback(
+      ((layout: BoardLayoutState) => {
+        this.tiles = this.gameState.getBoardLayoutAsArray();
+        console.info('Tiles are updated:', this.tiles, layout);
+        this.updateField(() => {
+          return;
+        });
+      }).bind(this)
+    );
   }
 
   attachColyseusMessageCallbacks(gameState: GameStateService): void {
+    return;
   }
 
   getTileRotation(tileID: number): THREE.Quaternion {
@@ -134,7 +138,11 @@ export class BoardTilesService implements ColyseusNotifyable {
     const group = new THREE.Group();
     for (let tileId = 0; tileId < 64; tileId++) {
       const tileMesh = this.objectLoader.loadGameTile();
-      tileMesh.position.set(this.centerCoords.x[this.tileCoords[tileId].x], 0.01, this.centerCoords.y[this.tileCoords[tileId].y]);
+      tileMesh.position.set(
+        this.centerCoords.x[this.tileCoords[tileId].x],
+        0.01,
+        this.centerCoords.y[this.tileCoords[tileId].y]
+      );
 
       tileMesh.rotation.setFromQuaternion(this.getTileRotation(Number(tileId)));
       group.add(tileMesh);
@@ -167,26 +175,27 @@ export class BoardTilesService implements ColyseusNotifyable {
     return group;
   }
 
-  getFieldCenter(fieldId: number): { x: number, y: number } {
-    const coords: { x: number, y: number } = this.getCoords(fieldId);
+  getFieldCenter(fieldId: number): { x: number; y: number } {
+    const coords: { x: number; y: number } = this.getCoords(fieldId);
     return {
       x: this.centerCoords.x[coords.x],
-      y: this.centerCoords.y[coords.y]
+      y: this.centerCoords.y[coords.y],
     };
   }
 
-  getFieldCoords(fieldId: number): { x1: number, y1: number, x2: number, y2: number } {
-    const coords: { x: number, y: number } = this.getCoords(fieldId);
+  getFieldCoords(fieldId: number): { x1: number; y1: number; x2: number; y2: number } {
+    const coords: { x: number; y: number } = this.getCoords(fieldId);
     return {
       x1: this.borderCoords.x[coords.x],
       y1: this.borderCoords.y[coords.y],
       x2: this.borderCoords.x[coords.x + 1],
-      y2: this.borderCoords.y[coords.y + 1]
+      y2: this.borderCoords.y[coords.y + 1],
     };
   }
 
-  coordsToFieldCoords(coords: THREE.Vector3): { x: number, y: number } {
-    let x = -1, y = -1;
+  coordsToFieldCoords(coords: THREE.Vector3): { x: number; y: number } {
+    let x = -1,
+      y = -1;
     for (let i = 0; i < 9; i++) {
       if (coords.x >= this.borderCoords.x[i]) {
         x = i;
@@ -195,14 +204,14 @@ export class BoardTilesService implements ColyseusNotifyable {
         y = i;
       }
     }
-    return {x: x, y: y};
+    return { x: x, y: y };
   }
 
-  getCoords(tileId: number): { x: number, y: number } {
+  getCoords(tileId: number): { x: number; y: number } {
     if (tileId < 0 || tileId > 63) {
-      return {x: 7, y: 0};
+      return { x: 7, y: 0 };
     }
-    return {x: this.tileCoords[tileId].x, y: this.tileCoords[tileId].y};
+    return { x: this.tileCoords[tileId].x, y: this.tileCoords[tileId].y };
   }
 
   getId(x: number, y: number): number {
@@ -220,7 +229,7 @@ export class BoardTilesService implements ColyseusNotifyable {
     return this.tiles[fieldId];
   }
 
-  updateField(onProgress: () => void) {
+  updateField(onProgress: () => void): void {
     for (const tileId in this.tiles) {
       if (tileId in this.tiles) {
         const mesh: THREE.Mesh = this.tileMeshes[tileId];
@@ -233,5 +242,4 @@ export class BoardTilesService implements ColyseusNotifyable {
       }
     }
   }
-
 }

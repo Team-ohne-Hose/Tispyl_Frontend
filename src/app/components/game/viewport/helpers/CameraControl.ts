@@ -2,7 +2,6 @@ import { PerspectiveCamera } from 'three';
 import * as THREE from 'three';
 import { GameBoardOrbitControl } from './GameBoardOrbitControl';
 
-
 export class CameraControl {
   cam: PerspectiveCamera;
   controls: GameBoardOrbitControl;
@@ -12,7 +11,7 @@ export class CameraControl {
     this.controls = ctrl;
   }
 
-  lookAtPosition(pos: THREE.Vector3, angle: THREE.Vector3, distance: number) {
+  lookAtPosition(pos: THREE.Vector3, angle: THREE.Vector3, distance: number): void {
     const p2 = angle.clone().normalize().multiplyScalar(-distance).add(pos.clone());
     this.cam.position.set(p2.x, p2.y, p2.z);
     this.controls.update();
@@ -20,11 +19,11 @@ export class CameraControl {
     this.controls.update();
   }
 
-  lookAtField(tileId: number) {
+  lookAtField(tileId: number): void {
     // TODO
   }
 
-  lookAtOverview() {
+  lookAtOverview(): void {
     // TODO
   }
 

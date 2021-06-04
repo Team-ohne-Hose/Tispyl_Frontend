@@ -1,6 +1,5 @@
 import { EventDispatcher, MOUSE, PerspectiveCamera, Quaternion, Spherical, TOUCH, Vector2, Vector3 } from 'three';
 
-
 export class GameBoardOrbitControl extends EventDispatcher {
   camera: PerspectiveCamera;
   domElement: HTMLElement;
@@ -18,9 +17,9 @@ export class GameBoardOrbitControl extends EventDispatcher {
   panSpeed = 1;
   keyPanSpeed = 7.0;
   enableKeys = true;
-  keys = {LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40};
-  mouseButtons = {LEFT: MOUSE.ROTATE, MIDDLE: MOUSE.DOLLY, RIGHT: undefined};
-  touches = {ONE: TOUCH.ROTATE, TWO: undefined};
+  keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
+  mouseButtons = { LEFT: MOUSE.ROTATE, MIDDLE: MOUSE.DOLLY, RIGHT: undefined };
+  touches = { ONE: TOUCH.ROTATE, TWO: undefined };
   enableTargetOffset = false;
   targetOffsetRatio = 0;
   minTargetOffset = 0;
@@ -40,12 +39,13 @@ export class GameBoardOrbitControl extends EventDispatcher {
     TOUCH_ROTATE: 3,
     TOUCH_PAN: 4,
     TOUCH_DOLLY_PAN: 5,
-    TOUCH_DOLLY_ROTATE: 6
+    TOUCH_DOLLY_ROTATE: 6,
   };
+
   // privates:
-  private changeEvent = {type: 'change'};
-  private startEvent = {type: 'start'};
-  private endEvent = {type: 'end'};
+  private changeEvent = { type: 'change' };
+  private startEvent = { type: 'start' };
+  private endEvent = { type: 'end' };
   private state = this.STATE.NONE;
   private EPS = 0.000001;
   private spherical = new Spherical();
@@ -65,13 +65,14 @@ export class GameBoardOrbitControl extends EventDispatcher {
   private dollyDelta = new Vector2();
   // functionPrivates
   private updateState: {
-    offset: Vector3,
-    targetOffsetVec: Vector3,
-    quat: Quaternion,
-    quatInverse: Quaternion,
-    lastPosition: Vector3,
-    lastQuaternion: Quaternion
+    offset: Vector3;
+    targetOffsetVec: Vector3;
+    quat: Quaternion;
+    quatInverse: Quaternion;
+    lastPosition: Vector3;
+    lastQuaternion: Quaternion;
   };
+
   private panLeftV = new Vector3();
   private panUpV = new Vector3();
 
@@ -85,7 +86,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
       quat: new Quaternion().setFromUnitVectors(this.camera.up, new Vector3(0, 1, 0)),
       quatInverse: undefined,
       lastPosition: new Vector3(),
-      lastQuaternion: new Quaternion()
+      lastQuaternion: new Quaternion(),
     };
     this.updateState.quatInverse = this.updateState.quat.clone().inverse();
 
@@ -107,15 +108,15 @@ export class GameBoardOrbitControl extends EventDispatcher {
     }
   }
 
-  getPolarAngle() {
+  getPolarAngle(): number {
     return this.spherical.phi;
   }
 
-  getAzimuthalAngle() {
+  getAzimuthalAngle(): number {
     return this.spherical.theta;
   }
 
-  update() {
+  update(): boolean {
     const position = this.camera.position;
 
     // ROTATION ==============================================================
@@ -128,9 +129,11 @@ export class GameBoardOrbitControl extends EventDispatcher {
     this.spherical.setFromVector3(this.updateState.offset);
 
     // apply rotation changes to the spherical
-    let rotSpeed = 1 - ((this.targetOffset - this.minTargetOffset) / (this.maxTargetOffset - this.minTargetOffset));
+    let rotSpeed = 1 - (this.targetOffset - this.minTargetOffset) / (this.maxTargetOffset - this.minTargetOffset);
     rotSpeed = this.mapCurvature(rotSpeed, this.targetOffsetSlowRotationCurve);
-    rotSpeed = this.targetOffsetSlowRotationSlow + ((this.targetOffsetSlowRotationFast - this.targetOffsetSlowRotationSlow) * rotSpeed);
+    rotSpeed =
+      this.targetOffsetSlowRotationSlow +
+      (this.targetOffsetSlowRotationFast - this.targetOffsetSlowRotationSlow) * rotSpeed;
     // console.log('rotSpeed: ', rotSpeed, this.targetOffset);
     this.spherical.theta += this.sphericalDelta.theta * rotSpeed;
 
@@ -189,10 +192,11 @@ export class GameBoardOrbitControl extends EventDispatcher {
     this.scale = 1;
 
     // issue change events if changed enough
-    if (this.zoomChanged ||
+    if (
+      this.zoomChanged ||
       this.updateState.lastPosition.distanceToSquared(this.camera.position) > this.EPS ||
-      8 * (1 - this.updateState.lastQuaternion.dot(this.camera.quaternion)) > this.EPS) {
-
+      8 * (1 - this.updateState.lastQuaternion.dot(this.camera.quaternion)) > this.EPS
+    ) {
       this.dispatchEvent(this.changeEvent);
 
       this.updateState.lastPosition.copy(this.camera.position);
@@ -203,7 +207,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
     return false;
   }
 
-  dispose() {
+  dispose(): void {
     this.domElement.removeEventListener('contextmenu', this.onContextMenu.bind(this), false);
     this.domElement.removeEventListener('mousedown', this.onMouseDown.bind(this), false);
     this.domElement.removeEventListener('wheel', this.onMouseWheel.bind(this), false);
@@ -224,26 +228,26 @@ export class GameBoardOrbitControl extends EventDispatcher {
   // curvature -1-0: nerf high values
   // curvature  0-1: boost low values
   private mapCurvature(valNormalized: number, curvature: number): number {
-    let a = 0.5 + (-curvature / 2);
+    let a = 0.5 + -curvature / 2;
     if (a === 0.5) {
       a += 0.00001;
     }
     const b2 = 2 * (1 - a);
     const om2a = 1 - 2 * a;
     const t = (Math.sqrt(a * a + om2a * valNormalized) - a) / om2a;
-    const y = (1 - b2) * (t * t) + (b2) * t;
+    const y = (1 - b2) * (t * t) + b2 * t;
     return y;
   }
 
-  private getZoomScale() {
+  private getZoomScale(): number {
     return Math.pow(0.95, this.zoomSpeed);
   }
 
-  private rotateLeft(angle) {
+  private rotateLeft(angle: number) {
     this.sphericalDelta.theta -= angle;
   }
 
-  private rotateUp(angle) {
+  private rotateUp(angle: number): void {
     if (this.enableTargetOffset) {
       this.targetOffset -= this.targetOffsetRatio * angle;
       this.targetOffset = Math.max(this.minTargetOffset, Math.min(this.maxTargetOffset, this.targetOffset));
@@ -252,14 +256,14 @@ export class GameBoardOrbitControl extends EventDispatcher {
     }
   }
 
-  private panLeft(distance, objectMatrix) {
+  private panLeft(distance: number, objectMatrix): void {
     this.panLeftV.setFromMatrixColumn(objectMatrix, 0); // get X column of objectMatrix
     this.panLeftV.multiplyScalar(-distance);
 
     this.panOffset.add(this.panLeftV);
   }
 
-  private panUp(distance, objectMatrix) {
+  private panUp(distance: number, objectMatrix): void {
     this.panUpV.setFromMatrixColumn(objectMatrix, 0);
     this.panUpV.crossVectors(this.camera.up, this.panUpV);
 
@@ -268,7 +272,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
   }
 
   // deltaX and deltaY are in pixels; right and down are positive
-  private pan(deltaX, deltaY) {
+  private pan(deltaX: number, deltaY: number): void {
     const offset = new Vector3();
 
     const element = this.domElement;
@@ -279,18 +283,18 @@ export class GameBoardOrbitControl extends EventDispatcher {
     let targetDistance = offset.length();
 
     // half of the fov is center to top of screen
-    targetDistance *= Math.tan((this.camera.fov / 2) * Math.PI / 180.0);
+    targetDistance *= Math.tan(((this.camera.fov / 2) * Math.PI) / 180.0);
 
     // we use only clientHeight here so aspect ratio does not distort speed
-    this.panLeft(2 * deltaX * targetDistance / element.clientHeight, this.camera.matrix);
-    this.panUp(2 * deltaY * targetDistance / element.clientHeight, this.camera.matrix);
+    this.panLeft((2 * deltaX * targetDistance) / element.clientHeight, this.camera.matrix);
+    this.panUp((2 * deltaY * targetDistance) / element.clientHeight, this.camera.matrix);
   }
 
-  private dollyOut(dollyScale) {
+  private dollyOut(dollyScale: number): void {
     this.scale /= dollyScale;
   }
 
-  private dollyIn(dollyScale) {
+  private dollyIn(dollyScale: number): void {
     this.scale *= dollyScale;
   }
 
@@ -298,32 +302,32 @@ export class GameBoardOrbitControl extends EventDispatcher {
   // event callbacks - update the object state
   //
 
-  private handleMouseDownRotate(event) {
+  private handleMouseDownRotate(event: MouseEvent): void {
     this.rotateStart.set(event.clientX, event.clientY);
   }
 
-  private handleMouseDownDolly(event) {
+  private handleMouseDownDolly(event: MouseEvent): void {
     this.dollyStart.set(event.clientX, event.clientY);
   }
 
-  private handleMouseDownPan(event) {
+  private handleMouseDownPan(event: MouseEvent): void {
     this.panStart.set(event.clientX, event.clientY);
   }
 
-  private handleMouseMoveRotate(event) {
+  private handleMouseMoveRotate(event: MouseEvent): void {
     this.rotateEnd.set(event.clientX, event.clientY);
     this.rotateDelta.subVectors(this.rotateEnd, this.rotateStart).multiplyScalar(this.rotateSpeed);
 
     const element = this.domElement;
 
-    this.rotateLeft(2 * Math.PI * this.rotateDelta.x / element.clientHeight); // yes, height
-    this.rotateUp(2 * Math.PI * this.rotateDelta.y / element.clientHeight);
+    this.rotateLeft((2 * Math.PI * this.rotateDelta.x) / element.clientHeight); // yes, height
+    this.rotateUp((2 * Math.PI * this.rotateDelta.y) / element.clientHeight);
     this.rotateStart.copy(this.rotateEnd);
 
     this.update();
   }
 
-  private handleMouseMoveDolly(event) {
+  private handleMouseMoveDolly(event: MouseEvent): void {
     this.dollyEnd.set(event.clientX, event.clientY);
     this.dollyDelta.subVectors(this.dollyEnd, this.dollyStart);
 
@@ -337,7 +341,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
     this.update();
   }
 
-  private handleMouseMovePan(event) {
+  private handleMouseMovePan(event: MouseEvent): void {
     this.panEnd.set(event.clientX, event.clientY);
     this.panDelta.subVectors(this.panEnd, this.panStart).multiplyScalar(this.panSpeed);
     this.pan(this.panDelta.x, this.panDelta.y);
@@ -345,14 +349,13 @@ export class GameBoardOrbitControl extends EventDispatcher {
     this.panStart.copy(this.panEnd);
 
     this.update();
-
   }
 
-  private handleMouseUp(event) {
-
+  private handleMouseUp(event: MouseEvent): void {
+    // do nothing
   }
 
-  private handleMouseWheel(event) {
+  private handleMouseWheel(event): void {
     if (event.deltaY < 0) {
       this.dollyIn(this.getZoomScale());
     } else if (event.deltaY > 0) {
@@ -362,7 +365,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
     this.update();
   }
 
-  private handleKeyDown(event) {
+  private handleKeyDown(event): void {
     let needsUpdate = false;
     switch (event.keyCode) {
       case this.keys.UP:
@@ -390,7 +393,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
     }
   }
 
-  private handleTouchStartRotate(event) {
+  private handleTouchStartRotate(event): void {
     if (event.touches.length === 1) {
       this.rotateStart.set(event.touches[0].pageX, event.touches[0].pageY);
     } else {
@@ -400,7 +403,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
     }
   }
 
-  private handleTouchStartPan(event) {
+  private handleTouchStartPan(event): void {
     if (event.touches.length === 1) {
       this.panStart.set(event.touches[0].pageX, event.touches[0].pageY);
     } else {
@@ -410,14 +413,14 @@ export class GameBoardOrbitControl extends EventDispatcher {
     }
   }
 
-  private handleTouchStartDolly(event) {
+  private handleTouchStartDolly(event): void {
     const dx = event.touches[0].pageX - event.touches[1].pageX;
     const dy = event.touches[0].pageY - event.touches[1].pageY;
     const distance = Math.sqrt(dx * dx + dy * dy);
     this.dollyStart.set(0, distance);
   }
 
-  private handleTouchStartDollyPan(event) {
+  private handleTouchStartDollyPan(event): void {
     if (this.enableZoom) {
       this.handleTouchStartDolly(event);
     }
@@ -426,7 +429,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
     }
   }
 
-  private handleTouchStartDollyRotate(event) {
+  private handleTouchStartDollyRotate(event): void {
     if (this.enableZoom) {
       this.handleTouchStartDolly(event);
     }
@@ -435,7 +438,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
     }
   }
 
-  private handleTouchMoveRotate(event) {
+  private handleTouchMoveRotate(event): void {
     if (event.touches.length === 1) {
       this.rotateEnd.set(event.touches[0].pageX, event.touches[0].pageY);
     } else {
@@ -446,12 +449,12 @@ export class GameBoardOrbitControl extends EventDispatcher {
     }
     this.rotateDelta.subVectors(this.rotateEnd, this.rotateStart).multiplyScalar(this.rotateSpeed);
     const element = this.domElement;
-    this.rotateLeft(2 * Math.PI * this.rotateDelta.x / element.clientHeight); // yes, height
-    this.rotateUp(2 * Math.PI * this.rotateDelta.y / element.clientHeight);
+    this.rotateLeft((2 * Math.PI * this.rotateDelta.x) / element.clientHeight); // yes, height
+    this.rotateUp((2 * Math.PI * this.rotateDelta.y) / element.clientHeight);
     this.rotateStart.copy(this.rotateEnd);
   }
 
-  private handleTouchMovePan(event) {
+  private handleTouchMovePan(event): void {
     if (event.touches.length === 1) {
       this.panEnd.set(event.touches[0].pageX, event.touches[0].pageY);
     } else {
@@ -464,7 +467,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
     this.panStart.copy(this.panEnd);
   }
 
-  private handleTouchMoveDolly(event) {
+  private handleTouchMoveDolly(event): void {
     const dx = event.touches[0].pageX - event.touches[1].pageX;
     const dy = event.touches[0].pageY - event.touches[1].pageY;
     const distance = Math.sqrt(dx * dx + dy * dy);
@@ -475,7 +478,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
     this.dollyStart.copy(this.dollyEnd);
   }
 
-  private handleTouchMoveDollyPan(event) {
+  private handleTouchMoveDollyPan(event): void {
     if (this.enableZoom) {
       this.handleTouchMoveDolly(event);
     }
@@ -484,7 +487,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
     }
   }
 
-  private handleTouchMoveDollyRotate(event) {
+  private handleTouchMoveDollyRotate(event): void {
     if (this.enableZoom) {
       this.handleTouchMoveDolly(event);
     }
@@ -493,14 +496,14 @@ export class GameBoardOrbitControl extends EventDispatcher {
     }
   }
 
-  private handleTouchEnd(event) {
+  private handleTouchEnd(event): void {
     // no-op
   }
 
   //
   // event handlers - FSM: listen for events and reset state
   //
-  private onMouseDown(event) {
+  private onMouseDown(event): void {
     if (this.enabled === false) {
       return;
     }
@@ -575,7 +578,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
     }
   }
 
-  private onMouseMove(event) {
+  private onMouseMove(event): void {
     if (this.enabled === false) {
       return;
     }
@@ -602,7 +605,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
     }
   }
 
-  private onMouseUp(event) {
+  private onMouseUp(event): void {
     if (this.enabled === false) {
       return;
     }
@@ -614,8 +617,12 @@ export class GameBoardOrbitControl extends EventDispatcher {
     this.state = this.STATE.NONE;
   }
 
-  private onMouseWheel(event) {
-    if (this.enabled === false || this.enableZoom === false || (this.state !== this.STATE.NONE && this.state !== this.STATE.ROTATE)) {
+  private onMouseWheel(event): void {
+    if (
+      this.enabled === false ||
+      this.enableZoom === false ||
+      (this.state !== this.STATE.NONE && this.state !== this.STATE.ROTATE)
+    ) {
       return;
     }
     event.preventDefault();
@@ -625,14 +632,14 @@ export class GameBoardOrbitControl extends EventDispatcher {
     this.dispatchEvent(this.endEvent);
   }
 
-  private onKeyDown(event) {
+  private onKeyDown(event): void {
     if (this.enabled === false || this.enableKeys === false || this.enablePan === false) {
       return;
     }
     this.handleKeyDown(event);
   }
 
-  private onTouchStart(event) {
+  private onTouchStart(event): void {
     if (this.enabled === false) {
       return;
     }
@@ -686,7 +693,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
     }
   }
 
-  private onTouchMove(event) {
+  private onTouchMove(event): void {
     if (this.enabled === false) {
       return;
     }
@@ -727,7 +734,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
     }
   }
 
-  private onTouchEnd(event) {
+  private onTouchEnd(event): void {
     if (this.enabled === false) {
       return;
     }
@@ -736,11 +743,10 @@ export class GameBoardOrbitControl extends EventDispatcher {
     this.state = this.STATE.NONE;
   }
 
-  private onContextMenu(event) {
+  private onContextMenu(event): void {
     if (this.enabled === false) {
       return;
     }
     event.preventDefault();
   }
-
 }

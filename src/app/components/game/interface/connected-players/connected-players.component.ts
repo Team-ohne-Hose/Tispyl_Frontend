@@ -5,24 +5,21 @@ import { ColyseusNotifyable } from '../../../../services/game-initialisation.ser
 import { MessageType, WsData } from '../../../../model/WsData';
 import { GameStateService } from '../../../../services/game-state.service';
 
-
 @Component({
   selector: 'app-connected-players',
   templateUrl: './connected-players.component.html',
-  styleUrls: ['./connected-players.component.css']
+  styleUrls: ['./connected-players.component.css'],
 })
 export class ConnectedPlayersComponent implements ColyseusNotifyable {
-
   @Input()
   players: Player[];
 
   @Input()
   currentPlayerDisplayName: string;
 
-  profilePics = {};
+  profilePics: string[] = [];
 
-  constructor(private fileManagement: FileService, private gameState: GameStateService) {
-  }
+  constructor(private fileManagement: FileService, private gameState: GameStateService) {}
 
   attachColyseusMessageCallbacks(gameState: GameStateService): void {
     gameState.registerMessageCallback(MessageType.REFRESH_COMMAND, {
@@ -35,14 +32,15 @@ export class ConnectedPlayersComponent implements ColyseusNotifyable {
             }
           }
         }
-      }
+      },
     });
   }
 
   attachColyseusStateCallbacks(gameState: GameStateService): void {
+    return;
   }
 
-  getProfilePic(name) {
+  getProfilePic(name: string): string {
     if (this.profilePics[name] === undefined) {
       this.profilePics[name] = this.fileManagement.profilePictureSource(name, true);
     }
@@ -52,5 +50,4 @@ export class ConnectedPlayersComponent implements ColyseusNotifyable {
   filterConnectedPlayers(value: Player, index: number, list: Player[]): boolean {
     return !value.hasLeft;
   }
-
 }

@@ -32,7 +32,7 @@ interface PlayerModelData {
   lowResTex: THREE.Texture;
   tex: THREE.Texture;
   spec: THREE.Texture;
-  subject: Subject<{ tex: THREE.Texture, spec: THREE.Texture }>;
+  subject: Subject<{ tex: THREE.Texture; spec: THREE.Texture }>;
 }
 
 export class Color {
@@ -66,92 +66,206 @@ export interface CubeMap {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ObjectLoaderService {
   cubeMaps: CubeMap[] = [
     {
-      name: 'Ryfjallet', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Ryfjallet/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+      name: 'Ryfjallet',
+      tex: undefined,
+      path: '/assets/cubemaps/mountain-skyboxes/Ryfjallet/',
+      px: 'posx.jpg',
+      py: 'posy.jpg',
+      pz: 'posz.jpg',
+      nx: 'negx.jpg',
+      ny: 'negy.jpg',
+      nz: 'negz.jpg',
     },
     {
-      name: 'Maskonaive1', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Maskonaive/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+      name: 'Maskonaive1',
+      tex: undefined,
+      path: '/assets/cubemaps/mountain-skyboxes/Maskonaive/',
+      px: 'posx.jpg',
+      py: 'posy.jpg',
+      pz: 'posz.jpg',
+      nx: 'negx.jpg',
+      ny: 'negy.jpg',
+      nz: 'negz.jpg',
     },
     {
-      name: 'Maskonaive2', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Maskonaive2/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+      name: 'Maskonaive2',
+      tex: undefined,
+      path: '/assets/cubemaps/mountain-skyboxes/Maskonaive2/',
+      px: 'posx.jpg',
+      py: 'posy.jpg',
+      pz: 'posz.jpg',
+      nx: 'negx.jpg',
+      ny: 'negy.jpg',
+      nz: 'negz.jpg',
     },
     {
-      name: 'Maskonaive3', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Maskonaive3/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+      name: 'Maskonaive3',
+      tex: undefined,
+      path: '/assets/cubemaps/mountain-skyboxes/Maskonaive3/',
+      px: 'posx.jpg',
+      py: 'posy.jpg',
+      pz: 'posz.jpg',
+      nx: 'negx.jpg',
+      ny: 'negy.jpg',
+      nz: 'negz.jpg',
     },
     {
-      name: 'Nalovardo', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Nalovardo/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+      name: 'Nalovardo',
+      tex: undefined,
+      path: '/assets/cubemaps/mountain-skyboxes/Nalovardo/',
+      px: 'posx.jpg',
+      py: 'posy.jpg',
+      pz: 'posz.jpg',
+      nx: 'negx.jpg',
+      ny: 'negy.jpg',
+      nz: 'negz.jpg',
     },
     {
-      name: 'Teide', tex: undefined, path: '/assets/cubemaps/mountain-skyboxes/Teide/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+      name: 'Teide',
+      tex: undefined,
+      path: '/assets/cubemaps/mountain-skyboxes/Teide/',
+      px: 'posx.jpg',
+      py: 'posy.jpg',
+      pz: 'posz.jpg',
+      nx: 'negx.jpg',
+      ny: 'negy.jpg',
+      nz: 'negz.jpg',
     },
     {
-      name: 'ForbiddenCity', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/ForbiddenCity/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+      name: 'ForbiddenCity',
+      tex: undefined,
+      path: '/assets/cubemaps/urban-skyboxes/ForbiddenCity/',
+      px: 'posx.jpg',
+      py: 'posy.jpg',
+      pz: 'posz.jpg',
+      nx: 'negx.jpg',
+      ny: 'negy.jpg',
+      nz: 'negz.jpg',
     },
     {
-      name: 'GamlaStan', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/GamlaStan/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+      name: 'GamlaStan',
+      tex: undefined,
+      path: '/assets/cubemaps/urban-skyboxes/GamlaStan/',
+      px: 'posx.jpg',
+      py: 'posy.jpg',
+      pz: 'posz.jpg',
+      nx: 'negx.jpg',
+      ny: 'negy.jpg',
+      nz: 'negz.jpg',
     },
     {
-      name: 'Medborgarplatsen', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/Medborgarplatsen/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+      name: 'Medborgarplatsen',
+      tex: undefined,
+      path: '/assets/cubemaps/urban-skyboxes/Medborgarplatsen/',
+      px: 'posx.jpg',
+      py: 'posy.jpg',
+      pz: 'posz.jpg',
+      nx: 'negx.jpg',
+      ny: 'negy.jpg',
+      nz: 'negz.jpg',
     },
     {
-      name: 'Roundabout', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/Roundabout/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+      name: 'Roundabout',
+      tex: undefined,
+      path: '/assets/cubemaps/urban-skyboxes/Roundabout/',
+      px: 'posx.jpg',
+      py: 'posy.jpg',
+      pz: 'posz.jpg',
+      nx: 'negx.jpg',
+      ny: 'negy.jpg',
+      nz: 'negz.jpg',
     },
     {
-      name: 'SaintLazarusChurch', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/SaintLazarusChurch/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+      name: 'SaintLazarusChurch',
+      tex: undefined,
+      path: '/assets/cubemaps/urban-skyboxes/SaintLazarusChurch/',
+      px: 'posx.jpg',
+      py: 'posy.jpg',
+      pz: 'posz.jpg',
+      nx: 'negx.jpg',
+      ny: 'negy.jpg',
+      nz: 'negz.jpg',
     },
     {
-      name: 'SaintLazarusChurch2', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/SaintLazarusChurch2/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+      name: 'SaintLazarusChurch2',
+      tex: undefined,
+      path: '/assets/cubemaps/urban-skyboxes/SaintLazarusChurch2/',
+      px: 'posx.jpg',
+      py: 'posy.jpg',
+      pz: 'posz.jpg',
+      nx: 'negx.jpg',
+      ny: 'negy.jpg',
+      nz: 'negz.jpg',
     },
     {
-      name: 'SaintLazarusChurch3', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/SaintLazarusChurch3/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+      name: 'SaintLazarusChurch3',
+      tex: undefined,
+      path: '/assets/cubemaps/urban-skyboxes/SaintLazarusChurch3/',
+      px: 'posx.jpg',
+      py: 'posy.jpg',
+      pz: 'posz.jpg',
+      nx: 'negx.jpg',
+      ny: 'negy.jpg',
+      nz: 'negz.jpg',
     },
     {
-      name: 'UnionSquare', tex: undefined, path: '/assets/cubemaps/urban-skyboxes/UnionSquare/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+      name: 'UnionSquare',
+      tex: undefined,
+      path: '/assets/cubemaps/urban-skyboxes/UnionSquare/',
+      px: 'posx.jpg',
+      py: 'posy.jpg',
+      pz: 'posz.jpg',
+      nx: 'negx.jpg',
+      ny: 'negy.jpg',
+      nz: 'negz.jpg',
     },
     {
-      name: 'Bridge', tex: undefined, path: '/assets/cubemaps/bridge-skyboxes/Bridge/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+      name: 'Bridge',
+      tex: undefined,
+      path: '/assets/cubemaps/bridge-skyboxes/Bridge/',
+      px: 'posx.jpg',
+      py: 'posy.jpg',
+      pz: 'posz.jpg',
+      nx: 'negx.jpg',
+      ny: 'negy.jpg',
+      nz: 'negz.jpg',
     },
     {
-      name: 'Bridge2', tex: undefined, path: '/assets/cubemaps/bridge-skyboxes/Bridge2/',
-      px: 'posx.jpg', py: 'posy.jpg', pz: 'posz.jpg', nx: 'negx.jpg', ny: 'negy.jpg', nz: 'negz.jpg'
+      name: 'Bridge2',
+      tex: undefined,
+      path: '/assets/cubemaps/bridge-skyboxes/Bridge2/',
+      px: 'posx.jpg',
+      py: 'posy.jpg',
+      pz: 'posz.jpg',
+      nx: 'negx.jpg',
+      ny: 'negy.jpg',
+      nz: 'negz.jpg',
     },
   ];
+
   currentCubeMap = 2;
   tLoader = new THREE.TextureLoader();
   defaultTileTexture: THREE.Texture;
   defaultTileTexturePath = '/assets/board/default.png';
   gameBoardTextureURL = '/assets/tischspiel_clear.png';
   private readonly resourcePath = '/assets/models/';
-  private readonly lowResSuffix = '_256'; // set the suffix for the lower resolution/faster loading playermodels, currently _128 or _256 or nothing
-  private texMapEntry = ((texFName: string, specFName?: string) =>
-    ({
-      texFName: texFName,
-      specFName: (specFName || 'default_spec'),
-      lowResTex: undefined,
-      tex: undefined,
-      spec: undefined,
-      subject: new Subject<{ tex: THREE.Texture, spec: THREE.Texture }>(),
-      objectList: []
-    }));
+  private readonly lowResSuffix = '_256';
+  // set the suffix for the lower resolution/faster loading playermodels, currently _128 or _256 or nothing
+  private texMapEntry = (texFName: string, specFName?: string) => ({
+    texFName: texFName,
+    specFName: specFName || 'default_spec',
+    lowResTex: undefined,
+    tex: undefined,
+    spec: undefined,
+    subject: new Subject<{ tex: THREE.Texture; spec: THREE.Texture }>(),
+    objectList: [],
+  });
+
   // we are currently not using specific specular maps, to use those, the subject has to also update those
   private texList: Map<PlayerModel, PlayerModelData> = new Map<PlayerModel, PlayerModelData>([
     [PlayerModel.bcap_NukaCola, this.texMapEntry('default')],
@@ -171,52 +285,59 @@ export class ObjectLoaderService {
     [PlayerModel.bcap_gude, this.texMapEntry('gude')],
     [PlayerModel.bcap_lordHelmchen, this.texMapEntry('lord_helmchen')],
   ]);
-  private readonly entities: ([PhysicsEntity, PhysicsEntityVariation])[] = [
+
+  private readonly entities: [PhysicsEntity, PhysicsEntityVariation][] = [
     [PhysicsEntity.dice, PhysicsEntityVariation.default],
     [PhysicsEntity.figure, PhysicsEntityVariation.default],
   ];
+
   private objectResourceList: EntityList<ResourceData> = {
     dice: {
       default: {
         cname: 'diceDefault',
         fname: 'diceDefault.glb',
-        objectCache: undefined
+        objectCache: undefined,
       },
       dice: {
         cname: 'diceModel',
         fname: 'dice/scene.gltf',
-        objectCache: undefined
+        objectCache: undefined,
       },
       dice2: {
         cname: 'diceModel2',
         fname: 'dice2/scene.gltf',
-        objectCache: undefined
-      }
+        objectCache: undefined,
+      },
     },
     figure: {
       default: {
         cname: 'figureDefault',
         fname: 'figureDefault.glb',
-        objectCache: undefined
-      }
-    }
+        objectCache: undefined,
+      },
+    },
   };
+
   private gameBoardGeo = new THREE.BoxBufferGeometry(100, 1, 100);
   private gameTileGeo = new THREE.BoxBufferGeometry(10, 1, 10);
 
-  private gameBoardMat = new THREE.MeshStandardMaterial({color: 0xffffff});
-  private gameBoundaryMat = new THREE.MeshStandardMaterial({color: 0xFADD12});
+  private gameBoardMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
+  private gameBoundaryMat = new THREE.MeshStandardMaterial({ color: 0xfadd12 });
 
   constructor() {
-    this.tLoader.load(this.defaultTileTexturePath, (texture) => {
-      texture.encoding = THREE.sRGBEncoding;
-      texture.anisotropy = 16;
-      this.defaultTileTexture = texture;
-    }, undefined, (error) => {
-      console.error(error);
-    });
+    this.tLoader.load(
+      this.defaultTileTexturePath,
+      (texture) => {
+        texture.encoding = THREE.sRGBEncoding;
+        texture.anisotropy = 16;
+        this.defaultTileTexture = texture;
+      },
+      undefined,
+      (error) => {
+        console.error(error);
+      }
+    );
   }
-
 
   async loadAllObjects(onProgressCallback: (progress: number, total: number) => void): Promise<void> {
     const myPromise: Promise<void> = new Promise<void>((resolve, reject) => {
@@ -243,16 +364,16 @@ export class ObjectLoaderService {
     return myPromise;
   }
 
-  async loadHiResTex() {
+  async loadHiResTex(): Promise<void> {
     console.log('this is:', this, this.texList);
     this.texList.forEach((val: PlayerModelData, key: PlayerModel) => {
       this.loadBcapTex(key, (tex: THREE.Texture, spec: THREE.Texture) => {
-        val.subject.next({tex: tex, spec: spec});
+        val.subject.next({ tex: tex, spec: spec });
       });
     });
   }
 
-  setCurrentCubeMap(cubeMapId: number) {
+  setCurrentCubeMap(cubeMapId: number): void {
     if (cubeMapId >= 0) {
       const cubemap = this.getCubeMap(cubeMapId);
       console.log('Using now cubemap', this.cubeMaps[cubeMapId].name, cubeMapId, this.cubeMaps[cubeMapId]);
@@ -271,12 +392,14 @@ export class ObjectLoaderService {
     if (this.cubeMaps[cubeMapId].tex === undefined) {
       const tex = new THREE.CubeTextureLoader()
         .setPath(this.cubeMaps[cubeMapId].path)
-        .load([this.cubeMaps[cubeMapId].px,
+        .load([
+          this.cubeMaps[cubeMapId].px,
           this.cubeMaps[cubeMapId].nx,
           this.cubeMaps[cubeMapId].py,
           this.cubeMaps[cubeMapId].ny,
           this.cubeMaps[cubeMapId].pz,
-          this.cubeMaps[cubeMapId].nz]);
+          this.cubeMaps[cubeMapId].nz,
+        ]);
       this.cubeMaps[cubeMapId].tex = tex;
     }
     return this.cubeMaps[cubeMapId].tex;
@@ -286,12 +409,12 @@ export class ObjectLoaderService {
     return this.texList.size;
   }
 
-  getBCapTextureThumbPath(sel: number) {
+  getBCapTextureThumbPath(sel: number): string {
     const entry = this.texList.get(sel);
     return '../assets/models/otherTex/' + (entry === undefined ? 'default' : entry.texFName) + '_128.png';
   }
 
-  loadObject(obj: PhysicsEntity, variation: PhysicsEntityVariation, callback: (model: THREE.Object3D) => void) {
+  loadObject(obj: PhysicsEntity, variation: PhysicsEntityVariation, callback: (model: THREE.Object3D) => void): void {
     const resource = this.getResourceData(obj, variation);
     if (resource.objectCache !== undefined) {
       callback(resource.objectCache.clone(true));
@@ -306,7 +429,7 @@ export class ObjectLoaderService {
     }
   }
 
-  switchTex(obj: THREE.Object3D, model: PlayerModel) {
+  switchTex(obj: THREE.Object3D, model: PlayerModel): void {
     if (model === undefined) {
       return;
     }
@@ -334,23 +457,22 @@ export class ObjectLoaderService {
         subscription.unsubscribe();
       }
       mesh.userData['textureSubscription'] = this.texList.get(model).subject.subscribe({
-        next: (newTexture: { tex: THREE.Texture, spec: THREE.Texture }) => {
+        next: (newTexture: { tex: THREE.Texture; spec: THREE.Texture }) => {
           mesh.material = (mesh.material as THREE.Material).clone();
           mesh.material['map'] = tex;
           // mesh.material['spec'] = newTexture.spec;
-        }
+        },
       });
-
     }
   }
 
-  loadTex(fname: string, fnameSpec: string): { tex: THREE.Texture, spec: THREE.Texture } {
+  loadTex(fname: string, fnameSpec: string): { tex: THREE.Texture; spec: THREE.Texture } {
     const texture = new THREE.TextureLoader().load('/assets/models/otherTex/' + fname + '.png');
     texture.encoding = THREE.sRGBEncoding;
     texture.anisotropy = 16;
     const gloss = new THREE.TextureLoader().load('/assets/models/otherTex/' + fnameSpec + '.png');
     gloss.encoding = THREE.LinearEncoding;
-    return {tex: texture, spec: gloss};
+    return { tex: texture, spec: gloss };
   }
 
   loadBcapLowRes(model: PlayerModel, onDone: (tex: Texture, spec: Texture) => void): void {
@@ -366,7 +488,7 @@ export class ObjectLoaderService {
 
       // only notify, if no hires tex exists
       if (texData.tex === undefined) {
-        texData.subject.next({tex: texMaps.tex, spec: texMaps.spec});
+        texData.subject.next({ tex: texMaps.tex, spec: texMaps.spec });
       }
       onDone(texMaps.tex, texMaps.spec);
     } else {
@@ -383,7 +505,7 @@ export class ObjectLoaderService {
       texData.tex = texMaps.tex;
       texData.spec = texMaps.spec;
 
-      texData.subject.next({tex: texData.tex, spec: texData.spec});
+      texData.subject.next({ tex: texData.tex, spec: texData.spec });
       onDone(texMaps.tex, texMaps.spec);
     } else {
       onDone(undefined, undefined);
@@ -392,37 +514,47 @@ export class ObjectLoaderService {
 
   generateGameBoard(): THREE.Mesh {
     const gameBoard = new THREE.Mesh(this.gameBoardGeo, this.gameBoardMat);
-    gameBoard.position.y = -.1;
+    gameBoard.position.y = -0.1;
     gameBoard.castShadow = false;
     gameBoard.receiveShadow = true;
     gameBoard.name = 'gameboard';
-    this.gameBoardMat.roughness = .4;
+    this.gameBoardMat.roughness = 0.4;
 
-    this.tLoader.load(this.gameBoardTextureURL, (texture) => {
-      texture.encoding = THREE.sRGBEncoding;
-      texture.anisotropy = 16;
-      this.gameBoardMat.map = texture;
-      this.gameBoardMat.needsUpdate = true;
-    }, undefined, (error) => {
-      console.error(error);
-    });
+    this.tLoader.load(
+      this.gameBoardTextureURL,
+      (texture) => {
+        texture.encoding = THREE.sRGBEncoding;
+        texture.anisotropy = 16;
+        this.gameBoardMat.map = texture;
+        this.gameBoardMat.needsUpdate = true;
+      },
+      undefined,
+      (error) => {
+        console.error(error);
+      }
+    );
     return gameBoard;
   }
 
-  loadGameTileTexture(texUrl: string, onLoad: (tex: THREE.Texture) => void) {
-    this.tLoader.load(texUrl, (texture) => {
-      texture.encoding = THREE.sRGBEncoding;
-      texture.anisotropy = 16;
-      onLoad(texture);
-    }, undefined, (error) => {
-      console.error(error);
-      onLoad(this.defaultTileTexture);
-    });
+  loadGameTileTexture(texUrl: string, onLoad: (tex: THREE.Texture) => void): void {
+    this.tLoader.load(
+      texUrl,
+      (texture) => {
+        texture.encoding = THREE.sRGBEncoding;
+        texture.anisotropy = 16;
+        onLoad(texture);
+      },
+      undefined,
+      (error) => {
+        console.error(error);
+        onLoad(this.defaultTileTexture);
+      }
+    );
   }
 
   loadGameTile(): THREE.Mesh {
-    const gameTileMat = new THREE.MeshStandardMaterial({color: 0xffffff});
-    gameTileMat.roughness = .8;
+    const gameTileMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
+    gameTileMat.roughness = 0.8;
     const gameTile = new THREE.Mesh(this.gameTileGeo, gameTileMat);
     gameTile.castShadow = true;
     gameTile.receiveShadow = true;
@@ -433,39 +565,50 @@ export class ObjectLoaderService {
     return gameTile;
   }
 
-  createBoundary(length: number, rotatedLandscape: boolean, center: THREE.Vector2) {
-    let w = .3, d = .3;
+  createBoundary(length: number, rotatedLandscape: boolean, center: THREE.Vector2): THREE.Mesh {
+    let w = 0.3,
+      d = 0.3;
     if (rotatedLandscape) {
-      w = length + .3;
+      w = length + 0.3;
     } else {
-      d = length + .3;
+      d = length + 0.3;
     }
 
-    const gameBoundaryGeo = new THREE.BoxBufferGeometry(w, .3, d);
+    const gameBoundaryGeo = new THREE.BoxBufferGeometry(w, 0.3, d);
     this.gameBoundaryMat.metalness = 1;
-    this.gameBoundaryMat.roughness = .06;
+    this.gameBoundaryMat.roughness = 0.06;
     const gameBoundary = new THREE.Mesh(gameBoundaryGeo, this.gameBoundaryMat);
     gameBoundary.castShadow = true;
     gameBoundary.receiveShadow = true;
     gameBoundary.position.set(center.x, 0.7, center.y);
     return gameBoundary;
-
   }
 
-  updateLabelSpriteText(sprite: THREE.Sprite, text: string) {
+  updateLabelSpriteText(sprite: THREE.Sprite, text: string): void {
     sprite.userData.text = ' ' + text + ' ';
-    this.drawCanvas(sprite.userData.canvas, sprite.userData.text, sprite.userData.fontSize, sprite.userData.font, sprite.userData.textColor,
-      sprite.userData.backgroundColor, sprite.userData.borderColor, sprite.userData.borderThickness, sprite.userData.radius);
+    this.drawCanvas(
+      sprite.userData.canvas,
+      sprite.userData.text,
+      sprite.userData.fontSize,
+      sprite.userData.font,
+      sprite.userData.textColor,
+      sprite.userData.backgroundColor,
+      sprite.userData.borderColor,
+      sprite.userData.borderThickness,
+      sprite.userData.radius
+    );
   }
 
-  createLabelSprite(text: string,
-                    fontSize?: number,
-                    font?: string,
-                    textColor?: Color,
-                    backgroundColor?: Color,
-                    borderColor?: Color,
-                    borderThickness?: number,
-                    radius?: number): THREE.Sprite {
+  createLabelSprite(
+    text: string,
+    fontSize?: number,
+    font?: string,
+    textColor?: Color,
+    backgroundColor?: Color,
+    borderColor?: Color,
+    borderThickness?: number,
+    radius?: number
+  ): THREE.Sprite {
     fontSize = fontSize || 16;
     font = font || 'Arial';
     textColor = textColor || new Color(1, 1, 1, 1);
@@ -485,7 +628,7 @@ export class ObjectLoaderService {
     const spriteMap: THREE.CanvasTexture = new THREE.CanvasTexture(canvas);
     spriteMap.anisotropy = 16;
     // canvas contents will be used for a texture
-    const spriteMaterial = new THREE.SpriteMaterial({map: spriteMap});
+    const spriteMaterial = new THREE.SpriteMaterial({ map: spriteMap });
     spriteMaterial.transparent = true;
     const sprite = new THREE.Sprite(spriteMaterial);
     sprite.scale.set(canvas.width / 75, canvas.height / 75, 1);
@@ -539,15 +682,17 @@ export class ObjectLoaderService {
     }
   }
 
-  private drawCanvas(canvas: HTMLCanvasElement,
-                     text: string,
-                     fontSize: number,
-                     font: string,
-                     textColor: Color,
-                     backgroundColor: Color,
-                     borderColor: Color,
-                     borderThickness: number,
-                     radius: number) {
+  private drawCanvas(
+    canvas: HTMLCanvasElement,
+    text: string,
+    fontSize: number,
+    font: string,
+    textColor: Color,
+    backgroundColor: Color,
+    borderColor: Color,
+    borderThickness: number,
+    radius: number
+  ) {
     const context = canvas.getContext('2d');
     context.font = 'Bold ' + fontSize + 'px ' + font;
 

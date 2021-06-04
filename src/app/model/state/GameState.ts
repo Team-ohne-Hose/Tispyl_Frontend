@@ -8,11 +8,10 @@ import { Link } from './Link';
 export enum Actions {
   ROLL,
   MOVE,
-  EXECUTE
+  EXECUTE,
 }
 
 export class GameState extends Schema {
-
   @type('number')
   round = 0;
 
@@ -28,7 +27,7 @@ export class GameState extends Schema {
   @type(PhysicsState)
   physicsState = new PhysicsState();
 
-  @type({map: Player})
+  @type({ map: Player })
   playerList = new MapSchema<Player>();
 
   @type(['string'])

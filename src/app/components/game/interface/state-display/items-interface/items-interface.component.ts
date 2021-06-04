@@ -4,23 +4,21 @@ import { ItemService } from '../../../../../services/item.service';
 @Component({
   selector: 'app-items-interface',
   templateUrl: './items-interface.component.html',
-  styleUrls: ['./items-interface.component.css']
+  styleUrls: ['./items-interface.component.css'],
 })
 export class ItemsInterfaceComponent implements OnInit {
-
   itemThumbnail = '../assets/defaultImage.jpg';
   itemName = 'NO ITEM';
   itemDescription = '';
   scrollable = true;
 
-  constructor(public items: ItemService) {
-  }
+  constructor(public items: ItemService) {}
 
   ngOnInit(): void {
     this.items.onItemUpdate = this.onItemUpdate.bind(this);
   }
 
-  updateItemData() {
+  updateItemData(): void {
     if (this.items.selectedItem < 0) {
       if (!(this.items.getOrderedItemList().length > 0)) {
         this.itemName = 'NO ITEM SELECTED';
@@ -37,19 +35,19 @@ export class ItemsInterfaceComponent implements OnInit {
     this.itemThumbnail = this.items.getItemThumb(this.items.selectedItem);
   }
 
-  prevItem($event: Event) {
+  prevItem($event: Event): void {
     this.items.setTargeting(false);
     this.items.selectPrevItem();
     this.updateItemData();
   }
 
-  nextItem($event: Event) {
+  nextItem($event: Event): void {
     this.items.setTargeting(false);
     this.items.selectNextItem();
     this.updateItemData();
   }
 
-  activateItem($event: Event) {
+  activateItem($event: Event): void {
     if (this.items.isCurrentlyTargeting()) {
       this.items.setTargeting(false);
     } else {
@@ -61,7 +59,7 @@ export class ItemsInterfaceComponent implements OnInit {
     }
   }
 
-  onItemUpdate() {
+  onItemUpdate(): void {
     this.updateItemData();
   }
 }

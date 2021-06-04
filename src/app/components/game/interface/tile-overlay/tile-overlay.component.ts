@@ -5,22 +5,22 @@ import { GameStateService } from '../../../../services/game-state.service';
 import { ColyseusNotifyable } from '../../../../services/game-initialisation.service';
 import { ChatService } from '../../../../services/chat.service';
 
-
 @Component({
   selector: 'app-tile-overlay',
   templateUrl: './tile-overlay.component.html',
-  styleUrls: ['./tile-overlay.component.css']
+  styleUrls: ['./tile-overlay.component.css'],
 })
 export class TileOverlayComponent implements ColyseusNotifyable {
-
   @Input() playerName: string;
 
-  constructor(private gameState: GameStateService,
-              private boardTiles: BoardTilesService,
-              private chatService: ChatService) {
-  }
+  constructor(
+    private gameState: GameStateService,
+    private boardTiles: BoardTilesService,
+    private chatService: ChatService
+  ) {}
 
   attachColyseusStateCallbacks(gameState: GameStateService): void {
+    return;
   }
 
   attachColyseusMessageCallbacks(gameState: GameStateService): void {
@@ -35,15 +35,16 @@ export class TileOverlayComponent implements ColyseusNotifyable {
           console.log(`[EVENT]: ${msg}`);
           this.print(msg, 'Tiles');
         }
-      }
+      },
     });
   }
 
-  titleOf(index: number) {
+  titleOf(index: number): string {
     const tile = this.boardTiles.getTile(index);
     return tile === undefined ? 'ERROR!' : tile.title;
   }
-  descriptionOf(index: number) {
+
+  descriptionOf(index: number): string {
     const tile = this.boardTiles.getTile(index);
     return tile === undefined ? 'ERROR!' : tile.description;
   }
@@ -51,5 +52,4 @@ export class TileOverlayComponent implements ColyseusNotifyable {
   private print(msg: string, senderCmd: string) {
     this.chatService.addLocalMessage(msg, 'Console: ' + senderCmd);
   }
-
 }

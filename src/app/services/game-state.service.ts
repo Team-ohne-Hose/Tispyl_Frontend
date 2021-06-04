@@ -11,9 +11,8 @@ import { GameInitialisationService } from './game-initialisation.service';
 import { VoteStage, VoteState } from '../model/state/VoteState';
 import { VoteEntry } from '../components/game/interface/menu-bar/vote-system/helpers/VoteEntry';
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GameStateService {
   // This class provides an interface to the colyseus data
@@ -33,8 +32,7 @@ export class GameStateService {
   private voteSystemCallbacks: ((change: DataChange<any>[]) => void)[] = [];
   private itemCallbacks: (() => void)[] = [];
 
-  constructor(private colyseus: ColyseusClientService,
-              private gameInit: GameInitialisationService) {
+  constructor(private colyseus: ColyseusClientService, private gameInit: GameInitialisationService) {
     this.colyseus.addOnChangeCallback((changes: DataChange<GameState>[]) => {
       changes.forEach((change: DataChange<any>) => {
         switch (change.field) {
@@ -132,14 +130,14 @@ export class GameStateService {
     return '';
   }
 
-  getByLoginName(loginName: string) {
+  getByLoginName(loginName: string): Player {
     const s: GameState = this.getState();
     if (s !== undefined) {
       return s.playerList.get(loginName);
     }
   }
 
-  getByDisplayName(displayName: string) {
+  getByDisplayName(displayName: string): Player {
     return this.findInPlayerList((p: Player) => {
       return p.displayName === displayName;
     });
@@ -193,7 +191,7 @@ export class GameStateService {
     return [];
   }
 
-  forEachPlayer(f: (p: Player) => void) {
+  forEachPlayer(f: (p: Player) => void): void {
     const s: GameState = this.getState();
     s?.playerList?.forEach(f);
   }
@@ -232,35 +230,35 @@ export class GameStateService {
     }
   }
 
-  addNextTurnCallback(f: ((activePlayerLogin: string) => void)): void {
+  addNextTurnCallback(f: (activePlayerLogin: string) => void): void {
     this.nextTurnCallback.push(f);
   }
 
-  addActionCallback(f: ((action: string) => void)): void {
+  addActionCallback(f: (action: string) => void): void {
     this.nextActionCallbacks.push(f);
   }
 
-  addPlayerListUpdateCallback(f: ((item: Player, key: string, players: MapSchema<Player>) => void)): void {
+  addPlayerListUpdateCallback(f: (item: Player, key: string, players: MapSchema<Player>) => void): void {
     this.playerListUpdateCallbacks.push(f);
   }
 
-  addPhysicsObjectMovedCallback(f: (item: PhysicsObjectState, key: string) => void) {
+  addPhysicsObjectMovedCallback(f: (item: PhysicsObjectState, key: string) => void): void {
     this.physicsObjectsMovedCallbacks.push(f);
   }
 
-  addBoardLayoutCallback(f: ((layout: BoardLayoutState) => void)): void {
+  addBoardLayoutCallback(f: (layout: BoardLayoutState) => void): void {
     this.boardLayoutCallbacks.push(f);
   }
 
-  addVoteStageCallback(f: ((stage: VoteStage) => void)): void {
+  addVoteStageCallback(f: (stage: VoteStage) => void): void {
     this.voteStageCallbacks.push(f);
   }
 
-  addVoteCastCallback(f: (() => void)): void {
+  addVoteCastCallback(f: () => void): void {
     this.voteCastCallbacks.push(f);
   }
 
-  addVoteSystemCallback(f: ((change: DataChange<any>[]) => void)): void {
+  addVoteSystemCallback(f: (change: DataChange<any>[]) => void): void {
     this.voteSystemCallbacks.push(f);
   }
 
@@ -272,7 +270,7 @@ export class GameStateService {
     this.colyseus.registerMessageCallback(type, cb);
   }
 
-  private attachPlayerCallbacks(room: Room<GameState>) {
+  private attachPlayerCallbacks(room: Room<GameState>): void {
     if (room.state.playerList === undefined) {
       console.warn('GameStateService Callbacks couldnt be attached, Playerlist was undefined');
     } else {
@@ -292,7 +290,7 @@ export class GameStateService {
     }
   }
 
-  private attachPhysicsMovedCallbacks(room: Room<GameState>) {
+  private attachPhysicsMovedCallbacks(room: Room<GameState>): void {
     if (room.state.physicsState === undefined) {
       console.warn('GameStateService Callbacks couldnt be attached, PhysicsState was undefined');
     } else if (room.state.physicsState.objects === undefined) {
@@ -317,7 +315,7 @@ export class GameStateService {
     }
   }
 
-  private attachBoardLayoutCallbacks(room: Room<GameState>) {
+  private attachBoardLayoutCallbacks(room: Room<GameState>): void {
     if (room.state.boardLayout === undefined) {
       console.warn('GameStateService Callbacks couldnt be attached, BoardLayout was undefined');
     } else {
@@ -334,7 +332,7 @@ export class GameStateService {
     }
   }
 
-  private attachVoteStateCallbacks(room: Room<GameState>) {
+  private attachVoteStateCallbacks(room: Room<GameState>): void {
     if (room.state.voteState === undefined) {
       console.warn('GameStateService Callbacks couldnt be attached, voteState was undefined');
     } else {
@@ -342,9 +340,12 @@ export class GameStateService {
     }
   }
 
-  private attachVoteCastCallback() {
+  private attachVoteCastCallback(): void {
     if (this.room?.state?.voteState?.voteConfiguration === undefined) {
-      console.warn('GameStateService tried to attach callbacks for casting votes. Something was not defined. Room is:', this.room);
+      console.warn(
+        'GameStateService tried to attach callbacks for casting votes. Something was not defined. Room is:',
+        this.room
+      );
       return;
     }
     // this should get called everytime a new Vote is started.
@@ -355,7 +356,7 @@ export class GameStateService {
     });
   }
 
-  private attachItemCallback(room: Room<GameState>) {
+  private attachItemCallback(room: Room<GameState>): void {
     const playerMe: Player = this.getMe();
     if (playerMe?.itemList === undefined) {
       console.warn('GameStateService Callbacks couldnt be attached, playerMe or its ItemList was undefined');
@@ -367,7 +368,7 @@ export class GameStateService {
     }
   }
 
-  private attachCallbacks(room: Room<GameState>) {
+  private attachCallbacks(room: Room<GameState>): void {
     if (room === undefined) {
       console.warn('GameStateService Callbacks couldnt be attached, Room was undefined!');
     } else {
@@ -380,42 +381,42 @@ export class GameStateService {
     }
   }
 
-  private callNextTurn() {
-    this.nextTurnCallback.forEach(f => f(this.room.state.currentPlayerLogin));
+  private callNextTurn(): void {
+    this.nextTurnCallback.forEach((f) => f(this.room.state.currentPlayerLogin));
   }
 
-  private callNextAction() {
-    this.nextActionCallbacks.forEach(f => f(this.room.state.action));
+  private callNextAction(): void {
+    this.nextActionCallbacks.forEach((f) => f(this.room.state.action));
   }
 
-  private callPlayerListUpdate(player: Player, key: string) {
-    this.playerListUpdateCallbacks.forEach(f => f(player, key, this.room.state.playerList));
+  private callPlayerListUpdate(player: Player, key: string): void {
+    this.playerListUpdateCallbacks.forEach((f) => f(player, key, this.room.state.playerList));
   }
 
-  private callPhysicsObjectMoved(item: PhysicsObjectState, key: string) {
-    this.physicsObjectsMovedCallbacks.forEach(f => f(item, key));
+  private callPhysicsObjectMoved(item: PhysicsObjectState, key: string): void {
+    this.physicsObjectsMovedCallbacks.forEach((f) => f(item, key));
   }
 
-  private callBoardLayoutUpdate() {
-    this.boardLayoutCallbacks.forEach(f => f(this.room.state.boardLayout));
+  private callBoardLayoutUpdate(): void {
+    this.boardLayoutCallbacks.forEach((f) => f(this.room.state.boardLayout));
   }
 
-  private callVoteStageUpdate(changes: DataChange<any>[]) {
+  private callVoteStageUpdate(changes: DataChange<any>[]): void {
     const newVal: VoteStage = changes.find((change: DataChange<any>) => change.field === 'voteStage')?.value;
     if (newVal !== undefined) {
-      this.voteStageCallbacks.forEach(f => f(newVal));
+      this.voteStageCallbacks.forEach((f) => f(newVal));
     }
     if (newVal === VoteStage.VOTE) {
       this.attachVoteCastCallback();
     }
-    this.voteSystemCallbacks.forEach(f => f(changes.filter((v: DataChange<any>) => v.field !== 'voteStage')));
+    this.voteSystemCallbacks.forEach((f) => f(changes.filter((v: DataChange<any>) => v.field !== 'voteStage')));
   }
 
-  private callVoteCastUpdate() {
-    this.voteCastCallbacks.forEach(f => f());
+  private callVoteCastUpdate(): void {
+    this.voteCastCallbacks.forEach((f) => f());
   }
 
-  private callItemUpdate() {
-    this.itemCallbacks.forEach(f => f());
+  private callItemUpdate(): void {
+    this.itemCallbacks.forEach((f) => f());
   }
 }

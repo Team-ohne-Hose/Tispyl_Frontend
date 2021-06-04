@@ -5,14 +5,12 @@ import { GameActionType, MessageType } from '../../../../../../model/WsData';
 import { Link } from '../../../../../../model/state/Link';
 import { ArraySchema } from '@colyseus/schema';
 
-
 @Component({
   selector: 'app-trink-buddy-display',
   templateUrl: './trink-buddy-display.component.html',
-  styleUrls: ['./trink-buddy-display.component.css']
+  styleUrls: ['./trink-buddy-display.component.css'],
 })
 export class TrinkBuddyDisplayComponent implements AfterViewInit {
-
   @ViewChild('chart') chart: ElementRef;
 
   errorText = '';
@@ -36,7 +34,10 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
         setTimeout(() => this.refreshChart(), 2000); // find out why this timeout needs to exist !
       };
     } else {
-      console.warn('Unable to register Trinkbuddy-link onAdd & onRemove callbacks. GameStateService.getState() returned: ', gameState.getState());
+      console.warn(
+        'Unable to register Trinkbuddy-link onAdd & onRemove callbacks. GameStateService.getState() returned: ',
+        gameState.getState()
+      );
     }
   }
 
@@ -44,7 +45,7 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
     this.refreshChart();
   }
 
-  addLink(from: HTMLInputElement, to: HTMLInputElement) {
+  addLink(from: HTMLInputElement, to: HTMLInputElement): void {
     const source = String(from.value).trim();
     const target = String(to.value).trim();
     const validation = this.validateInput(from, to);
@@ -54,7 +55,7 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
         type: MessageType.GAME_MESSAGE,
         action: GameActionType.addDrinkbuddies,
         source: source,
-        target: target
+        target: target,
       });
     }
     if (validation.isAlreadyLinked) {
@@ -62,7 +63,7 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
     }
   }
 
-  removeLink(from: HTMLInputElement, to: HTMLInputElement) {
+  removeLink(from: HTMLInputElement, to: HTMLInputElement): void {
     const source = String(from.value).trim();
     const target = String(to.value).trim();
     const validation = this.validateInput(from, to);
@@ -71,7 +72,7 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
         type: MessageType.GAME_MESSAGE,
         action: GameActionType.removeDrinkbuddies,
         source: source,
-        target: target
+        target: target,
       });
     }
     if (!validation.isAlreadyLinked) {
@@ -79,7 +80,7 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
     }
   }
 
-  refreshChart() {
+  refreshChart(): void {
     if (this.simulation !== undefined) {
       this.simulation.stop();
       this.svg.remove();
@@ -95,11 +96,21 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
     const chartHeight = this.chart.nativeElement.offsetHeight;
 
     // Define simulation
-    const simulation = d3.forceSimulation(this.nodes)
-      .force('link', d3.forceLink(this.links).id(d => d['id']).distance(50))
+    const simulation = d3
+      .forceSimulation(this.nodes)
+      .force(
+        'link',
+        d3
+          .forceLink(this.links)
+          .id((d) => d['id'])
+          .distance(50)
+      )
       .force('charge', d3.forceManyBody().strength(-5))
       .force('center', d3.forceCenter(chartWidth / 2, chartHeight / 2))
-      .force('collision', d3.forceCollide().radius(d => this.radius));
+      .force(
+        'collision',
+        d3.forceCollide().radius((d) => this.radius)
+      );
 
     // Build container svg inside figure tag
     this.svg = d3
@@ -157,23 +168,23 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
       .selectAll('node-group')
       .data(this.nodes)
       .join('text')
-      .text(d => d.id);
+      .text((d) => d.id);
 
     // Define simulation update function
     simulation.on('tick', () => {
       node
-        .attr('cx', d => Math.max(this.radius, Math.min(chartWidth - this.radius, d.x)))
-        .attr('cy', d => Math.max(this.radius, Math.min(chartHeight - this.radius, d.y)));
+        .attr('cx', (d) => Math.max(this.radius, Math.min(chartWidth - this.radius, d.x)))
+        .attr('cy', (d) => Math.max(this.radius, Math.min(chartHeight - this.radius, d.y)));
 
       labels
-        .attr('x', d => Math.max(this.radius, Math.min(chartWidth - this.radius, d.x)))
-        .attr('y', d => Math.max(this.radius, Math.min(chartHeight - this.radius, d.y - 10)));
+        .attr('x', (d) => Math.max(this.radius, Math.min(chartWidth - this.radius, d.x)))
+        .attr('y', (d) => Math.max(this.radius, Math.min(chartHeight - this.radius, d.y - 10)));
 
       link
-        .attr('x1', d => Math.max(this.radius, Math.min(chartWidth - this.radius, d.source.x)))
-        .attr('y1', d => Math.max(this.radius, Math.min(chartHeight - this.radius, d.source.y)))
-        .attr('x2', d => Math.max(this.radius, Math.min(chartWidth - this.radius, d.target.x)))
-        .attr('y2', d => Math.max(this.radius, Math.min(chartHeight - this.radius, d.target.y)));
+        .attr('x1', (d) => Math.max(this.radius, Math.min(chartWidth - this.radius, d.source.x)))
+        .attr('y1', (d) => Math.max(this.radius, Math.min(chartHeight - this.radius, d.source.y)))
+        .attr('x2', (d) => Math.max(this.radius, Math.min(chartWidth - this.radius, d.target.x)))
+        .attr('y2', (d) => Math.max(this.radius, Math.min(chartHeight - this.radius, d.target.y)));
     });
 
     return simulation;
@@ -201,10 +212,7 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
       event.subject.fy = null;
     }
 
-    return d3.drag()
-      .on('start', dragstarted)
-      .on('drag', dragged)
-      .on('end', dragended);
+    return d3.drag().on('start', dragstarted).on('drag', dragged).on('end', dragended);
   }
 
   private validateInput(from: HTMLInputElement, to: HTMLInputElement) {
@@ -242,13 +250,13 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
       this.errorText = '';
     }, 6000);
 
-    return {isFromValid: isFromValid, isToValid: isToValid, isAlreadyLinked: isAlreadyLinked};
+    return { isFromValid: isFromValid, isToValid: isToValid, isAlreadyLinked: isAlreadyLinked };
   }
 
   private fetchNodeData() {
     this.nodes = [];
-    this.gameState.forEachPlayer(p => {
-      this.nodes.push({id: p.displayName});
+    this.gameState.forEachPlayer((p) => {
+      this.nodes.push({ id: p.displayName });
     });
     if (this.nodes.length <= 0) {
       console.warn('Failed to fetch new node data, because the game state was not defined. Nodes now: ', this.nodes);
@@ -263,12 +271,11 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
       const knownNodes = this.nodes.map((n) => n.id);
       remoteLinks.forEach((link: Link) => {
         if (knownNodes.indexOf(link.source) !== -1 && knownNodes.indexOf(link.target) !== -1) {
-          this.links.push({source: link.source, target: link.target});
+          this.links.push({ source: link.source, target: link.target });
         }
       });
     } else {
       console.warn('Failed to fetch new link data, because the game state was not defined. Links now: ', this.links);
     }
   }
-
 }

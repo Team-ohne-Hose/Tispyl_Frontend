@@ -12,7 +12,7 @@ import {
   state,
   style,
   transition,
-  trigger
+  trigger,
 } from '@angular/animations';
 import { Player } from '../../../../model/state/Player';
 
@@ -20,10 +20,9 @@ import { Player } from '../../../../model/state/Player';
   selector: 'app-menu-bar',
   templateUrl: './menu-bar.component.html',
   styleUrls: ['./menu-bar.component.css'],
-  animations: []
+  animations: [],
 })
 export class MenuBarComponent {
-
   @Input() playerList: Player[];
   @Input() ruleList = [];
 
@@ -31,9 +30,6 @@ export class MenuBarComponent {
   @ViewChild('tabEdge') tabEdge: ElementRef;
 
   tabIndex = 0;
-
-  constructor() {
-  }
 
   toggleTab(targetTabIndex: number): void {
     if (this.tabIndex === targetTabIndex) {

@@ -8,7 +8,6 @@ import { Observable } from 'rxjs';
 })
 export class ResolveToHeadlinePipe implements PipeTransform {
   constructor(private mdc: MarkdownContentService) {}
-
   /**
    * Translates markdown file names to their headline
    * @param markdownName name of the file that will be translated through the cache

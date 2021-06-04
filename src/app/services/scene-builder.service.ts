@@ -3,16 +3,12 @@ import * as THREE from 'three';
 import { GameBoardOrbitControl } from '../components/game/viewport/helpers/GameBoardOrbitControl';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SceneBuilderService {
-  constructor() {
-  }
-
   generateSpotLight(): THREE.SpotLight {
     const light = new THREE.SpotLight(0xffffff, 9, 0, 0.7, 0.45, 0.02);
     light.position.set(-60, 50, -90);
-
 
     return light;
   }
@@ -23,7 +19,7 @@ export class SceneBuilderService {
     orbitCtrl.mouseButtons = {
       LEFT: undefined, // THREE.MOUSE.PAN,
       MIDDLE: THREE.MOUSE.DOLLY,
-      RIGHT: THREE.MOUSE.ROTATE
+      RIGHT: THREE.MOUSE.ROTATE,
     };
     orbitCtrl.dollyMinAngle = Math.PI * 0.48;
     orbitCtrl.dollyMaxAngle = Math.PI * 0.2;
@@ -35,7 +31,6 @@ export class SceneBuilderService {
     orbitCtrl.targetOffsetRatio = 25;
     orbitCtrl.minTargetOffset = 0;
     orbitCtrl.maxTargetOffset = 55;
-
 
     orbitCtrl.update();
     return orbitCtrl;

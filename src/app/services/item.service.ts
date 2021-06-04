@@ -12,76 +12,115 @@ enum executeTypes { // even numbers are targeted actions, odd numbers are not ta
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ItemService implements ColyseusNotifyable {
-
-
   private static readonly items = {
     0: {
-      id: 0, weight: 1, name: 'Wirt',
+      id: 0,
+      weight: 1,
+      name: 'Wirt',
       desc: 'Verteile 3 Rationen',
-      imgUrl: '../assets/items/wirt.png', executeType: executeTypes.targetedExecute
+      imgUrl: '../assets/items/wirt.png',
+      executeType: executeTypes.targetedExecute,
     },
     1: {
-      id: 1, weight: 1, name: 'Diplomat',
+      id: 1,
+      weight: 1,
+      name: 'Diplomat',
       desc: 'Stelle eine Regel auf',
-      imgUrl: '../assets/items/diplomat.png', executeType: executeTypes.untargetedExecute
+      imgUrl: '../assets/items/diplomat.png',
+      executeType: executeTypes.untargetedExecute,
     },
     2: {
-      id: 2, weight: 1, name: 'Klon',
+      id: 2,
+      weight: 1,
+      name: 'Klon',
       desc: 'Ein anderer Mitspieler muss deine nächste Aufgabe auch machen',
-      imgUrl: '../assets/items/klon.png', executeType: executeTypes.targetedExecute
+      imgUrl: '../assets/items/klon.png',
+      executeType: executeTypes.targetedExecute,
     },
     3: {
-      id: 3, weight: 1, name: 'Beste Freunde Gulasch',
+      id: 3,
+      weight: 1,
+      name: 'Beste Freunde Gulasch',
       desc: 'Wähle einen Trinkbuddy',
-      imgUrl: '../assets/items/BesteFreundeGulasch.png', executeType: executeTypes.targetedExecute
+      imgUrl: '../assets/items/BesteFreundeGulasch.png',
+      executeType: executeTypes.targetedExecute,
     },
     4: {
-      id: 4, weight: 1, name: 'Todfeind',
+      id: 4,
+      weight: 1,
+      name: 'Todfeind',
       desc: 'Löse eine Trinkbuddy Verbindung auf',
-      imgUrl: '../assets/items/todfeind.png', executeType: executeTypes.untargetedExecute
+      imgUrl: '../assets/items/todfeind.png',
+      executeType: executeTypes.untargetedExecute,
     },
     5: {
-      id: 5, weight: 1, name: 'Joker',
+      id: 5,
+      weight: 1,
+      name: 'Joker',
       desc: 'Führe ein beliebiges Feld aus',
-      imgUrl: '../assets/items/joker.png', executeType: executeTypes.untargetedExecute
+      imgUrl: '../assets/items/joker.png',
+      executeType: executeTypes.untargetedExecute,
     },
     6: {
-      id: 6, weight: 1, name: 'MOAB',
+      id: 6,
+      weight: 1,
+      name: 'MOAB',
       desc: 'Alle rücken 10 Felder zurück',
-      imgUrl: '../assets/items/moab.png', executeType: executeTypes.untargetedExecute
+      imgUrl: '../assets/items/moab.png',
+      executeType: executeTypes.untargetedExecute,
     },
     7: {
-      id: 7, weight: 1, name: 'Assasin',
+      id: 7,
+      weight: 1,
+      name: 'Assasin',
       desc: 'Ein Spieler muss einen Ring nach unten',
-      imgUrl: '../assets/items/assasin.png', executeType: executeTypes.targetedExecute
+      imgUrl: '../assets/items/assasin.png',
+      executeType: executeTypes.targetedExecute,
     },
     8: {
-      id: 8, weight: 1, name: 'Sabotage',
+      id: 8,
+      weight: 1,
+      name: 'Sabotage',
       desc: 'Ein Spieler muss 5 Felder zurück',
-      imgUrl: '../assets/items/sabotage.png', executeType: executeTypes.targetedExecute
+      imgUrl: '../assets/items/sabotage.png',
+      executeType: executeTypes.targetedExecute,
     },
     9: {
-      id: 9, weight: 1, name: 'Ah shit, here we go again',
+      id: 9,
+      weight: 1,
+      name: 'Ah shit, here we go again',
       desc: 'Spielt danach noch eine Runde Tischspiel',
-      imgUrl: '../assets/items/ASHWGA.png', executeType: executeTypes.untargetedExecute
+      imgUrl: '../assets/items/ASHWGA.png',
+      executeType: executeTypes.untargetedExecute,
     },
     10: {
-      id: 10, weight: 1, name: 'Trittbrettfahrer',
-      desc: 'Exe dein Getränk. Schaffst du es müssen alle anderen dir gleich tun.(Dein Getränk muss mindestens halb voll sein wenn du dieses Item nutzt.)',
-      imgUrl: '../assets/items/Trittbrettfahrer.png', executeType: executeTypes.untargetedExecute
+      id: 10,
+      weight: 1,
+      name: 'Trittbrettfahrer',
+      desc:
+        'Exe dein Getränk. Schaffst du es müssen alle anderen dir gleich tun.' +
+        '(Dein Getränk muss mindestens halb voll sein wenn du dieses Item nutzt.)',
+      imgUrl: '../assets/items/Trittbrettfahrer.png',
+      executeType: executeTypes.untargetedExecute,
     },
     11: {
-      id: 11, weight: 1, name: 'Losing is Fun',
+      id: 11,
+      weight: 1,
+      name: 'Losing is Fun',
       desc: 'Gehe zurück zum Start',
-      imgUrl: '../assets/items/lachweinler.png', executeType: executeTypes.untargetedExecute
+      imgUrl: '../assets/items/lachweinler.png',
+      executeType: executeTypes.untargetedExecute,
     },
     12: {
-      id: 12, weight: 1, name: 'Anonymer Tipp',
+      id: 12,
+      weight: 1,
+      name: 'Anonymer Tipp',
       desc: 'ein Spieler muss nächste Runde aussetzen',
-      imgUrl: '../assets/items/anonym.png', executeType: executeTypes.targetedExecute
+      imgUrl: '../assets/items/anonym.png',
+      executeType: executeTypes.targetedExecute,
     },
     count: 13,
   };
@@ -91,16 +130,17 @@ export class ItemService implements ColyseusNotifyable {
   onItemUpdate: () => void;
   gameState: GameStateService;
 
-  constructor(private chatService: ChatService) {
-  }
+  constructor(private chatService: ChatService) {}
 
   attachColyseusStateCallbacks(gameState: GameStateService): void {
     this.gameState = gameState;
-    gameState.addItemUpdateCallback((() => {
-      if (this.onItemUpdate !== undefined) {
-        this.onItemUpdate();
-      }
-    }).bind(this));
+    gameState.addItemUpdateCallback(
+      (() => {
+        if (this.onItemUpdate !== undefined) {
+          this.onItemUpdate();
+        }
+      }).bind(this)
+    );
     this.onItemUpdate();
   }
 
@@ -116,11 +156,11 @@ export class ItemService implements ColyseusNotifyable {
               break;
           }
         }
-      }
+      },
     });
   }
 
-  onItemUsed(item: UseItem) {
+  onItemUsed(item: UseItem): void {
     let msg = `${item.playerLoginName} used ${item.itemName}: ${item.itemDescription}`;
     if (item.targetLoginName && item.targetLoginName !== '') {
       msg = msg + ' on ' + item.targetLoginName;
@@ -152,20 +192,20 @@ export class ItemService implements ColyseusNotifyable {
     return itemListArray;
   }
 
-  selectNextItem() {
+  selectNextItem(): void {
     const itemListArray: number[] = this.getOrderedItemList();
     if (itemListArray === undefined || itemListArray.length <= 0) {
       this.selectItem(-1);
     } else if (itemListArray !== undefined) {
-      let searchResult = itemListArray.find(element => element > this.selectedItem);
+      let searchResult = itemListArray.find((element) => element > this.selectedItem);
       if (searchResult === undefined) {
-        searchResult = itemListArray.find(element => true);
+        searchResult = itemListArray.find((element) => true);
       }
       this.selectItem(searchResult);
     }
   }
 
-  selectPrevItem() {
+  selectPrevItem(): void {
     const itemListArray: number[] = this.getOrderedItemList();
     if (itemListArray === undefined || itemListArray.length <= 0) {
       this.selectItem(-1);
@@ -184,7 +224,7 @@ export class ItemService implements ColyseusNotifyable {
     }
   }
 
-  selectItem(itemId: number) {
+  selectItem(itemId: number): void {
     this.setTargeting(false);
     if (itemId < 0) {
       this.selectedItem = -1;
@@ -226,10 +266,10 @@ export class ItemService implements ColyseusNotifyable {
     if (itemId >= ItemService.items.count || itemId < 0) {
       return false;
     }
-    return (ItemService.items[itemId].executeType % 2) === 0;
+    return ItemService.items[itemId].executeType % 2 === 0;
   }
 
-  setTargeting(en: boolean) {
+  setTargeting(en: boolean): void {
     this.targetingItem = en;
   }
 
@@ -237,15 +277,15 @@ export class ItemService implements ColyseusNotifyable {
     return this.targetingItem;
   }
 
-  onTargetHover(targetId: number) {
-
+  onTargetHover(targetId: number): void {
+    return;
   }
 
-  onTargetSet(targetId: number) {
+  onTargetSet(targetId: number): void {
     this.useItem(this.selectedItem, targetId);
   }
 
-  useItem(itemId: number, targetId?: number) {
+  useItem(itemId: number, targetId?: number): void {
     if (this.onItemUpdate !== undefined) {
       this.onItemUpdate();
     }
@@ -260,7 +300,10 @@ export class ItemService implements ColyseusNotifyable {
       }
     }
 
-    this.chatService.addLocalMessage('Trying to use Item ' + itemId + ((targetLogin === '') ? '' : ' on ' + targetLogin), 'Items');
+    this.chatService.addLocalMessage(
+      'Trying to use Item ' + itemId + (targetLogin === '' ? '' : ' on ' + targetLogin),
+      'Items'
+    );
     this.gameState.sendMessage(MessageType.ITEM_MESSAGE, {
       type: MessageType.ITEM_MESSAGE,
       subType: ItemMessageType.useItem,
@@ -269,7 +312,7 @@ export class ItemService implements ColyseusNotifyable {
       itemId: itemId,
       param: '',
       itemName: ItemService.items[itemId].name,
-      itemDescription: ItemService.items[itemId].desc
+      itemDescription: ItemService.items[itemId].desc,
     });
     this.selectNextItem();
   }

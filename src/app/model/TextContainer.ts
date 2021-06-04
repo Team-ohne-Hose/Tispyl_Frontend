@@ -1,19 +1,19 @@
 export interface TextContainer {
-  ruleTitle: String;
-  rule0: String;
-  rule1: String;
-  rule2: String;
-  rule3: String;
-  rule4: String;
-  rule5: String;
-  rule6: String;
-  rule7: String;
-  logInTitle: String;
-  logInUser: String;
-  logInPass: String;
-  logInSubmit: String;
-  logInRegister: String;
-  gamesListTitle: String;
-  gamesListCreate: String;
-  gamesListNoGame: String;
+  ruleTitle: string;
+  rule0: string;
+  rule1: string;
+  rule2: string;
+  rule3: string;
+  rule4: string;
+  rule5: string;
+  rule6: string;
+  rule7: string;
+  logInTitle: string;
+  logInUser: string;
+  logInPass: string;
+  logInSubmit: string;
+  logInRegister: string;
+  gamesListTitle: string;
+  gamesListCreate: string;
+  gamesListNoGame: string;
 }

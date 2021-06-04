@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HintsService {
-
   private readonly hints: string[] = [
     'Wirf den Würfel nicht vom Tisch, denn dann musst du trinken!',
     'Alkohol kann dich betrunken machen!',
@@ -45,11 +44,6 @@ export class HintsService {
     '9/10 Menschen finden Mobbing gut!',
     'Lieber 2 Promille als garkeine inneren Werte',
   ];
-
-
-  constructor() {
-  }
-
 
   getRandomHint(): string {
     return this.hints[Math.max(Math.min(Math.floor(Math.random() * this.hints.length), this.hints.length - 1), 0)];

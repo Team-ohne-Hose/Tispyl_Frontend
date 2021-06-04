@@ -137,7 +137,7 @@ export class OpenGamePopupComponent {
     this.dialogRef.close();
   }
 
-  public createGame() {
+  public createGame(): void {
     if (this.roomName !== undefined) {
       this.dialogRef.close({
         roomName: this.roomName,

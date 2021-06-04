@@ -141,7 +141,7 @@ export class ColyseusClientService {
     this.onChangeCallbacks.map((f) => f(changes));
   }
 
-  private updateRoomCallbacks(currentRoom?: Room<GameState>) {
+  private updateRoomCallbacks(currentRoom?: Room<GameState>): void {
     const onMsg = this.gatherFunctionCalls.bind(this);
     if (currentRoom === undefined) {
       this.getActiveRoom().subscribe((activeRoom) => {
