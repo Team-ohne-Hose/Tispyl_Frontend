@@ -1,18 +1,21 @@
+/* eslint-disable no-use-before-define */
+
 import { VoteConfiguration } from '../components/game/interface/menu-bar/vote-system/helpers/VoteConfiguration';
 
-export type WsData = OtherMessage |
-  ServerMessage |
-  ChatMessage |
-  JoinMessage |
-  LeftMessage |
-  GameMessage |
-  PlayerMessage |
-  PhysicsCommand |
-  DebugCommand |
-  RefreshCommand |
-  AchievementMessage |
-  ItemMessage |
-  ChatCommand;
+export type WsData =
+  | OtherMessage
+  | ServerMessage
+  | ChatMessage
+  | JoinMessage
+  | LeftMessage
+  | GameMessage
+  | PlayerMessage
+  | PhysicsCommand
+  | DebugCommand
+  | RefreshCommand
+  | AchievementMessage
+  | ItemMessage
+  | ChatCommand;
 
 export enum MessageType {
   OTHER,
@@ -27,7 +30,7 @@ export enum MessageType {
   REFRESH_COMMAND,
   ACHIEVEMENT_MESSAGE,
   ITEM_MESSAGE,
-  CHAT_COMMAND
+  CHAT_COMMAND,
 }
 
 export interface OtherMessage {
@@ -72,30 +75,32 @@ export enum GameActionType {
   playerCastVote,
   closeVotingSession,
   addDrinkbuddies,
-  removeDrinkbuddies
+  removeDrinkbuddies,
 }
 
-export type GameMessage = GameAction |
-  GameSetTile |
-  GameShowTile |
-  GameReadyProperty |
-  GameAddRule |
-  GameDeleteRule |
-  GameDiceRoll |
-  GameStartCreatingVote |
-  GameStopCreatingVote |
-  GameBeginVotingSession |
-  GamePlayerCastVote |
-  GameCloseVotingSession |
-  GameUpdateDrinkBuddies;
+export type GameMessage =
+  | GameAction
+  | GameSetTile
+  | GameShowTile
+  | GameReadyProperty
+  | GameAddRule
+  | GameDeleteRule
+  | GameDiceRoll
+  | GameStartCreatingVote
+  | GameStopCreatingVote
+  | GameBeginVotingSession
+  | GamePlayerCastVote
+  | GameCloseVotingSession
+  | GameUpdateDrinkBuddies;
 
-type actionTypes = GameActionType.none |
-  GameActionType.advanceRound |
-  GameActionType.advanceAction |
-  GameActionType.advanceTurn |
-  GameActionType.reverseTurnOrder |
-  GameActionType.refreshData |
-  GameActionType.setStartingCondition;
+type actionTypes =
+  | GameActionType.none
+  | GameActionType.advanceRound
+  | GameActionType.advanceAction
+  | GameActionType.advanceTurn
+  | GameActionType.reverseTurnOrder
+  | GameActionType.refreshData
+  | GameActionType.setStartingCondition;
 
 export interface GameAction {
   type: MessageType.GAME_MESSAGE;
@@ -166,7 +171,7 @@ export interface GameUpdateDrinkBuddies {
 
 export type PlayerMessage = SetFigure;
 export enum PlayerMessageType {
-  setFigure
+  setFigure,
 }
 export enum PlayerModel {
   bcap_NukaCola = 1,
@@ -200,21 +205,22 @@ export enum PhysicsCommandType {
   quaternion,
   velocity,
   angularVelocity,
-  wakeAll
+  wakeAll,
 }
-export type PhysicsCommand = PhysicsCommandKinematic |
-  PhysicsCommandRemove    |
-  PhysicsCommandPosition  |
-  PhysicsCommandQuat      |
-  PhysicsCommandVelocity  |
-  PhysicsCommandAngular   |
-  PhysicsCommandWakeAll;
+export type PhysicsCommand =
+  | PhysicsCommandKinematic
+  | PhysicsCommandRemove
+  | PhysicsCommandPosition
+  | PhysicsCommandQuat
+  | PhysicsCommandVelocity
+  | PhysicsCommandAngular
+  | PhysicsCommandWakeAll;
 export enum PhysicsEntity {
   dice,
-  figure
+  figure,
 }
 export enum PhysicsEntityVariation {
-  default
+  default,
 }
 export interface PhysicsCommandKinematic {
   type: MessageType.PHYSICS_MESSAGE;
@@ -267,7 +273,7 @@ export interface PhysicsCommandWakeAll {
 
 export type DebugCommand = ListPhysics;
 export enum DebugCommandType {
-  listPhysics
+  listPhysics,
 }
 export interface ListPhysics {
   type: MessageType.DEBUG_COMMAND;
@@ -276,7 +282,7 @@ export interface ListPhysics {
 
 export type RefreshCommand = RefreshProfilePics;
 export enum RefreshCommandType {
-  refreshProfilePic
+  refreshProfilePic,
 }
 export interface RefreshProfilePics {
   type: MessageType.REFRESH_COMMAND;
@@ -285,7 +291,7 @@ export interface RefreshProfilePics {
 
 export type AchievementMessage = NewAchievement;
 export enum AchievementMessageType {
-  newAchievement
+  newAchievement,
 }
 export interface NewAchievement {
   type: MessageType.ACHIEVEMENT_MESSAGE;
@@ -318,7 +324,7 @@ export type ChatCommand = AskCommand | RandomCommand | CoinFlipCommand;
 export enum ChatCommandType {
   commandAsk,
   commandRandom,
-  commandCoinFlip
+  commandCoinFlip,
 }
 export interface AskCommand {
   type: MessageType.CHAT_COMMAND;

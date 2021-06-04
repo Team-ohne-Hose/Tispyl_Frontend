@@ -7,9 +7,8 @@ import { GameStateService } from '../../../../services/game-state.service';
 import { ItemService } from '../../../../services/item.service';
 
 export class MouseInteraction {
-
   // Raycasting & Mouse
-  lastMouseLeftDownCoords: { x: number, y: number, button: number, ts: number };
+  lastMouseLeftDownCoords: { x: number; y: number; button: number; ts: number };
   raycaster = new THREE.Raycaster();
   currentSize = new THREE.Vector2();
 
@@ -17,33 +16,36 @@ export class MouseInteraction {
   camera: Camera;
   interactable: Object3D[] = [];
 
-  currentlySelected: { obj: THREE.Object3D, oldPos: Vector3 };
+  currentlySelected: { obj: THREE.Object3D; oldPos: Vector3 };
 
-  constructor(camera: Camera, boardItemManager: BoardItemManagement,
-              private physics: PhysicsCommands,
-              private gameState: GameStateService,
-              private boardTiles: BoardTilesService,
-              private itemService: ItemService) {
+  constructor(
+    camera: Camera,
+    boardItemManager: BoardItemManagement,
+    private physics: PhysicsCommands,
+    private gameState: GameStateService,
+    private boardTiles: BoardTilesService,
+    private itemService: ItemService
+  ) {
     this.boardItemManager = boardItemManager;
     this.camera = camera;
     this.physics.addInteractable = this.addInteractable.bind(this);
   }
 
-  addInteractable(obj: Object3D) {
+  addInteractable(obj: Object3D): void {
     // console.error('pushing obj', obj);
     this.interactable.push(obj);
   }
 
-  updateScreenSize(width: number, height: number) {
+  updateScreenSize(width: number, height: number): void {
     this.currentSize.width = width;
     this.currentSize.height = height;
   }
 
-  mouseMoved(event) {
+  mouseMoved(event: MouseEvent): void {
     if (this.currentlySelected !== undefined) {
       const normX = (event.clientX / this.currentSize.width) * 2 - 1;
       const normY = -(event.clientY / this.currentSize.height) * 2 + 1;
-      this.raycaster.setFromCamera({x: normX, y: normY}, this.camera);
+      this.raycaster.setFromCamera({ x: normX, y: normY }, this.camera);
       const intersects = this.raycaster.intersectObject(this.boardItemManager.board);
       if (intersects.length > 0) {
         const point = intersects[0].point;
@@ -52,7 +54,7 @@ export class MouseInteraction {
     } else if (this.itemService.isCurrentlyTargeting()) {
       const normX = (event.clientX / this.currentSize.width) * 2 - 1;
       const normY = -(event.clientY / this.currentSize.height) * 2 + 1;
-      this.raycaster.setFromCamera({x: normX, y: normY}, this.camera);
+      this.raycaster.setFromCamera({ x: normX, y: normY }, this.camera);
       const intersects = this.raycaster.intersectObjects(this.interactable);
 
       if (intersects.length > 0) {
@@ -62,9 +64,7 @@ export class MouseInteraction {
         if (type === ClickedTarget.figure) {
           const obj = intersects[0].object;
           const targetFigureId = this.gameState.getMyFigureId();
-          if (targetFigureId === obj.userData.physicsId) {
-
-          } else {
+          if (targetFigureId !== obj.userData.physicsId) {
             this.itemService.onTargetHover(obj.userData.physicsId);
           }
         }
@@ -72,7 +72,7 @@ export class MouseInteraction {
     }
   }
 
-  mouseDown(event) {
+  mouseDown(event: MouseEvent): void {
     if (event.button === 0) {
       this.lastMouseLeftDownCoords = {
         x: event.clientX,
@@ -83,22 +83,28 @@ export class MouseInteraction {
     }
   }
 
-  mouseUp(event) {
+  mouseUp(event: MouseEvent): void {
     if (event.button === 0 && this.lastMouseLeftDownCoords.ts !== 0) {
       const travelled = {
         x: event.clientX - this.lastMouseLeftDownCoords.x,
         y: event.clientY - this.lastMouseLeftDownCoords.y,
         time: event.timeStamp - this.lastMouseLeftDownCoords.ts,
-        distance: 0
+        distance: 0,
       };
-      travelled.distance = Math.sqrt((travelled.x * travelled.x) + (travelled.y * travelled.y));
+      travelled.distance = Math.sqrt(travelled.x * travelled.x + travelled.y * travelled.y);
 
       if (travelled.distance < 10) {
         this.clickCoords(this.lastMouseLeftDownCoords.x, this.lastMouseLeftDownCoords.y);
       } else {
-        this.dragCoords(this.lastMouseLeftDownCoords.x, this.lastMouseLeftDownCoords.y,
-          event.clientX, event.clientY,
-          travelled.x, travelled.y, travelled.distance);
+        this.dragCoords(
+          this.lastMouseLeftDownCoords.x,
+          this.lastMouseLeftDownCoords.y,
+          event.clientX,
+          event.clientY,
+          travelled.x,
+          travelled.y,
+          travelled.distance
+        );
       }
       this.lastMouseLeftDownCoords = {
         x: 0,
@@ -109,15 +115,15 @@ export class MouseInteraction {
     }
   }
 
-  dragCoords(x: number, y: number, x2: number, y2: number, distX: number, distY: number, dist: number) {
+  dragCoords(x: number, y: number, x2: number, y2: number, distX: number, distY: number, dist: number): void {
     console.log('dragDropRecognised: ', dist, x, y);
     console.error('scene:', this.boardItemManager.scene, this.interactable);
   }
 
-  clickCoords(x: number, y: number) {
+  clickCoords(x: number, y: number): void {
     const normX = (x / this.currentSize.width) * 2 - 1;
     const normY = -(y / this.currentSize.height) * 2 + 1;
-    this.raycaster.setFromCamera({x: normX, y: normY}, this.camera);
+    this.raycaster.setFromCamera({ x: normX, y: normY }, this.camera);
     const intersects = this.raycaster.intersectObjects(this.interactable);
 
     if (intersects.length > 0) {
@@ -126,7 +132,12 @@ export class MouseInteraction {
       console.log('Intersecting:', intersects[0].object.name, type);
       if (type === ClickedTarget.board) {
         if (!this.handleBoardTileClick(point)) {
-          this.boardItemManager.addFlummi(point.x + (Math.random() - 0.5), 30, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
+          this.boardItemManager.addFlummi(
+            point.x + (Math.random() - 0.5),
+            30,
+            point.z + (Math.random() - 0.5),
+            Math.random() * 0xffffff
+          );
         }
         this.currentlySelected = undefined;
       } else if (type === ClickedTarget.figure) {
@@ -137,7 +148,7 @@ export class MouseInteraction {
           this.currentlySelected = undefined;
         } else {
           if (this.gameState.getMyFigureId() === obj.userData.physicsId) {
-            this.currentlySelected = {obj: obj, oldPos: obj.position.clone()};
+            this.currentlySelected = { obj: obj, oldPos: obj.position.clone() };
             this.physics.setKinematic(PhysicsCommands.getPhysId(obj), true);
             this.physics.wakeAll();
             this.boardItemManager.hoverGameFigure(this.currentlySelected.obj, point.x, point.z);
@@ -181,7 +192,7 @@ export class MouseInteraction {
       return ClickedTarget.board;
     } else {
       console.log('not gameboard', o);
-      return o.parent.userData ? (o.parent.userData.clickRole || ClickedTarget.other) : ClickedTarget.other;
+      return o.parent.userData ? o.parent.userData.clickRole || ClickedTarget.other : ClickedTarget.other;
     }
   }
 }

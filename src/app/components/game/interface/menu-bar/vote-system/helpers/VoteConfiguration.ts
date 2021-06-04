@@ -2,7 +2,6 @@ import { VoteEntry } from './VoteEntry';
 import { Schema, ArraySchema, type } from '@colyseus/schema';
 
 export class VoteConfiguration extends Schema {
-
   @type('string')
   author: string;
 
@@ -15,7 +14,12 @@ export class VoteConfiguration extends Schema {
   @type([VoteEntry])
   votingOptions: VoteEntry[];
 
-  static build(title: string, author: string, eligibilities: Map<string, boolean>, options: VoteEntry[]): VoteConfiguration {
+  static build(
+    title: string,
+    author: string,
+    eligibilities: Map<string, boolean>,
+    options: VoteEntry[]
+  ): VoteConfiguration {
     const config = new VoteConfiguration();
     config.title = title;
     config.author = author;

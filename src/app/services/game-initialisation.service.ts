@@ -17,10 +17,9 @@ export interface ColyseusNotifyable {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GameInitialisationService {
-
   private colyseusReady = false;
   private staticReady = false;
 
@@ -31,16 +30,19 @@ export class GameInitialisationService {
   private colyseusNotifyableClasses: ColyseusNotifyable[] = [];
   private gameState: GameStateService;
 
-  constructor(private objectLoader: ObjectLoaderService,
-              private chatService: ChatService,
-              private itemService: ItemService) {
-  }
+  constructor(
+    private objectLoader: ObjectLoaderService,
+    private chatService: ChatService,
+    private itemService: ItemService
+  ) {}
 
-  async startInitialisation(game: GameComponent,
-                            viewPort: ViewportComponent,
-                            boardItemManagement: BoardItemManagement,
-                            physicsCommands: PhysicsCommands,
-                            boardTilesService: BoardTilesService) {
+  async startInitialisation(
+    game: GameComponent,
+    viewPort: ViewportComponent,
+    boardItemManagement: BoardItemManagement,
+    physicsCommands: PhysicsCommands,
+    boardTilesService: BoardTilesService
+  ): Promise<void> {
     console.debug('starting Initialisation of game engine');
     game.loadingScreenRef.startTips();
     this.viewPort = viewPort;
@@ -61,7 +63,7 @@ export class GameInitialisationService {
 
     console.debug('loading Textures');
     await this.objectLoader.loadAllObjects((progress: number, total: number) => {
-      console.debug('loading common files: ' + progress + '/' + total, ((progress / total) * 50) + '%');
+      console.debug('loading common files: ' + progress + '/' + total, (progress / total) * 50 + '%');
       game.loadingScreenRef.setProgress((progress / total) * 50);
     });
 
@@ -79,8 +81,7 @@ export class GameInitialisationService {
     }
   }
 
-  setColyseusReady(gameState: GameStateService) {
-
+  setColyseusReady(gameState: GameStateService): void {
     console.info('Setting colyseus ready. Gamestate is: ', this.gameState);
 
     this.gameState = gameState;
@@ -97,7 +98,7 @@ export class GameInitialisationService {
     }
   }
 
-  private afterColyseusInitialisation() {
+  private afterColyseusInitialisation(): void {
     console.info('colyseus is initialized and common files are loaded');
     console.debug('attaching colyseus callbacks');
     this.colyseusNotifyableClasses.forEach((obj: ColyseusNotifyable, index: number, array: ColyseusNotifyable[]) => {
@@ -112,6 +113,7 @@ export class GameInitialisationService {
     let progress = 0;
     const initPending = this.viewPort.physics.getInitializePending();
     this.viewPort.physics.initializeFromState(() => {
+      return;
     });
     const spritesPending = this.viewPort.boardItemManager.getSpritesPending();
     const queued = 64 + initPending + spritesPending;
@@ -132,9 +134,9 @@ export class GameInitialisationService {
 
     const onProgress = () => {
       progress++;
-      console.debug('loading instance specific files: ' + progress + '/' + queued, ((progress / queued) * 50 + 50) + '%');
+      console.debug('loading instance specific files: ' + progress + '/' + queued, (progress / queued) * 50 + 50 + '%');
       if (this.game.loadingScreenRef !== undefined) {
-        this.game.loadingScreenRef.setProgress(((progress / queued) * 50 + 50));
+        this.game.loadingScreenRef.setProgress((progress / queued) * 50 + 50);
       }
       if (progress === queued) {
         doneCallback();

@@ -6,11 +6,10 @@ import { ObjectLoaderService } from '../../../services/object-loader.service';
 import { JwtTokenService } from 'src/app/services/jwttoken.service';
 import { figureList, environmentList } from '../lobbyLUTs';
 
-
 @Component({
   selector: 'app-profile-display',
   templateUrl: './profile-display.component.html',
-  styleUrls: ['./profile-display.component.css']
+  styleUrls: ['./profile-display.component.css'],
 })
 export class ProfileDisplayComponent {
   // TODO: set at Backend.
@@ -23,50 +22,49 @@ export class ProfileDisplayComponent {
   figureList = figureList;
   envList = environmentList;
 
-  constructor(private userManagement: UserService,
-              private fileManagement: FileService,
-              private objectLoaderService: ObjectLoaderService,
-              private AuthService: JwtTokenService) {
-
-
-    this.userManagement.getActiveUser().subscribe(u => {
+  constructor(
+    private userManagement: UserService,
+    private fileManagement: FileService,
+    private objectLoaderService: ObjectLoaderService,
+    private AuthService: JwtTokenService
+  ) {
+    this.userManagement.getActiveUser().subscribe((u) => {
       if (u !== undefined) {
         this.profileSource = this.fileManagement.profilePictureSource(u.login_name, true);
       }
     });
   }
 
-  getDate() {
+  getDate(): Date {
     return new Date(this.user.user_creation);
   }
 
-  getTimePlayed() {
+  getTimePlayed(): string {
     const min = this.user.time_played;
     return `${Math.floor(min / 60)} hours ${Math.floor(min % 60)} minutes`;
   }
 
-  logout() {
+  logout(): void {
     this.AuthService.logout();
     this.userManagement.setActiveUser(undefined);
   }
 
-  onFileChanged(event) {
+  onFileChanged(event): void {
     const file = event.target.files[0];
-    this.fileManagement.uploadProfilePicture(file, this.user).subscribe(suc => {
+    this.fileManagement.uploadProfilePicture(file, this.user).subscribe((suc) => {
       console.log(suc);
       this.userManagement.syncUserData(this.user);
     });
   }
 
-  removeProfilePic(event) {
-    this.fileManagement.removeProfilePicture(this.user).subscribe(suc => {
+  removeProfilePic(event): void {
+    this.fileManagement.removeProfilePicture(this.user).subscribe((suc) => {
       console.log(suc);
       this.userManagement.syncUserData(this.user);
     });
   }
 
-  setGameSettings() {
+  setGameSettings(): void {
     this.objectLoaderService.setCurrentCubeMap(this.selectedEnv);
   }
-
 }

@@ -17,21 +17,22 @@ export interface FigureItem {
 }
 
 export class BoardItemManagement implements ColyseusNotifyable {
-
   allFigures: FigureItem[];
   board: THREE.Mesh;
   scene: THREE.Scene;
   markerGeo = new THREE.ConeBufferGeometry(1, 10, 15, 1, false, 0, 2 * Math.PI);
 
-  constructor(scene: THREE.Scene,
-              private sceneBuilder: SceneBuilderService,
-              private physics: PhysicsCommands,
-              private gameState: GameStateService,
-              private loader: ObjectLoaderService) {
+  constructor(
+    scene: THREE.Scene,
+    private sceneBuilder: SceneBuilderService,
+    private physics: PhysicsCommands,
+    private gameState: GameStateService,
+    private loader: ObjectLoaderService
+  ) {
     this.scene = scene;
     this.allFigures = [];
     this.physics.addPlayer = ((mesh: THREE.Object3D, name: string) => {
-      this.allFigures.push({mesh: mesh, labelSprite: undefined, name: name, isHidden: false, labelInScene: false});
+      this.allFigures.push({ mesh: mesh, labelSprite: undefined, name: name, isHidden: false, labelInScene: false });
       console.debug('adding to BoardItemManagement´s list of figures', name, mesh, this.allFigures);
     }).bind(this);
     this.physics.isPlayerCached = ((physId: number) => {
@@ -42,36 +43,43 @@ export class BoardItemManagement implements ColyseusNotifyable {
   }
 
   attachColyseusStateCallbacks(gameState: GameStateService): void {
-    gameState.addPlayerListUpdateCallback(((player: Player, key: string, players: MapSchema<Player>) => {
-      const figureItem = this.allFigures.find((val: FigureItem, index: number) => {
-        return val.mesh.userData.physicsId === player.figureId;
-      });
-      if (figureItem === undefined) {
-        console.warn('figure hasnt been initialized yet, but hiddenState is to be set', player.figureId, this.allFigures);
-      } else {
-        if (player.figureModel !== undefined) {
-          console.debug('loading new playerTex', player.figureModel);
-          // TODO prevent loading Textures all the time/ prevent if not necessary
-          this.loader.switchTex(figureItem.mesh, player.figureModel);
-        }
-        if (player.hasLeft !== figureItem.isHidden) {
-          console.debug('changing hiddenState', player.hasLeft, figureItem.isHidden, this.allFigures);
-          if (figureItem.isHidden) {
-            this.scene.add(figureItem.mesh);
-            figureItem.isHidden = false;
-          } else {
-            this.scene.remove(figureItem.mesh);
-            figureItem.isHidden = true;
+    gameState.addPlayerListUpdateCallback(
+      ((player: Player, key: string, players: MapSchema<Player>) => {
+        const figureItem = this.allFigures.find((val: FigureItem, index: number) => {
+          return val.mesh.userData.physicsId === player.figureId;
+        });
+        if (figureItem === undefined) {
+          console.warn(
+            'figure hasnt been initialized yet, but hiddenState is to be set',
+            player.figureId,
+            this.allFigures
+          );
+        } else {
+          if (player.figureModel !== undefined) {
+            console.debug('loading new playerTex', player.figureModel);
+            // TODO prevent loading Textures all the time/ prevent if not necessary
+            this.loader.switchTex(figureItem.mesh, player.figureModel);
+          }
+          if (player.hasLeft !== figureItem.isHidden) {
+            console.debug('changing hiddenState', player.hasLeft, figureItem.isHidden, this.allFigures);
+            if (figureItem.isHidden) {
+              this.scene.add(figureItem.mesh);
+              figureItem.isHidden = false;
+            } else {
+              this.scene.remove(figureItem.mesh);
+              figureItem.isHidden = true;
+            }
           }
         }
-      }
-    }).bind(this));
+      }).bind(this)
+    );
   }
 
   attachColyseusMessageCallbacks(gameState: GameStateService): void {
+    return;
   }
 
-  throwDice() {
+  throwDice(): void {
     if (this.gameState.isMyTurn()) {
       console.debug('throwing Dice', this.physics.dice, PhysicsCommands.getPhysId(this.physics.dice));
       if (this.physics.dice !== undefined) {
@@ -83,11 +91,12 @@ export class BoardItemManagement implements ColyseusNotifyable {
         vel.normalize().multiplyScalar(Math.random() * 30);
         this.physics.setVelocity(physIdDice, vel.x, vel.y, vel.z);
 
-        const rotSpeed = (2 * Math.PI) * (getSignedRandom() * 0.5 + 5);
+        const rotSpeed = 2 * Math.PI * (getSignedRandom() * 0.5 + 5);
         const rotation = new THREE.Vector3().setFromSphericalCoords(
           rotSpeed,
           (Math.random() * 0.3 + 0.35) * Math.PI, // main rotational axis should not be vertical. therefore restrict phi.
-          Math.random() * 2 * Math.PI);
+          Math.random() * 2 * Math.PI
+        );
         this.physics.setAngularVelocity(physIdDice, rotation.x, rotation.y, rotation.z);
         this.physics.wakeAll();
       }
@@ -100,28 +109,40 @@ export class BoardItemManagement implements ColyseusNotifyable {
     return this.allFigures.length;
   }
 
-  createSprites(onProgressCallback: () => void) {
+  createSprites(onProgressCallback: () => void): void {
     this.allFigures.forEach((figure: FigureItem) => {
       if (figure.labelSprite === undefined) {
         console.debug('adding Sprite for player ', figure.name);
-        figure.labelSprite = this.loader.createLabelSprite(figure.name, 70, 'Roboto',
+        figure.labelSprite = this.loader.createLabelSprite(
+          figure.name,
+          70,
+          'Roboto',
           new Color(1, 1, 1, 1),
-          new Color(.24, .24, .24, .9),
-          new Color(.1, .1, .1, 0), 0, 4);
+          new Color(0.24, 0.24, 0.24, 0.9),
+          new Color(0.1, 0.1, 0.1, 0),
+          0,
+          4
+        );
       }
       onProgressCallback();
       figure.labelSprite.position.set(figure.mesh.position.x, figure.mesh.position.y + 5, figure.mesh.position.z);
     });
   }
 
-  updateSprites(hidden: boolean, scene: THREE.Scene) {
+  updateSprites(hidden: boolean, scene: THREE.Scene): void {
     for (const f of this.allFigures) {
       if (f.labelSprite === undefined) {
         console.debug('update: adding Sprite for player ', f.name);
-        f.labelSprite = this.loader.createLabelSprite(f.name, 70, 'Roboto',
+        f.labelSprite = this.loader.createLabelSprite(
+          f.name,
+          70,
+          'Roboto',
           new Color(1, 1, 1, 1),
-          new Color(.24, .24, .24, .9),
-          new Color(.1, .1, .1, 0), 0, 4);
+          new Color(0.24, 0.24, 0.24, 0.9),
+          new Color(0.1, 0.1, 0.1, 0),
+          0,
+          4
+        );
       }
       f.labelSprite.position.set(f.mesh.position.x, f.mesh.position.y + 5, f.mesh.position.z);
       if (f.labelInScene !== !hidden) {
@@ -136,21 +157,20 @@ export class BoardItemManagement implements ColyseusNotifyable {
     }
   }
 
-  hoverGameFigure(object: THREE.Object3D, x: number, y: number) {
+  hoverGameFigure(object: THREE.Object3D, x: number, y: number): void {
     const physID = PhysicsCommands.getPhysId(object);
     // pick up figure, set to no spatial velocity, rotation is ok, but the figure shouldnt move.
     this.physics.setPosition(physID, x, 10, y);
     this.physics.setVelocity(physID, 0, 0, 0);
-    // this.physics.setRotation(PhysicsCommands.getPhysId(object), 0, 0, 0, 1);
   }
 
-  respawnMyFigure() {
+  respawnMyFigure(): void {
     const physID = this.gameState.getMe().figureId;
     this.physics.setPosition(physID, 0, 15, 0);
     this.physics.setVelocity(physID, 0, 0, 0);
   }
 
-  moveGameFigure(object: THREE.Object3D, fieldID: number) {
+  moveGameFigure(object: THREE.Object3D, fieldID: number): void {
     console.debug('move Figure to ', fieldID);
     let playerId: string;
     const userData = object.userData;
@@ -165,15 +185,15 @@ export class BoardItemManagement implements ColyseusNotifyable {
       action: GameActionType.setTile,
       figureId: userData.physicsId,
       playerId: playerId,
-      tileId: fieldID
+      tileId: fieldID,
     };
     this.gameState.sendMessage(MessageType.GAME_MESSAGE, msg);
   }
 
-  addFlummi(x: number, y: number, z: number, color: number) {
+  addFlummi(x: number, y: number, z: number, color: number): void {
     // const geometry = new THREE.SphereGeometry( 2, 32, 32 );
     const geometry = new THREE.SphereBufferGeometry(2, 32, 32);
-    const material = new THREE.MeshStandardMaterial({color: color});
+    const material = new THREE.MeshStandardMaterial({ color: color });
     const sphere = new THREE.Mesh(geometry, material);
     sphere.position.set(x, y, z);
     // this.scene.add( sphere );
@@ -183,7 +203,7 @@ export class BoardItemManagement implements ColyseusNotifyable {
 
   addMarker(x: number, y: number, z: number, col: number): void {
     // TODO rebuild Marker, because important
-    const markerMat = new THREE.MeshStandardMaterial({color: col});
+    const markerMat = new THREE.MeshStandardMaterial({ color: col });
     const marker = new THREE.Mesh(this.markerGeo, markerMat);
     marker.castShadow = true;
     marker.receiveShadow = true;

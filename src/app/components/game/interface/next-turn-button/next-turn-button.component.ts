@@ -6,7 +6,7 @@ import { ColyseusNotifyable } from '../../../../services/game-initialisation.ser
 @Component({
   selector: 'app-next-turn-button',
   templateUrl: './next-turn-button.component.html',
-  styleUrls: ['./next-turn-button.component.css']
+  styleUrls: ['./next-turn-button.component.css'],
 })
 export class NextTurnButtonComponent implements ColyseusNotifyable {
   @Input() disabled: boolean;
@@ -15,8 +15,7 @@ export class NextTurnButtonComponent implements ColyseusNotifyable {
   hidden = true;
   private lastClick = 0;
 
-  constructor(private gameState: GameStateService) {
-  }
+  constructor(private gameState: GameStateService) {}
 
   attachColyseusStateCallbacks(gameState: GameStateService): void {
     gameState.addNextTurnCallback(this.checkTurn.bind(this));
@@ -24,9 +23,10 @@ export class NextTurnButtonComponent implements ColyseusNotifyable {
   }
 
   attachColyseusMessageCallbacks(gameState: GameStateService): void {
+    return;
   }
 
-  checkTurn(activePlayerLogin: string) {
+  checkTurn(activePlayerLogin: string): void {
     if (this.gameState.isMyTurn()) {
       // console.log('myTurn');
       this.hidden = false;
@@ -36,16 +36,18 @@ export class NextTurnButtonComponent implements ColyseusNotifyable {
     }
   }
 
-  nextTurn(event) {
+  nextTurn(event: Event): void {
     console.log('clicked next turn');
-    if (this.gameState.isMyTurn() && (new Date().getTime() - this.lastClick) > 500) {
+    if (this.gameState.isMyTurn() && new Date().getTime() - this.lastClick > 500) {
       this.lastClick = new Date().getTime();
       if (this.gameState.getAction() !== 'EXECUTE') {
         console.log('skipping actions..');
       }
       console.log('next Turn');
-      this.gameState.sendMessage(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.advanceTurn});
+      this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
+        type: MessageType.GAME_MESSAGE,
+        action: GameActionType.advanceTurn,
+      });
     }
   }
-
 }

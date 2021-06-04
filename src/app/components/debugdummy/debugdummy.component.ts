@@ -1,15 +1,7 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 @Component({
   selector: 'app-debugdummy',
   templateUrl: './debugdummy.component.html',
-  styleUrls: ['./debugdummy.component.css']
+  styleUrls: ['./debugdummy.component.css'],
 })
-export class DebugdummyComponent {
-
-  constructor() {
-  }
-
-  defaultFunc() {
-
-  }
-}
+export class DebugdummyComponent {}

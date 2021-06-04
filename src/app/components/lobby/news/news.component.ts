@@ -6,7 +6,6 @@ import { MarkdownContentService, SourceDirectory } from '../../../services/markd
   templateUrl: './news.component.html',
   styleUrls: ['./news.component.css'],
 })
-
 export class NewsComponent {
   src = SourceDirectory.NEWS;
   availableNews: string[];

@@ -9,7 +9,7 @@ import {
   PlayerModel,
   RefreshCommandType,
   RefreshProfilePics,
-  SetFigure
+  SetFigure,
 } from '../../../../../model/WsData';
 import { GameStateService } from '../../../../../services/game-state.service';
 import { Player } from '../../../../../model/state/Player';
@@ -19,10 +19,9 @@ import { Command, CommandService } from '../../../../../services/command.service
 @Component({
   selector: 'app-home-register',
   templateUrl: './home-register.component.html',
-  styleUrls: ['./home-register.component.css']
+  styleUrls: ['./home-register.component.css'],
 })
 export class HomeRegisterComponent {
-
   profileSource = '../assets/defaultImage.jpg';
   bottleCapSource = '../assets/models/otherTex/default.png';
   myBCapIndex = PlayerModel.bcap_NukaCola;
@@ -35,26 +34,28 @@ export class HomeRegisterComponent {
   @ViewChild('chatInput') chatInput: ElementRef;
   chatMessages: ChatMessage[] = [];
 
-  private commandHistory: String[] = [];
+  private commandHistory: string[] = [];
   private curCmdHistoryOffset = -1; // -1 means no selection has been made
   private readonly maxCmdHistory = 32;
 
   showChatCmdDropdown = false;
 
-  constructor(private userManagement: UserService,
-              private fileManagement: FileService,
-              public gameState: GameStateService,
-              private loader: ObjectLoaderService,
-              private chatService: ChatService,
-              private commandService: CommandService) {
-
+  constructor(
+    private userManagement: UserService,
+    private fileManagement: FileService,
+    public gameState: GameStateService,
+    private loader: ObjectLoaderService,
+    private chatService: ChatService,
+    private commandService: CommandService
+  ) {
     this.myPlayer = this.gameState.getMe();
-    this.profileSource = this.fileManagement.profilePictureSource(this.myPlayer?.loginName) || '../assets/defaultImage.jpg';
+    this.profileSource =
+      this.fileManagement.profilePictureSource(this.myPlayer?.loginName) || '../assets/defaultImage.jpg';
     this.myBCapIndex = this.myPlayer.figureModel || PlayerModel.bcap_NukaCola;
     console.debug('Initialized bottle cap index to: ', this.myBCapIndex);
     this.bottleCapSource = this.loader.getBCapTextureThumbPath(this.myBCapIndex);
 
-    this.userManagement.getActiveUser().subscribe(u => {
+    this.userManagement.getActiveUser().subscribe((u) => {
       this.user = u;
     });
 
@@ -69,7 +70,7 @@ export class HomeRegisterComponent {
     }, 20);
   }
 
-  sendChatMessageByKey(event: KeyboardEvent, inputField: HTMLInputElement) {
+  sendChatMessageByKey(event: KeyboardEvent, inputField: HTMLInputElement): void {
     if (event.key === 'Enter') {
       this.sendChatMessage(inputField);
     } else if (event.key === 'ArrowUp') {
@@ -88,13 +89,14 @@ export class HomeRegisterComponent {
       }
     }
   }
+
   private showCmdHistory(cmdHistoryOffset: number) {
     const nativeElem = this.chatInput.nativeElement;
     nativeElem.value = cmdHistoryOffset < 0 ? '' : this.commandHistory[cmdHistoryOffset];
     nativeElem.focus();
   }
 
-  sendChatMessage(inputField: HTMLInputElement) {
+  sendChatMessage(inputField: HTMLInputElement): void {
     this.curCmdHistoryOffset = -1;
 
     const userInput: string = String(inputField.value).trim();
@@ -109,14 +111,13 @@ export class HomeRegisterComponent {
 
         // execute
         this.executeCommand(userInput);
-
       } else {
         this.chatService.sendMessage(String(userInput));
       }
     }
   }
 
-  onChatMessage() {
+  onChatMessage(): void {
     this.chatMessages = this.chatService.getChatMessages();
     const htmlNode = this.textSection.nativeElement;
     setTimeout(() => {
@@ -124,11 +125,11 @@ export class HomeRegisterComponent {
     }, 20);
   }
 
-  executeCommand(cmdStr: string) {
+  executeCommand(cmdStr: string): void {
     this.commandService.executeChatCommand(cmdStr);
   }
 
-  nextBCap($event: Event) {
+  nextBCap($event: Event): void {
     this.myBCapIndex++;
     if (this.myBCapIndex > this.loader.getBCapCount()) {
       this.myBCapIndex = 1;
@@ -136,7 +137,7 @@ export class HomeRegisterComponent {
     this.setBCap();
   }
 
-  prevBCap($event: Event) {
+  prevBCap($event: Event): void {
     this.myBCapIndex--;
     if (this.myBCapIndex < 1) {
       this.myBCapIndex = this.loader.getBCapCount();
@@ -144,7 +145,7 @@ export class HomeRegisterComponent {
     this.setBCap();
   }
 
-  getTimePlayed() {
+  getTimePlayed(): string {
     if (this.user !== undefined) {
       const min = this.user.time_played;
       return `${Math.floor(min / 60)} hours ${Math.floor(min % 60)} minutes`;
@@ -153,7 +154,7 @@ export class HomeRegisterComponent {
     }
   }
 
-  getRole() {
+  getRole(): string {
     if (this.myPlayer === undefined) {
       return 'undefined';
     } else if (this.myPlayer.isCurrentHost) {
@@ -165,20 +166,23 @@ export class HomeRegisterComponent {
     }
   }
 
-  newProfilePic(event) {
-    const file = event.target.files[0];
-    this.fileManagement.uploadProfilePicture(file, this.user).subscribe(suc => {
-      console.log('Uploaded new profile picture: ', suc);
-      this.profileSource = this.fileManagement.profilePictureSource(this.myPlayer.loginName, true);
-      const msg: RefreshProfilePics = {
-        type: MessageType.REFRESH_COMMAND,
-        subType: RefreshCommandType.refreshProfilePic
-      };
-      this.gameState.sendMessage(MessageType.REFRESH_COMMAND, msg);
-    });
+  newProfilePic(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const file = target?.files[0];
+    if (file !== undefined) {
+      this.fileManagement.uploadProfilePicture(file, this.user).subscribe((suc) => {
+        console.log('Uploaded new profile picture: ', suc);
+        this.profileSource = this.fileManagement.profilePictureSource(this.myPlayer.loginName, true);
+        const msg: RefreshProfilePics = {
+          type: MessageType.REFRESH_COMMAND,
+          subType: RefreshCommandType.refreshProfilePic,
+        };
+        this.gameState.sendMessage(MessageType.REFRESH_COMMAND, msg);
+      });
+    }
   }
 
-  private setBCap() {
+  private setBCap(): void {
     console.debug('Update bottle cap index to: ', this.myBCapIndex);
     this.bottleCapSource = this.loader.getBCapTextureThumbPath(this.myBCapIndex);
 
@@ -186,12 +190,12 @@ export class HomeRegisterComponent {
       type: MessageType.PLAYER_MESSAGE,
       subType: PlayerMessageType.setFigure,
       playerId: this.gameState.getMyLoginName(),
-      playerModel: this.myBCapIndex
+      playerModel: this.myBCapIndex,
     };
     this.gameState.sendMessage(MessageType.PLAYER_MESSAGE, msg);
   }
 
-  selectCmd(c: Command) {
+  selectCmd(c: Command): void {
     console.log(`clicked on ${c.cmd}`);
     const nativeElem = this.chatInput.nativeElement;
     nativeElem.value = c.prototype;

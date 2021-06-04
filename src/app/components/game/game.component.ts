@@ -17,10 +17,9 @@ import { CommandService } from '../../services/command.service';
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
-  styleUrls: ['./game.component.css']
+  styleUrls: ['./game.component.css'],
 })
 export class GameComponent implements OnInit, AfterViewInit {
-
   @ViewChild('viewRef') viewRef: ViewportComponent;
   @ViewChild('interfaceRef') interfaceRef: InterfaceComponent;
   @ViewChild('loadingRef') loadingScreenRef: LoadingScreenComponent;
@@ -31,60 +30,68 @@ export class GameComponent implements OnInit, AfterViewInit {
   loadGame = true;
   loadingScreenVisible = true;
 
-  constructor(private dialog: MatDialog,
-              private router: Router,
-              private colyseus: ColyseusClientService,
-              private gameInit: GameInitialisationService,
-              private boardTilesService: BoardTilesService,
-              private commandService: CommandService) {
+  constructor(
+    private dialog: MatDialog,
+    private router: Router,
+    private colyseus: ColyseusClientService,
+    private gameInit: GameInitialisationService,
+    private boardTilesService: BoardTilesService,
+    private commandService: CommandService
+  ) {
     commandService.registerGame(this);
   }
 
   ngOnInit(): void {
-    this.colyseus.getActiveRoom().subscribe((myRoom) => {
-      if (myRoom === undefined) {
-        this.router.navigateByUrl('/home/lobby');
-        this.loadGame = false;
-      } else {
-        const msg: GameAction = {
-          type: MessageType.GAME_MESSAGE,
-          action: GameActionType.refreshData
-        };
-        myRoom.send(MessageType.GAME_MESSAGE, msg);
+    this.colyseus.getActiveRoom().subscribe(
+      (myRoom) => {
+        if (myRoom === undefined) {
+          this.router.navigateByUrl('/home/lobby');
+          this.loadGame = false;
+        } else {
+          const msg: GameAction = {
+            type: MessageType.GAME_MESSAGE,
+            action: GameActionType.refreshData,
+          };
+          myRoom.send(MessageType.GAME_MESSAGE, msg);
+        }
+      },
+      (errRoom) => {
+        console.log('ErrorRoom is', errRoom);
+        this.router.navigateByUrl('');
       }
-    }, (errRoom) => {
-      console.log('ErrorRoom is', errRoom);
-      this.router.navigateByUrl('');
-    });
+    );
   }
 
   ngAfterViewInit(): void {
     if (this.loadGame) {
       this.interfaceRef.gameComponent = this;
-      this.gameInit.startInitialisation(this,
+      this.gameInit.startInitialisation(
+        this,
         this.viewRef,
         this.viewRef.boardItemManager,
         this.viewRef.physics,
-        this.boardTilesService);
+        this.boardTilesService
+      );
     }
   }
 
-  registerViewport(tuple: [CameraControl, BoardItemManagement, AudioControl]) {
+  registerViewport(tuple: [CameraControl, BoardItemManagement, AudioControl]): void {
     this.cameraControl = tuple[0];
     this.boardItemControl = tuple[1];
     this.audioCtrl = tuple[2];
   }
 
-  showAttribution() {
-    const dialogRef: MatDialogRef<ShowAttribComponent, { roomName: string, skinName: string, randomizeTiles: boolean }> =
-      this.dialog.open(ShowAttribComponent, {
-        width: '80%',
-        maxWidth: '900px',
-        height: '70%',
-        maxHeight: '750px',
-        data: {},
-        panelClass: 'modalbox-base'
-      });
+  showAttribution(): void {
+    const dialogRef: MatDialogRef<
+      ShowAttribComponent,
+      { roomName: string; skinName: string; randomizeTiles: boolean }
+    > = this.dialog.open(ShowAttribComponent, {
+      width: '80%',
+      maxWidth: '900px',
+      height: '70%',
+      maxHeight: '750px',
+      data: {},
+      panelClass: 'modalbox-base',
+    });
   }
-
 }

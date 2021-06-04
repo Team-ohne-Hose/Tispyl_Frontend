@@ -2,9 +2,8 @@ import { Player } from '../../../../../../model/state/Player';
 import { Schema, ArraySchema, type } from '@colyseus/schema';
 
 export class VoteEntry extends Schema {
-
   @type('boolean')
-  isPlayerEntry: boolean = false;
+  isPlayerEntry = false;
 
   @type('string')
   playerHandle: string = undefined;
@@ -29,7 +28,7 @@ export class VoteEntry extends Schema {
     ve.isPlayerEntry = obj.isPlayerEntry;
     ve.playerHandle = obj.playerHandle;
     ve.text = obj.text;
-    obj.castVotes.map(v => ve.castVotes.push(v));
+    obj.castVotes.map((v) => ve.castVotes.push(v));
     return ve;
   }
 }

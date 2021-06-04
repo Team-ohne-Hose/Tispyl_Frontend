@@ -4,5 +4,5 @@ export enum VoteSystemState {
   creating,
   voting,
   results,
-  notEligible
+  notEligible,
 }

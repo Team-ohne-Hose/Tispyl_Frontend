@@ -1,8 +1,6 @@
 import { VoteEntry } from './VoteEntry';
 
-
 export class VoteResult {
-
   readonly title: string;
   readonly author: string;
   readonly entries: VoteEntry[];

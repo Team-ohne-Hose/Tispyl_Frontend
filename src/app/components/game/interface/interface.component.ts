@@ -8,14 +8,12 @@ import { ColyseusNotifyable } from '../../../services/game-initialisation.servic
 import { TurnOverlayComponent } from './turn-overlay/turn-overlay.component';
 import { ConnectedPlayersComponent } from './connected-players/connected-players.component';
 
-
 @Component({
   selector: 'app-interface',
   templateUrl: './interface.component.html',
-  styleUrls: ['./interface.component.css']
+  styleUrls: ['./interface.component.css'],
 })
-export class InterfaceComponent implements OnInit, ColyseusNotifyable {
-
+export class InterfaceComponent implements ColyseusNotifyable {
   routes;
   gameComponent: GameComponent;
   @ViewChild('nextTurn') nextTurnRef: NextTurnButtonComponent;
@@ -23,9 +21,8 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
   @ViewChild('turnOverlay') turnOverlayRef: TurnOverlayComponent;
   @ViewChild('connectedPlayers') connectedPlayersRef: ConnectedPlayersComponent;
 
-  constructor(private router: Router,
-              public gameState: GameStateService) {
-    this.routes = router.config.filter(route => route.path !== '**' && route.path.length > 0);
+  constructor(private router: Router, public gameState: GameStateService) {
+    this.routes = router.config.filter((route) => route.path !== '**' && route.path.length > 0);
   }
 
   attachColyseusStateCallbacks(gameState: GameStateService): void {
@@ -35,9 +32,6 @@ export class InterfaceComponent implements OnInit, ColyseusNotifyable {
   }
 
   attachColyseusMessageCallbacks(gameState: GameStateService): void {
+    return;
   }
-
-  ngOnInit(): void {
-  }
-
 }

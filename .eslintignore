@@ -1,3 +1,8 @@
 /src/migration
 /src/app/services/translation/translations.json
+src/karma.conf.js
+/node_modules
+/dist
+/out-tsc
+/e2e
 *.css

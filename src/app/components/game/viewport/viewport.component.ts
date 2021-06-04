@@ -25,10 +25,9 @@ export class ObjectUserData {
 @Component({
   selector: 'app-viewport',
   templateUrl: './viewport.component.html',
-  styleUrls: ['./viewport.component.css']
+  styleUrls: ['./viewport.component.css'],
 })
-export class ViewportComponent implements AfterViewInit, OnInit {
-
+export class ViewportComponent implements AfterViewInit {
   mouseInteract: MouseInteraction;
   cameraControl: CameraControl;
   boardItemManager: BoardItemManagement;
@@ -46,15 +45,15 @@ export class ViewportComponent implements AfterViewInit, OnInit {
   controls: GameBoardOrbitControl;
   physics: PhysicsCommands;
 
-  constructor(private sceneBuilder: SceneBuilderService,
-              private objectLoaderService: ObjectLoaderService,
-              private gameState: GameStateService,
-              private boardTiles: BoardTilesService,
-              public itemService: ItemService) {
+  constructor(
+    private sceneBuilder: SceneBuilderService,
+    private objectLoaderService: ObjectLoaderService,
+    private gameState: GameStateService,
+    private boardTiles: BoardTilesService,
+    public itemService: ItemService
+  ) {}
 
-  }
-
-  animate() {
+  animate(): void {
     requestAnimationFrame(this.animate.bind(this));
 
     this.boardItemManager.updateSprites(this.labelSpritesHidden, this.scene);
@@ -62,10 +61,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.stats.update();
   }
 
-  ngOnInit() {
-  }
-
-  async ngAfterViewInit() {
+  async ngAfterViewInit(): Promise<void> {
     const width = this.view['nativeElement'].offsetWidth;
     const height = this.view['nativeElement'].offsetHeight;
 
@@ -76,13 +72,11 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     // initialize Camera & Renderer
     this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 5000);
     this.camera.position.set(0, 70, -30);
-    this.renderer = new THREE.WebGLRenderer({antialias: true, powerPreference: 'high-performance'});
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     this.renderer.setSize(width, height);
 
     this.stats = Stats();
-    document
-      .getElementById('viewport-container')
-      .append(this.renderer.domElement, this.stats.dom);
+    document.getElementById('viewport-container').append(this.renderer.domElement, this.stats.dom);
 
     const spotlight = this.sceneBuilder.generateSpotLight();
     this.scene.add(spotlight);
@@ -97,10 +91,23 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.physics.scene = this.scene;
 
     // initialize BoardItemManagement
-    this.boardItemManager = new BoardItemManagement(this.scene, this.sceneBuilder, this.physics, this.gameState, this.objectLoaderService);
+    this.boardItemManager = new BoardItemManagement(
+      this.scene,
+      this.sceneBuilder,
+      this.physics,
+      this.gameState,
+      this.objectLoaderService
+    );
 
     // initialize Mouse
-    this.mouseInteract = new MouseInteraction(this.camera, this.boardItemManager, this.physics, this.gameState, this.boardTiles, this.itemService);
+    this.mouseInteract = new MouseInteraction(
+      this.camera,
+      this.boardItemManager,
+      this.physics,
+      this.gameState,
+      this.boardTiles,
+      this.itemService
+    );
     this.mouseInteract.updateScreenSize(width, height);
 
     // initialize Audio/Camera Control
@@ -114,7 +121,7 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     console.info('THREE.js Viewport initialised');
   }
 
-  initialiseScene() {
+  initialiseScene(): void {
     // load stuff which is dependend on loading textures
     this.scene.background = this.objectLoaderService.getCubeMap();
 
@@ -126,12 +133,12 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     this.mouseInteract.addInteractable(gameBoard);
   }
 
-  startRendering() {
+  startRendering(): void {
     this.animate();
     console.debug('THREE.js rendering started');
   }
 
-  keyDown(event) {
+  keyDown(event): void {
     if (event.key === 'Tab') {
       this.labelSpritesHidden = false;
       event.preventDefault();
@@ -139,19 +146,29 @@ export class ViewportComponent implements AfterViewInit, OnInit {
     }
   }
 
-  keyUp(event) {
+  keyUp(event): void {
     if (event.key === 'Tab') {
       this.labelSpritesHidden = true;
     }
   }
 
-  onWindowResize(event) {
-    console.debug('viewResizing: ', window.innerWidth, this.view['nativeElement'].clientWidth, this.view['nativeElement'].scrollWidth,
-      this.view['nativeElement'].offsetWidth, this.view['nativeElement'].offsetHeight, this.view);
+  onWindowResize(event): void {
+    console.debug(
+      'viewResizing: ',
+      window.innerWidth,
+      this.view['nativeElement'].clientWidth,
+      this.view['nativeElement'].scrollWidth,
+      this.view['nativeElement'].offsetWidth,
+      this.view['nativeElement'].offsetHeight,
+      this.view
+    );
     this.renderer.setSize(this.view['nativeElement'].offsetWidth, this.view['nativeElement'].offsetHeight);
     this.camera.aspect = this.view['nativeElement'].offsetWidth / this.view['nativeElement'].offsetHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(this.view['nativeElement'].offsetWidth, this.view['nativeElement'].offsetHeight);
-    this.mouseInteract.updateScreenSize(this.view['nativeElement'].offsetWidth, this.view['nativeElement'].offsetHeight);
+    this.mouseInteract.updateScreenSize(
+      this.view['nativeElement'].offsetWidth,
+      this.view['nativeElement'].offsetHeight
+    );
   }
 }
