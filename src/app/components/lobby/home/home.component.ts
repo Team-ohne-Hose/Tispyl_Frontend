@@ -40,7 +40,7 @@ export class HomeComponent implements OnInit, AfterContentInit {
   @ViewChild('dropdown') dropDown: ElementRef;
 
   /** State values */
-  currentUser: User;
+  currentUser: LoginUser;
   isLoggedIn = false;
   profileSource: string;
 
@@ -80,7 +80,6 @@ export class HomeComponent implements OnInit, AfterContentInit {
 
     /** Triggers as soon as a user logs in or out */
     this.userService.activeUser.subscribe((u: LoginUser) => {
-
       if (u !== undefined) {
         this.currentUser = u;
         this.isLoggedIn = true;

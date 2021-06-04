@@ -2,7 +2,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LOCALE_ID, NgModule } from '@angular/core';
-
 import { AppComponent } from './app.component';
 import { GameDisplayComponent } from './components/lobby/game-display/game-display.component';
 import { LoginComponent } from './components/lobby/login/login.component';
@@ -10,9 +9,7 @@ import { RulesComponent } from './components/lobby/rules/rules.component';
 import { GifViewerComponent } from './components/lobby/gif-viewer/gif-viewer.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
-
 import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -73,7 +70,6 @@ import { MdContentComponent } from './components/lobby/md-content-list/md-conten
 import { MdContentDirective } from './components/lobby/md-content-list/md-content.directive';
 import { MdContentListComponent } from './components/lobby/md-content-list/md-content-list.component';
 import { ResolveToHeadlinePipe } from './components/lobby/news/resolve-to-headline.pipe';
-
 
 const appRoutes: Routes = [
   {

@@ -10,7 +10,7 @@ import { APIResponse } from '../model/APIResponse';
   providedIn: 'root',
 })
 export class FileService {
-  readonly profilePictureEndpoint = environment.endpoint + 'profile';
+  readonly endpoint = environment.endpoint + 'profile';
 
   constructor(private httpClient: HttpClient) {}
 
