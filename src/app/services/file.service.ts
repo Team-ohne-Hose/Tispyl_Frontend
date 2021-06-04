@@ -10,11 +10,7 @@ import { APIResponse } from '../model/APIResponse';
   providedIn: 'root',
 })
 export class FileService {
-  private readonly prodProfilePictureEndpoint = 'https://tispyl.uber.space:41920/api/profile';
-  private readonly devProfilePictureEndpoint = 'http://localhost:25670/api/profile';
-  private profilePictureEndpoint = environment.production
-    ? this.prodProfilePictureEndpoint
-    : this.devProfilePictureEndpoint;
+  readonly profilePictureEndpoint = environment.endpoint + 'profile';
 
   constructor(private httpClient: HttpClient) {}
 

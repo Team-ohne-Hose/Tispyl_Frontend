@@ -29,10 +29,8 @@ export interface CreateRoomOpts {
 })
 export class ColyseusClientService {
   myLoginName: string;
-  private readonly prodBackendWStarget = 'wss://tispyl.uber.space:41920';
-  private readonly devBackendWStarget = 'ws://localhost:25670';
-  private backendWStarget = environment.production ? this.prodBackendWStarget : this.devBackendWStarget;
-  private client: Client = new Client(this.backendWStarget);
+  readonly backendWsTarget = environment.WsEndpoint;
+  private client: Client = new Client(this.backendWsTarget);
   private activeRoom: BehaviorSubject<Room<GameState>>;
   availableRooms: BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>;
 
