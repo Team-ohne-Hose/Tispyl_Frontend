@@ -4,8 +4,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { OpenGamePopupComponent } from './dialogs/open-game-popup/open-game-popup.component';
 import { ColyseusClientService, CreateRoomOpts } from '../../services/colyseus-client.service';
 import { Client, Room, RoomAvailable } from 'colyseus.js';
-import { Router } from '@angular/router';
-import { UserService, LoginUser } from '../../services/user.service';
+import { BasicUser, UserService } from '../../services/user.service';
 import { RoomMetaInfo } from '../../model/RoomMetaInfo';
 import { JoinGameComponent } from './dialogs/join-game/join-game.component';
 import { GameState } from '../../model/state/GameState';
@@ -24,10 +23,10 @@ export class LobbyComponent implements OnInit {
   environments = environmentList;
 
   /** Game room & Colyseus values */
-  currentUser: LoginUser;
+  currentUser: BasicUser;
   activeLobby: Room<GameState>;
   gameClient: Client;
-  availableLobbies: RoomAvailable<RoomMetaInfo>[] = [];
+  availableRooms: RoomAvailable<RoomMetaInfo>[] = [];
 
   /** Player settings */
   currentEnvironmentIdx = 0;
@@ -46,23 +45,32 @@ export class LobbyComponent implements OnInit {
     private dialog: MatDialog,
     private colyseus: ColyseusClientService,
     private objectLoader: ObjectLoaderService,
-    private router: Router,
-    private userManagement: UserService
+    private userService: UserService
   ) {
     this.gameClient = colyseus.getClient();
   }
 
   ngOnInit(): void {
-    this.userManagement.getActiveUser().subscribe((u) => (this.currentUser = u));
-    this.colyseus.getActiveRoom().subscribe((r) => (this.activeLobby = r));
-    this.colyseus.availableRooms.subscribe((arr) => (this.availableLobbies = arr));
+    // Set current user
+    this.userService.activeUser.subscribe((user) => {
+      this.currentUser = user;
+    });
+
+    this.colyseus.getActiveRoom().subscribe((room) => {
+      this.activeLobby = room;
+    });
+
+    this.colyseus.availableRooms.subscribe((availableRooms) => {
+      this.availableRooms = availableRooms;
+    });
+    this.refetchGameRooms();
   }
 
   changeLanguage(lang: string): void {
     this.translation = TranslationService.getTranslations(lang);
   }
 
-  refresh(): void {
+  refetchGameRooms(): void {
     this.colyseus.updateAvailableRooms();
   }
 
@@ -119,7 +127,7 @@ export class LobbyComponent implements OnInit {
       panelClass: 'modalbox-base',
     });
     dialogRef.afterClosed().subscribe((s) => console.log('closed dialog'));
-    const currentUser = this.userManagement.activeUser.value;
+    const currentUser = this.userService.activeUser.value;
     this.colyseus.joinActiveRoom(lobby, currentUser.login_name, currentUser.display_name);
   }
 

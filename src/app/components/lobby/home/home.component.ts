@@ -1,7 +1,7 @@
 import { AfterContentInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JwtTokenService } from '../../../services/jwttoken.service';
-import { UserService, LoginUser, User } from '../../../services/user.service';
+import { UserService, BasicUser, LoginUser } from '../../../services/user.service';
 import { APIResponse } from '../../../model/APIResponse';
 import { FileService } from 'src/app/services/file.service';
 
@@ -40,7 +40,7 @@ export class HomeComponent implements OnInit, AfterContentInit {
   @ViewChild('dropdown') dropDown: ElementRef;
 
   /** State values */
-  currentUser: LoginUser;
+  currentUser: BasicUser;
   isLoggedIn = false;
   profileSource: string;
 
@@ -66,8 +66,8 @@ export class HomeComponent implements OnInit, AfterContentInit {
     /** Check for active JWT Token */
     if (this.AuthService.isLoggedIn()) {
       this.userService.getUserByLoginName(localStorage.getItem('username')).subscribe(
-        (usr: APIResponse<LoginUser>) => {
-          this.userService.setActiveUser(usr.payload as LoginUser);
+        (response: APIResponse<LoginUser>) => {
+          this.userService.setActiveUser(response.payload as LoginUser);
         },
         (err) => {
           console.error(
@@ -79,7 +79,7 @@ export class HomeComponent implements OnInit, AfterContentInit {
     }
 
     /** Triggers as soon as a user logs in or out */
-    this.userService.activeUser.subscribe((u: LoginUser) => {
+    this.userService.activeUser.subscribe((u: BasicUser) => {
       if (u !== undefined) {
         this.currentUser = u;
         this.isLoggedIn = true;

@@ -28,14 +28,15 @@ export interface CreateRoomOpts {
   providedIn: 'root',
 })
 export class ColyseusClientService {
-  myLoginName: string;
   readonly backendWsTarget = environment.wsEndpoint;
+
   private client: Client = new Client(this.backendWsTarget);
   private activeRoom: BehaviorSubject<Room<GameState>>;
-  availableRooms: BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>;
-
   private messageCallbacks: Map<MessageType, MessageCallback[]> = new Map<MessageType, MessageCallback[]>([]);
   private onChangeCallbacks: ((changes: DataChange<any>[]) => void)[] = [this.onDataChange.bind(this)];
+
+  availableRooms: BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>;
+  myLoginName: string;
 
   constructor(private router: Router) {
     this.activeRoom = new BehaviorSubject<Room<GameState>>(undefined);
@@ -93,6 +94,12 @@ export class ColyseusClientService {
 
   watchAvailableRooms(): Observable<RoomAvailable<RoomMetaInfo>[]> {
     return this.availableRooms.asObservable();
+  }
+
+  getAvailableRooms() {
+    this.client.getAvailableRooms('game').then((rooms) => {
+      this.availableRooms.next(rooms);
+    });
   }
 
   updateAvailableRooms(): void {

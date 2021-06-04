@@ -1,32 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import * as hash from 'object-hash';
-import { filter, map, shareReplay } from 'rxjs/operators';
 import { APIResponse } from '../model/APIResponse';
 import { environment } from '../../environments/environment';
-import { JwtResponse } from './jwttoken.service';
+import * as hash from 'object-hash';
 
-export class User {
-  id: number;
-  login_name: string;
-  display_name: string;
-  password_hash: string;
-  user_creation: string;
-  time_played: number;
-  profile_picture: string;
-  last_figure: string;
-  is_connected: boolean;
-  is_dev: boolean;
-
-  constructor(login: string, display: string, password: string) {
-    this.login_name = login;
-    this.display_name = display;
-    this.password_hash = hash.MD5(password);
-  }
-}
-
-export class LoginUser {
+export class BasicUser {
   id: number;
   login_name: string;
   display_name: string;
@@ -37,14 +16,49 @@ export class LoginUser {
   is_connected: boolean;
   is_dev: boolean;
 }
-export class ForeignUser extends LoginUser {}
+
+export class LoginUser extends BasicUser {
+  password_hash;
+}
+
+// export class OldUser {
+//   id: number;
+//   login_name: string;
+//   display_name: string;
+//   password_hash: string;
+//   user_creation: string;
+//   time_played: number;
+//   profile_picture: string;
+//   last_figure: string;
+//   is_connected: boolean;
+//   is_dev: boolean;
+
+//   constructor(login: string, display: string, password: string) {
+//     this.login_name = login;
+//     this.display_name = display;
+//     this.password_hash = hash.MD5(password);
+//   }
+// }
+
+// export class OldLoginUser {
+//   id: number;
+//   login_name: string;
+//   display_name: string;
+//   user_creation: string;
+//   time_played: number;
+//   profile_picture: string;
+//   last_figure: string;
+//   is_connected: boolean;
+//   is_dev: boolean;
+// }
+// export class OldForeignUser extends OldLoginUser { }
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
   activeUser: BehaviorSubject<LoginUser>;
-  profileUser: ForeignUser;
+  profileUser: BasicUser;
 
   private userEndpoint = environment.endpoint + 'user';
 
@@ -60,14 +74,14 @@ export class UserService {
    * @deprecated The method should not be used as it removes the benefits of using a BehaviorSubject
    * @See {rxjs.BehaviorSubject}
    */
-  getActiveUser(): Observable<LoginUser> {
+  getActiveUser(): Observable<BasicUser> {
     return this.activeUser.asObservable();
   }
 
   // REQUESTS
 
-  getUserByLoginName(login_name: string): Observable<APIResponse<LoginUser>> {
-    return this.httpClient.get<APIResponse<LoginUser>>(this.userEndpoint + '?login_name=' + login_name);
+  getUserByLoginName(login_name: string): Observable<APIResponse<BasicUser>> {
+    return this.httpClient.get<APIResponse<BasicUser>>(this.userEndpoint + '?login_name=' + login_name);
   }
 
   removeUser(user_id: number): Observable<number> {
@@ -75,9 +89,9 @@ export class UserService {
     return this.httpClient.delete<number>(requestUrl);
   }
 
-  syncUserData(user: User): void {
+  syncUserData(user: LoginUser): void {
     this.httpClient
-      .get<APIResponse<User>>(this.userEndpoint + '?login_name=' + user.login_name)
+      .get<APIResponse<LoginUser>>(this.userEndpoint + '?login_name=' + user.login_name)
       .subscribe((response) => {
         if (response.payload !== undefined) {
           this.setActiveUser(response.payload as LoginUser);
@@ -87,8 +101,8 @@ export class UserService {
       });
   }
 
-  requestUserDatabyId(userId: number): Observable<APIResponse<ForeignUser>> {
+  requestUserDatabyId(userId: number): Observable<APIResponse<BasicUser>> {
     const requestUrl = this.userEndpoint + '/byId?userId=' + userId;
-    return this.httpClient.get<APIResponse<ForeignUser>>(requestUrl);
+    return this.httpClient.get<APIResponse<BasicUser>>(requestUrl);
   }
 }
