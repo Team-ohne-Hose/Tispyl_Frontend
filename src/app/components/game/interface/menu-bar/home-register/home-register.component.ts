@@ -55,9 +55,7 @@ export class HomeRegisterComponent {
     console.debug('Initialized bottle cap index to: ', this.myBCapIndex);
     this.bottleCapSource = this.loader.getBCapTextureThumbPath(this.myBCapIndex);
 
-    this.userManagement.getActiveUser().subscribe((u) => {
-      this.user = u;
-    });
+    this.user = this.userManagement.activeUser.value;
 
     this.chatMessages = this.chatService.getChatMessages();
     this.chatService.setMessageCallback(this.onChatMessage.bind(this));

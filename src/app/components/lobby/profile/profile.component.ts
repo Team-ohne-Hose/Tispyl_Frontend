@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { Observable } from 'rxjs';
 import { FileService } from 'src/app/services/file.service';
-import { LoginUser, User, UserService } from 'src/app/services/user.service';
+import { BasicUser, LoginUser, UserService } from 'src/app/services/user.service';
 
 class ImageSnippet {
   pending = false;
@@ -19,13 +18,11 @@ class ImageSnippet {
 })
 export class ProfileComponent implements OnInit {
   timePlayed: string;
-  currentUser: User;
+  currentUser: LoginUser;
   profileSource: string;
   selectedFile: ImageSnippet;
   isCurrentUser: boolean;
-  foreignUser: LoginUser;
-
-  user: Observable<User>;
+  foreignUser: BasicUser;
 
   constructor(
     private route: ActivatedRoute,
@@ -51,13 +48,13 @@ export class ProfileComponent implements OnInit {
 
     // get foreign user
     this.userService.requestUserDatabyId(userId).subscribe((response) => {
-      this.foreignUser = response.payload as LoginUser;
+      this.foreignUser = response.payload as BasicUser;
       this.isCurrentUser = this.foreignUser.login_name === this.currentUser.login_name;
       this.profileSource = this.fileService.profilePictureSource(this.foreignUser.login_name, true);
       this.changeDetector.markForCheck();
     });
 
-    this.userService.activeUser.subscribe((user: User) => {
+    this.userService.activeUser.subscribe((user: LoginUser) => {
       if (user !== undefined) {
         this.currentUser = user;
         this.profileSource = this.fileService.profilePictureSource(user.login_name, true);

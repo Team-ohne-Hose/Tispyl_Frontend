@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { UserService, User } from '../../../services/user.service';
+import { UserService, LoginUser } from '../../../services/user.service';
 import { FileService } from '../../../services/file.service';
 import { PlayerModel } from '../../../model/WsData';
 import { ObjectLoaderService } from '../../../services/object-loader.service';
@@ -16,7 +16,7 @@ export class ProfileDisplayComponent {
   selectedFigure;
   selectedEnv = 9;
 
-  @Input() user: User;
+  @Input() user: LoginUser;
   profileSource;
 
   figureList = figureList;

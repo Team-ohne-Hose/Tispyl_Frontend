@@ -45,7 +45,7 @@ export class GameComponent implements OnInit, AfterViewInit {
     this.colyseus.getActiveRoom().subscribe(
       (myRoom) => {
         if (myRoom === undefined) {
-          this.router.navigateByUrl('/home/lobby');
+          this.router.navigateByUrl('/lobby');
           this.loadGame = false;
         } else {
           const msg: GameAction = {

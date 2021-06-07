@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { APIResponse } from '../model/APIResponse';
-import { UserService, LoginUser } from './user.service';
+import { UserService, BasicUser, LoginUser } from './user.service';
 import moment from 'moment';
 import { RegisterOptions } from '../model/RegisterOptions';
 import { Observable, throwError } from 'rxjs';
@@ -16,7 +16,7 @@ export class JwtResponse {
 @Injectable({ providedIn: 'root' })
 export class JwtTokenService {
   private JwtToken: string = null;
-  readonly endpoint = environment.production + 'user';
+  readonly endpoint = environment.endpoint + 'user';
 
   constructor(private http: HttpClient, private userService: UserService) {}
 
@@ -36,7 +36,7 @@ export class JwtTokenService {
     localStorage.setItem('expires_at', JSON.stringify(expiresAt.valueOf()));
   }
 
-  login(username: string, password: string): Observable<LoginUser> {
+  login(username: string, password: string): Observable<BasicUser> {
     return this.http.post<APIResponse<JwtResponse>>(this.endpoint + '/token', { username, password }).pipe(
       map((jwt: APIResponse<JwtResponse>) => {
         if (jwt.success) {

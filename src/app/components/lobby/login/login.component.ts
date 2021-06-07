@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { TextContainer } from '../../../model/TextContainer';
 import * as hash from 'object-hash';
-import { UserService, LoginUser } from '../../../services/user.service';
+import { UserService, BasicUser } from '../../../services/user.service';
 import { JwtTokenService } from 'src/app/services/jwttoken.service';
 import { TranslationService } from '../../../services/translation/translation.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -110,7 +110,7 @@ export class LoginComponent implements OnInit {
     }
 
     this.jwtTokenService.login(this.login_name, hash.MD5(this.password_plain)).subscribe(
-      (usr: LoginUser) => {
+      (usr: BasicUser) => {
         this.isRequesting = false;
         console.debug('Logged in as: ', usr);
         this.router

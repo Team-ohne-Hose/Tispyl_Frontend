@@ -73,7 +73,7 @@ import { ResolveToHeadlinePipe } from './components/lobby/news/resolve-to-headli
 
 const appRoutes: Routes = [
   {
-    path: 'home',
+    path: '',
     component: HomeComponent,
     children: [
       { path: '', redirectTo: 'news', pathMatch: 'full' },
@@ -103,7 +103,6 @@ const appRoutes: Routes = [
     ],
   },
   { path: 'game', component: GameComponent },
-  { path: '', redirectTo: '/home/news', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent },
 ];
 

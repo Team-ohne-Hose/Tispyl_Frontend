@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { User } from 'src/app/services/user.service';
+import { BasicUser, LoginUser } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-gamehistory',
@@ -7,7 +7,7 @@ import { User } from 'src/app/services/user.service';
   styleUrls: ['../profile.component.css'],
 })
 export class GameHistoryComponent {
-  @Input() currentUser: User;
+  @Input() currentUser: BasicUser;
 
   randomNumber(min: number, max: number): number {
     return Math.random() * (max - min) + min;

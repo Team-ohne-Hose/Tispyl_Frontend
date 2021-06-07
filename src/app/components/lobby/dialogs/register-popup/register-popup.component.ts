@@ -3,7 +3,7 @@ import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { RegisterOptions } from 'src/app/model/RegisterOptions';
 import { JwtTokenService } from 'src/app/services/jwttoken.service';
-import { User } from '../../../../services/user.service';
+import { LoginUser } from '../../../../services/user.service';
 
 @Component({
   templateUrl: './register-popup.component.html',
@@ -18,7 +18,7 @@ export class RegisterPopupComponent {
   errorMsg: string[] = [];
 
   constructor(
-    private dialogRef: MatDialogRef<RegisterPopupComponent, User>,
+    private dialogRef: MatDialogRef<RegisterPopupComponent, LoginUser>,
     private AuthService: JwtTokenService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
