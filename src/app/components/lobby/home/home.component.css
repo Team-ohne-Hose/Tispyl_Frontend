@@ -296,6 +296,9 @@
   max-width: 80%;
 }
 
+foot-notes > info > a {
+}
+
 @media only screen and (max-width: 1000px) {
   .nav-bar {
     grid-template-columns: 20vw auto 50vw auto 20vw;
