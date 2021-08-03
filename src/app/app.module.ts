@@ -70,6 +70,7 @@ import { MdContentComponent } from './components/lobby/md-content-list/md-conten
 import { MdContentDirective } from './components/lobby/md-content-list/md-content.directive';
 import { MdContentListComponent } from './components/lobby/md-content-list/md-content-list.component';
 import { ResolveToHeadlinePipe } from './components/lobby/news/resolve-to-headline.pipe';
+import { ImprintComponent } from './components/imprint/imprint.component';
 
 const appRoutes: Routes = [
   {
@@ -96,10 +97,11 @@ const appRoutes: Routes = [
       { path: 'register', component: PageNotFoundComponent },
       { path: 'settings', component: SettingsComponent },
       { path: 'report', component: PageNotFoundComponent },
-      { path: 'imprint', component: PageNotFoundComponent },
+      { path: 'imprint', component: ImprintComponent },
       { path: 'about', component: PageNotFoundComponent },
       { path: 'credits', component: PageNotFoundComponent },
       { path: '_debug', component: DebugdummyComponent },
+      { path: 'bug', component: PageNotFoundComponent },
     ],
   },
   { path: 'game', component: GameComponent },
