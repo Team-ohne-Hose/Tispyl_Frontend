@@ -1,12 +1,11 @@
 <div class="news-layout">
-
   <app-md-content-list class="news" [src]=src></app-md-content-list>
 
   <div class="sticky-swim-lane">
     <div class="news-quick-links">
       <div class="news-quick-header">News:</div>
-      <div class="news-quick-item" *ngFor="let news of availableNews" >
-        {{ news | resolveToHeadline | async }}
+      <div class="news-quick-item" *ngFor="let news of availableNews" [attr.id]='news' >
+        <a [routerLink]='"."' [fragment]="news">{{ news | resolveToHeadline | async }}</a>
       </div>
     </div>
   </div>
