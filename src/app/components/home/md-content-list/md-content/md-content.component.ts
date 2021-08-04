@@ -8,6 +8,7 @@ import { MarkdownContentService, SourceDirectory } from '../../../../services/ma
 })
 export class MdContentComponent {
   mdText = undefined;
+  anchorTag = undefined;
   constructor(private mcs: MarkdownContentService) {}
 
   /**
@@ -23,6 +24,7 @@ export class MdContentComponent {
     this.mcs.getMarkdownFor(dir, fileName).subscribe(
       (md: string) => {
         this.mdText = md;
+        this.anchorTag = fileName;
       },
       (error) => {
         console.error(error);

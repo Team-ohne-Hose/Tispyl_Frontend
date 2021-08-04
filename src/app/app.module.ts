@@ -160,7 +160,7 @@ const appRoutes: Routes = [
   imports: [
     RouterModule.forRoot(
       appRoutes, // ,{ enableTracing: true } // <-- debugging purposes only
-      { relativeLinkResolution: 'legacy' }
+      { relativeLinkResolution: 'legacy', anchorScrolling: 'enabled' }
     ),
     ReactiveFormsModule,
     DragDropModule,
