@@ -1,4 +1,3 @@
-
 .ornamental-box {
   height: auto;
   width: 8px;
@@ -44,7 +43,6 @@
   background-color: #4b4b4b;
 }
 
-
 .heading {
   font-size: large;
   margin-right: 4px;
@@ -57,7 +55,7 @@
 }
 
 .naming {
-  flex-direction: column
+  flex-direction: column;
 }
 
 .date {
@@ -68,13 +66,11 @@
 
 .delete-game {
   align-self: center;
-
 }
 
 .blue-text {
   color: lightskyblue;
 }
-
 
 .controls {
   display: flex;
@@ -89,7 +85,6 @@
   box-shadow: 0 0 0 0;
   background-color: transparent;
 }
-
 
 .controls .enter {
   color: rgb(205, 238, 200);
@@ -124,4 +119,3 @@
 .count i {
   margin-right: 8px;
 }
-

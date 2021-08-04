@@ -4,7 +4,7 @@ import { FileService } from '../../../services/file.service';
 import { PlayerModel } from '../../../model/WsData';
 import { ObjectLoaderService } from '../../../services/object-loader.service';
 import { JwtTokenService } from 'src/app/services/jwttoken.service';
-import { figureList, environmentList } from '../lobbyLUTs';
+import { figureList, environmentList } from '../lobby/lobbyLUTs';
 
 @Component({
   selector: 'app-profile-display',

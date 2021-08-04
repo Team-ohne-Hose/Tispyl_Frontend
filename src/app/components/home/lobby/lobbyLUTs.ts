@@ -1,4 +1,4 @@
-import { PlayerModel } from '../../model/WsData';
+import { PlayerModel } from '../../../model/WsData';
 
 export enum Resolution {
   res_8k,
