@@ -8,7 +8,7 @@ import { LoginComponent } from './components/home/login/login.component';
 import { RulesComponent } from './components/home/rules/rules.component';
 import { GifViewerComponent } from './components/home/gif-viewer/gif-viewer.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -61,8 +61,6 @@ import { ProfileComponent } from './components/home/profile/profile.component';
 import { SettingsComponent } from './components/home/settings/settings.component';
 import { CustomEditorComponent } from './components/home/custom-editor/custom-editor.component';
 import { ChatCommandListComponent } from './components/game/interface/menu-bar/home-register/chat-command-list/chat-command-list.component';
-import { ReactiveFormsModule } from '@angular/forms';
-import { NgbCarouselModule, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
 import { GameHistoryComponent } from './components/home/profile/gamehistory/gamehistory.component';
 import { EditProfileComponent } from './components/home/profile/edit-profile/edit-profile.component';
 import { MarkdownToHtmlModule } from 'markdown-to-html-pipe';
@@ -71,6 +69,9 @@ import { MdContentDirective } from './components/home/md-content-list/md-content
 import { MdContentListComponent } from './components/home/md-content-list/md-content-list.component';
 import { ResolveToHeadlinePipe } from './components/home/news/resolve-to-headline.pipe';
 import { ImprintComponent } from './components/imprint/imprint.component';
+import { ContactComponent } from './components/contact/contact.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { AppToastsComponent } from './components/toast/toast.component';
 
 const appRoutes: Routes = [
   {
@@ -100,6 +101,7 @@ const appRoutes: Routes = [
       { path: 'imprint', component: ImprintComponent },
       { path: 'about', component: PageNotFoundComponent },
       { path: 'credits', component: PageNotFoundComponent },
+      { path: 'contact', component: ContactComponent },
       { path: '_debug', component: DebugdummyComponent },
       { path: 'bug', component: PageNotFoundComponent },
     ],
@@ -156,13 +158,14 @@ const appRoutes: Routes = [
     MdContentDirective,
     MdContentListComponent,
     ResolveToHeadlinePipe,
+    ContactComponent,
+    AppToastsComponent,
   ],
   imports: [
     RouterModule.forRoot(
       appRoutes, // ,{ enableTracing: true } // <-- debugging purposes only
       { relativeLinkResolution: 'legacy', anchorScrolling: 'enabled' }
     ),
-    ReactiveFormsModule,
     DragDropModule,
     BrowserModule,
     HttpClientModule,
@@ -175,6 +178,7 @@ const appRoutes: Routes = [
     MatExpansionModule,
     MatFormFieldModule,
     FormsModule,
+    ReactiveFormsModule,
     MatIconModule,
     MatListModule,
     MatChipsModule,
@@ -182,9 +186,8 @@ const appRoutes: Routes = [
     MatStepperModule,
     MatSlideToggleModule,
     CdkStepperModule,
-    NgbCarouselModule,
-    NgbPopoverModule,
     MarkdownToHtmlModule,
+    NgbModule,
   ],
   providers: [
     {
