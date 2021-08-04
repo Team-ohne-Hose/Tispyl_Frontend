@@ -74,12 +74,11 @@
   background: var(--scrollbarBG);
 }
 .customScrollBarContainer::-webkit-scrollbar-thumb {
-  background-color: var(--thumbBG) ;
+  background-color: var(--thumbBG);
   border-radius: 8px;
   border: 3px solid var(--scrollbarBG);
 }
 /* End Scrollbars */
-
 
 .deck-list-entry {
   background-color: hsl(0, 0%, 80%);
@@ -97,7 +96,8 @@
   position: relative;
   padding: 0px 28px;
 }
-.carousel-control-prev,.carousel-control-next {
+.carousel-control-prev,
+.carousel-control-next {
   width: 40px;
 }
 
@@ -155,7 +155,7 @@
 }
 .switch {
   margin-right: 1rem;
-  padding: .4rem .8rem;
+  padding: 0.4rem 0.8rem;
   background-color: #676767;
   border-radius: 1rem;
   color: #161616;
