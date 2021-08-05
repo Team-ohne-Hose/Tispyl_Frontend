@@ -21,7 +21,7 @@
                 <p class="text-secondary mb-1">Role (coming soon)</p>
                 <p class="text-muted font-size-sm">Level (coming soon)</p>
 
-                <a class="btn btn-primary profile-btn" [routerLink]="['./profile', currentUser.id]">Edit</a>
+                <a (click)="toggleShow()" class="btn btn-primary profile-btn">Edit</a>
                 <a class="btn btn-primary profile-btn" (click)="imageInput.click()" *ngIf="isCurrentUser">Upload</a>
                 <a class="btn btn-outline-primary profile-btn" [routerLink]="['./profile', currentUser.id]">Message</a>
               </div>
@@ -79,7 +79,8 @@
 
       <!--Game History-->
       <div class="col-md-8">
-        <app-gamehistory [currentUser]="foreignUser"></app-gamehistory>
+        <app-gamehistory *ngIf="isShownLastGames" [currentUser]="foreignUser"></app-gamehistory>
+        <app-edit-profile *ngIf="!isShownLastGames" [currentUser]="currentUser"></app-edit-profile>
       </div>
       <!--End Game History-->
     </div>
