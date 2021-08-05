@@ -24,12 +24,18 @@ export class ProfileComponent implements OnInit {
   isCurrentUser: boolean;
   foreignUser: BasicUser;
 
+  isShownLastGames = true;
+
   constructor(
     private route: ActivatedRoute,
     private changeDetector: ChangeDetectorRef,
     private userService: UserService,
     private fileService: FileService
   ) {}
+
+  toggleShow() {
+    this.isShownLastGames = !this.isShownLastGames;
+  }
 
   private onSuccess() {
     this.selectedFile.pending = false;
