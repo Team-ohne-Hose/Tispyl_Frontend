@@ -41,7 +41,6 @@ export class PlayerIconComponent {
     const file = target?.files[0];
     if (this.player !== undefined && file !== undefined) {
       this.fileManagement.uploadProfilePicture(file, this.currentUser).subscribe((suc) => {
-        console.log('Uploaded new profile picture: ', suc);
         this.currentSource = this.fileManagement.profilePictureSource(this.player.loginName);
         const msg: RefreshProfilePics = {
           type: MessageType.REFRESH_COMMAND,
