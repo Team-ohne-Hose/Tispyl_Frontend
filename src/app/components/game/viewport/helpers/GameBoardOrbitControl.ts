@@ -1,5 +1,9 @@
 import { EventDispatcher, MOUSE, PerspectiveCamera, Quaternion, Spherical, TOUCH, Vector2, Vector3 } from 'three';
 
+/**
+ * GameBoardOrbitControl updates the camera position through user input.
+ * @See OrbitControlReadMe.md for an in depth explanation
+ */
 export class GameBoardOrbitControl extends EventDispatcher {
   camera: PerspectiveCamera;
   domElement: HTMLElement;
@@ -11,25 +15,27 @@ export class GameBoardOrbitControl extends EventDispatcher {
   enableRotate = true;
   enableKeys = true;
   enableDollyAngle = true;
+  enableDampening = true;
 
   EPSILON = 0.001;
   minTargetOffset = 0;
-  maxTargetOffset = 100;
-  minRadius = 0;
-  maxRadius = Infinity;
+  maxTargetOffset = 55;
+  minRadius = 10;
+  maxRadius = 100;
   minTheta = -Infinity;
   maxTheta = Infinity;
-  minPhi = 0;
-  maxPhi = Math.PI;
-  targetOffsetSpeed = 10;
+  minPhi = Math.PI * 0.48;
+  maxPhi = Math.PI * 0.2;
+  targetOffsetSpeed = 25;
   zoomSpeed = 1;
   rotateSpeed = 1;
   minRotSpeed = 0.1;
   maxRotSpeed = 0.7;
   rotSpeedCurvature = 0.1;
-  dollyCurvature = 0.2;
+  dollyCurvature = 1;
+  dampeningFactor = 0.1;
 
-  mouseButtons = { LEFT: MOUSE.ROTATE, MIDDLE: MOUSE.DOLLY, RIGHT: undefined };
+  mouseButtons = { LEFT: undefined, MIDDLE: MOUSE.DOLLY, RIGHT: MOUSE.ROTATE };
   touches = { ONE: TOUCH.ROTATE, TWO: undefined };
 
   /** Constants and Internal control flow values */
@@ -50,7 +56,6 @@ export class GameBoardOrbitControl extends EventDispatcher {
   private endEvent = { type: 'end' };
 
   /** Delta variables -> "Input parameters" for the Update() function */
-  private targetOffset = 0;
   private rotateStart = new Vector2();
   private rotateEnd = new Vector2();
   private rotateDelta = new Vector2();
@@ -58,10 +63,12 @@ export class GameBoardOrbitControl extends EventDispatcher {
   private dollyEnd = new Vector2();
   private dollyDelta = new Vector2();
   private sphericalDt = new Spherical();
+  private targetOffsetDt = 0;
   private scaleChange = 1;
 
   /** Member variables of the Update() function */
   private m: {
+    targetOffset: number;
     camOffset: Vector3;
     camSpherical: Spherical;
     targetOffsetVec: Vector3;
@@ -77,6 +84,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
 
     /** basic initialization */
     this.m = {
+      targetOffset: 0,
       camOffset: new Vector3(),
       camSpherical: new Spherical(),
       targetOffsetVec: new Vector3(),
@@ -119,12 +127,16 @@ export class GameBoardOrbitControl extends EventDispatcher {
     this.m.camSpherical.setFromVector3(this.m.camOffset); // camOffset as spherical coordinates (Spherical)
 
     /** Calculate rotation speed based on distance to the center point */
-    let rotSpeed = 1 - this.normalize(this.targetOffset, this.minTargetOffset, this.maxTargetOffset); // inv. normalized distance to target
+    let rotSpeed = 1 - this.normalize(this.m.targetOffset, this.minTargetOffset, this.maxTargetOffset); // inv.normalized distance to target
     rotSpeed = this.mapCurvature(rotSpeed, this.rotSpeedCurvature); // calculate percentage speed based on distance and curvature
     rotSpeed = this.minRotSpeed + (this.maxRotSpeed - this.minRotSpeed) * rotSpeed; // apply percentage between min and max speed
 
     /** Apply (left/right) rotation delta */
-    this.m.camSpherical.theta += this.sphericalDt.theta * rotSpeed;
+    if (this.enableDampening) {
+      this.m.camSpherical.theta += this.sphericalDt.theta * rotSpeed * this.dampeningFactor;
+    } else {
+      this.m.camSpherical.theta += this.sphericalDt.theta * rotSpeed;
+    }
     this.m.camSpherical.theta = Math.max(this.minTheta, Math.min(this.maxTheta, this.m.camSpherical.theta)); // clamp theta to min and max
     this.m.camSpherical.makeSafe(); // restrict to the fewest rotations to reach the destination
     this.m.camOffset.setFromSpherical(this.m.camSpherical); // update vector3 representation
@@ -141,16 +153,20 @@ export class GameBoardOrbitControl extends EventDispatcher {
     if (this.enableDollyAngle) {
       const dist = this.normalize(this.m.camSpherical.radius, this.minRadius, this.maxRadius); // inv. normalized distance to target
       const angleNorm = this.mapCurvature(dist, this.dollyCurvature); // calculate percentage angle based on distance and curvature
-      this.m.camSpherical.phi = this.minPhi + (this.maxPhi - this.minPhi) * angleNorm; // apply percentage between min
-      // and max angle
+      this.m.camSpherical.phi = this.minPhi + (this.maxPhi - this.minPhi) * angleNorm; // apply percentage between min and max angle
     }
     this.m.camOffset.setFromSpherical(this.m.camSpherical); // put modified vector back into offset
 
     /** In 'target space': Calculate targetOffsetVec (vector from 'scene center' to 'camera lookAt') */
-    this.targetOffset = Math.max(this.minTargetOffset, Math.min(this.maxTargetOffset, this.targetOffset));
+    if (this.enableDampening) {
+      this.m.targetOffset += this.targetOffsetDt * this.targetOffsetSpeed * this.dampeningFactor;
+    } else {
+      this.m.targetOffset += this.targetOffsetDt * this.targetOffsetSpeed;
+    }
+    this.m.targetOffset = Math.max(this.minTargetOffset, Math.min(this.maxTargetOffset, this.m.targetOffset));
     this.m.targetOffsetVec = this.m.camOffset.clone();
     this.m.targetOffsetVec.y = 0;
-    this.m.targetOffsetVec.normalize().multiplyScalar(this.targetOffset);
+    this.m.targetOffsetVec.normalize().multiplyScalar(this.m.targetOffset);
 
     /** Apply distance delta (Forward/Backward) and move back in world space */
     this.m.camOffset.add(this.m.targetOffsetVec);
@@ -161,7 +177,14 @@ export class GameBoardOrbitControl extends EventDispatcher {
     this.camera.lookAt(tgt);
 
     /** Reset values and issue a 'changeEvent' if changes were significant */
-    this.sphericalDt.set(0, 0, 0);
+    if (this.enableDampening) {
+      this.sphericalDt.theta *= 1 - this.dampeningFactor;
+      this.sphericalDt.phi *= 1 - this.dampeningFactor;
+      this.targetOffsetDt *= 1 - this.dampeningFactor;
+    } else {
+      this.sphericalDt.set(0, 0, 0);
+      this.targetOffsetDt = 0;
+    }
     this.scaleChange = 1;
     if (
       this.m.lastPosition.distanceToSquared(this.camera.position) > this.EPSILON ||
@@ -560,8 +583,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
   }
 
   private rotateUp(angle: number): void {
-    this.targetOffset -= this.targetOffsetSpeed * angle;
-    this.targetOffset = Math.max(this.minTargetOffset, Math.min(this.maxTargetOffset, this.targetOffset));
+    this.targetOffsetDt -= angle;
   }
 
   private dollyOut(dollyScale: number): void {

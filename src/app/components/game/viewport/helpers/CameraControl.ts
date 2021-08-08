@@ -12,6 +12,7 @@ export class CameraControl {
   }
 
   lookAtPosition(pos: THREE.Vector3, angle: THREE.Vector3, distance: number): void {
+    // not used as of yet
     const p2 = angle.clone().normalize().multiplyScalar(-distance).add(pos.clone());
     this.cam.position.set(p2.x, p2.y, p2.z);
     this.controls.update();

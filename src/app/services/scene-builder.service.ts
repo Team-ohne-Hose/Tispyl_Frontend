@@ -15,22 +15,6 @@ export class SceneBuilderService {
 
   generateGameBoardOrbitControls(cam: THREE.PerspectiveCamera, domElem: HTMLElement): GameBoardOrbitControl {
     const orbitCtrl = new GameBoardOrbitControl(cam, domElem);
-    orbitCtrl.mouseButtons = {
-      LEFT: undefined,
-      MIDDLE: THREE.MOUSE.DOLLY,
-      RIGHT: THREE.MOUSE.ROTATE,
-    };
-    orbitCtrl.minPhi = Math.PI * 0.48;
-    orbitCtrl.maxPhi = Math.PI * 0.2;
-    orbitCtrl.dollyCurvature = 1;
-    orbitCtrl.enableDollyAngle = true;
-    orbitCtrl.minRadius = 10;
-    orbitCtrl.maxRadius = 100;
-
-    orbitCtrl.targetOffsetSpeed = 25;
-    orbitCtrl.minTargetOffset = 0;
-    orbitCtrl.maxTargetOffset = 55;
-
     orbitCtrl.update();
     return orbitCtrl;
   }
