@@ -58,6 +58,7 @@ export class ViewportComponent implements AfterViewInit {
 
     this.boardItemManager.updateSprites(this.labelSpritesHidden, this.scene);
     this.renderer.render(this.scene, this.camera);
+    this.controls.update();
     this.stats.update();
   }
 
@@ -138,7 +139,7 @@ export class ViewportComponent implements AfterViewInit {
     console.debug('THREE.js rendering started');
   }
 
-  keyDown(event): void {
+  keyDown(event: KeyboardEvent): void {
     if (event.key === 'Tab') {
       this.labelSpritesHidden = false;
       event.preventDefault();
@@ -146,13 +147,13 @@ export class ViewportComponent implements AfterViewInit {
     }
   }
 
-  keyUp(event): void {
+  keyUp(event: KeyboardEvent): void {
     if (event.key === 'Tab') {
       this.labelSpritesHidden = true;
     }
   }
 
-  onWindowResize(event): void {
+  onWindowResize(_: Event): void {
     console.debug(
       'viewResizing: ',
       window.innerWidth,
