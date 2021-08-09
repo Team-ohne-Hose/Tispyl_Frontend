@@ -1,12 +1,20 @@
-<div class="center">
-  <div class="progressBarContainer">
-    <div [style.width.%]="progress * .9 + 10" class="progressBar">
-      <div class="centerText">
-        {{progress}} %
-      </div>
+
+<div class="flex">
+
+  <img [src]="logoSource" alt="ONLINE-TISCHSPIEL" class="logo">
+
+  <div class="center">
+    <div class="centerText">
+      {{progress}}%
+    </div>
+    <div class="progressBarContainer">
+      <div [style.width.%]="progress * .9 + 10" class="progressBar"></div>
     </div>
   </div>
+
+  <div class="tips">
+    {{currentTip}}
+  </div>
+
 </div>
-<div #tips class="tips">
-  {{currentTip}}
-</div>
+
