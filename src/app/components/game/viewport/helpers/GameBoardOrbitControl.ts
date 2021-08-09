@@ -6,7 +6,7 @@ import { EventDispatcher, MOUSE, PerspectiveCamera, Quaternion, Spherical, TOUCH
  */
 export class GameBoardOrbitControl extends EventDispatcher {
   camera: PerspectiveCamera;
-  domElement: HTMLElement;
+  domElement: HTMLCanvasElement;
   target = new Vector3();
 
   /** Configurable parameters. See OrbitControlReadMe.md for more info on these */
@@ -76,7 +76,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
     lastQuaternion: Quaternion;
   };
 
-  constructor(cam: PerspectiveCamera, domElement: HTMLElement) {
+  constructor(cam: PerspectiveCamera, domElement: HTMLCanvasElement) {
     super();
     this.camera = cam;
     this.domElement = domElement;
@@ -98,26 +98,38 @@ export class GameBoardOrbitControl extends EventDispatcher {
     }
   }
 
+  readonly cbs = {
+    onContextMenu: this.onContextMenu.bind(this),
+    onMouseDown: this.onMouseDown.bind(this),
+    onMouseMove: this.onMouseMove.bind(this),
+    onMouseUp: this.onMouseUp.bind(this),
+    onMouseWheel: this.onMouseWheel.bind(this),
+    onTouchStart: this.onTouchStart.bind(this),
+    onTouchEnd: this.onTouchEnd.bind(this),
+    onTouchMove: this.onTouchMove.bind(this),
+    onKeyDown: this.onKeyDown.bind(this),
+  };
+
   bindListeners(): void {
-    this.domElement.addEventListener('contextmenu', this.onContextMenu.bind(this), false);
-    this.domElement.addEventListener('mousedown', this.onMouseDown.bind(this), false);
-    this.domElement.addEventListener('wheel', this.onMouseWheel.bind(this), false);
-    this.domElement.addEventListener('touchstart', this.onTouchStart.bind(this), false);
-    this.domElement.addEventListener('touchend', this.onTouchEnd.bind(this), false);
-    this.domElement.addEventListener('touchmove', this.onTouchMove.bind(this), false);
-    this.domElement.addEventListener('keydown', this.onKeyDown.bind(this), false);
+    this.domElement.addEventListener('contextmenu', this.cbs.onContextMenu, false);
+    this.domElement.addEventListener('mousedown', this.cbs.onMouseDown, false);
+    this.domElement.addEventListener('wheel', this.cbs.onMouseWheel, false);
+    this.domElement.addEventListener('touchstart', this.cbs.onTouchStart, false);
+    this.domElement.addEventListener('touchend', this.cbs.onTouchEnd, false);
+    this.domElement.addEventListener('touchmove', this.cbs.onTouchMove, false);
+    this.domElement.addEventListener('keydown', this.cbs.onKeyDown, false);
   }
 
   dispose(): void {
-    this.domElement.removeEventListener('contextmenu', this.onContextMenu.bind(this), false);
-    this.domElement.removeEventListener('mousedown', this.onMouseDown.bind(this), false);
-    this.domElement.removeEventListener('wheel', this.onMouseWheel.bind(this), false);
-    this.domElement.removeEventListener('touchstart', this.onTouchStart.bind(this), false);
-    this.domElement.removeEventListener('touchend', this.onTouchEnd.bind(this), false);
-    this.domElement.removeEventListener('touchmove', this.onTouchMove.bind(this), false);
-    document.removeEventListener('mousemove', this.onMouseMove.bind(this), false);
-    document.removeEventListener('mouseup', this.onMouseUp.bind(this), false);
-    this.domElement.removeEventListener('keydown', this.onKeyDown.bind(this), false);
+    this.domElement.removeEventListener('contextmenu', this.cbs.onContextMenu, false);
+    this.domElement.removeEventListener('mousedown', this.cbs.onMouseDown, false);
+    this.domElement.removeEventListener('wheel', this.cbs.onMouseWheel, false);
+    this.domElement.removeEventListener('touchstart', this.cbs.onTouchStart, false);
+    this.domElement.removeEventListener('touchend', this.cbs.onTouchEnd, false);
+    this.domElement.removeEventListener('touchmove', this.cbs.onTouchMove, false);
+    this.domElement.removeEventListener('mousemove', this.cbs.onMouseMove, false);
+    this.domElement.removeEventListener('mouseup', this.cbs.onMouseUp, false);
+    this.domElement.removeEventListener('keydown', this.cbs.onKeyDown, false);
   }
 
   update(): boolean {
@@ -296,8 +308,8 @@ export class GameBoardOrbitControl extends EventDispatcher {
 
     /** If a state change occurred, register listeners to act on followup actions */
     if (this.currentState !== this.CONTROL_STATE.NONE) {
-      document.addEventListener('mousemove', this.onMouseMove.bind(this), false);
-      document.addEventListener('mouseup', this.onMouseUp.bind(this), false); // implicitly unbinds the Listeners afterwards
+      this.domElement.addEventListener('mousemove', this.cbs.onMouseMove);
+      this.domElement.addEventListener('mouseup', this.cbs.onMouseUp, { once: true }); // implicitly unbinds the move Listeners afterwards
       this.dispatchEvent(this.startEvent);
     }
   }
@@ -328,9 +340,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
       return;
     }
     this.handleMouseUp(event);
-    document.removeEventListener('mousemove', this.onMouseMove.bind(this), false);
-    document.removeEventListener('mouseup', this.onMouseUp.bind(this), false);
-
+    this.domElement.removeEventListener('mousemove', this.cbs.onMouseMove);
     this.dispatchEvent(this.endEvent);
     this.currentState = this.CONTROL_STATE.NONE;
   }
