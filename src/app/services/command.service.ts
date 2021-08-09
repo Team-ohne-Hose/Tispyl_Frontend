@@ -8,6 +8,7 @@ import { ItemService } from './item.service';
 import { HintsService } from './hints.service';
 import { GameComponent } from '../components/game/game.component';
 import { ObjectLoaderService } from './object-loader.service';
+import { BoardItemControlService } from './board-item-control.service';
 
 export interface Command {
   cmd: string;
@@ -124,6 +125,12 @@ export class CommandService {
       description: 'load the HiRes Textures',
       prototype: '/hires',
     },
+    {
+      cmd: '/printSceneTree',
+      function: this.printSceneTree.bind(this),
+      description: 'prints the current SceneTree for debugging purposes',
+      prototype: '/printSceneTree',
+    },
     // TODO readd a feature alike this one. But add a new Player for this client instead
     /*{ cmd: '/addFigure',
       function: this.addGamefigure.bind(this),
@@ -138,7 +145,8 @@ export class CommandService {
     private chat: ChatService,
     private items: ItemService,
     private hints: HintsService,
-    private objectLoader: ObjectLoaderService
+    private objectLoader: ObjectLoaderService,
+    private bic: BoardItemControlService
   ) {}
 
   registerGame(gameComponent: GameComponent): void {
@@ -159,6 +167,10 @@ export class CommandService {
     } else {
       console.log('Unknown command: ', args);
     }
+  }
+
+  private printSceneTree(rawCMD: string, parameters: string[]): void {
+    this.print(JSON.stringify(this.bic.sceneTree.toJSON()), rawCMD);
   }
 
   private giveItem(rawCMD: string, parameters: string[]): void {
@@ -270,7 +282,7 @@ export class CommandService {
 
       // Parse the input and generate the glTF output
       exporter.parse(
-        this.gameComponent.boardItemControl.scene,
+        this.bic.sceneTree,
         function (result) {
           console.log(result);
           if (result instanceof ArrayBuffer) {
@@ -287,7 +299,7 @@ export class CommandService {
   }
 
   private respawn(rawCMD: string, parameters: string[]): void {
-    this.gameComponent.boardItemControl.respawnMyFigure();
+    this.bic.respawnMyFigure();
   }
 
   private askGame(rawCMD: string, parameters: string[]): void {
@@ -319,7 +331,7 @@ export class CommandService {
 
   private playAnthem(rawCMD: string, parameters: string[]): void {
     if (this.gameComponent !== undefined) {
-      this.gameComponent.audioCtrl.playAudio();
+      this.gameComponent.userInteraction.audioControls.playAudio();
     }
   }
 

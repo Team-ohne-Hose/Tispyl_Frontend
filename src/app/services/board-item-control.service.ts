@@ -1,38 +1,48 @@
+import { Injectable } from '@angular/core';
+import { PhysicsCommands } from '../components/game/viewport/helpers/PhysicsCommands';
+import { GameStateService } from './game-state.service';
+import { Color, ObjectLoaderService } from './object-loader.service';
+import { BoardTilesService } from './board-tiles.service';
+import { ItemService } from './item.service';
+import { ViewportComponent } from '../components/game/viewport/viewport.component';
 import * as THREE from 'three';
-import { SceneBuilderService } from '../../../../services/scene-builder.service';
-import { PhysicsCommands } from './PhysicsCommands';
-import { GameActionType, GameSetTile, MessageType } from '../../../../model/WsData';
-import { Color, ObjectLoaderService } from '../../../../services/object-loader.service';
+import { ColyseusNotifyable } from './game-initialisation.service';
+import { Player } from '../model/state/Player';
 import { MapSchema } from '@colyseus/schema';
-import { Player } from '../../../../model/state/Player';
-import { GameStateService } from '../../../../services/game-state.service';
-import { ColyseusNotifyable } from '../../../../services/game-initialisation.service';
+import { GameActionType, GameSetTile, MessageType } from '../model/WsData';
 
 export interface FigureItem {
   mesh: THREE.Object3D;
   labelSprite: THREE.Sprite;
   name: string;
   isHidden: boolean;
-  labelInScene: boolean;
 }
 
-export class BoardItemManagement implements ColyseusNotifyable {
+@Injectable({
+  providedIn: 'root',
+})
+export class BoardItemControlService implements ColyseusNotifyable {
+  rendererDomReference: HTMLCanvasElement;
+  sceneTree: THREE.Scene;
+  camera: THREE.PerspectiveCamera;
+
+  physics: PhysicsCommands;
+
   allFigures: FigureItem[];
   board: THREE.Mesh;
-  scene: THREE.Scene;
   markerGeo = new THREE.ConeBufferGeometry(1, 10, 15, 1, false, 0, 2 * Math.PI);
 
   constructor(
-    scene: THREE.Scene,
-    private sceneBuilder: SceneBuilderService,
-    private physics: PhysicsCommands,
-    private gameState: GameStateService,
-    private loader: ObjectLoaderService
+    public gameState: GameStateService,
+    public loader: ObjectLoaderService,
+    public boardTiles: BoardTilesService,
+    public itemService: ItemService
   ) {
-    this.scene = scene;
+    this.physics = new PhysicsCommands(this);
+
     this.allFigures = [];
     this.physics.addPlayer = ((mesh: THREE.Object3D, name: string) => {
-      this.allFigures.push({ mesh: mesh, labelSprite: undefined, name: name, isHidden: false, labelInScene: false });
+      this.allFigures.push({ mesh: mesh, labelSprite: undefined, name: name, isHidden: false });
       console.debug('adding to BoardItemManagement´s list of figures', name, mesh, this.allFigures);
     }).bind(this);
     this.physics.isPlayerCached = ((physId: number) => {
@@ -40,6 +50,12 @@ export class BoardItemManagement implements ColyseusNotifyable {
         return val.mesh.userData.physicsId === physId;
       });
     }).bind(this);
+  }
+
+  public bind(viewport: ViewportComponent): void {
+    this.camera = viewport.camera;
+    this.rendererDomReference = viewport.renderer.domElement;
+    this.sceneTree = viewport.sceneTree;
   }
 
   attachColyseusStateCallbacks(gameState: GameStateService): void {
@@ -63,10 +79,10 @@ export class BoardItemManagement implements ColyseusNotifyable {
           if (player.hasLeft !== figureItem.isHidden) {
             console.debug('changing hiddenState', player.hasLeft, figureItem.isHidden, this.allFigures);
             if (figureItem.isHidden) {
-              this.scene.add(figureItem.mesh);
+              this.sceneTree.add(figureItem.mesh);
               figureItem.isHidden = false;
             } else {
-              this.scene.remove(figureItem.mesh);
+              this.sceneTree.remove(figureItem.mesh);
               figureItem.isHidden = true;
             }
           }
@@ -113,46 +129,24 @@ export class BoardItemManagement implements ColyseusNotifyable {
     this.allFigures.forEach((figure: FigureItem) => {
       if (figure.labelSprite === undefined) {
         console.debug('adding Sprite for player ', figure.name);
-        figure.labelSprite = this.loader.createLabelSprite(
-          figure.name,
-          70,
-          'Roboto',
-          new Color(1, 1, 1, 1),
-          new Color(0.24, 0.24, 0.24, 0.9),
-          new Color(0.1, 0.1, 0.1, 0),
-          0,
-          4
-        );
+        figure.labelSprite = this.loader.createPredefLabelSprite(figure.name);
       }
       onProgressCallback();
-      figure.labelSprite.position.set(figure.mesh.position.x, figure.mesh.position.y + 5, figure.mesh.position.z);
+      figure.labelSprite.position.set(0, 5, 0);
     });
   }
 
-  updateSprites(hidden: boolean, scene: THREE.Scene): void {
+  hideNameTags(isHidden: boolean): void {
     for (const f of this.allFigures) {
       if (f.labelSprite === undefined) {
         console.debug('update: adding Sprite for player ', f.name);
-        f.labelSprite = this.loader.createLabelSprite(
-          f.name,
-          70,
-          'Roboto',
-          new Color(1, 1, 1, 1),
-          new Color(0.24, 0.24, 0.24, 0.9),
-          new Color(0.1, 0.1, 0.1, 0),
-          0,
-          4
-        );
+        f.labelSprite = this.loader.createPredefLabelSprite(f.name);
+        f.labelSprite.position.set(0, 5, 0);
       }
-      f.labelSprite.position.set(f.mesh.position.x, f.mesh.position.y + 5, f.mesh.position.z);
-      if (f.labelInScene !== !hidden) {
-        if (hidden) {
-          scene.remove(f.labelSprite);
-          f.labelInScene = false;
-        } else {
-          scene.add(f.labelSprite);
-          f.labelInScene = true;
-        }
+      if (isHidden) {
+        f.mesh.remove(f.labelSprite);
+      } else {
+        f.mesh.add(f.labelSprite);
       }
     }
   }
