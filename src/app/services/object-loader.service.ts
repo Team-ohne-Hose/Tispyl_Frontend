@@ -599,6 +599,19 @@ export class ObjectLoaderService {
     );
   }
 
+  createPredefLabelSprite(text: string): THREE.Sprite {
+    return this.createLabelSprite(
+      text,
+      70,
+      'Roboto',
+      new Color(1, 1, 1, 1),
+      new Color(0.24, 0.24, 0.24, 0.9),
+      new Color(0.1, 0.1, 0.1, 0),
+      0,
+      4
+    );
+  }
+
   createLabelSprite(
     text: string,
     fontSize?: number,
