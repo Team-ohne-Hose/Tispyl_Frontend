@@ -5,30 +5,33 @@
         <h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">assignment</i>Profil
           bearbeiten</h6>
 
-        <form class="px-5">
-          <div class="form-group row mb-5">
-            <label for="exampleFormControlInput1" class="col-sm-2 col-form-label">Anzeigename</label>
-            <div class="col-sm-3">
-              <input type="email" class="form-control" id="exampleFormControlInput1" value="{{currentUser?.display_name}}" placeholder="Max Mustermann">
+        <form class="needs-validation px-5" #editForm="ngForm" (ngSubmit)="submitUserChanges(editForm.value)"
+          novalidate>
+          <div class="form-row mb-3">
+            <div class="col-sm-12">
+              <label for="display-name">Anzeigename</label>
+              <input type="email" class="form-control" id="display-name" [ngModel]="currentUser.display_name" name="display_name" placeholder="Max Mustermann" ngModel>
             </div>
           </div>
-          <div class="form-group row">
-            <label for="exampleFormControlInput1" class="col-sm-2  col-form-label">Passwort</label>
-            <div class="col-sm-3">
-              <input type="password" class="form-control" id="exampleFormControlInput1" placeholder="">
+
+          <div class="form-row mb-3">
+            <div class="col-sm-12 my-3">
+              <label for="current-password">Passwort</label>
+              <input type="password" name="currentPassword" class="form-control" id="current-password" placeholder=""
+                ngModel>
+            </div>
+            <div class="col-sm-6 pass-col">
+              <label for="new-password">Neues Passwort</label>
+              <input type="password" name="newPassword" class="form-control" id="new-password" placeholder="" ngModel>
+            </div>
+
+            <div class="col-sm-6 pass-col">
+              <label for="new-password-confirmed">Passwort wiederholen</label>
+              <input type="password" name="newPasswordConfirmed" class="form-control" id="new-password-confirmed"
+                placeholder="" ngModel>
             </div>
           </div>
-          <div class="form-group row">
-            <label for="exampleFormControlInput1" class="col-sm-2 col-form-label">Neues Passwort</label>
-            <div class="col-sm-3">
-              <input type="password" class="form-control" id="exampleFormControlInput1" placeholder="">
-            </div>
-            <label for="exampleFormControlInput1" class="col-sm-2 offset-1 col-form-label">Passwort wiederholen</label>
-            <div class="col-sm-3">
-              <input type="password" class="form-control" id="exampleFormControlInput1" placeholder="">
-            </div>
-          </div>
-          <button class="btn btn-primary" type="submit">Abschicken</button>
+          <button type="submit" value="submit" class="btn btn-primary" type="submit">Abschicken</button>
         </form>
       </div>
     </div>

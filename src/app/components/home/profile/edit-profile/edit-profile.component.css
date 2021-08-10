@@ -1,0 +1,6 @@
+.pass-col {
+  display: grid;
+  align-items: end;
+  justify-items: start;
+  align-content: stretch;
+}
