@@ -33,7 +33,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
   maxRotSpeed = 0.7;
   rotSpeedCurvature = 0.1;
   dollyCurvature = 1;
-  dampeningFactor = 0.1;
+  dampeningFactor = 0.25;
 
   mouseButtons = { LEFT: undefined, MIDDLE: MOUSE.DOLLY, RIGHT: MOUSE.ROTATE };
   touches = { ONE: TOUCH.ROTATE, TWO: undefined };
@@ -101,7 +101,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
   readonly cbs = {
     onContextMenu: this.onContextMenu.bind(this),
     onMouseDown: this.onMouseDown.bind(this),
-    onMouseMove: this.onMouseMove.bind(this),
+    onMouseMove: this.throttled(15, this.onMouseMove.bind(this)),
     onMouseUp: this.onMouseUp.bind(this),
     onMouseWheel: this.onMouseWheel.bind(this),
     onTouchStart: this.onTouchStart.bind(this),
@@ -109,6 +109,19 @@ export class GameBoardOrbitControl extends EventDispatcher {
     onTouchMove: this.onTouchMove.bind(this),
     onKeyDown: this.onKeyDown.bind(this),
   };
+
+  /** This is used to avoid calling too many mouseMove events */
+  private throttled(delay: number, fn: (...args) => void): (...args) => void {
+    let lastCall = 0;
+    return function (...args) {
+      const now = Date.now();
+      if (now - lastCall < delay) {
+        return;
+      }
+      lastCall = now;
+      return fn(...args);
+    };
+  }
 
   bindListeners(): void {
     this.domElement.addEventListener('contextmenu', this.cbs.onContextMenu, false);
@@ -132,7 +145,17 @@ export class GameBoardOrbitControl extends EventDispatcher {
     this.domElement.removeEventListener('keydown', this.cbs.onKeyDown, false);
   }
 
-  update(): boolean {
+  update(force = false): boolean {
+    if (
+      /** Only update anything if significant changes happened or the update was forced */
+      Math.abs(this.sphericalDt.theta) < this.EPSILON &&
+      Math.abs(this.scaleChange - 1) < this.EPSILON &&
+      Math.abs(this.targetOffsetDt) < this.EPSILON &&
+      !force
+    ) {
+      return;
+    }
+
     /** Keep a reference to current values */
     const position = this.camera.position;
     this.m.camOffset.copy(position).sub(this.target); // cam position in relation to target (Vector3)
@@ -314,7 +337,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
     }
   }
 
-  private onMouseMove(event): void {
+  private onMouseMove(event: MouseEvent): void {
     if (this.enabled === false) {
       return;
     }
@@ -486,8 +509,6 @@ export class GameBoardOrbitControl extends EventDispatcher {
     this.rotateLeft((2 * Math.PI * this.rotateDelta.x) / element.clientHeight); // yes, height
     this.rotateUp((2 * Math.PI * this.rotateDelta.y) / element.clientHeight);
     this.rotateStart.copy(this.rotateEnd);
-
-    this.update();
   }
 
   private handleMouseMoveDolly(event: MouseEvent): void {
@@ -500,8 +521,6 @@ export class GameBoardOrbitControl extends EventDispatcher {
       this.dollyIn(this.getZoomScale());
     }
     this.dollyStart.copy(this.dollyEnd);
-
-    this.update();
   }
 
   private handleMouseUp(event: MouseEvent): void {
@@ -514,8 +533,6 @@ export class GameBoardOrbitControl extends EventDispatcher {
     } else if (event.deltaY > 0) {
       this.dollyOut(this.getZoomScale());
     }
-
-    this.update();
   }
 
   private handleTouchStartRotate(event): void {
