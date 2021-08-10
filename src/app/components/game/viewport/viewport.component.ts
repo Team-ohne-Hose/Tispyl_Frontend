@@ -1,13 +1,10 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import * as THREE from 'three';
 import { PerspectiveCamera, Renderer, Scene } from 'three';
-import { MouseInteraction } from './helpers/MouseInteraction';
-import { AudioControl } from './helpers/AudioControl';
 import { UserInteractionController } from './helpers/UserInteractionController';
-import { GameBoardOrbitControl } from './helpers/GameBoardOrbitControl';
 import { ObjectLoaderService } from '../../../services/object-loader.service';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
-import { ClickedTarget, PhysicsCommands } from './helpers/PhysicsCommands';
+import { ClickedTarget } from './helpers/PhysicsCommands';
 import { PhysicsEntity, PhysicsEntityVariation } from '../../../model/WsData';
 import { BoardTilesService } from '../../../services/board-tiles.service';
 import { GameStateService } from '../../../services/game-state.service';
@@ -67,6 +64,7 @@ export class ViewportComponent implements AfterViewInit {
   }
 
   startRendering(): void {
+    this.userInteractionController.cameraControls.update(true);
     this.animate();
     console.debug('THREE.js rendering started');
   }
