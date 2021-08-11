@@ -92,6 +92,7 @@ export class UserService {
       }
 
       this.activeUser.next(response.payload);
+
       this.toastService.show('Success', 'Dein Profil wurde erfolgreich aktualisiert.', 'bg-success text-light', 3000);
     });
   }
