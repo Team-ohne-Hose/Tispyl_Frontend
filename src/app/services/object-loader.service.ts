@@ -423,6 +423,9 @@ export class ObjectLoaderService {
       loader.load(resource.fname, (gltf: GLTF) => {
         gltf.scene.castShadow = true;
         gltf.scene.receiveShadow = true;
+        gltf.scene.children.forEach((o) => {
+          o.castShadow = true;
+        });
         resource.objectCache = gltf.scene.clone(true);
         callback(gltf.scene);
       });
@@ -518,7 +521,7 @@ export class ObjectLoaderService {
     gameBoard.castShadow = false;
     gameBoard.receiveShadow = true;
     gameBoard.name = 'gameboard';
-    this.gameBoardMat.roughness = 0.4;
+    this.gameBoardMat.roughness = 0.475;
 
     this.tLoader.load(
       this.gameBoardTextureURL,
@@ -556,7 +559,6 @@ export class ObjectLoaderService {
     const gameTileMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
     gameTileMat.roughness = 0.8;
     const gameTile = new THREE.Mesh(this.gameTileGeo, gameTileMat);
-    gameTile.castShadow = true;
     gameTile.receiveShadow = true;
     gameTile.name = 'gametile';
 
