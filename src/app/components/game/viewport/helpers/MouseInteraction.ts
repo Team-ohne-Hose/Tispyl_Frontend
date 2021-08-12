@@ -14,6 +14,9 @@ export class MouseInteraction {
 
   currentlySelected: { obj: THREE.Object3D; oldPos: Vector3 };
 
+  /** Throttled version of the mouseMove function to avoid too many ray casts */
+  mouseMoved = this.throttled(15, this._mouseMoved.bind(this));
+
   constructor(private bic: BoardItemControlService) {
     this.camera = bic.camera;
     this.bic.physics.addInteractable = this.addInteractable.bind(this);
@@ -29,7 +32,20 @@ export class MouseInteraction {
     this.currentSize.height = height;
   }
 
-  mouseMoved(event: MouseEvent): void {
+  /** This is used to avoid calling too many mouseMove events */
+  private throttled(delay: number, fn: (...args) => void): (...args) => void {
+    let lastCall = 0;
+    return function (...args) {
+      const now = Date.now();
+      if (now - lastCall < delay) {
+        return;
+      }
+      lastCall = now;
+      return fn(...args);
+    };
+  }
+
+  private _mouseMoved(event: MouseEvent): void {
     if (this.currentlySelected !== undefined) {
       const normX = (event.clientX / this.currentSize.width) * 2 - 1;
       const normY = -(event.clientY / this.currentSize.height) * 2 + 1;
