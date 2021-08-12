@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import * as THREE from 'three';
-import { PerspectiveCamera, Renderer, Scene } from 'three';
+import { PerspectiveCamera, Renderer, Scene, Vector3, WebGLRenderer } from 'three';
 import { UserInteractionController } from './helpers/UserInteractionController';
 import { ObjectLoaderService } from '../../../services/object-loader.service';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
@@ -31,7 +31,7 @@ export class ViewportComponent implements AfterViewInit {
   userInteractionController: UserInteractionController;
   sceneTree: Scene;
   camera: PerspectiveCamera;
-  renderer: Renderer;
+  renderer: WebGLRenderer;
 
   stats: Stats; // will be toggleable in a menu later on
 
@@ -54,6 +54,7 @@ export class ViewportComponent implements AfterViewInit {
     this.camera = new THREE.PerspectiveCamera();
     this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     this.renderer.setSize(width, height);
+    this.renderer.shadowMap.enabled = true;
     this.view.nativeElement.append(this.renderer.domElement, this.stats.dom);
 
     /** Bind viewport to its control objects */
@@ -98,9 +99,25 @@ export class ViewportComponent implements AfterViewInit {
     this.camera.position.set(0, 70, -30);
     this.camera.updateProjectionMatrix();
 
-    const spotlight = new THREE.SpotLight(0xffffff, 9, 0, 0.7, 0.45, 0.02);
-    spotlight.position.set(-60, 50, -90);
-    this.sceneTree.add(spotlight);
+    /** Lighting - NOTE: this setup is tailored specifically to the current object materials and is far off from any physical model */
+    const ambient = new THREE.AmbientLight(0xb1e1ff, 0.8); // soft blue-ish ambient light
+    const sun = new THREE.DirectionalLight(0xf7eee4, 4.5); // warm yellow-ish sun light
+    const sunTarget = new THREE.Object3D().translateY(5);
+    sun.position.set(20, 100, 90);
+    sun.shadow.camera.left = -60;
+    sun.shadow.camera.right = 60;
+    sun.shadow.camera.top = 60;
+    sun.shadow.camera.bottom = -60;
+    sun.shadow.camera.far = 200;
+    sun.shadow.camera.updateProjectionMatrix();
+    sun.shadow.mapSize.width = 4096;
+    sun.shadow.mapSize.height = 4096;
+    sun.shadow.bias = -0.00015;
+    sun.target = sunTarget;
+    sun.castShadow = true;
+
+    this.sceneTree.add(ambient);
+    this.sceneTree.add(sun);
 
     /** Load texture objects that require heavy operations */
     this.sceneTree.background = this.objectLoaderService.getCubeMap(); // sky box
