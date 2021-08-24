@@ -42,10 +42,10 @@
           <i class="fas fa-gavel"></i>
           <span>FAQ</span>
         </button>
-        <button *ngIf="isLoggedIn" class="nav-button" [routerLink]="['./profile', currentUser.id]">
+        <!--<button *ngIf="isLoggedIn" class="nav-button" [routerLink]="['./profile', currentUser.id]">
           <i class="fas fa-user-circle"></i>
           <span>Profile</span>
-        </button>
+        </button>-->
         <button class="nav-button" [routerLink]="['./updates']">
           <i class="far fa-clipboard"></i>
           <span>Updates</span>
@@ -61,9 +61,9 @@
           <img [src]="profileSource" alt="user" />
         </div>
         <div class="custom-dropdown-menu">
-          <button class="custom-dropdown-item" [routerLink]="['./settings']">
-            <i class="fas fa-cog"></i>
-            <span>Settings</span>
+          <button class="custom-dropdown-item" [routerLink]="['./profile', currentUser.id]">
+            <i class="fas fa-user-circle"></i>
+            <span>Profile</span>
           </button>
           <button class="custom-dropdown-item" (click)="onLogOut()">
             <i class="fas fa-door-open"></i>

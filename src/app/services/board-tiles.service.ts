@@ -107,7 +107,7 @@ export class BoardTilesService implements ColyseusNotifyable {
     const tileReadable = [];
     this.tiles.forEach((tile: Tile) => {
       if (tile !== undefined) {
-        tileReadable[tile.tileId] = tile.translationKey;
+        tileReadable[tile.tileId] = tile.title;
       }
     });
     console.info('Tiles are:', tileReadable);

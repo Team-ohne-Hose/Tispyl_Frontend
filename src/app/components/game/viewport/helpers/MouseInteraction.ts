@@ -186,7 +186,9 @@ export class MouseInteraction {
       // console.log('clicked outside of playing field');
       // const oldPos = this.currentlySelected.oldPos;
       // this.physics.setPosition(PhysicsCommands.getPhysId(this.currentlySelected.obj), oldPos.x, oldPos.y, oldPos.z);
-      this.bic.physics.setKinematic(PhysicsCommands.getPhysId(this.currentlySelected.obj), false);
+      if (this.currentlySelected !== undefined) {
+        this.bic.physics.setKinematic(PhysicsCommands.getPhysId(this.currentlySelected.obj), false);
+      }
     }
     return false;
   }

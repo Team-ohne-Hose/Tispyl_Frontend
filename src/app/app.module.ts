@@ -96,7 +96,6 @@ const appRoutes: Routes = [
       { path: 'custom', component: CustomEditorComponent },
       { path: 'login', component: LoginComponent },
       { path: 'register', component: PageNotFoundComponent },
-      { path: 'settings', component: SettingsComponent },
       { path: 'report', component: PageNotFoundComponent },
       { path: 'imprint', component: ImprintComponent },
       { path: 'about', component: PageNotFoundComponent },
