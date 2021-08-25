@@ -1,6 +1,4 @@
-
 .register-card-base {
-
   --base-padding: 0.5rem;
   --seperator-padding: 0.25rem;
 
@@ -20,7 +18,6 @@
   height: 100%;
   max-height: 100%;
   min-height: 0;
-
 }
 
 .gold-border {
@@ -31,7 +28,7 @@
 
 .paper-body {
   color: var(--text-color);
-  background: url("../../../../../../assets/old-paper-texture-background.jpg");
+  background: url('../../../../../../assets/old-paper-texture-background.jpg');
   box-shadow: inset 0 0 0.2em 0.15em rgba(0, 0, 0, 0.6);
 }
 
@@ -98,25 +95,13 @@
   align-items: center;
 }
 
-.rule-mover {
+.rule-gavel {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   align-self: stretch;
   align-items: center;
   min-height: 0;
-}
-
-.rule:hover .move-button {
-  color: var(--dim-text-color);
-}
-
-.move-button {
-  color: transparent
-}
-
-.rule:hover .move-button:hover {
-  color: white;
 }
 
 .delete-rule {
@@ -168,10 +153,3 @@
   color: var(--dim-text-color);
   background-color: var(--light-bg-hover);
 }
-
-
-
-
-
-
-

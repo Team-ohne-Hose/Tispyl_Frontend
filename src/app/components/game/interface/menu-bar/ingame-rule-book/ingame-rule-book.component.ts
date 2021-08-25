@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { GameActionType, MessageType } from '../../../../../model/WsData';
 import { GameStateService } from '../../../../../services/game-state.service';
+import { Rule } from '../../../../../model/state/Rule';
 
 @Component({
   selector: 'app-ingame-rule-book',
@@ -8,7 +9,7 @@ import { GameStateService } from '../../../../../services/game-state.service';
   styleUrls: ['./ingame-rule-book.component.css'],
 })
 export class IngameRuleBookComponent {
-  @Input() rules = [];
+  @Input() rules: Rule[] = [];
 
   constructor(private gameState: GameStateService) {}
 
@@ -18,7 +19,7 @@ export class IngameRuleBookComponent {
     }
   }
 
-  addRule(inputField: HTMLTextAreaElement) {
+  addRule(inputField: HTMLTextAreaElement): void {
     console.log('current Rules', this.rules);
     const userInput: string = String(inputField.value).trim();
     inputField.value = '';
@@ -28,7 +29,7 @@ export class IngameRuleBookComponent {
         type: MessageType.GAME_MESSAGE,
         action: GameActionType.addRule,
         text: String(userInput),
-        author: '',
+        author: this.gameState.getMe().displayName,
       });
     }
   }

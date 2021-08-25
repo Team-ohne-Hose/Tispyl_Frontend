@@ -10,6 +10,7 @@ import { MessageType } from '../model/WsData';
 import { VoteStage, VoteState } from '../model/state/VoteState';
 import { VoteEntry } from '../components/game/interface/menu-bar/vote-system/helpers/VoteEntry';
 import { BehaviorSubject } from 'rxjs';
+import { Rule } from '../model/state/Rule';
 
 @Injectable({
   providedIn: 'root',
@@ -198,7 +199,7 @@ export class GameStateService {
     s?.playerList?.forEach(f);
   }
 
-  getRules(): ArraySchema<string> | undefined {
+  getRules(): ArraySchema<Rule> | undefined {
     const s: GameState = this.getState();
     return s?.rules;
   }
