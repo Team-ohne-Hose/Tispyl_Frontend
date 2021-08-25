@@ -3,28 +3,15 @@
   <div class="vote-head">
     <div class="head-text">
       <div>Voting System</div>
-      <div class="selected-history">
-        <div>Result:</div>
-        <div (click)="previousHistoricResult()"><i class="fas fa-caret-left button"></i></div>
-        <div>{{ (currentHistoryResult + 1) === resultHistory.length ? 'Latest' : currentHistoryResult + 1 }}</div>
-        <div (click)="nextHistoricResult()"><i class="fas fa-caret-right button"></i></div>
-      </div>
     </div>
     <div *ngIf="gameState.isGameLoaded()" class="head-progress">
       <!-- VoteStage 2 should be creation -->
-      <i
-        [ngClass]="gameState.getVoteState().voteStage === 2 ? 'fas fa-circle-notch fa-spin highlight' : 'far fa-circle'"></i>
+      <i [ngClass]="gameState.getVoteState().voteStage === 2 ? 'fas fa-circle-notch fa-spin highlight' : 'far fa-circle'"></i>
     </div>
     <div *ngIf="!gameState.isGameLoaded()" class="head-progress">
       <i class="far fa-circle"></i>
     </div>
   </div>
-
-  <div class="seperator"></div>
-
-  <!-- result history -->
-  <app-historic-results-display [currentResult]="resultHistory[currentHistoryResult]"
-                                [totalVoteCount]="resultHistory.length"></app-historic-results-display>
 
   <div class="seperator"></div>
 
