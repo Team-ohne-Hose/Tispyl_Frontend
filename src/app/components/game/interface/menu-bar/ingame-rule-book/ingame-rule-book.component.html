@@ -8,16 +8,12 @@
             Special Rules
           </div>
           <div *ngFor="let r of rules; let i = index" class="rule">
-            <div class="rule-mover">
-              <i class="fas fa-sort-up move-button"></i>
+            <div class="rule-gavel">
               <i class="fas fa-gavel"></i>
-              <i class="fas fa-sort-down move-button"></i>
             </div>
             <div class="rule-text">
-              <!--<span class="author">by {{r.author}}</span>
-              <span class="text">{{r.text}}</span>-->
-              <span class="author">by undefined</span>
-              <span class="text">{{r}}</span>
+              <span class="author">by {{r.author}}</span>
+              <span class="text">{{r.text}}</span>
             </div>
             <div (click)="removeRule(i)" class="delete-rule"><i class="fas fa-ban"></i></div>
           </div>
