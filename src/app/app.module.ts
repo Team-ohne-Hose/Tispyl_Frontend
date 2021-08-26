@@ -101,10 +101,10 @@ const appRoutes: Routes = [
       { path: 'about', component: PageNotFoundComponent },
       { path: 'credits', component: PageNotFoundComponent },
       { path: 'contact', component: ContactComponent },
-      { path: '_debug', component: DebugdummyComponent },
       { path: 'bug', component: PageNotFoundComponent },
     ],
   },
+  { path: '_debug', component: DebugdummyComponent },
   { path: 'game', component: GameComponent },
   { path: '**', component: PageNotFoundComponent },
 ];
