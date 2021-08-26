@@ -85,7 +85,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
 
   getInitializePending(): number {
     const physState: PhysicsState = this.bic.gameState.getPhysicsState();
-    if (physState !== undefined) {
+    if (physState !== undefined && physState.objects !== undefined) {
       return physState.objects.size;
     }
     return 0;
