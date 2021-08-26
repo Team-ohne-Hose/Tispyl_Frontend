@@ -1,13 +1,14 @@
-<app-menu-bar></app-menu-bar>
+<div class="dummyBody">
+  <app-pregame-banner [players]="players"></app-pregame-banner>
 
-<div class="bronze"></div>
+  <div class="debug-buttons">
+    <div *ngFor="let p of players; let i = index">
+      <button (click)="p.isReady = !p.isReady">{{p.displayName}}</button>
+    </div>
+    <button (click)="addplayer()">add</button>
+    <button (click)="removeplayer()">remove</button>
+  </div>
 
-<div class="debug-buttons">
-  <button (click)="defaultFunc()"> default</button>
-  <button (click)="defaultFunc()"> waiting</button>
-  <button (click)="defaultFunc()"> notEligable</button>
-  <button (click)="defaultFunc()"> creating</button>
-  <button (click)="defaultFunc()"> voting</button>
-  <button (click)="defaultFunc()"> results</button>
 </div>
+
 
