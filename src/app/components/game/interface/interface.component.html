@@ -1,8 +1,10 @@
 <div class="interface-bounds">
-  <app-state-display
+  <app-state-display #stateDisplay
     [action]="gameState.getAction()"
     [currentPlayerDisplayName]="gameState.getCurrentPlayerDisplayName()"
-    [round]="gameState.getRound()">
+    [round]="gameState.getRound()"
+    [disabled]="!gameState.hasStarted()"
+  >
   </app-state-display>
   <app-pregame-banner @fadeOutAnimation *ngIf="!gameState.hasStarted()" [players]="gameState.getPlayerArray()"></app-pregame-banner>
   <app-connected-players
@@ -14,12 +16,9 @@
     [playerList]="gameState.getPlayerArray()"
     [ruleList]="gameState.getRules()">
   </app-menu-bar>
-  <app-next-turn-button #nextTurn
-                        [action]="gameState.getAction()"
-                        [disabled]="!gameState.hasStarted">
-  </app-next-turn-button>
   <app-turn-overlay #turnOverlay
                     [currentPlayerName]="gameState.getCurrentPlayerDisplayName()" [ownTurn]="this.gameState.isMyTurn()">
   </app-turn-overlay>
   <app-tile-overlay #tileOverlay ></app-tile-overlay>
+  <app-items-interface></app-items-interface>
 </div>
