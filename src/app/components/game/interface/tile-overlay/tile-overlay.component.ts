@@ -4,7 +4,7 @@ import { BoardTilesService } from '../../../../services/board-tiles.service';
 import { GameStateService } from '../../../../services/game-state.service';
 import { ColyseusNotifyable } from '../../../../services/game-initialisation.service';
 import { FileService } from '../../../../services/file.service';
-import { Timer } from './Timer';
+import { Timer } from '../../../framework/Timer';
 import { animate, group, sequence, style, transition, trigger } from '@angular/animations';
 
 @Component({

@@ -103,6 +103,10 @@ export class Timer {
     return this.tCurrent;
   }
 
+  getCurrentPercentile(): number {
+    return Math.round((this.tCurrent * 100) / this.tMax);
+  }
+
   getMaxTime(): number {
     return this.tMax;
   }
