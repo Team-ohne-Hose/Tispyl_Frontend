@@ -423,6 +423,9 @@ export class ObjectLoaderService {
       loader.load(resource.fname, (gltf: GLTF) => {
         gltf.scene.castShadow = true;
         gltf.scene.receiveShadow = true;
+        gltf.scene.children.forEach((o) => {
+          o.castShadow = true;
+        });
         resource.objectCache = gltf.scene.clone(true);
         callback(gltf.scene);
       });
@@ -518,7 +521,7 @@ export class ObjectLoaderService {
     gameBoard.castShadow = false;
     gameBoard.receiveShadow = true;
     gameBoard.name = 'gameboard';
-    this.gameBoardMat.roughness = 0.4;
+    this.gameBoardMat.roughness = 0.475;
 
     this.tLoader.load(
       this.gameBoardTextureURL,
@@ -556,7 +559,6 @@ export class ObjectLoaderService {
     const gameTileMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
     gameTileMat.roughness = 0.8;
     const gameTile = new THREE.Mesh(this.gameTileGeo, gameTileMat);
-    gameTile.castShadow = true;
     gameTile.receiveShadow = true;
     gameTile.name = 'gametile';
 
@@ -596,6 +598,19 @@ export class ObjectLoaderService {
       sprite.userData.borderColor,
       sprite.userData.borderThickness,
       sprite.userData.radius
+    );
+  }
+
+  createPredefLabelSprite(text: string): THREE.Sprite {
+    return this.createLabelSprite(
+      text,
+      70,
+      'Roboto',
+      new Color(1, 1, 1, 1),
+      new Color(0.24, 0.24, 0.24, 0.9),
+      new Color(0.1, 0.1, 0.1, 0),
+      0,
+      4
     );
   }
 

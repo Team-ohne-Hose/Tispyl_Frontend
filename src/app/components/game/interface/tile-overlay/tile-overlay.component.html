@@ -1,1 +1,62 @@
-<div></div>
+<div [ngClass]= "{ 'anchor': true, 'litGlow': isLit}">
+
+  <div class="decor-box" (mouseenter)="timer.pause()" (mouseleave)="timer.resume()">
+    <div class="decor-caret-wrap">
+      <div class="decor-caret" (click)="toggleDisplayState(false)">
+        <i *ngIf="displayState === 'SMALL'" class="fas fa-caret-up"></i>
+        <i *ngIf="displayState === 'LARGE'"  class="fas fa-caret-down"></i>
+      </div>
+    </div>
+
+      <div class="relative">
+
+        <div class="content-box" style="overflow: hidden">
+          <div class="toolbar-menu">
+            <div class="c_popover-anchor">
+              <i class="fas fa-question-circle" (click)="isInfHidden = !isInfHidden" #infoQ></i>
+              <div [ngClass]= "{ 'c_popover': true, 'hide': isInfHidden }" #info>
+                <div class="c_popover-content">
+            <span class="info-text">
+              Diese Box zeigt immer das Feld an auf dem der letzte aktive Spieler, der einen Zug gemacht hat, gelandet ist.
+              Außerdem lässt sie sich ausklappen um eine Beschreibung des Feldes zu zeigen.
+            </span>
+                </div>
+                <div class="c_popover-caret"></div>
+              </div>
+            </div>
+
+            <div class="c_popover-anchor">
+              <i class="fas fa-cog" (click)="isOptHidden = !isOptHidden" #optionsCog></i>
+              <div [ngClass]= "{ 'c_popover': true, 'hide': isOptHidden}" #options>
+                <div class="c_popover-content">
+                  <div class="option"><input id="light-up" type="checkbox" [(ngModel)]="optLightUp"><label for="light-up">Aufleuchten an/aus</label></div>
+                  <div class="option"><input id="auto-open" type="checkbox" [(ngModel)]="optAutoOpen"><label for="auto-open">Automatisch öffnen an/aus</label></div>
+                </div>
+                <div class="c_popover-caret"></div>
+              </div>
+            </div>
+          </div>
+          <div @largeContentAnimation *ngIf="displayState === 'LARGE'" class="info-box-large" style="overflow: hidden">
+            <div class="img-anchor" >
+              <div class="close-timer" [style.width]=currentProgress ></div>
+              <div class="img-bg" [style.background-image]=tileImgDynBg ></div>
+              <img [src]=tileImgPath class="img-fg" alt="Tile Image">
+            </div>
+            <div class="p-name">{{playerName}} kam auf: </div>
+            <div class="t-title">{{tileTitle}}</div>
+            <div class="t-description">{{tileDescription}}</div>
+          </div>
+
+          <div @smallContentAnimation *ngIf="displayState === 'SMALL'" class="info-box-small" style="overflow: hidden">
+            <img [src]=tileImgPath alt="Tile Image">
+            <div class="p-name">{{playerName}} kam auf:</div>
+            <div class="t-title">{{tileTitle}}</div>
+          </div>
+
+        </div>
+      </div>
+
+
+
+  </div>
+</div>

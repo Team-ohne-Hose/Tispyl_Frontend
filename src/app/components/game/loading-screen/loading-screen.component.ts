@@ -1,20 +1,23 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { HintsService } from '../../../services/hints.service';
 
 @Component({
   selector: 'app-loading-screen',
   templateUrl: './loading-screen.component.html',
   styleUrls: ['./loading-screen.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoadingScreenComponent {
+  logoSource = 'assets/logo.png';
   progress = 0;
   currentTip = '...';
   private timeOutRef: number;
 
-  constructor(private hints: HintsService) {}
+  constructor(private hints: HintsService, private ref: ChangeDetectorRef) {}
 
-  setProgress(progress: number) {
+  setProgress(progress: number): void {
     this.progress = Math.round(progress * 10) / 10;
+    this.ref.detectChanges();
   }
 
   startTips(): void {
@@ -31,5 +34,6 @@ export class LoadingScreenComponent {
 
   private newTip(): void {
     this.currentTip = 'Tipp: ' + this.hints.getRandomHint();
+    this.ref.markForCheck();
   }
 }

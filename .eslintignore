@@ -6,3 +6,4 @@ src/karma.conf.js
 /out-tsc
 /e2e
 *.css
+*.md

@@ -1,7 +1,7 @@
 <div #view (keydown)="keyDown($event)" (keyup)="keyUp($event)"
-     (mousedown)="mouseInteract.mouseDown($event)"
-     (mousemove)="mouseInteract.mouseMoved($event)"
-     (mouseup)="mouseInteract.mouseUp($event)"
+     (mousedown)="userInteractionController.mouseInteractions.mouseDown($event)"
+     (mousemove)="userInteractionController.mouseInteractions.mouseMoved($event)"
+     (mouseup)="userInteractionController.mouseInteractions.mouseUp($event)"
      (window:resize)="onWindowResize($event)"
      [ngStyle]="{'cursor': (this.itemService.targetingItem ? 'url(\'assets/crosshair.svg\') 64 64, auto' : '')}"
      id="viewport-container">

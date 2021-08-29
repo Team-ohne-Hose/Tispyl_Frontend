@@ -4,9 +4,7 @@
     [currentPlayerDisplayName]="gameState.getCurrentPlayerDisplayName()"
     [round]="gameState.getRound()">
   </app-state-display>
-  <app-pregame-banner *ngIf="!gameState.hasStarted()"
-                      [players]="gameState.getPlayerArray()">
-  </app-pregame-banner>
+  <app-pregame-banner @fadeOutAnimation *ngIf="!gameState.hasStarted()" [players]="gameState.getPlayerArray()"></app-pregame-banner>
   <app-connected-players
     #connectedPlayers
     [currentPlayerDisplayName]="gameState.getCurrentPlayerDisplayName()"
@@ -23,7 +21,5 @@
   <app-turn-overlay #turnOverlay
                     [currentPlayerName]="gameState.getCurrentPlayerDisplayName()" [ownTurn]="this.gameState.isMyTurn()">
   </app-turn-overlay>
-  <app-tile-overlay #tileOverlay
-                    [playerName]="gameState.getCurrentPlayerDisplayName()">
-  </app-tile-overlay>
+  <app-tile-overlay #tileOverlay ></app-tile-overlay>
 </div>

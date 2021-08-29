@@ -7,9 +7,10 @@ import { Player } from '../model/state/Player';
 import { PhysicsObjectState, PhysicsState } from '../model/state/PhysicsState';
 import { BoardLayoutState, Tile } from '../model/state/BoardLayoutState';
 import { MessageType } from '../model/WsData';
-import { GameInitialisationService } from './game-initialisation.service';
 import { VoteStage, VoteState } from '../model/state/VoteState';
 import { VoteEntry } from '../components/game/interface/menu-bar/vote-system/helpers/VoteEntry';
+import { BehaviorSubject } from 'rxjs';
+import { Rule } from '../model/state/Rule';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +18,8 @@ import { VoteEntry } from '../components/game/interface/menu-bar/vote-system/hel
 export class GameStateService {
   // This class provides an interface to the colyseus data
   // It provides structures which fit better to the needs when ingame
+
+  isColyseusReady: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   activePlayerLogin = '';
   activeAction = '';
@@ -29,12 +32,12 @@ export class GameStateService {
   private boardLayoutCallbacks: ((layout: BoardLayoutState) => void)[] = [];
   private voteStageCallbacks: ((stage: VoteStage) => void)[] = [];
   private voteCastCallbacks: (() => void)[] = [];
-  private voteSystemCallbacks: ((change: DataChange<any>[]) => void)[] = [];
+  private voteSystemCallbacks: ((change: DataChange[]) => void)[] = [];
   private itemCallbacks: (() => void)[] = [];
 
-  constructor(private colyseus: ColyseusClientService, private gameInit: GameInitialisationService) {
+  constructor(private colyseus: ColyseusClientService) {
     this.colyseus.addOnChangeCallback((changes: DataChange<GameState>[]) => {
-      changes.forEach((change: DataChange<any>) => {
+      changes.forEach((change: DataChange) => {
         switch (change.field) {
           case 'currentPlayerLogin':
             console.debug('nextTurn detected. notifying callbacks');
@@ -56,7 +59,7 @@ export class GameStateService {
         room.onStateChange.once((state) => {
           console.debug('first colyseus Patch recieved');
           this.loaded = true;
-          this.gameInit.setColyseusReady(this);
+          this.isColyseusReady.next(true);
           setTimeout(this.attachCallbacks.bind(this), 100, room);
         });
       } else {
@@ -196,7 +199,7 @@ export class GameStateService {
     s?.playerList?.forEach(f);
   }
 
-  getRules(): ArraySchema<string> | undefined {
+  getRules(): ArraySchema<Rule> | undefined {
     const s: GameState = this.getState();
     return s?.rules;
   }
@@ -223,7 +226,7 @@ export class GameStateService {
     return [];
   }
 
-  sendMessage(type: number | string, data: any): void {
+  sendMessage(type: number | string, data: unknown): void {
     const room = this.getRoom();
     if (room !== undefined) {
       room.send(type, data);
@@ -258,7 +261,7 @@ export class GameStateService {
     this.voteCastCallbacks.push(f);
   }
 
-  addVoteSystemCallback(f: (change: DataChange<any>[]) => void): void {
+  addVoteSystemCallback(f: (change: DataChange[]) => void): void {
     this.voteSystemCallbacks.push(f);
   }
 
@@ -401,15 +404,15 @@ export class GameStateService {
     this.boardLayoutCallbacks.forEach((f) => f(this.room.state.boardLayout));
   }
 
-  private callVoteStageUpdate(changes: DataChange<any>[]): void {
-    const newVal: VoteStage = changes.find((change: DataChange<any>) => change.field === 'voteStage')?.value;
+  private callVoteStageUpdate(changes: DataChange[]): void {
+    const newVal: VoteStage = changes.find((change: DataChange) => change.field === 'voteStage')?.value;
     if (newVal !== undefined) {
       this.voteStageCallbacks.forEach((f) => f(newVal));
     }
     if (newVal === VoteStage.VOTE) {
       this.attachVoteCastCallback();
     }
-    this.voteSystemCallbacks.forEach((f) => f(changes.filter((v: DataChange<any>) => v.field !== 'voteStage')));
+    this.voteSystemCallbacks.forEach((f) => f(changes.filter((v: DataChange) => v.field !== 'voteStage')));
   }
 
   private callVoteCastUpdate(): void {

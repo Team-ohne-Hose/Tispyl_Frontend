@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { GameComponent } from '../game.component';
 import { GameStateService } from '../../../services/game-state.service';
@@ -7,11 +7,17 @@ import { TileOverlayComponent } from './tile-overlay/tile-overlay.component';
 import { ColyseusNotifyable } from '../../../services/game-initialisation.service';
 import { TurnOverlayComponent } from './turn-overlay/turn-overlay.component';
 import { ConnectedPlayersComponent } from './connected-players/connected-players.component';
+import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-interface',
   templateUrl: './interface.component.html',
   styleUrls: ['./interface.component.css'],
+  animations: [
+    trigger('fadeOutAnimation', [
+      transition(':leave', [style({ opacity: '1' }), animate('0.25s ease-in', style({ opacity: '0' }))]),
+    ]),
+  ],
 })
 export class InterfaceComponent implements ColyseusNotifyable {
   routes;

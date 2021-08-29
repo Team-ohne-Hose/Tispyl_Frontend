@@ -1,0 +1,252 @@
+.hide {
+  display: none;
+}
+
+.relative {
+  position: relative;
+}
+
+.anchor {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+
+  transition: filter 0.5s ease-in;
+}
+
+.litGlow {
+  filter: drop-shadow(3px 3px 8px #ffffad);
+  transition: filter 0.1s;
+}
+
+.decor-box {
+  pointer-events: visibleFill;
+
+  margin-left: 8rem;
+  color: #c5c5c5;
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  filter: drop-shadow(3px 3px 8px rgb(0, 0, 0));
+  overflow: visible;
+}
+
+.decor-caret {
+  width: 100%;
+  height: 100%;
+
+  background: rgba(75, 75, 75, 0.8);
+  color: #797979;
+  clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.decor-caret:hover {
+  color: #a8a8a8;
+}
+
+.decor-caret-wrap {
+  width: 5rem;
+  height: 1rem;
+
+  transition: 1s;
+}
+
+.content-box {
+  overflow: hidden;
+  background: rgba(75, 75, 75, 0.8);
+  width: 15.5rem;
+  min-height: 5rem;
+}
+
+.toolbar-menu {
+  padding: 0.125rem;
+  position: absolute;
+  display: flex;
+  flex-direction: row-reverse;
+  right: 0;
+  top: 0;
+}
+
+.info-box-small {
+  padding: 0.25rem;
+  display: grid;
+  grid-template-areas:
+    'i n .'
+    'i t t';
+
+  grid-template-rows: 1rem 3.5rem;
+  grid-template-columns: 4.5rem auto 2rem;
+}
+
+.info-box-small > img {
+  width: 100%;
+  align-self: center;
+  justify-self: center;
+  grid-area: i;
+
+  border: solid 1px rgba(218, 165, 32, 0.4);
+}
+
+.info-box-small > .p-name {
+  margin-left: 0.5rem;
+  font-size: small;
+  color: #797979;
+  grid-area: n;
+}
+
+.info-box-small > .t-title {
+  margin-left: 0.5rem;
+  overflow-wrap: break-word;
+  grid-area: t;
+}
+
+.c_popover-anchor {
+  display: flex;
+  justify-content: flex-end;
+  position: relative;
+  padding: 0.125rem;
+}
+
+.c_popover-caret {
+  width: 0.5rem;
+  height: 0.5rem;
+  background: rgba(75, 75, 75, 0.8);
+  clip-path: polygon(0 0, 0% 100%, 100% 0);
+}
+
+.c_popover {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+}
+
+.c_popover-content {
+  background-image: linear-gradient(to bottom right, rgba(75, 75, 75, 0.8), rgba(55, 55, 55, 0.8));
+  display: flex;
+  padding: 0.5rem;
+  flex-direction: column-reverse;
+}
+
+.option {
+  font-size: small;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+
+.option > label {
+  margin-bottom: 0;
+  margin-left: 0.25rem;
+}
+
+.fa-question-circle {
+  color: #797979;
+  font-size: small;
+}
+
+.fa-question-circle:hover {
+  color: #8a8a8a;
+}
+
+.fa-cog {
+  color: #797979;
+  font-size: small;
+}
+
+.fa-cog:hover {
+  color: #8a8a8a;
+}
+
+.info-text {
+  font-size: small;
+  min-width: 16rem;
+}
+
+/* Large */
+.info-box-large {
+  width: 100%;
+  padding-top: 0.5rem;
+
+  display: grid;
+  grid-template-areas:
+    '. n .'
+    'i i i'
+    '. t .'
+    '. d .';
+
+  grid-template-rows: 1rem 12rem 1.5rem 4rem 4rem 7rem;
+  grid-template-columns: 0.5rem auto 0.5rem;
+
+  row-gap: 0.25rem;
+}
+
+.img-anchor {
+  position: relative;
+  grid-area: i;
+  border-top: solid 2px rgba(218, 165, 32, 0.5);
+  border-bottom: solid 2px rgba(218, 165, 32, 0.5);
+}
+
+.img-bg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+
+  background-size: 105%;
+  background-position: center;
+
+  filter: blur(4px);
+  -webkit-filter: blur(4px);
+  clip-path: inset(0 0 0 0);
+
+  z-index: 1;
+}
+
+.close-timer {
+  position: absolute;
+  background-color: rgba(55, 55, 55, 0.65);
+  height: 100%;
+
+  z-index: 2;
+}
+
+.img-fg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(3px 3px 8px rgb(0, 0, 0));
+
+  width: 65%;
+  border: solid 2px rgba(218, 165, 32, 0.5);
+
+  z-index: 3;
+}
+
+.info-box-large > .p-name {
+  font-size: small;
+  color: #797979;
+  grid-area: n;
+}
+
+.info-box-large > .t-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  color: #797979;
+  grid-area: t;
+}
+
+.info-box-large > .t-description {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  font-size: medium;
+  text-align: justify;
+  grid-area: d;
+}

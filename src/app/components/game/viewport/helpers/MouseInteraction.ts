@@ -1,10 +1,7 @@
 import * as THREE from 'three';
 import { Camera, Object3D, Vector3 } from 'three';
-import { BoardItemManagement } from './BoardItemManagement';
 import { ClickedTarget, PhysicsCommands } from './PhysicsCommands';
-import { BoardTilesService } from '../../../../services/board-tiles.service';
-import { GameStateService } from '../../../../services/game-state.service';
-import { ItemService } from '../../../../services/item.service';
+import { BoardItemControlService } from '../../../../services/board-item-control.service';
 
 export class MouseInteraction {
   // Raycasting & Mouse
@@ -12,23 +9,17 @@ export class MouseInteraction {
   raycaster = new THREE.Raycaster();
   currentSize = new THREE.Vector2();
 
-  boardItemManager: BoardItemManagement;
   camera: Camera;
   interactable: Object3D[] = [];
 
   currentlySelected: { obj: THREE.Object3D; oldPos: Vector3 };
 
-  constructor(
-    camera: Camera,
-    boardItemManager: BoardItemManagement,
-    private physics: PhysicsCommands,
-    private gameState: GameStateService,
-    private boardTiles: BoardTilesService,
-    private itemService: ItemService
-  ) {
-    this.boardItemManager = boardItemManager;
-    this.camera = camera;
-    this.physics.addInteractable = this.addInteractable.bind(this);
+  /** Throttled version of the mouseMove function to avoid too many ray casts */
+  mouseMoved = this.throttled(15, this._mouseMoved.bind(this));
+
+  constructor(private bic: BoardItemControlService) {
+    this.camera = bic.camera;
+    this.bic.physics.addInteractable = this.addInteractable.bind(this);
   }
 
   addInteractable(obj: Object3D): void {
@@ -41,17 +32,30 @@ export class MouseInteraction {
     this.currentSize.height = height;
   }
 
-  mouseMoved(event: MouseEvent): void {
+  /** This is used to avoid calling too many mouseMove events */
+  private throttled(delay: number, fn: (...args) => void): (...args) => void {
+    let lastCall = 0;
+    return function (...args) {
+      const now = Date.now();
+      if (now - lastCall < delay) {
+        return;
+      }
+      lastCall = now;
+      return fn(...args);
+    };
+  }
+
+  private _mouseMoved(event: MouseEvent): void {
     if (this.currentlySelected !== undefined) {
       const normX = (event.clientX / this.currentSize.width) * 2 - 1;
       const normY = -(event.clientY / this.currentSize.height) * 2 + 1;
       this.raycaster.setFromCamera({ x: normX, y: normY }, this.camera);
-      const intersects = this.raycaster.intersectObject(this.boardItemManager.board);
+      const intersects = this.raycaster.intersectObject(this.bic.board);
       if (intersects.length > 0) {
         const point = intersects[0].point;
-        this.boardItemManager.hoverGameFigure(this.currentlySelected.obj, point.x, point.z);
+        this.bic.hoverGameFigure(this.currentlySelected.obj, point.x, point.z);
       }
-    } else if (this.itemService.isCurrentlyTargeting()) {
+    } else if (this.bic.itemService.isCurrentlyTargeting()) {
       const normX = (event.clientX / this.currentSize.width) * 2 - 1;
       const normY = -(event.clientY / this.currentSize.height) * 2 + 1;
       this.raycaster.setFromCamera({ x: normX, y: normY }, this.camera);
@@ -63,9 +67,9 @@ export class MouseInteraction {
         // console.log('Intersecting:', intersects[0].object.name, type);
         if (type === ClickedTarget.figure) {
           const obj = intersects[0].object;
-          const targetFigureId = this.gameState.getMyFigureId();
+          const targetFigureId = this.bic.gameState.getMyFigureId();
           if (targetFigureId !== obj.userData.physicsId) {
-            this.itemService.onTargetHover(obj.userData.physicsId);
+            this.bic.itemService.onTargetHover(obj.userData.physicsId);
           }
         }
       }
@@ -117,7 +121,7 @@ export class MouseInteraction {
 
   dragCoords(x: number, y: number, x2: number, y2: number, distX: number, distY: number, dist: number): void {
     console.log('dragDropRecognised: ', dist, x, y);
-    console.error('scene:', this.boardItemManager.scene, this.interactable);
+    console.error('scene:', this.bic.sceneTree, this.interactable);
   }
 
   clickCoords(x: number, y: number): void {
@@ -132,7 +136,7 @@ export class MouseInteraction {
       console.log('Intersecting:', intersects[0].object.name, type);
       if (type === ClickedTarget.board) {
         if (!this.handleBoardTileClick(point)) {
-          this.boardItemManager.addFlummi(
+          this.bic.addFlummi(
             point.x + (Math.random() - 0.5),
             30,
             point.z + (Math.random() - 0.5),
@@ -147,42 +151,44 @@ export class MouseInteraction {
           this.handleBoardTileClick(point);
           this.currentlySelected = undefined;
         } else {
-          if (this.gameState.getMyFigureId() === obj.userData.physicsId) {
+          if (this.bic.gameState.getMyFigureId() === obj.userData.physicsId) {
             this.currentlySelected = { obj: obj, oldPos: obj.position.clone() };
-            this.physics.setKinematic(PhysicsCommands.getPhysId(obj), true);
-            this.physics.wakeAll();
-            this.boardItemManager.hoverGameFigure(this.currentlySelected.obj, point.x, point.z);
+            this.bic.physics.setKinematic(PhysicsCommands.getPhysId(obj), true);
+            this.bic.physics.wakeAll();
+            this.bic.hoverGameFigure(this.currentlySelected.obj, point.x, point.z);
             console.log('selected Object');
           } else {
-            if (this.itemService.isCurrentlyTargeting()) {
-              this.itemService.onTargetSet(obj.userData.physicsId);
+            if (this.bic.itemService.isCurrentlyTargeting()) {
+              this.bic.itemService.onTargetSet(obj.userData.physicsId);
             } else {
               console.log('This is not your figure');
             }
           }
         }
       } else if (type === ClickedTarget.dice) {
-        this.boardItemManager.throwDice();
+        this.bic.throwDice();
       }
     }
   }
 
   handleBoardTileClick(intersection: THREE.Vector3): boolean {
-    const coords = this.boardTiles.coordsToFieldCoords(intersection);
+    const coords = this.bic.boardTiles.coordsToFieldCoords(intersection);
     if (coords.x >= 0 && coords.x < 8 && coords.y >= 0 && coords.y < 8) {
-      const tileId = this.boardTiles.getId(coords.x, coords.y);
-      const tile = this.boardTiles.getTile(tileId);
+      const tileId = this.bic.boardTiles.getId(coords.x, coords.y);
+      const tile = this.bic.boardTiles.getTile(tileId);
       // console.log('clicked on Tile: ', tile.translationKey, coords.x, coords.y);
       if (this.currentlySelected !== undefined) {
-        this.boardItemManager.moveGameFigure(this.currentlySelected.obj, tileId);
-        this.physics.setKinematic(PhysicsCommands.getPhysId(this.currentlySelected.obj), false);
+        this.bic.moveGameFigure(this.currentlySelected.obj, tileId);
+        this.bic.physics.setKinematic(PhysicsCommands.getPhysId(this.currentlySelected.obj), false);
         return true;
       }
     } else {
       // console.log('clicked outside of playing field');
       // const oldPos = this.currentlySelected.oldPos;
       // this.physics.setPosition(PhysicsCommands.getPhysId(this.currentlySelected.obj), oldPos.x, oldPos.y, oldPos.z);
-      this.physics.setKinematic(PhysicsCommands.getPhysId(this.currentlySelected.obj), false);
+      if (this.currentlySelected !== undefined) {
+        this.bic.physics.setKinematic(PhysicsCommands.getPhysId(this.currentlySelected.obj), false);
+      }
     }
     return false;
   }

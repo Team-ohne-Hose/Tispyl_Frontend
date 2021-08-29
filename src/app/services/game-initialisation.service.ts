@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ViewportComponent } from '../components/game/viewport/viewport.component';
 import { ObjectLoaderService } from './object-loader.service';
-import { BoardItemManagement } from '../components/game/viewport/helpers/BoardItemManagement';
 import { PhysicsCommands } from '../components/game/viewport/helpers/PhysicsCommands';
 import { BoardTilesService } from './board-tiles.service';
 import * as THREE from 'three';
@@ -9,6 +8,7 @@ import { GameComponent } from '../components/game/game.component';
 import { ChatService } from './chat.service';
 import { GameStateService } from './game-state.service';
 import { ItemService } from './item.service';
+import { BoardItemControlService } from './board-item-control.service';
 
 export interface ColyseusNotifyable {
   attachColyseusStateCallbacks(gameState: GameStateService): void;
@@ -25,39 +25,35 @@ export class GameInitialisationService {
 
   private viewPort: ViewportComponent;
   private game: GameComponent;
-  private boardTilesService: BoardTilesService;
 
   private colyseusNotifyableClasses: ColyseusNotifyable[] = [];
-  private gameState: GameStateService;
 
   constructor(
     private objectLoader: ObjectLoaderService,
     private chatService: ChatService,
-    private itemService: ItemService
-  ) {}
+    private itemService: ItemService,
+    private boardTilesService: BoardTilesService,
+    private bic: BoardItemControlService
+  ) {
+    this.bic.gameState.isColyseusReady.subscribe((suc) => this.setColyseusReady());
+  }
 
-  async startInitialisation(
-    game: GameComponent,
-    viewPort: ViewportComponent,
-    boardItemManagement: BoardItemManagement,
-    physicsCommands: PhysicsCommands,
-    boardTilesService: BoardTilesService
-  ): Promise<void> {
-    console.debug('starting Initialisation of game engine');
-    game.loadingScreenRef.startTips();
-    this.viewPort = viewPort;
+  async startInitialisation(game: GameComponent): Promise<void> {
     this.game = game;
-    this.boardTilesService = boardTilesService;
+    this.viewPort = this.game.viewRef;
+
+    console.debug('starting Initialisation of game engine');
+    this.game.loadingScreenRef.startTips();
 
     this.colyseusNotifyableClasses = [];
     this.colyseusNotifyableClasses.push(this.boardTilesService);
-    this.colyseusNotifyableClasses.push(boardItemManagement);
-    this.colyseusNotifyableClasses.push(physicsCommands);
+    this.colyseusNotifyableClasses.push(this.bic);
+    this.colyseusNotifyableClasses.push(this.bic.physics);
     // this.colyseusNotifyableClasses.push(game.interfaceRef.chatRef);
-    this.colyseusNotifyableClasses.push(game.interfaceRef.nextTurnRef);
-    this.colyseusNotifyableClasses.push(game.interfaceRef.tileOverlayRef);
-    this.colyseusNotifyableClasses.push(game.interfaceRef);
-    this.colyseusNotifyableClasses.push(game.interfaceRef.connectedPlayersRef);
+    this.colyseusNotifyableClasses.push(this.game.interfaceRef.nextTurnRef);
+    this.colyseusNotifyableClasses.push(this.game.interfaceRef.tileOverlayRef);
+    this.colyseusNotifyableClasses.push(this.game.interfaceRef);
+    this.colyseusNotifyableClasses.push(this.game.interfaceRef.connectedPlayersRef);
     this.colyseusNotifyableClasses.push(this.chatService);
     this.colyseusNotifyableClasses.push(this.itemService);
 
@@ -70,7 +66,7 @@ export class GameInitialisationService {
     console.debug('loading of common files done');
 
     console.debug('creating static Scene');
-    viewPort.initialiseScene();
+    this.viewPort.initializeScene();
 
     // check/wait for colyseus to recieve first patch
     this.staticReady = true;
@@ -81,10 +77,9 @@ export class GameInitialisationService {
     }
   }
 
-  setColyseusReady(gameState: GameStateService): void {
-    console.info('Setting colyseus ready. Gamestate is: ', this.gameState);
+  setColyseusReady(): void {
+    console.info('Setting colyseus ready. Gamestate is: ', this.bic.gameState);
 
-    this.gameState = gameState;
     if (!this.colyseusReady) {
       console.debug('Colyseus is ready');
       this.colyseusReady = true;
@@ -105,17 +100,17 @@ export class GameInitialisationService {
       if (obj === undefined) {
         console.error('couldnt attach colyseus Callbacks because the object was undefined', index, array);
       } else {
-        obj.attachColyseusMessageCallbacks(this.gameState);
-        obj.attachColyseusStateCallbacks(this.gameState);
+        obj.attachColyseusMessageCallbacks(this.bic.gameState);
+        obj.attachColyseusStateCallbacks(this.bic.gameState);
       }
     });
 
     let progress = 0;
-    const initPending = this.viewPort.physics.getInitializePending();
-    this.viewPort.physics.initializeFromState(() => {
+    const initPending = this.bic.physics.getInitializePending();
+    this.bic.physics.initializeFromState(() => {
       return;
     });
-    const spritesPending = this.viewPort.boardItemManager.getSpritesPending();
+    const spritesPending = this.bic.getSpritesPending();
     const queued = 64 + initPending + spritesPending;
     console.info('loading: 64 Tiles, ', initPending, ' phys Pending ', spritesPending, ' sprites Pending');
 
@@ -143,10 +138,10 @@ export class GameInitialisationService {
       }
     };
     console.debug('creating dynamic gameboard');
-    this.boardTilesService.initialize(((grp: THREE.Group) => this.viewPort.scene.add(grp)).bind(this), onProgress);
+    this.boardTilesService.initialize(((grp: THREE.Group) => this.viewPort.sceneTree.add(grp)).bind(this), onProgress);
 
     console.debug('creating dynamic objects & players');
-    this.viewPort.physics.initializeFromState(onProgress);
-    this.viewPort.boardItemManager.createSprites(onProgress);
+    this.bic.physics.initializeFromState(onProgress);
+    this.bic.createSprites(onProgress);
   }
 }

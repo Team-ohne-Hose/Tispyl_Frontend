@@ -1,14 +1,11 @@
 import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
-import { BoardItemManagement } from './viewport/helpers/BoardItemManagement';
-import { AudioControl } from './viewport/helpers/AudioControl';
-import { CameraControl } from './viewport/helpers/CameraControl';
+import { UserInteractionController } from './viewport/helpers/UserInteractionController';
 import { Router } from '@angular/router';
 import { ColyseusClientService } from '../../services/colyseus-client.service';
 import { ViewportComponent } from './viewport/viewport.component';
 import { GameAction, GameActionType, MessageType } from '../../model/WsData';
 import { GameInitialisationService } from '../../services/game-initialisation.service';
 import { InterfaceComponent } from './interface/interface.component';
-import { BoardTilesService } from '../../services/board-tiles.service';
 import { LoadingScreenComponent } from './loading-screen/loading-screen.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ShowAttribComponent } from './show-attrib/show-attrib.component';
@@ -23,10 +20,8 @@ export class GameComponent implements OnInit, AfterViewInit {
   @ViewChild('viewRef') viewRef: ViewportComponent;
   @ViewChild('interfaceRef') interfaceRef: InterfaceComponent;
   @ViewChild('loadingRef') loadingScreenRef: LoadingScreenComponent;
-  // might be obsolete in the future
-  cameraControl: CameraControl;
-  boardItemControl: BoardItemManagement;
-  audioCtrl: AudioControl;
+
+  userInteraction: UserInteractionController;
   loadGame = true;
   loadingScreenVisible = true;
 
@@ -35,7 +30,6 @@ export class GameComponent implements OnInit, AfterViewInit {
     private router: Router,
     private colyseus: ColyseusClientService,
     private gameInit: GameInitialisationService,
-    private boardTilesService: BoardTilesService,
     private commandService: CommandService
   ) {
     commandService.registerGame(this);
@@ -50,7 +44,7 @@ export class GameComponent implements OnInit, AfterViewInit {
         } else {
           const msg: GameAction = {
             type: MessageType.GAME_MESSAGE,
-            action: GameActionType.refreshData,
+            action: GameActionType.refreshData, // send triggerAll() to all participants
           };
           myRoom.send(MessageType.GAME_MESSAGE, msg);
         }
@@ -65,20 +59,9 @@ export class GameComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     if (this.loadGame) {
       this.interfaceRef.gameComponent = this;
-      this.gameInit.startInitialisation(
-        this,
-        this.viewRef,
-        this.viewRef.boardItemManager,
-        this.viewRef.physics,
-        this.boardTilesService
-      );
+      this.gameInit.startInitialisation(this);
+      this.userInteraction = this.viewRef.userInteractionController;
     }
-  }
-
-  registerViewport(tuple: [CameraControl, BoardItemManagement, AudioControl]): void {
-    this.cameraControl = tuple[0];
-    this.boardItemControl = tuple[1];
-    this.audioCtrl = tuple[2];
   }
 
   showAttribution(): void {

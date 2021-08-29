@@ -13,11 +13,11 @@ import {
   PhysicsEntityVariation,
 } from '../../../../model/WsData';
 import { ObjectUserData } from '../viewport.component';
-import { ObjectLoaderService } from '../../../../services/object-loader.service';
 import { PhysicsObjectState, PhysicsState } from '../../../../model/state/PhysicsState';
 import { Player } from '../../../../model/state/Player';
 import { GameStateService } from '../../../../services/game-state.service';
 import { ColyseusNotifyable } from '../../../../services/game-initialisation.service';
+import { BoardItemControlService } from '../../../../services/board-item-control.service';
 
 export enum ClickedTarget {
   other,
@@ -35,8 +35,6 @@ export enum CollisionGroups {
 }
 
 export class PhysicsCommands implements ColyseusNotifyable {
-  scene: THREE.Scene;
-
   dice: Object3D;
   currentlyLoadingEntities: Map<number, boolean> = new Map<number, boolean>();
 
@@ -44,7 +42,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
   addPlayer: (mesh: THREE.Object3D, name: string) => void;
   isPlayerCached: (physId: number) => boolean;
 
-  constructor(private loader: ObjectLoaderService, private gameState: GameStateService) {}
+  constructor(private bic: BoardItemControlService) {}
 
   static getObjectByPhysId(toSearch: Object3D, physId: number): THREE.Object3D {
     if (toSearch.name !== undefined) {
@@ -86,15 +84,15 @@ export class PhysicsCommands implements ColyseusNotifyable {
   }
 
   getInitializePending(): number {
-    const physState: PhysicsState = this.gameState.getPhysicsState();
-    if (physState !== undefined) {
+    const physState: PhysicsState = this.bic.gameState.getPhysicsState();
+    if (physState !== undefined && physState.objects !== undefined) {
       return physState.objects.size;
     }
     return 0;
   }
 
   initializeFromState(progressCallback: () => void): void {
-    const physState = this.gameState.getPhysicsState();
+    const physState = this.bic.gameState.getPhysicsState();
     if (physState !== undefined) {
       physState.objects.forEach((item: PhysicsObjectState, key: string) => {
         if (item !== undefined) {
@@ -111,7 +109,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
 
   updateFromState(item: PhysicsObjectState, onDone: () => void): void {
     if (!item.disabled) {
-      const obj = PhysicsCommands.getObjectByPhysId(this.scene, item.objectIDPhysics);
+      const obj = PhysicsCommands.getObjectByPhysId(this.bic.sceneTree, item.objectIDPhysics);
       // console.log('query for physId', item.objectIDPhysics, obj);
       if (obj !== undefined) {
         obj.position.set(item.position.x, item.position.y, item.position.z);
@@ -120,7 +118,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
         // console.log("rotation is: ", item.quaternion.x, item.quaternion.y, item.quaternion.z, item.quaternion.w);
         onDone();
       } else {
-        if (item.entity >= 0 && this.scene.children.length < 120) {
+        if (item.entity >= 0 && this.bic.sceneTree.children.length < 120) {
           // TODO balance
           if (this.currentlyLoadingEntities.get(item.objectIDPhysics)) {
             // is currently getting loaded
@@ -166,7 +164,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
       objectID: physId,
       kinematic: enabled,
     };
-    this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
+    this.bic.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
   }
 
   setPositionVec(physId: number, vec: THREE.Vector3): void {
@@ -182,7 +180,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
       positionY: y,
       positionZ: z,
     };
-    this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
+    this.bic.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
   }
 
   setVelocity(physId: number, x: number, y: number, z: number): void {
@@ -194,7 +192,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
       velY: y,
       velZ: z,
     };
-    this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
+    this.bic.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
   }
 
   setAngularVelocity(physId: number, x: number, y: number, z: number): void {
@@ -206,7 +204,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
       angularY: y,
       angularZ: z,
     };
-    this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
+    this.bic.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
   }
 
   wakeAll(): void {
@@ -214,7 +212,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
       type: MessageType.PHYSICS_MESSAGE,
       subType: PhysicsCommandType.wakeAll,
     };
-    this.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
+    this.bic.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
   }
 
   removePhysics(physId: number): void {
@@ -250,7 +248,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
     rotY = rotY || 0;
     rotZ = rotZ || 0;
     rotW = rotW || 0;
-    this.loader.loadObject(entity, variant, (model: THREE.Object3D) => {
+    this.bic.loader.loadObject(entity, variant, (model: THREE.Object3D) => {
       model.quaternion.set(rotX, rotY, rotZ, rotW);
       model.position.set(posX, posY, posZ);
       const userData: ObjectUserData = {
@@ -261,7 +259,7 @@ export class PhysicsCommands implements ColyseusNotifyable {
       };
       model.userData = userData;
       console.debug('Adding physics object', model.userData.physicsId, model.name, entity, variant);
-      this.scene.add(model);
+      this.bic.sceneTree.add(model);
 
       let player: Player;
       // set the various references in other classes
@@ -275,11 +273,11 @@ export class PhysicsCommands implements ColyseusNotifyable {
           this.setClickRole(ClickedTarget.figure, model);
 
           // Load other playermodels
-          player = this.gameState.findInPlayerList((p: Player) => {
+          player = this.bic.gameState.findInPlayerList((p: Player) => {
             return p.figureId === physicsId;
           });
           if (player !== undefined) {
-            this.loader.switchTex(model, player.figureModel);
+            this.bic.loader.switchTex(model, player.figureModel);
             this.addPlayer(model, player.displayName);
             model.userData.displayName = player.displayName;
           }
