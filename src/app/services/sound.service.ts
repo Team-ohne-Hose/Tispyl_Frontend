@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 export class SoundService {
   public static OWN_TURN_SOUND = 'own_turn';
   public static FOREIGN_TURN_SOUND = 'others_turn';
+  public static WAKE_PLAYER = 'wake_player';
 
   private assetPath = '../../../assets/sounds/';
   private html5Audio: HTMLAudioElement = new Audio();
@@ -15,6 +16,7 @@ export class SoundService {
   private sounds: Map<string, string> = new Map<string, string>([
     ['own_turn', '234564__foolboymedia__notification-up-i.wav'],
     ['others_turn', '414437__inspectorj__dropping-metal-pin-on-wood-a.wav'],
+    ['wake_player', 'dbischoff__wakePlayer.wav'],
   ]);
 
   play(soundName: string): void {
