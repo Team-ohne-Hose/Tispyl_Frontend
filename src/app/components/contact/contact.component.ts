@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-/* eslint-disable no-empty-function */
-/* eslint-disable @typescript-eslint/no-empty-function */
 import { Component } from '@angular/core';
 import { MailerService } from 'src/app/services/mailer.service';
 import { AppToastService } from 'src/app/services/toast.service';
@@ -18,8 +15,8 @@ export class ContactMessage {
 export class ContactComponent {
   constructor(private mailerService: MailerService, private toastService: AppToastService) {}
 
-  onClickSubmit(contactMessage: ContactMessage) {
-    this.mailerService.submitMail(contactMessage.email, contactMessage.msg).subscribe((re) => {
+  onClickSubmit(contactMessage: ContactMessage): void {
+    const res = this.mailerService.submitMail(contactMessage.email, contactMessage.msg).subscribe((re) => {
       if (re.success) {
         this.toastService.show(
           'Init',
