@@ -49,8 +49,7 @@ export class GameInitialisationService {
     this.colyseusNotifyableClasses.push(this.boardTilesService);
     this.colyseusNotifyableClasses.push(this.bic);
     this.colyseusNotifyableClasses.push(this.bic.physics);
-    // this.colyseusNotifyableClasses.push(game.interfaceRef.chatRef);
-    this.colyseusNotifyableClasses.push(this.game.interfaceRef.nextTurnRef);
+    this.colyseusNotifyableClasses.push(this.game.interfaceRef.stateDisplayRef);
     this.colyseusNotifyableClasses.push(this.game.interfaceRef.tileOverlayRef);
     this.colyseusNotifyableClasses.push(this.game.interfaceRef);
     this.colyseusNotifyableClasses.push(this.game.interfaceRef.connectedPlayersRef);

@@ -1,35 +1,47 @@
-<div class="state-area">
-  <app-items-interface class="leftBoxItem"></app-items-interface>
-  <div class="state-window">
+<div class="anchor">
+  <div class="state-container">
+    <div class="state">
+      <div class="state-content">
+        <div class="active-player-name">{{currentPlayerDisplayName || 'Tispyl'}} ist drann:</div>
+        <div class="active-state">
 
-    <div class="state-element">
-      <div class="state-description">
-        <i class="fas fa-flag-checkered"></i>
-        <span>Round</span>
+          <div class="state-round">
+            <span>Runde</span>
+            <div class="round-value">
+              <div>{{round}} <i class="fas fa-flag-checkered"></i></div>
+            </div>
+          </div>
+
+          <div class="action-icon">
+            <div>{{actionTexts[action]}}</div>
+            <i [ngClass]="actionIcons[action] || 'fas fa-angry'"></i>
+          </div>
+
+          <div class="button-anchor">
+              <button
+                *ngIf="isMyTurn" class="turn-button"
+                [@buttonMovement]="action === 'EXECUTE' ? 'hovering' : 'embedded'"
+                [disabled]="disabled" (click)="nextTurn()"
+              >Zug beenden</button>
+
+            <button
+              @buttonMovement
+              *ngIf="!isMyTurn" class="turn-button"
+               [disabled]="disabled || !canWake" (click)="alertPlayer()"
+            ><span class="wake-cd" [style.width]=currentCD></span>Spieler wecken</button>
+          </div>
+
+
+        </div>
+
       </div>
-      <div class="state-value">{{round}}</div>
+      <div class="decor-notch">
+        <div class="rect"></div>
+        <div class="triangle"></div>
+      </div>
     </div>
 
-    <div class="seperator"></div>
 
-    <div class="state-element">
-      <div class="state-description">
-        <i class="far fa-address-card"></i>
-        <span>Turn</span>
-      </div>
-      <div class="state-value">{{currentPlayerDisplayName}}</div>
-    </div>
-
-    <div class="seperator"></div>
-
-    <div class="state-element">
-      <div class="state-description no-icon">
-        <span>Action</span>
-      </div>
-      <div class="state-value">
-        <i [ngClass]="knownActions[action] || 'fas fa-angry'"></i>
-      </div>
-    </div>
 
   </div>
 </div>

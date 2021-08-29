@@ -7,6 +7,7 @@ import { TileOverlayComponent } from './tile-overlay/tile-overlay.component';
 import { ColyseusNotifyable } from '../../../services/game-initialisation.service';
 import { TurnOverlayComponent } from './turn-overlay/turn-overlay.component';
 import { ConnectedPlayersComponent } from './connected-players/connected-players.component';
+import { StateDisplayComponent } from './state-display/state-display.component';
 import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
@@ -25,6 +26,7 @@ export class InterfaceComponent implements ColyseusNotifyable {
   @ViewChild('nextTurn') nextTurnRef: NextTurnButtonComponent;
   @ViewChild('tileOverlay') tileOverlayRef: TileOverlayComponent;
   @ViewChild('turnOverlay') turnOverlayRef: TurnOverlayComponent;
+  @ViewChild('stateDisplay') stateDisplayRef: StateDisplayComponent;
   @ViewChild('connectedPlayers') connectedPlayersRef: ConnectedPlayersComponent;
 
   constructor(private router: Router, public gameState: GameStateService) {
