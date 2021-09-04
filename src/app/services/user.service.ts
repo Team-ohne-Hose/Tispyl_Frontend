@@ -3,7 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { APIResponse } from '../model/APIResponse';
 import { environment } from '../../environments/environment';
+import * as hash from 'object-hash';
 import { EditUserData } from '../components/home/profile/edit-profile/edit-profile.component';
+import { map } from 'rxjs/operators';
 import { AppToastService } from './toast.service';
 
 export class BasicUser {
@@ -75,7 +77,7 @@ export class UserService {
     return this.httpClient.get<APIResponse<BasicUser>>(requestUrl);
   }
 
-  updateUser(userData: EditUserData): void {
+  updateUser(userData: EditUserData) {
     const requestUrl = this.endpoint;
 
     this.httpClient.patch<APIResponse<LoginUser>>(requestUrl, userData).subscribe((response) => {
