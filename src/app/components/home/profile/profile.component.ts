@@ -37,12 +37,12 @@ export class ProfileComponent implements OnInit {
     this.isShownLastGames = !this.isShownLastGames;
   }
 
-  private onSuccess(): void {
+  private onSuccess() {
     this.selectedFile.pending = false;
     this.selectedFile.status = 'ok';
   }
 
-  private onError(): void {
+  private onError() {
     this.selectedFile.pending = false;
     this.selectedFile.status = 'fail';
     this.selectedFile.src = '';
@@ -72,7 +72,7 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  processFile(imageInput: HTMLInputElement): void {
+  processFile(imageInput: DataTransfer): void {
     const file: File = imageInput.files[0];
     const reader = new FileReader();
 
