@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import * as hash from 'object-hash';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { BasicUser, UserService } from 'src/app/services/user.service';
 import { AppToastService } from 'src/app/services/toast.service';
 
@@ -17,10 +17,18 @@ export class EditUserData {
   templateUrl: './edit-profile.component.html',
   styleUrls: ['../../../../../../src/assets/css/styles.css', './edit-profile.component.css'],
 })
-export class EditProfileComponent {
+export class EditProfileComponent implements OnInit {
   @Input() currentUser: BasicUser;
+  editUser: EditUserData;
 
   constructor(private userService: UserService, private toastService: AppToastService) {}
+
+  ngOnInit(): void {
+    this.editUser = new EditUserData();
+
+    this.editUser.id = this.currentUser.id;
+    this.editUser.display_name = this.currentUser.display_name;
+  }
 
   submitUserChanges(changedUser: EditUserData) {
     changedUser.id = this.currentUser.id;
@@ -39,14 +47,6 @@ export class EditProfileComponent {
         'bg-danger text-light',
         3000
       );
-    else {
-      // hash passwords
-      changedUser.newPassword = hash.MD5(changedUser.newPassword);
-      changedUser.currentPassword = hash.MD5(changedUser.currentPassword);
-
-      delete changedUser.newPasswordConfirmed;
-
-      this.userService.updateUser(changedUser);
-    }
+    else this.userService.updateUser(changedUser);
   }
 }
