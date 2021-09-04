@@ -5,7 +5,7 @@ import { GameStateService } from '../game-state.service';
 import { ItemMessageType, MessageType, UseItem, WsData } from '../../model/WsData';
 import { MapSchema } from '@colyseus/schema';
 import { Player } from '../../model/state/Player';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { Item, itemTable } from './itemLUT';
 
 export enum itemTargetErrorType {
