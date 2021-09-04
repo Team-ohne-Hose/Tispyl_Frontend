@@ -4,6 +4,7 @@ import { BasicUser, UserService } from 'src/app/services/user.service';
 import { AppToastService } from 'src/app/services/toast.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { EqualityValidator } from '../../login/EqualityValidator';
+import { CustomValidators } from '../../../../validators/custom-validators';
 
 export class EditUserData {
   id: any;
