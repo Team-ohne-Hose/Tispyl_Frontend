@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import { Camera, Object3D, Vector3 } from 'three';
 import { ClickedTarget, PhysicsCommands } from './PhysicsCommands';
 import { BoardItemControlService } from '../../../../services/board-item-control.service';
+import { Player } from '../../../../model/state/Player';
+import { itemTargetErrorType } from '../../../../services/items-service/item.service';
 
 export class MouseInteraction {
   // Raycasting & Mouse
@@ -47,33 +49,40 @@ export class MouseInteraction {
 
   private _mouseMoved(event: MouseEvent): void {
     if (this.currentlySelected !== undefined) {
-      const normX = (event.clientX / this.currentSize.width) * 2 - 1;
-      const normY = -(event.clientY / this.currentSize.height) * 2 + 1;
-      this.raycaster.setFromCamera({ x: normX, y: normY }, this.camera);
-      const intersects = this.raycaster.intersectObject(this.bic.board);
+      const intersects = this._rayIntersectionsEv(event);
       if (intersects.length > 0) {
         const point = intersects[0].point;
         this.bic.hoverGameFigure(this.currentlySelected.obj, point.x, point.z);
       }
-    } else if (this.bic.itemService.isCurrentlyTargeting()) {
-      const normX = (event.clientX / this.currentSize.width) * 2 - 1;
-      const normY = -(event.clientY / this.currentSize.height) * 2 + 1;
-      this.raycaster.setFromCamera({ x: normX, y: normY }, this.camera);
-      const intersects = this.raycaster.intersectObjects(this.interactable);
-
+    } else if (this.bic.itemService.isTargeting()) {
+      const intersects = this._rayIntersectionsEv(event);
       if (intersects.length > 0) {
-        const point = intersects[0].point;
         const type = this.getClickedType(intersects[0].object);
-        // console.log('Intersecting:', intersects[0].object.name, type);
         if (type === ClickedTarget.figure) {
           const obj = intersects[0].object;
           const targetFigureId = this.bic.gameState.getMyFigureId();
           if (targetFigureId !== obj.userData.physicsId) {
-            this.bic.itemService.onTargetHover(obj.userData.physicsId);
+            const targetPlayer: Player = this.bic.gameState
+              .getPlayerArray()
+              .find((p) => p.figureId === obj.userData.physicsId);
+            if (targetPlayer !== undefined) {
+              this.bic.itemService.onTargetHover(obj.userData.physicsId);
+            }
           }
         }
       }
     }
+  }
+
+  private _rayIntersectionsEv(event: MouseEvent): THREE.Intersection[] {
+    return this._rayIntersections(event.clientX, event.clientY);
+  }
+
+  private _rayIntersections(x: number, y: number): THREE.Intersection[] {
+    const normX = (x / this.currentSize.width) * 2 - 1;
+    const normY = -(y / this.currentSize.height) * 2 + 1;
+    this.raycaster.setFromCamera({ x: normX, y: normY }, this.camera);
+    return this.raycaster.intersectObjects(this.interactable);
   }
 
   mouseDown(event: MouseEvent): void {
@@ -117,6 +126,13 @@ export class MouseInteraction {
         ts: 0,
       };
     }
+    if (event.button === 2 && this.bic.itemService.isTargeting()) {
+      this.bic.itemService.abortTargeting({
+        type: itemTargetErrorType.USER_ABORT,
+        event: event,
+        message: 'User aborted targeting by right clicking.',
+      });
+    }
   }
 
   dragCoords(x: number, y: number, x2: number, y2: number, distX: number, distY: number, dist: number): void {
@@ -125,10 +141,7 @@ export class MouseInteraction {
   }
 
   clickCoords(x: number, y: number): void {
-    const normX = (x / this.currentSize.width) * 2 - 1;
-    const normY = -(y / this.currentSize.height) * 2 + 1;
-    this.raycaster.setFromCamera({ x: normX, y: normY }, this.camera);
-    const intersects = this.raycaster.intersectObjects(this.interactable);
+    const intersects = this._rayIntersections(x, y);
 
     if (intersects.length > 0) {
       const point = intersects[0].point;
@@ -158,8 +171,11 @@ export class MouseInteraction {
             this.bic.hoverGameFigure(this.currentlySelected.obj, point.x, point.z);
             console.log('selected Object');
           } else {
-            if (this.bic.itemService.isCurrentlyTargeting()) {
-              this.bic.itemService.onTargetSet(obj.userData.physicsId);
+            if (this.bic.itemService.isTargeting()) {
+              const targetPlayer: Player = this.bic.gameState
+                .getPlayerArray()
+                .find((p) => p.figureId === obj.userData.physicsId);
+              this.bic.itemService.onTargetFinish(targetPlayer);
             } else {
               console.log('This is not your figure');
             }
@@ -197,7 +213,6 @@ export class MouseInteraction {
     if (o.name === 'gameboard') {
       return ClickedTarget.board;
     } else {
-      console.log('not gameboard', o);
       return o.parent.userData ? o.parent.userData.clickRole || ClickedTarget.other : ClickedTarget.other;
     }
   }

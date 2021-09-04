@@ -1,0 +1,48 @@
+/* -- start - caret sizes -- */
+:host(.smallCaret) .popover-caret {
+  width: 1rem !important;
+  height: 1rem !important;
+}
+:host(.mediumCaret) .popover-caret {
+  width: 2rem !important;
+  height: 2rem !important;
+}
+:host(.largeCaret) .popover-caret {
+  width: 3rem !important;
+  height: 3rem !important;
+}
+/* --- end --- caret sizes --- */
+
+/* --- start - debug parent class --- */
+:host(.debug) .popover-box {
+  border: dashed 2px greenyellow;
+}
+
+:host(.debug) .popover-content {
+  background-color: #723d3d;
+  padding: 0.5rem;
+}
+
+:host(.debug) .popover-caret {
+  background-color: aliceblue;
+  width: 2rem;
+  height: 2rem;
+}
+/* --- end --- debug parent class --- */
+
+/* --- start - translucentInterface parent class --- */
+:host(.translucentInterface) .popover-box {
+  filter: drop-shadow(3px 3px 8px rgb(0, 0, 0));
+}
+
+:host(.translucentInterface) .popover-content {
+  background-image: linear-gradient(to bottom right, rgba(75, 75, 75, 0.8), rgba(55, 55, 55, 0.8));
+  padding: 0.5rem;
+}
+
+:host(.translucentInterface) .popover-caret {
+  background: rgba(55, 55, 55, 0.8);
+  width: 1rem;
+  height: 1rem;
+}
+/* --- end --- opaqueInterface parent class --- */

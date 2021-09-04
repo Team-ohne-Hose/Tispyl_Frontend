@@ -3,7 +3,7 @@
      (mousemove)="userInteractionController.mouseInteractions.mouseMoved($event)"
      (mouseup)="userInteractionController.mouseInteractions.mouseUp($event)"
      (window:resize)="onWindowResize($event)"
-     [ngStyle]="{'cursor': (this.itemService.targetingItem ? 'url(\'assets/crosshair.svg\') 64 64, auto' : '')}"
+     [ngStyle]="{'cursor': (this.itemService.target$ !== undefined ? 'url(\'assets/crosshair.svg\') 64 64, auto' : '')}"
      id="viewport-container">
 
 </div>

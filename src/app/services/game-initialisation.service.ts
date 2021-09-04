@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import { GameComponent } from '../components/game/game.component';
 import { ChatService } from './chat.service';
 import { GameStateService } from './game-state.service';
-import { ItemService } from './item.service';
+import { ItemService } from './items-service/item.service';
 import { BoardItemControlService } from './board-item-control.service';
 
 export interface ColyseusNotifyable {

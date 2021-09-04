@@ -4,11 +4,12 @@ import { Player } from '../model/state/Player';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
 import { GameStateService } from './game-state.service';
 import { ChatService } from './chat.service';
-import { ItemService } from './item.service';
+import { ItemService } from './items-service/item.service';
 import { HintsService } from './hints.service';
 import { GameComponent } from '../components/game/game.component';
 import { ObjectLoaderService } from './object-loader.service';
 import { BoardItemControlService } from './board-item-control.service';
+import { Item } from './items-service/itemLUT';
 
 export interface Command {
   cmd: string;
@@ -204,29 +205,18 @@ export class CommandService {
 
   private showItems(rawCMD: string, parameters: string[]): void {
     const myPlayer: Player = this.gameState.getMe();
+    const myItems: Item[] = this.items.getMyItemsList();
     if (myPlayer !== undefined) {
-      let list = '';
-      myPlayer.itemList.forEach((value: number, key: string) => {
-        if (value > 0) {
-          if (list !== '') {
-            list = list + '\r\n';
-          }
-          list =
-            list +
-            value +
-            'x ' +
-            this.items.getItemName(Number(key)) +
-            '(' +
-            key +
-            '): ' +
-            this.items.getItemDesc(Number(key));
-        }
-      });
-      if (list === '') {
-        this.print('You have no Item', '/showItems');
+      if (myItems.length > 0) {
+        const itemStrings: string[] = myItems.map((it: Item, idx: number) => {
+          return `${idx}. ${it.name} - ${it.description}`;
+        });
+        this.print(itemStrings.join('\r\n\r\n'), '/showItems');
       } else {
-        this.print(list, '/showItems');
+        this.print('You have no Item', '/showItems');
       }
+    } else {
+      this.print('Your "Player" object was undefined. This should never happen.', '/showItems');
     }
   }
 

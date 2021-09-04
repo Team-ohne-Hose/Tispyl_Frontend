@@ -1,0 +1,176 @@
+:host(.base) {
+  position: absolute;
+}
+/* -- Basic content classes -- */
+.popover-box {
+  display: flex;
+  width: min-content;
+}
+
+.popover-caret {
+  min-width: 0.1rem;
+  min-height: 0.1rem;
+}
+
+/* -- Direction -- */
+:host(.above) {
+  top: 0;
+  transform: translate(0, -100%);
+}
+
+:host(.below) {
+}
+
+:host(.left) {
+  left: 0;
+  transform: translate(-100%, 0);
+}
+
+:host(.right) {
+  right: 0;
+}
+
+/* -- Attachments -- */
+:host(.attachA) {
+  top: 0;
+  left: 0;
+}
+
+:host(.attachB) {
+  top: 0;
+  left: 50%;
+}
+
+:host(.attachC) {
+  top: 0;
+  left: 100%;
+}
+
+:host(.attachD) {
+  top: 50%;
+  left: 0;
+}
+
+:host(.attachE) {
+  top: 50%;
+  left: 50%;
+}
+
+:host(.attachF) {
+  top: 50%;
+  left: 100%;
+}
+:host(.attachG) {
+  top: 100%;
+  left: 0;
+}
+
+:host(.attachH) {
+  top: 100%;
+  left: 50%;
+}
+
+:host(.attachI) {
+  top: 100%;
+  left: 100%;
+}
+
+/* -- Combined translations -- */
+/* -> Direction: above, ReferencePoint: 1 */
+:host(.aboveCenter) {
+  transform: translate(-50%, -100%);
+}
+/* -> Direction: above, ReferencePoint: 2 */
+:host(.aboveLeft) {
+  transform: translate(-100%, -100%);
+}
+/* -> Direction: left, ReferencePoint: 1 */
+:host(.leftCenter) {
+  transform: translate(-100%, -50%);
+}
+/* -> Direction: left, ReferencePoint: 2 */
+:host(.leftTop) {
+  transform: translate(-100%, -100%);
+}
+/* -> Direction: right, ReferencePoint: 1 */
+:host(.rightCenter) {
+  transform: translate(0, -50%);
+}
+/* -> Direction: right, ReferencePoint: 2 */
+:host(.rightTop) {
+  transform: translate(0, -100%);
+}
+/* -> Direction: below, ReferencePoint: 1 */
+:host(.belowCenter) {
+  transform: translate(-50%, 0%);
+}
+/* -> Direction: below, ReferencePoint: 2 */
+:host(.belowLeft) {
+  transform: translate(-100%, 0);
+}
+
+/* -- caret position -- */
+.caret-pos-b {
+  flex-direction: column;
+}
+.caret-pos-t {
+  flex-direction: column-reverse;
+}
+.caret-pos-r {
+  flex-direction: row;
+}
+.caret-pos-l {
+  flex-direction: row-reverse;
+}
+
+/* -- caret clip top -- */
+.clip-tl {
+  clip-path: polygon(0 100%, 0 0, 100% 0);
+}
+.clip-tc {
+  clip-path: polygon(50% 100%, 0 0, 100% 0);
+  align-self: center;
+}
+.clip-tr {
+  clip-path: polygon(100% 100%, 0 0, 100% 0);
+  align-self: flex-end;
+}
+
+/* -- caret clip bottom -- */
+.clip-bl {
+  clip-path: polygon(0 100%, 0 0, 100% 100%);
+}
+.clip-bc {
+  clip-path: polygon(0 100%, 50% 0, 100% 100%);
+  align-self: center;
+}
+.clip-br {
+  clip-path: polygon(0 100%, 100% 0, 100% 100%);
+  align-self: flex-end;
+}
+
+/* -- caret clip left -- */
+.clip-lt {
+  clip-path: polygon(0 100%, 0 0, 100% 0);
+}
+.clip-lc {
+  clip-path: polygon(0 100%, 0 0, 100% 50%);
+  align-self: center;
+}
+.clip-lb {
+  clip-path: polygon(0 100%, 0 0, 100% 100%);
+  align-self: flex-end;
+}
+
+/* -- caret clip right -- */
+.clip-rt {
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+.clip-rc {
+  clip-path: polygon(0 50%, 100% 0, 100% 100%);
+  align-self: center;
+}
+.clip-rb {
+  clip-path: polygon(0 100%, 100% 0, 100% 100%);
+  align-self: flex-end;
+}
