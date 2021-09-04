@@ -29,7 +29,7 @@ export class UserService {
   activeUser: BehaviorSubject<LoginUser>;
   profileUser: BasicUser;
 
-  private endpoint = environment.endpoint + 'user';
+  private userEndpoint = environment.endpoint + 'user';
 
   constructor(private httpClient: HttpClient, private toastService: AppToastService) {
     this.activeUser = new BehaviorSubject<LoginUser>(undefined);
@@ -50,17 +50,17 @@ export class UserService {
   // REQUESTS
 
   getUserByLoginName(login_name: string): Observable<APIResponse<BasicUser>> {
-    return this.httpClient.get<APIResponse<BasicUser>>(this.endpoint + '?login_name=' + login_name);
+    return this.httpClient.get<APIResponse<BasicUser>>(this.userEndpoint + '?login_name=' + login_name);
   }
 
   removeUser(user_id: number): Observable<number> {
-    const requestUrl = this.endpoint + '?user_id=' + user_id;
+    const requestUrl = this.userEndpoint + '?user_id=' + user_id;
     return this.httpClient.delete<number>(requestUrl);
   }
 
   syncUserData(user: LoginUser): void {
     this.httpClient
-      .get<APIResponse<LoginUser>>(this.endpoint + '?login_name=' + user.login_name)
+      .get<APIResponse<LoginUser>>(this.userEndpoint + '?login_name=' + user.login_name)
       .subscribe((response) => {
         if (response.payload !== undefined) {
           this.setActiveUser(response.payload as LoginUser);
@@ -71,12 +71,12 @@ export class UserService {
   }
 
   requestUserDatabyId(userId: number): Observable<APIResponse<BasicUser>> {
-    const requestUrl = this.endpoint + '/byId?userId=' + userId;
+    const requestUrl = this.userEndpoint + '/byId?userId=' + userId;
     return this.httpClient.get<APIResponse<BasicUser>>(requestUrl);
   }
 
   updateUser(userData: EditUserData): void {
-    const requestUrl = this.endpoint;
+    const requestUrl = this.userEndpoint;
 
     this.httpClient.patch<APIResponse<LoginUser>>(requestUrl, userData).subscribe((response) => {
       if (!response.success) {

@@ -6,18 +6,17 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { EqualityValidator } from '../../login/EqualityValidator';
 
 export class EditUserData {
-  id: any;
+  id: number;
   login_name?: string;
   display_name: string;
   currentPassword: string;
   newPassword?: string;
-  newPasswordConfirmed?: string;
 }
 
 @Component({
   selector: 'app-edit-profile',
   templateUrl: './edit-profile.component.html',
-  styleUrls: ['../../../../../../src/assets/css/styles.css', './edit-profile.component.css'],
+  styleUrls: ['./edit-profile.component.css'],
 })
 export class EditProfileComponent implements OnInit {
   constructor(private userService: UserService, private toastService: AppToastService) {}
@@ -36,14 +35,24 @@ export class EditProfileComponent implements OnInit {
   isSuccessText = false;
 
   // edit form
-  edit = null;
+  edit: FormGroup;
 
-  onSubmit() {
+  onSubmit(): void {
     const editUser: EditUserData = new EditUserData();
     editUser.id = this.currentUser.id;
     editUser.currentPassword = hash.MD5(this.edit.value.currentPassword);
     editUser.display_name = this.edit.value.newUsername;
+
+    if (this.edit.value.newPassword !== '') {
+      editUser.newPassword = hash.MD5(this.edit.value.newPassword);
+    }
+
     this.userService.updateUser(editUser);
+
+    // reset form fields
+    this.edit.value.currentPassword = '';
+    this.edit.value.newPassword = '';
+    this.edit.value.newPasswordConfirmed = '';
   }
 
   ngOnInit(): void {
@@ -64,34 +73,5 @@ export class EditProfileComponent implements OnInit {
 
   keyPressed(keyEvent: KeyboardEvent): void {
     console.log(this.edit);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  submitUserChanges(changedUser: EditUserData) {
-    changedUser.id = this.currentUser.id;
-
-    if (changedUser.currentPassword.length === 0) {
-      this.toastService.show('Error', 'Du hast kein Passwort angegeben.', 'bg-danger text-light', 3000);
-    } else if (
-      (changedUser.newPassword.length !== 0 && changedUser.newPasswordConfirmed.length === 0) ||
-      (changedUser.newPassword.length === 0 && changedUser.newPasswordConfirmed.length !== 0)
-    ) {
-      this.toastService.show('Error', 'Bitte wiederhole dein neues Passwort.', 'bg-danger text-light', 3000);
-    } else if (changedUser.newPassword !== changedUser.newPasswordConfirmed) {
-      this.toastService.show(
-        'Error',
-        'Die eingegebenen Passwörter stimmen nicht überein.',
-        'bg-danger text-light',
-        3000
-      );
-    } else {
-      // hash passwords
-      changedUser.newPassword = hash.MD5(changedUser.newPassword);
-      changedUser.currentPassword = hash.MD5(changedUser.currentPassword);
-
-      delete changedUser.newPasswordConfirmed;
-
-      this.userService.updateUser(changedUser);
-    }
   }
 }
