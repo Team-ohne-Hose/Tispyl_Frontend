@@ -1,0 +1,7 @@
+
+<div [ngClass]="_boxClass">
+  <div [ngClass]="_contentClass">
+    <ng-content></ng-content>
+  </div>
+  <div *ngIf="showCaret" [ngClass]="_caretClass"></div>
+</div>

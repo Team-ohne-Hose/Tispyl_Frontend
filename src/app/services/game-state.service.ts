@@ -9,8 +9,9 @@ import { BoardLayoutState, Tile } from '../model/state/BoardLayoutState';
 import { MessageType } from '../model/WsData';
 import { VoteStage, VoteState } from '../model/state/VoteState';
 import { VoteEntry } from '../components/game/interface/menu-bar/vote-system/helpers/VoteEntry';
-import { BehaviorSubject } from 'rxjs';
+import { AsyncSubject, BehaviorSubject, Observable, Subject } from 'rxjs';
 import { Rule } from '../model/state/Rule';
+import { map, mergeMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -21,8 +22,12 @@ export class GameStateService {
 
   isColyseusReady: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
+  me: AsyncSubject<Player> = new AsyncSubject<Player>();
+  currentHostLogin: Subject<string> = new Subject<string>();
+
   activePlayerLogin = '';
   activeAction = '';
+
   private room: Room<GameState>;
   private loaded = false;
   private nextTurnCallback: ((activePlayerLogin: string) => void)[] = [];
@@ -50,6 +55,16 @@ export class GameStateService {
             this.activeAction = change.value;
             this.callNextAction();
             break;
+          case 'playerList': {
+            if (!this.me.isStopped) {
+              this.me.next(this._resolveMyPlayerObject(change.value as MapSchema<Player>));
+              this.me.complete();
+            }
+            break;
+          }
+          case 'hostLoginName':
+            this.currentHostLogin.next(change.value);
+            break;
         }
       });
     });
@@ -66,6 +81,20 @@ export class GameStateService {
         console.error('room was undefined');
       }
     });
+  }
+
+  private _resolveMyPlayerObject(players: MapSchema<Player>): Player {
+    return Array.from(players.values()).find((p: Player) => {
+      return p.loginName === this.colyseus.myLoginName;
+    });
+  }
+
+  amIHost(): Observable<boolean> {
+    return this.currentHostLogin.pipe(
+      mergeMap((hostLogin: string) => {
+        return this.me.pipe(map((me: Player) => hostLogin === me.loginName));
+      })
+    );
   }
 
   isGameLoaded(): boolean {

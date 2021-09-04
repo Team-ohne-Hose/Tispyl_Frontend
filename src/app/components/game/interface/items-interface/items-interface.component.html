@@ -1,0 +1,100 @@
+<div class="anchor">
+
+  <div [ngClass]="{'decor-box-host': isHost$ | async, 'decor-box-peasant': !(isHost$ | async)}">
+    <div class="decor-head">Deine Items:</div>
+    <div class="decor-caret-l"></div>
+    <div class="decor-caret-r"></div>
+    <div class="decor-help custom-anchor"  (click)="isInfoHidden = false" #info>
+      <i class="fas fa-question-circle"></i>
+      <app-custom-popover
+        *ngIf="!isInfoHidden"
+        [options]="{direction: 'above', referencePoint: '0', attachmentPoint: 'E'}"
+        [customClass]="'translucentInterface'"
+      >
+        <div class="question-text">
+          Diese 'Hot-bar' zeigt deine aktuellen Items. Solltest du der Spielleiter sein, findest du hier
+          auch das Menü um bestimmte Feldaktionen auszuführen.
+        </div>
+      </app-custom-popover>
+    </div>
+    <div class="content-box">
+      <div class="hot-bar">
+        <div
+          *ngFor="let _ of [].constructor(MAX_ITEM_COUNT); let i = index"
+          [ngClass]="{'item': true, 'item-last': i === MAX_ITEM_COUNT && !(isHost$ | async)}"
+        >
+          <div class="item-placeholder" (mouseenter)="slotHidden[i]=false" (mouseleave)="slotHidden[i]=true">
+            <div class="placeholder-text">{{i+1 | asRomanNumeral}}</div>
+            <div *ngIf="itemList[i] !== undefined" class="item-card" (click)="activateItem(i)">
+              <img [src]="itemList[i].imgUrl" [alt]="itemList[i].name">
+            </div>
+            <app-custom-popover
+              *ngIf="itemList[i] !== undefined && !slotHidden[i]"
+              [options]="{direction: 'above', referencePoint: '1', attachmentPoint: 'B'}"
+              [customClass]="'translucentInterface mediumCaret'"
+            >
+              <div class="info-text">
+                <span class="head">{{itemList[i].name}}:</span>
+                <span>{{itemList[i].description}}</span>
+              </div>
+            </app-custom-popover>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="(isHost$ | async)" class="host-menu-button" (click)="isHostHidden = false" #host>
+      <i class="fas fa-bars"></i>
+      <app-custom-popover
+        *ngIf="!isHostHidden"
+        [options]="{direction: 'above', referencePoint: '1', attachmentPoint: 'E'}"
+        [customClass]="'translucentInterface mediumCaret'"
+        >
+        <div class="host-content">
+          <div class="head">Spielleiter Befehle</div>
+          <div class="content-row">
+            <span>Perspektivwechsel:</span><button (click)="perspectiveChange()"><i class="fas fa-history"></i></button>
+          </div>
+          <div class="content-row">
+            <span>Münzwurf:</span><button (click)="coinFlip()"><i class="fas fa-coins"></i></button>
+          </div>
+          <div class="content-row">
+            <span>Item geben:</span>
+            <select [(ngModel)]="giveItem_name">
+              <option *ngFor="let p of gameState.getPlayerArray()" [ngValue]="p.displayName">{{p.displayName}}</option>
+            </select>
+            <select [(ngModel)]="giveItem_itemId">
+              <option *ngFor=" let item of itemTable.list" [ngValue]="item.id">{{item.name}}</option>
+            </select>
+            <span class="item-idx">({{giveItem_itemId || 0}})</span>
+            <button (click)="giveItem()"><i class="fas fa-drumstick-bite"></i></button>
+          </div>
+          <div class="content-row">
+            <span>Zufallszahl:</span>
+            <input type="number" [(ngModel)]="random_max" placeholder="max">
+            <button (click)="random()"><i class="fas fa-sort-numeric-up-alt"></i></button>
+          </div>
+          <div class="content-row separator"></div>
+          <div class="content-row">
+            <span>Neu-/Starte spiel:</span><button (click)="startGame()"><i class="fas fa-power-off"></i></button>
+          </div>
+          <div class="content-row">
+            <span>Nächste Aktion:</span><button (click)="nextAction()"><i class="fas fa-step-forward"></i></button>
+          </div>
+          <div class="content-row">
+            <span>Nächster Spieler:</span><button (click)="nextTurn()"><i class="fas fa-fast-forward"></i></button>
+          </div>
+        </div>
+      </app-custom-popover>
+      <span class="sub-script">Spielleiter</span>
+    </div>
+
+    <div class="decor-notch">
+      <div class="triangle"></div>
+      <div class="rect"></div>
+    </div>
+
+  </div>
+
+</div>

@@ -48,7 +48,7 @@ import { MenuBarComponent } from './components/game/interface/menu-bar/menu-bar.
 import { MatExpansionModule } from '@angular/material/expansion';
 import { HomeRegisterComponent } from './components/game/interface/menu-bar/home-register/home-register.component';
 import { TrinkBuddyDisplayComponent } from './components/game/interface/menu-bar/home-register/trink-buddy-display/trink-buddy-display.component';
-import { ItemsInterfaceComponent } from './components/game/interface/state-display/items-interface/items-interface.component';
+import { ItemsInterfaceComponent } from './components/game/interface/items-interface/items-interface.component';
 import { HistoricResultsDisplayComponent } from './components/game/interface/menu-bar/vote-system/historic-results-display/historic-results-display.component';
 import { VoteCreatorComponent } from './components/game/interface/menu-bar/vote-system/vote-creator/vote-creator.component';
 import { PlayerIconComponent } from './components/framework/player-icon/player-icon.component';
@@ -72,6 +72,8 @@ import { ImprintComponent } from './components/imprint/imprint.component';
 import { ContactComponent } from './components/contact/contact.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppToastsComponent } from './components/toast/toast.component';
+import { RomanNumeralsPipe } from './components/framework/roman-numerals.pipe';
+import { CustomPopoverComponent } from './components/framework/custom-popover/custom-popover.component';
 
 const appRoutes: Routes = [
   {
@@ -159,6 +161,8 @@ const appRoutes: Routes = [
     ResolveToHeadlinePipe,
     ContactComponent,
     AppToastsComponent,
+    RomanNumeralsPipe,
+    CustomPopoverComponent,
   ],
   imports: [
     RouterModule.forRoot(

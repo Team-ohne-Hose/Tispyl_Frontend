@@ -3,7 +3,7 @@ import { PhysicsCommands } from '../components/game/viewport/helpers/PhysicsComm
 import { GameStateService } from './game-state.service';
 import { Color, ObjectLoaderService } from './object-loader.service';
 import { BoardTilesService } from './board-tiles.service';
-import { ItemService } from './item.service';
+import { ItemService } from './items-service/item.service';
 import { ViewportComponent } from '../components/game/viewport/viewport.component';
 import * as THREE from 'three';
 import { ColyseusNotifyable } from './game-initialisation.service';

@@ -8,7 +8,7 @@ import { ClickedTarget } from './helpers/PhysicsCommands';
 import { PhysicsEntity, PhysicsEntityVariation } from '../../../model/WsData';
 import { BoardTilesService } from '../../../services/board-tiles.service';
 import { GameStateService } from '../../../services/game-state.service';
-import { ItemService } from '../../../services/item.service';
+import { ItemService } from '../../../services/items-service/item.service';
 import { BoardItemControlService } from '../../../services/board-item-control.service';
 
 export class ObjectUserData {
