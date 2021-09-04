@@ -4,11 +4,24 @@ import { Observable, Subscription } from 'rxjs';
 import { executeTypes, Item, itemTable } from '../../../../services/items-service/itemLUT';
 import { CommandService } from '../../../../services/command.service';
 import { GameStateService } from '../../../../services/game-state.service';
+import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-items-interface',
   templateUrl: './items-interface.component.html',
   styleUrls: ['./items-interface.component.css'],
+  animations: [
+    trigger('cardMovement', [
+      transition(':enter', [
+        style({ transform: 'translate(0, -10rem) scale(2)', opacity: 0 }),
+        animate('1s cubic-bezier(.63, -0.34, .36, 1.22)', style({ transform: 'translate(0, 0) scale(1)', opacity: 1 })),
+      ]),
+      transition(':leave', [
+        style({ transform: 'translate(0, 0)', opacity: 1 }),
+        animate('0.5s ease-out', style({ transform: 'translate(0, -5rem)', opacity: 0 })),
+      ]),
+    ]),
+  ],
 })
 export class ItemsInterfaceComponent implements OnDestroy {
   /** Constants */

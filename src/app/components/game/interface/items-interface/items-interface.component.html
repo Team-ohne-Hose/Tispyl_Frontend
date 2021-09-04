@@ -25,7 +25,7 @@
         >
           <div class="item-placeholder" (mouseenter)="slotHidden[i]=false" (mouseleave)="slotHidden[i]=true">
             <div class="placeholder-text">{{i+1 | asRomanNumeral}}</div>
-            <div *ngIf="itemList[i] !== undefined" class="item-card" (click)="activateItem(i)">
+            <div *ngIf="itemList[i] !== undefined" class="item-card" (click)="activateItem(i)" @cardMovement>
               <img [src]="itemList[i].imgUrl" [alt]="itemList[i].name">
             </div>
             <app-custom-popover
