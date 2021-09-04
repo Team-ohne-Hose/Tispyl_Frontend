@@ -21,9 +21,9 @@
                 <p class="text-secondary mb-1">Role (coming soon)</p>
                 <p class="text-muted font-size-sm">Level (coming soon)</p>
 
-                <a *ngIf="isCurrentUser" (click)="toggleShow()" class="btn btn-primary profile-btn">Edit</a>
+                <a (click)="toggleShow()" class="btn btn-primary profile-btn">Edit</a>
                 <a class="btn btn-primary profile-btn" (click)="imageInput.click()" *ngIf="isCurrentUser">Upload</a>
-                <a class="btn btn-outline-primary profile-btn" [routerLink]="['/profile', currentUser.id]">Message</a>
+                <a class="btn btn-outline-primary profile-btn" [routerLink]="['./profile', currentUser.id]">Message</a>
               </div>
             </div>
           </div>
