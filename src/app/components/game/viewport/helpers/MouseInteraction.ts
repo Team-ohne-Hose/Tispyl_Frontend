@@ -5,6 +5,15 @@ import { BoardItemControlService } from '../../../../services/board-item-control
 import { Player } from '../../../../model/state/Player';
 import { itemTargetErrorType } from '../../../../services/items-service/item.service';
 
+/** See: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button */
+enum mouseButton {
+  MAIN,
+  AUXILIARY,
+  SECONDARY,
+  FOURTH,
+  FIFTH,
+}
+
 export class MouseInteraction {
   // Raycasting & Mouse
   lastMouseLeftDownCoords: { x: number; y: number; button: number; ts: number };
@@ -86,7 +95,7 @@ export class MouseInteraction {
   }
 
   mouseDown(event: MouseEvent): void {
-    if (event.button === 0) {
+    if (event.button === mouseButton.MAIN) {
       this.lastMouseLeftDownCoords = {
         x: event.clientX,
         y: event.clientY,
@@ -97,7 +106,7 @@ export class MouseInteraction {
   }
 
   mouseUp(event: MouseEvent): void {
-    if (event.button === 0 && this.lastMouseLeftDownCoords.ts !== 0) {
+    if (event.button === mouseButton.MAIN && this.lastMouseLeftDownCoords.ts !== 0) {
       const travelled = {
         x: event.clientX - this.lastMouseLeftDownCoords.x,
         y: event.clientY - this.lastMouseLeftDownCoords.y,
@@ -126,7 +135,7 @@ export class MouseInteraction {
         ts: 0,
       };
     }
-    if (event.button === 2 && this.bic.itemService.isTargeting()) {
+    if (event.button === mouseButton.SECONDARY && this.bic.itemService.isTargeting()) {
       this.bic.itemService.abortTargeting({
         type: itemTargetErrorType.USER_ABORT,
         event: event,

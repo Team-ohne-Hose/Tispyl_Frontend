@@ -10,7 +10,7 @@ export class RomanNumeralsPipe implements PipeTransform {
 
   /** This function was taken from the following blog: https://blog.stevenlevithan.com/archives/javascript-roman-numeral-converter */
   private _romanize(num) {
-    if (!+num) {
+    if (!(num > 0)) {
       return 'ERROR';
     }
     const digits = String(+num).split('');

@@ -1,36 +1,62 @@
 import { ChangeDetectionStrategy, Component, HostBinding, Input, OnInit, ViewEncapsulation } from '@angular/core';
 
+export enum popoverDirection {
+  ABOVE,
+  LEFT,
+  RIGHT,
+  BELOW,
+}
+
+export enum popoverSpawn {
+  TOP_LEFT,
+  TOP_CENTER,
+  TOP_RIGHT,
+  CENTER_LEFT,
+  CENTER_CENTER,
+  CENTER_RIGHT,
+  BOTTOM_LEFT,
+  BOTTOM_CENTER,
+  BOTTOM_RIGHT,
+}
+
+export enum popoverDisplacement {
+  AFTER,
+  NONE,
+  BEFORE,
+}
+
 export interface PopOverOpts {
   /** Selects the direction the box is 'popped out' towards */
-  direction?: 'above' | 'below' | 'left' | 'right';
+  direction?: popoverDirection;
 
   /**
-   * Selects the point to which the pop over element is attached to.
-   * The following attachment points are available:
-   *  (A)--(B)--(C)
-   *   |    |    |
-   *  (D)--(E)--(F)
-   *   |    |    |
-   *  (G)--(H)--(I)
+   * Selects the point to which the pop over element is spawned out from.
+   * The spawnPoints attachment points are available:
+   *  (TOP_LEFT)---------(TOP_CENTER)--------(TOP_RIGHT)
+   *   |                      |                       |
+   *  (CENTER_LEFT)----(CENTER_CENTER)----(CENTER_RIGHT)
+   *   |                      |                       |
+   *  (BOTTOM_LEFT)----(BOTTOM_CENTER)----(BOTTOM_RIGHT)
    */
-  attachmentPoint?: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I';
+  spawnPoint?: popoverSpawn;
 
   /**
-   * Selects the positioning of the pop over element in reference to the attachment point. Assuming the direction to be:
-   *  - above or below -> 0 = left bound, 1 = centered, 2 = right bound
-   *  - left or right  -> 0 = top bound,  1 = centered, 2 = bottom bound
+   * Selects the positioning of the popover element it self in reference to the spawnPoint.
+   * Moving it away from the center position it defaults to. Assuming the top left corner of a box to be before the bottom right corner
+   * in both X and Y, BEFORE will move the popover towards the top/left corner and AFTER away from the top/left corner.
    *
-   * Example: attachmentPoint = 'D' ; referencePoint = '0'
+   * The following example illustrates:
+   * { direction: LEFT, spawnPoint: CENTER_LEFT, displacement: AFTER }
    *
-   *                     (A)--------
-   *                      |
-   *     ---------(0) -> (D) Anchor
-   *               |      |
-   *     Pop over (1)    (G)--------
-   *               |
-   *     ---------(2)
+   *                          (TOP_LEFT)-----------
+   *                          |
+   *     ----------(AFTER) -> (CENTER_LEFT) Anchor
+   *                     |    |
+   *      Pop over  (NONE)    (BOTTOM_LEFT)--------
+   *                     |
+   *     ---------(BEFORE)
    */
-  referencePoint?: '0' | '1' | '2';
+  displacement?: popoverDisplacement;
 }
 
 @Component({
@@ -65,18 +91,28 @@ export class CustomPopoverComponent implements OnInit {
   _contentClass = 'popover-content';
   _caretClass = 'popover-caret';
   _hostClass;
+  _defaultOptions = {
+    direction: popoverDirection.ABOVE,
+    displacement: popoverDisplacement.NONE,
+    spawnPoint: popoverSpawn.TOP_CENTER,
+  };
 
   ngOnInit(): void {
     this.forceAnchorStyle();
-    const opts: PopOverOpts =
-      this.options !== undefined ? this.options : { direction: 'above', referencePoint: '1', attachmentPoint: 'B' };
+    const opts: PopOverOpts = this.options !== undefined ? this.options : this._defaultOptions;
     this.selectCaret(opts);
     this._hostClass = this.buildHostClass(opts);
   }
 
   private forceAnchorStyle() {
     if (this.forcedAnchor !== undefined) {
-      if (!(this.forcedAnchor.style.position === 'relative' || this.forcedAnchor.style.position === 'absolute')) {
+      const oldStyle = this.forcedAnchor.style.position;
+      if (oldStyle === 'sticky' || oldStyle === 'fixed') {
+        console.warn(
+          'A sticky or fixed parent is changed by a custom-popover component. This will most likely cause style issues.'
+        );
+      }
+      if (!(oldStyle === 'relative' || oldStyle === 'absolute')) {
         this.forcedAnchor.style.position = 'relative';
       }
     }
@@ -84,16 +120,16 @@ export class CustomPopoverComponent implements OnInit {
 
   private selectCaret(opts: PopOverOpts) {
     switch (opts.direction) {
-      case 'below':
+      case popoverDirection.BELOW:
         this._boxClass += ' caret-pos-t';
-        switch (opts.referencePoint) {
-          case '0':
+        switch (opts.displacement) {
+          case popoverDisplacement.AFTER:
             this._caretClass += ' clip-bl';
             break;
-          case '1':
+          case popoverDisplacement.NONE:
             this._caretClass += ' clip-bc';
             break;
-          case '2':
+          case popoverDisplacement.BEFORE:
             this._caretClass += ' clip-br';
             break;
           default:
@@ -102,16 +138,16 @@ export class CustomPopoverComponent implements OnInit {
         }
         break;
 
-      case 'left':
+      case popoverDirection.LEFT:
         this._boxClass += ' caret-pos-r';
-        switch (opts.referencePoint) {
-          case '0':
+        switch (opts.displacement) {
+          case popoverDisplacement.AFTER:
             this._caretClass += ' clip-lt';
             break;
-          case '1':
+          case popoverDisplacement.NONE:
             this._caretClass += ' clip-lc';
             break;
-          case '2':
+          case popoverDisplacement.BEFORE:
             this._caretClass += ' clip-lb';
             break;
           default:
@@ -120,16 +156,16 @@ export class CustomPopoverComponent implements OnInit {
         }
         break;
 
-      case 'right':
+      case popoverDirection.RIGHT:
         this._boxClass += ' caret-pos-l';
-        switch (opts.referencePoint) {
-          case '0':
+        switch (opts.displacement) {
+          case popoverDisplacement.AFTER:
             this._caretClass += ' clip-rt';
             break;
-          case '1':
+          case popoverDisplacement.NONE:
             this._caretClass += ' clip-rc';
             break;
-          case '2':
+          case popoverDisplacement.BEFORE:
             this._caretClass += ' clip-rb';
             break;
           default:
@@ -138,16 +174,16 @@ export class CustomPopoverComponent implements OnInit {
         }
         break;
 
-      case 'above':
+      case popoverDirection.ABOVE:
         this._boxClass += ' caret-pos-b';
-        switch (opts.referencePoint) {
-          case '0':
+        switch (opts.displacement) {
+          case popoverDisplacement.AFTER:
             this._caretClass += ' clip-tl';
             break;
-          case '1':
+          case popoverDisplacement.NONE:
             this._caretClass += ' clip-tc';
             break;
-          case '2':
+          case popoverDisplacement.BEFORE:
             this._caretClass += ' clip-tr';
             break;
           default:
@@ -155,16 +191,17 @@ export class CustomPopoverComponent implements OnInit {
             break;
         }
         break;
+
       default:
         this._boxClass += ' caret-pos-b';
-        switch (opts.referencePoint) {
-          case '0':
+        switch (opts.displacement) {
+          case popoverDisplacement.AFTER:
             this._caretClass += ' clip-tl';
             break;
-          case '1':
+          case popoverDisplacement.NONE:
             this._caretClass += ' clip-tc';
             break;
-          case '2':
+          case popoverDisplacement.BEFORE:
             this._caretClass += ' clip-tr';
             break;
           default:
@@ -176,50 +213,53 @@ export class CustomPopoverComponent implements OnInit {
   }
 
   private buildHostClass(opts: PopOverOpts) {
-    const styleClasses = ['base', opts?.direction || 'above', 'attach' + (opts?.attachmentPoint || 'B')];
+    const directionClass = popoverDirection[opts?.direction || popoverDirection.ABOVE];
+    const spawnPointClass = 'attach' + popoverSpawn[opts?.spawnPoint || popoverSpawn.TOP_CENTER];
+
+    const styleClasses = ['base', directionClass, spawnPointClass];
     switch (opts?.direction) {
-      case 'above':
-        switch (opts?.referencePoint) {
-          case '1':
+      case popoverDirection.ABOVE:
+        switch (opts?.displacement) {
+          case popoverDisplacement.NONE:
             styleClasses.push('aboveCenter');
             break;
-          case '2':
+          case popoverDisplacement.BEFORE:
             styleClasses.push('aboveLeft');
             break;
           default:
             break;
         }
         break;
-      case 'left':
-        switch (opts?.referencePoint) {
-          case '1':
+      case popoverDirection.LEFT:
+        switch (opts?.displacement) {
+          case popoverDisplacement.NONE:
             styleClasses.push('leftCenter');
             break;
-          case '2':
+          case popoverDisplacement.BEFORE:
             styleClasses.push('leftTop');
             break;
           default:
             break;
         }
         break;
-      case 'right':
-        switch (opts?.referencePoint) {
-          case '1':
+      case popoverDirection.RIGHT:
+        switch (opts?.displacement) {
+          case popoverDisplacement.NONE:
             styleClasses.push('rightCenter');
             break;
-          case '2':
+          case popoverDisplacement.BEFORE:
             styleClasses.push('rightTop');
             break;
           default:
             break;
         }
         break;
-      case 'below':
-        switch (opts?.referencePoint) {
-          case '1':
+      case popoverDirection.BELOW:
+        switch (opts?.displacement) {
+          case popoverDisplacement.NONE:
             styleClasses.push('belowCenter');
             break;
-          case '2':
+          case popoverDisplacement.BEFORE:
             styleClasses.push('belowLeft');
             break;
           default:
@@ -227,11 +267,11 @@ export class CustomPopoverComponent implements OnInit {
         }
         break;
       default:
-        switch (opts?.referencePoint) {
-          case '1':
+        switch (opts?.displacement) {
+          case popoverDisplacement.NONE:
             styleClasses.push('aboveCenter');
             break;
-          case '2':
+          case popoverDisplacement.BEFORE:
             styleClasses.push('aboveLeft');
             break;
           default:
