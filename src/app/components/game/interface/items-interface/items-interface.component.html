@@ -8,7 +8,7 @@
       <i class="fas fa-question-circle"></i>
       <app-custom-popover
         *ngIf="!isInfoHidden"
-        [options]="{direction: 'above', referencePoint: '0', attachmentPoint: 'E'}"
+        [options]="hintPopoverOpts"
         [customClass]="'translucentInterface'"
       >
         <div class="question-text">
@@ -30,7 +30,7 @@
             </div>
             <app-custom-popover
               *ngIf="itemList[i] !== undefined && !slotHidden[i]"
-              [options]="{direction: 'above', referencePoint: '1', attachmentPoint: 'B'}"
+              [options]="itemPopoverOpts"
               [customClass]="'translucentInterface mediumCaret'"
             >
               <div class="info-text">
@@ -48,7 +48,7 @@
       <i class="fas fa-bars"></i>
       <app-custom-popover
         *ngIf="!isHostHidden"
-        [options]="{direction: 'above', referencePoint: '1', attachmentPoint: 'E'}"
+        [options]="hostButtonPopoverOpts"
         [customClass]="'translucentInterface mediumCaret'"
         >
         <div class="host-content">
@@ -65,7 +65,7 @@
               <option *ngFor="let p of gameState.getPlayerArray()" [ngValue]="p.displayName">{{p.displayName}}</option>
             </select>
             <select [(ngModel)]="giveItem_itemId">
-              <option *ngFor=" let item of itemTable.list" [ngValue]="item.id">{{item.name}}</option>
+              <option *ngFor=" let item of ITEM_TABLE.list" [ngValue]="item.id">{{item.name}}</option>
             </select>
             <span class="item-idx">({{giveItem_itemId || 0}})</span>
             <button (click)="giveItem()"><i class="fas fa-drumstick-bite"></i></button>

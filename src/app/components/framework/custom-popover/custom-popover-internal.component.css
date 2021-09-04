@@ -13,64 +13,64 @@
 }
 
 /* -- Direction -- */
-:host(.above) {
+:host(.ABOVE) {
   top: 0;
   transform: translate(0, -100%);
 }
 
-:host(.below) {
+:host(.BELOW) {
 }
 
-:host(.left) {
+:host(.LEFT) {
   left: 0;
   transform: translate(-100%, 0);
 }
 
-:host(.right) {
+:host(.RIGHT) {
   right: 0;
 }
 
 /* -- Attachments -- */
-:host(.attachA) {
+:host(.attachTOP_LEFT) {
   top: 0;
   left: 0;
 }
 
-:host(.attachB) {
+:host(.attachTOP_CENTER) {
   top: 0;
   left: 50%;
 }
 
-:host(.attachC) {
+:host(.attachTOP_RIGHT) {
   top: 0;
   left: 100%;
 }
 
-:host(.attachD) {
+:host(.attachCENTER_LEFT) {
   top: 50%;
   left: 0;
 }
 
-:host(.attachE) {
+:host(.attachCENTER_CENTER) {
   top: 50%;
   left: 50%;
 }
 
-:host(.attachF) {
+:host(.attachCENTER_RIGHT) {
   top: 50%;
   left: 100%;
 }
-:host(.attachG) {
+:host(.attachBOTTOM_LEFT) {
   top: 100%;
   left: 0;
 }
 
-:host(.attachH) {
+:host(.attachBOTTOM_CENTER) {
   top: 100%;
   left: 50%;
 }
 
-:host(.attachI) {
+:host(.attachBOTTOM_RIGHT) {
   top: 100%;
   left: 100%;
 }

@@ -5,6 +5,12 @@ import { executeTypes, Item, itemTable } from '../../../../services/items-servic
 import { CommandService } from '../../../../services/command.service';
 import { GameStateService } from '../../../../services/game-state.service';
 import { animate, style, transition, trigger } from '@angular/animations';
+import {
+  popoverDirection,
+  popoverDisplacement,
+  PopOverOpts,
+  popoverSpawn,
+} from '../../../framework/custom-popover/custom-popover.component';
 
 @Component({
   selector: 'app-items-interface',
@@ -26,7 +32,25 @@ import { animate, style, transition, trigger } from '@angular/animations';
 export class ItemsInterfaceComponent implements OnDestroy {
   /** Constants */
   readonly MAX_ITEM_COUNT = 5;
-  readonly itemTable = itemTable;
+  readonly ITEM_TABLE = itemTable;
+
+  readonly itemPopoverOpts: PopOverOpts = {
+    direction: popoverDirection.ABOVE,
+    spawnPoint: popoverSpawn.TOP_CENTER,
+    displacement: popoverDisplacement.NONE,
+  };
+
+  readonly hostButtonPopoverOpts: PopOverOpts = {
+    direction: popoverDirection.ABOVE,
+    spawnPoint: popoverSpawn.TOP_CENTER,
+    displacement: popoverDisplacement.NONE,
+  };
+
+  readonly hintPopoverOpts: PopOverOpts = {
+    direction: popoverDirection.ABOVE,
+    spawnPoint: popoverSpawn.TOP_CENTER,
+    displacement: popoverDisplacement.AFTER,
+  };
 
   /** Visibility state */
   isHost$: Observable<boolean>;
@@ -107,7 +131,7 @@ export class ItemsInterfaceComponent implements OnDestroy {
       this.giveItem_itemId = undefined;
     } else {
       alert(
-        'Die Aktion konnte nicht ausgeführt werden da entweder der Spieler name oder die ItemID nicht definiert waren.'
+        'Die Aktion konnte nicht ausgeführt werden da entweder der Spielername oder die ItemID nicht definiert waren.'
       );
     }
   }
