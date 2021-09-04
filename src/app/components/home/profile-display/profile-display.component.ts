@@ -27,7 +27,7 @@ export class ProfileDisplayComponent {
     private objectLoaderService: ObjectLoaderService,
     private AuthService: JwtTokenService
   ) {
-    this.userManagement.activeUser.subscribe((u) => {
+    this.userManagement.getActiveUser().subscribe((u) => {
       if (u !== undefined) {
         this.profileSource = this.fileManagement.profilePictureSource(u.login_name, true);
       }
@@ -51,12 +51,14 @@ export class ProfileDisplayComponent {
   onFileChanged(event): void {
     const file = event.target.files[0];
     this.fileManagement.uploadProfilePicture(file, this.user).subscribe((suc) => {
+      console.log(suc);
       this.userManagement.syncUserData(this.user);
     });
   }
 
   removeProfilePic(event): void {
     this.fileManagement.removeProfilePicture(this.user).subscribe((suc) => {
+      console.log(suc);
       this.userManagement.syncUserData(this.user);
     });
   }
