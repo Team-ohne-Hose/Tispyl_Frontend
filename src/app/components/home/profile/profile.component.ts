@@ -26,16 +26,16 @@ export class ProfileComponent implements OnInit {
 
   isShownLastGames = true;
 
+  toggleShow = (): void => {
+    this.isShownLastGames = !this.isShownLastGames;
+  };
+
   constructor(
     private route: ActivatedRoute,
     private changeDetector: ChangeDetectorRef,
     private userService: UserService,
     private fileService: FileService
   ) {}
-
-  toggleShow() {
-    this.isShownLastGames = !this.isShownLastGames;
-  }
 
   private onSuccess(): void {
     this.selectedFile.pending = false;

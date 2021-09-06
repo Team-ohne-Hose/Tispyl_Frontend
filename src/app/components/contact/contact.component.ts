@@ -10,7 +10,7 @@ export class ContactMessage {
 @Component({
   selector: 'app-contact',
   templateUrl: './contact.component.html',
-  styleUrls: ['../../../assets/css/styles.css', './contact.component.css'],
+  styleUrls: ['./contact.component.css'],
 })
 export class ContactComponent {
   constructor(private mailerService: MailerService, private toastService: AppToastService) {}

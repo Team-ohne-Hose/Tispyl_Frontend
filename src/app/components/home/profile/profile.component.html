@@ -80,7 +80,7 @@
       <!--Game History-->
       <div class="col-md-8">
         <app-gamehistory *ngIf="isShownLastGames" [currentUser]="foreignUser"></app-gamehistory>
-        <app-edit-profile *ngIf="!isShownLastGames" [currentUser]="currentUser"></app-edit-profile>
+        <app-edit-profile *ngIf="!isShownLastGames" [currentUser]="currentUser" [toggleShow]='toggleShow'></app-edit-profile>
       </div>
       <!--End Game History-->
     </div>

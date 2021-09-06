@@ -23,16 +23,14 @@ export class EditProfileComponent implements OnInit {
 
   @Input() currentUser: BasicUser;
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  @Input() toggleShow: () => {};
+
   /** input values */
   username = '';
   currentPassword = '';
   newPassword = '';
   newPasswordConfirmed = '';
-
-  submitted = false;
-
-  /** Registration auxiliaries */
-  isSuccessText = false;
 
   // edit form
   edit: FormGroup;
@@ -53,6 +51,7 @@ export class EditProfileComponent implements OnInit {
     this.edit.value.currentPassword = '';
     this.edit.value.newPassword = '';
     this.edit.value.newPasswordConfirmed = '';
+    this.toggleShow();
   }
 
   ngOnInit(): void {
