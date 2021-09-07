@@ -3,7 +3,7 @@
 }
 
 .anchor {
-  pointer-events: visibleFill;
+  cursor: default;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -13,6 +13,7 @@
 }
 
 .decor-box-host {
+  pointer-events: visibleFill;
   filter: drop-shadow(3px 3px 8px rgb(0, 0, 0));
   display: grid;
   grid-template-areas:
@@ -22,6 +23,7 @@
 }
 
 .decor-box-peasant {
+  pointer-events: visibleFill;
   filter: drop-shadow(3px 3px 8px rgb(0, 0, 0));
   display: grid;
   grid-template-areas:

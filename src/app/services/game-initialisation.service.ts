@@ -35,7 +35,7 @@ export class GameInitialisationService {
     private boardTilesService: BoardTilesService,
     private bic: BoardItemControlService
   ) {
-    this.bic.gameState.isColyseusReady.subscribe((suc) => this.setColyseusReady());
+    this.bic.gameState.isColyseusReady$.subscribe((suc) => this.setColyseusReady());
   }
 
   async startInitialisation(game: GameComponent): Promise<void> {
@@ -52,7 +52,6 @@ export class GameInitialisationService {
     this.colyseusNotifyableClasses.push(this.game.interfaceRef.stateDisplayRef);
     this.colyseusNotifyableClasses.push(this.game.interfaceRef.tileOverlayRef);
     this.colyseusNotifyableClasses.push(this.game.interfaceRef);
-    this.colyseusNotifyableClasses.push(this.game.interfaceRef.connectedPlayersRef);
     this.colyseusNotifyableClasses.push(this.chatService);
     this.colyseusNotifyableClasses.push(this.itemService);
 

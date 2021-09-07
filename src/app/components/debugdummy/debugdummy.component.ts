@@ -9,13 +9,15 @@ import { Player } from '../../model/state/Player';
   styleUrls: ['./debugdummy.component.css'],
 })
 export class DebugdummyComponent {
-  p = new Player('Kneggo', 'sdf', false);
+  p = new Player('Kneggo', 'aaaa', false);
   players: Player[] = [
-    new Player('Peter Enis', 'lpeterenis', true),
-    new Player('Liebler', 'LieblerLogin', false),
-    new Player('Titts', 'lkdsaghf', false),
-    new Player('PrivatePupu', 'nameZumLogin', false),
+    new Player('ssss', 'ssss', true),
+    new Player('ssss', 'aaaa', false),
+    new Player('Titts', 'aaaa', false),
+    new Player('PrivatePupu', 'aaaa', false),
   ];
+
+  currentPlayerName = 'Titts';
 
   constructor() {
     this.p.isReady = true;
@@ -30,5 +32,9 @@ export class DebugdummyComponent {
 
   removeplayer() {
     this.players.pop();
+  }
+
+  toggle() {
+    this.currentPlayerName = this.currentPlayerName === 'Titts' ? 'PrivatePupu' : 'Titts';
   }
 }
