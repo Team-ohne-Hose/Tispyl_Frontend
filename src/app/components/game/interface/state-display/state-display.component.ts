@@ -97,7 +97,7 @@ export class StateDisplayComponent implements ColyseusNotifyable {
               }
               break;
             default:
-              console.warn(`Wake player callback was called with an unexpected action type: ${JSON.stringify(data)}`);
+              break;
           }
         }
       },

@@ -7,11 +7,7 @@
   >
   </app-state-display>
   <app-pregame-banner @fadeOutAnimation *ngIf="!gameState.hasStarted()" [players]="gameState.getPlayerArray()"></app-pregame-banner>
-  <app-connected-players
-    #connectedPlayers
-    [currentPlayerDisplayName]="gameState.getCurrentPlayerDisplayName()"
-    [players]="gameState.getPlayerArray()">
-  </app-connected-players>
+  <app-connected-players></app-connected-players>
   <app-menu-bar
     [playerList]="gameState.getPlayerArray()"
     [ruleList]="gameState.getRules()">

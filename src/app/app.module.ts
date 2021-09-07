@@ -74,6 +74,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppToastsComponent } from './components/toast/toast.component';
 import { RomanNumeralsPipe } from './components/framework/roman-numerals.pipe';
 import { CustomPopoverComponent } from './components/framework/custom-popover/custom-popover.component';
+import { PrescriptPipe } from './components/game/interface/connected-players/prescript.pipe';
 
 const appRoutes: Routes = [
   {
@@ -163,6 +164,7 @@ const appRoutes: Routes = [
     AppToastsComponent,
     RomanNumeralsPipe,
     CustomPopoverComponent,
+    PrescriptPipe,
   ],
   imports: [
     RouterModule.forRoot(

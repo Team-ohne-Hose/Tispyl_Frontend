@@ -20,12 +20,15 @@ export class GameStateService {
   // This class provides an interface to the colyseus data
   // It provides structures which fit better to the needs when ingame
 
-  isColyseusReady: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  isColyseusReady$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  me: AsyncSubject<Player> = new AsyncSubject<Player>();
-  currentHostLogin: Subject<string> = new Subject<string>();
+  /** Access values for the game state */
+  me$: AsyncSubject<Player> = new AsyncSubject<Player>();
+  currentHostLogin$: Subject<string> = new Subject<string>();
+  activePlayerLogin$: BehaviorSubject<string> = new BehaviorSubject<string>(undefined);
+  playerMap$: BehaviorSubject<Map<string, Player>> = new BehaviorSubject<Map<string, Player>>(new Map());
+  isTurnOrderReversed$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  activePlayerLogin = '';
   activeAction = '';
 
   private room: Room<GameState>;
@@ -47,23 +50,27 @@ export class GameStateService {
           case 'currentPlayerLogin':
             console.debug('nextTurn detected. notifying callbacks');
             this.callNextTurn();
-            if (this.activePlayerLogin !== change.value) {
-              this.activePlayerLogin = change.value;
-            }
+            this.activePlayerLogin$.next(change.value);
             break;
           case 'action':
             this.activeAction = change.value;
             this.callNextAction();
             break;
           case 'playerList': {
-            if (!this.me.isStopped) {
-              this.me.next(this._resolveMyPlayerObject(change.value as MapSchema<Player>));
-              this.me.complete();
+            const m = change.value as MapSchema<Player>;
+            this.playerMap$.next(m);
+
+            if (!this.me$.isStopped) {
+              this.me$.next(this._resolveMyPlayerObject(m));
+              this.me$.complete();
             }
             break;
           }
           case 'hostLoginName':
-            this.currentHostLogin.next(change.value);
+            this.currentHostLogin$.next(change.value);
+            break;
+          case 'reversed':
+            this.isTurnOrderReversed$.next(change.value);
             break;
         }
       });
@@ -74,7 +81,7 @@ export class GameStateService {
         room.onStateChange.once((state) => {
           console.debug('first colyseus Patch recieved');
           this.loaded = true;
-          this.isColyseusReady.next(true);
+          this.isColyseusReady$.next(true);
           setTimeout(this.attachCallbacks.bind(this), 100, room);
         });
       } else {
@@ -90,9 +97,9 @@ export class GameStateService {
   }
 
   amIHost(): Observable<boolean> {
-    return this.currentHostLogin.pipe(
+    return this.currentHostLogin$.pipe(
       mergeMap((hostLogin: string) => {
-        return this.me.pipe(map((me: Player) => hostLogin === me.loginName));
+        return this.me$.pipe(map((me: Player) => hostLogin === me.loginName));
       })
     );
   }
@@ -215,6 +222,17 @@ export class GameStateService {
     return false;
   }
 
+  getPlayerArray$(): Observable<Player[]> {
+    return this.playerMap$.pipe(
+      map((m: Map<string, Player>) => {
+        return Array.from(m.values());
+      })
+    );
+  }
+
+  /**
+   * @deprecated This method accesses state values directly which can result in inconsistencies. Use getPlayerArray$() instead
+   */
   getPlayerArray(): Player[] {
     const s: GameState = this.getState();
     if (s !== undefined) {
@@ -309,16 +327,25 @@ export class GameStateService {
       const addPlayerCbs = (p: Player, key: string) => {
         p.onChange = ((changes: DataChange[]) => {
           this.callPlayerListUpdate(p, key);
+          this.playerMap$.next(this.playerMap$.value.set(key, p));
         }).bind(this);
       };
       room.state.playerList.onAdd = (p: Player, key: string) => {
         addPlayerCbs(p, key);
         this.callPlayerListUpdate(p, key);
+        this.playerMap$.next(this.playerMap$.value.set(key, p));
       };
       room.state.playerList.forEach((p: Player, key: string) => {
         addPlayerCbs(p, key);
         this.callPlayerListUpdate(p, key);
       });
+      room.state.playerList.onRemove = (p: Player, key: string) => {
+        addPlayerCbs(p, key);
+        this.callPlayerListUpdate(p, key);
+        const m = this.playerMap$.value;
+        m.delete(key);
+        this.playerMap$.next(m);
+      };
     }
   }
 

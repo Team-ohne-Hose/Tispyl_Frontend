@@ -27,7 +27,6 @@ export class InterfaceComponent implements ColyseusNotifyable {
   @ViewChild('tileOverlay') tileOverlayRef: TileOverlayComponent;
   @ViewChild('turnOverlay') turnOverlayRef: TurnOverlayComponent;
   @ViewChild('stateDisplay') stateDisplayRef: StateDisplayComponent;
-  @ViewChild('connectedPlayers') connectedPlayersRef: ConnectedPlayersComponent;
 
   constructor(private router: Router, public gameState: GameStateService) {
     this.routes = router.config.filter((route) => route.path !== '**' && route.path.length > 0);

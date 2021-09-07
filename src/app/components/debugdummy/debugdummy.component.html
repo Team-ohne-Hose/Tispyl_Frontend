@@ -1,12 +1,12 @@
 <div class="dummyBody">
-  <app-pregame-banner [players]="players"></app-pregame-banner>
+
+  <app-connected-players></app-connected-players>
+
 
   <div class="debug-buttons">
-    <div *ngFor="let p of players; let i = index">
-      <button (click)="p.isReady = !p.isReady">{{p.displayName}}</button>
-    </div>
     <button (click)="addplayer()">add</button>
     <button (click)="removeplayer()">remove</button>
+    <button (click)="toggle()">toggle</button>
   </div>
 
 </div>

@@ -42,7 +42,7 @@ export class ViewportComponent implements AfterViewInit {
     public itemService: ItemService,
     private bic: BoardItemControlService
   ) {
-    this.stats = Stats();
+    // this.stats = Stats();
   }
 
   async ngAfterViewInit(): Promise<void> {
@@ -55,7 +55,7 @@ export class ViewportComponent implements AfterViewInit {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     this.renderer.setSize(width, height);
     this.renderer.shadowMap.enabled = true;
-    this.view.nativeElement.append(this.renderer.domElement, this.stats.dom);
+    this.view.nativeElement.append(this.renderer.domElement);
 
     /** Bind viewport to its control objects */
     this.bic.bind(this);
@@ -75,7 +75,7 @@ export class ViewportComponent implements AfterViewInit {
 
     this.renderer.render(this.sceneTree, this.camera);
     this.userInteractionController.cameraControls.update();
-    this.stats.update();
+    // this.stats.update();
   }
 
   initializeScene(): void {
