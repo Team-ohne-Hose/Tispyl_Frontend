@@ -1,5 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
 
+.transparent {
+  background-color: rgba(48, 48, 48, 0.58);
+  box-shadow: 3px 3px 11px 0 rgb(0, 0, 0);
+  -webkit-box-shadow: 3px 3px 11px 0 rgb(0, 0, 0);
+  -moz-box-shadow: 3px 3px 11px 0 rgb(0, 0, 0);
+}
+
 .component-box {
   display: flex;
   width: 100%;
@@ -300,3 +307,5 @@ td {
   margin: 0.5em;
   z-index: 1200;
 }
+
+

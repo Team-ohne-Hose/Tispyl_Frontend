@@ -5,7 +5,7 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-about',
   templateUrl: './imprint.component.html',
-  styleUrls: ['../../../assets/css/styles.css', './imprint.component.css'],
+  styleUrls: ['./imprint.component.css'],
 })
 export class ImprintComponent {
   constructor() {}

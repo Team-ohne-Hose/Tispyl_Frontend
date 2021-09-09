@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { UserService, LoginUser } from '../../../services/user.service';
 import { FileService } from '../../../services/file.service';
-import { PlayerModel } from '../../../model/WsData';
 import { ObjectLoaderService } from '../../../services/object-loader.service';
 import { JwtTokenService } from 'src/app/services/jwttoken.service';
 import { figureList, environmentList } from '../lobby/lobbyLUTs';
@@ -28,7 +27,7 @@ export class ProfileDisplayComponent {
     private objectLoaderService: ObjectLoaderService,
     private AuthService: JwtTokenService
   ) {
-    this.userManagement.getActiveUser().subscribe((u) => {
+    this.userManagement.activeUser.subscribe((u) => {
       if (u !== undefined) {
         this.profileSource = this.fileManagement.profilePictureSource(u.login_name, true);
       }
@@ -52,14 +51,12 @@ export class ProfileDisplayComponent {
   onFileChanged(event): void {
     const file = event.target.files[0];
     this.fileManagement.uploadProfilePicture(file, this.user).subscribe((suc) => {
-      console.log(suc);
       this.userManagement.syncUserData(this.user);
     });
   }
 
   removeProfilePic(event): void {
     this.fileManagement.removeProfilePicture(this.user).subscribe((suc) => {
-      console.log(suc);
       this.userManagement.syncUserData(this.user);
     });
   }

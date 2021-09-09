@@ -1,53 +1,81 @@
-<div class="card-body">
-  <div class="row">
-    <div class="col-sm-3">
-      <h6 class="mb-0">Full Name</h6>
-    </div>
-    <div class="col-sm-9 text-secondary">
-      Kenneth Valdez
-    </div>
-  </div>
-  <hr>
-  <div class="row">
-    <div class="col-sm-3">
-      <h6 class="mb-0">Email</h6>
-    </div>
-    <div class="col-sm-9 text-secondary">
-      fip@jukmuh.al
-    </div>
-  </div>
-  <hr>
-  <div class="row">
-    <div class="col-sm-3">
-      <h6 class="mb-0">Phone</h6>
-    </div>
-    <div class="col-sm-9 text-secondary">
-      (239) 816-9029
-    </div>
-  </div>
-  <hr>
-  <div class="row">
-    <div class="col-sm-3">
-      <h6 class="mb-0">Mobile</h6>
-    </div>
-    <div class="col-sm-9 text-secondary">
-      (320) 380-4539
-    </div>
-  </div>
-  <hr>
-  <div class="row">
-    <div class="col-sm-3">
-      <h6 class="mb-0">Address</h6>
-    </div>
-    <div class="col-sm-9 text-secondary">
-      Bay Area, San Francisco, CA
-    </div>
-  </div>
-  <hr>
-  <div class="row">
-    <div class="col-sm-12">
-      <a class="btn btn-info " target="__blank"
-        href="https://www.bootdey.com/snippets/view/profile-edit-data-and-skills">Edit</a>
+<div class='row gutters-sm'>
+  <div class='col-sm-12 mb-3'>
+    <div class='card h-100 transparent'>
+      <div class='card-body'>
+        <h6 class='d-flex align-items-center mb-3'><i class='material-icons text-info mr-2'>assignment</i>Profil
+          bearbeiten</h6>
+
+        <form class='needs-validation px-5' (submit)='this.onSubmit()' [formGroup]='edit'>
+
+          <div class='form-row mb-3'>
+            <div class='col-sm-12'>
+
+              <label for='display-name'
+                     [ngClass]="edit.controls.newUsername.invalid ? 'text-danger' : ''">Anzeigename:
+              </label>
+              <input (keyup)='keyPressed($event)' id='display-name' formControlName='newUsername' type='text'
+                     name='display_name'
+                     class='form-control' [ngClass]="edit.controls.newUsername.invalid ? 'is-invalid' : ''">
+              <label class='text-danger' *ngIf="edit.controls.newUsername.invalid">
+                Der Anzeigename muss mindestens 3 Zeichen enthalten.
+              </label>
+              <label class='text-danger' *ngIf="edit.controls.newUsername.hasError('username')">
+                Der Anzeigename ist ungültig!
+              </label>
+
+              <div class='requirements'>
+                <div class='requirement-tooltip'>
+                  <div class='tooltip-text'>Dies ist der Name, den andere Spieler sehen können.</div>
+                  <span class='tooltip-arrow'></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class='form-row mb-3'>
+            <div class='col-sm-12 my-3'>
+              <label for='currentPassword'
+                     [ngClass]="edit.controls.currentPassword.invalid ? 'text-danger' : ''">Passwort:
+              </label>
+              <input id='currentPassword' formControlName='currentPassword' type='password' class='form-control'
+                     [ngClass]="edit.controls.currentPassword.invalid ? 'is-invalid' : ''">
+
+              <label class='text-danger' *ngIf="edit.controls.currentPassword.invalid">
+                Must be at least 8 characters!
+              </label>
+            </div>
+
+
+            <div class='col-sm-6'>
+              <label for='newPassword'
+                     [ngClass]="edit.controls.newPassword.invalid ? 'text-danger' : ''">Neues Passwort:
+              </label>
+              <input id='newPassword' formControlName='newPassword' type='password' class='form-control'
+                     [ngClass]="edit.controls.newPassword.invalid ? 'is-invalid' : ''">
+              <label class='text-danger' *ngIf="edit.controls.newPassword.invalid">
+                Must be at least 8 characters!
+              </label>
+            </div>
+
+            <div class='col-sm-6'>
+              <label for='new-password-confirmed'
+                     [ngClass]="edit.errors?.equality? 'text-danger' : ''">Passwort wiederholen:
+              </label>
+              <input id='new-password-confirmed' formControlName='newPasswordConfirmed' type='password'
+                     class='form-control' [ngClass]="edit.errors?.equality ? 'is-invalid' :
+                     ''">
+
+              <label class='text-danger' *ngIf='edit.errors?.equality'>
+                Die neuen Passwörter stimmen nicht überein.
+              </label>
+            </div>
+          </div>
+
+            <button type='submit' value='submit' class='btn btn-primary'>
+              Abschicken
+            </button>
+        </form>
+      </div>
     </div>
   </div>
 </div>

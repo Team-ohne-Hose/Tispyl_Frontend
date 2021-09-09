@@ -3,7 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { APIResponse } from '../model/APIResponse';
 import { environment } from '../../environments/environment';
-import * as hash from 'object-hash';
+import { EditUserData } from '../components/home/profile/edit-profile/edit-profile.component';
+import { AppToastService } from './toast.service';
 
 export class BasicUser {
   id: number;
@@ -21,38 +22,6 @@ export class LoginUser extends BasicUser {
   password_hash;
 }
 
-// export class OldUser {
-//   id: number;
-//   login_name: string;
-//   display_name: string;
-//   password_hash: string;
-//   user_creation: string;
-//   time_played: number;
-//   profile_picture: string;
-//   last_figure: string;
-//   is_connected: boolean;
-//   is_dev: boolean;
-
-//   constructor(login: string, display: string, password: string) {
-//     this.login_name = login;
-//     this.display_name = display;
-//     this.password_hash = hash.MD5(password);
-//   }
-// }
-
-// export class OldLoginUser {
-//   id: number;
-//   login_name: string;
-//   display_name: string;
-//   user_creation: string;
-//   time_played: number;
-//   profile_picture: string;
-//   last_figure: string;
-//   is_connected: boolean;
-//   is_dev: boolean;
-// }
-// export class OldForeignUser extends OldLoginUser { }
-
 @Injectable({
   providedIn: 'root',
 })
@@ -62,7 +31,7 @@ export class UserService {
 
   private userEndpoint = environment.endpoint + 'user';
 
-  constructor(private httpClient: HttpClient) {
+  constructor(private httpClient: HttpClient, private toastService: AppToastService) {
     this.activeUser = new BehaviorSubject<LoginUser>(undefined);
   }
 
@@ -104,5 +73,25 @@ export class UserService {
   requestUserDatabyId(userId: number): Observable<APIResponse<BasicUser>> {
     const requestUrl = this.userEndpoint + '/byId?userId=' + userId;
     return this.httpClient.get<APIResponse<BasicUser>>(requestUrl);
+  }
+
+  updateUser(userData: EditUserData): void {
+    const requestUrl = this.userEndpoint;
+
+    this.httpClient.patch<APIResponse<LoginUser>>(requestUrl, userData).subscribe((response) => {
+      if (!response.success) {
+        this.toastService.show(
+          'Error',
+          'Beim aktualisieren deines Profils ist etwas schief gelaufen.',
+          'bg-danger text-light',
+          3000
+        );
+        return;
+      }
+
+      this.activeUser.next(response.payload);
+
+      this.toastService.show('Success', 'Dein Profil wurde erfolgreich aktualisiert.', 'bg-success text-light', 3000);
+    });
   }
 }
