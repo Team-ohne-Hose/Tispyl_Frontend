@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ChatService } from '../chat.service';
-import { ColyseusNotifyable } from '../game-initialisation.service';
+import { ColyseusNotifiable } from '../game-initialisation.service';
 import { GameStateService } from '../game-state.service';
 import { ItemMessageType, MessageType, UseItem, WsData } from '../../model/WsData';
 import { MapSchema } from '@colyseus/schema';
@@ -22,7 +22,7 @@ export interface ItemTargetError {
 @Injectable({
   providedIn: 'root',
 })
-export class ItemService implements ColyseusNotifyable {
+export class ItemService {
   private latestTarget: Player;
   target$: Subject<Player> = undefined;
   myItems$: BehaviorSubject<Item[]> = new BehaviorSubject<Item[]>([]);
@@ -43,14 +43,6 @@ export class ItemService implements ColyseusNotifyable {
         }
       },
     });
-  }
-
-  attachColyseusStateCallbacks(gameState: GameStateService): void {
-    // no-op
-  }
-
-  attachColyseusMessageCallbacks(gameState: GameStateService): void {
-    // no-op
   }
 
   getMyItemsList(): Item[] {

@@ -1,15 +1,17 @@
 import { Injectable } from '@angular/core';
 import { PhysicsCommands } from '../components/game/viewport/helpers/PhysicsCommands';
 import { GameStateService } from './game-state.service';
-import { Color, ObjectLoaderService } from './object-loader.service';
+import { ObjectLoaderService } from './object-loader/object-loader.service';
 import { BoardTilesService } from './board-tiles.service';
 import { ItemService } from './items-service/item.service';
 import { ViewportComponent } from '../components/game/viewport/viewport.component';
 import * as THREE from 'three';
-import { ColyseusNotifyable } from './game-initialisation.service';
+import { ColyseusNotifiable } from './game-initialisation.service';
 import { Player } from '../model/state/Player';
 import { MapSchema } from '@colyseus/schema';
 import { GameActionType, GameSetTile, MessageType } from '../model/WsData';
+import { Observable, Observer } from 'rxjs';
+import { Progress } from './object-loader/loaderTypes';
 
 export interface FigureItem {
   mesh: THREE.Object3D;
@@ -21,7 +23,7 @@ export interface FigureItem {
 @Injectable({
   providedIn: 'root',
 })
-export class BoardItemControlService implements ColyseusNotifyable {
+export class BoardItemControlService {
   rendererDomReference: HTMLCanvasElement;
   sceneTree: THREE.Scene;
   camera: THREE.PerspectiveCamera;
@@ -50,6 +52,32 @@ export class BoardItemControlService implements ColyseusNotifyable {
         return val.mesh.userData.physicsId === physId;
       });
     }).bind(this);
+
+    /** This should be cleaned and clarified */
+    this.gameState.playerListChanges$.subscribe((p: Player) => {
+      const figureItem = this.allFigures.find((val: FigureItem, index: number) => {
+        return val.mesh.userData.physicsId === p.figureId;
+      });
+      if (figureItem === undefined) {
+        console.warn('figure hasnt been initialized yet, but hiddenState is to be set', p.figureId, this.allFigures);
+      } else {
+        if (p.figureModel !== undefined) {
+          console.debug('loading new playerTex', p.figureModel);
+          // TODO prevent loading Textures all the time/ prevent if not necessary
+          this.loader.switchTex(figureItem.mesh, p.figureModel);
+        }
+        if (p.hasLeft !== figureItem.isHidden) {
+          console.debug('changing hiddenState', p.hasLeft, figureItem.isHidden, this.allFigures);
+          if (figureItem.isHidden) {
+            this.sceneTree.add(figureItem.mesh);
+            figureItem.isHidden = false;
+          } else {
+            this.sceneTree.remove(figureItem.mesh);
+            figureItem.isHidden = true;
+          }
+        }
+      }
+    });
   }
 
   public bind(viewport: ViewportComponent): void {
@@ -58,66 +86,35 @@ export class BoardItemControlService implements ColyseusNotifyable {
     this.sceneTree = viewport.sceneTree;
   }
 
-  attachColyseusStateCallbacks(gameState: GameStateService): void {
-    gameState.addPlayerListUpdateCallback(
-      ((player: Player, key: string, players: MapSchema<Player>) => {
-        const figureItem = this.allFigures.find((val: FigureItem, index: number) => {
-          return val.mesh.userData.physicsId === player.figureId;
-        });
-        if (figureItem === undefined) {
-          console.warn(
-            'figure hasnt been initialized yet, but hiddenState is to be set',
-            player.figureId,
-            this.allFigures
-          );
-        } else {
-          if (player.figureModel !== undefined) {
-            console.debug('loading new playerTex', player.figureModel);
-            // TODO prevent loading Textures all the time/ prevent if not necessary
-            this.loader.switchTex(figureItem.mesh, player.figureModel);
-          }
-          if (player.hasLeft !== figureItem.isHidden) {
-            console.debug('changing hiddenState', player.hasLeft, figureItem.isHidden, this.allFigures);
-            if (figureItem.isHidden) {
-              this.sceneTree.add(figureItem.mesh);
-              figureItem.isHidden = false;
-            } else {
-              this.sceneTree.remove(figureItem.mesh);
-              figureItem.isHidden = true;
-            }
-          }
-        }
-      }).bind(this)
-    );
-  }
-
-  attachColyseusMessageCallbacks(gameState: GameStateService): void {
-    return;
-  }
-
   throwDice(): void {
-    if (this.gameState.isMyTurn()) {
-      console.debug('throwing Dice', this.physics.dice, PhysicsCommands.getPhysId(this.physics.dice));
-      if (this.physics.dice !== undefined) {
-        const physIdDice = PhysicsCommands.getPhysId(this.physics.dice);
-        this.physics.setPosition(physIdDice, 0, 40, 0);
-
-        const getSignedRandom = () => (Math.random() - 0.5) * 2;
-        const vel = new THREE.Vector3(getSignedRandom(), Math.random() / 5, getSignedRandom());
-        vel.normalize().multiplyScalar(Math.random() * 30);
-        this.physics.setVelocity(physIdDice, vel.x, vel.y, vel.z);
-
-        const rotSpeed = 2 * Math.PI * (getSignedRandom() * 0.5 + 5);
-        const rotation = new THREE.Vector3().setFromSphericalCoords(
-          rotSpeed,
-          (Math.random() * 0.3 + 0.35) * Math.PI, // main rotational axis should not be vertical. therefore restrict phi.
-          Math.random() * 2 * Math.PI
-        );
-        this.physics.setAngularVelocity(physIdDice, rotation.x, rotation.y, rotation.z);
-        this.physics.wakeAll();
+    this.gameState.isMyTurnOnce$().subscribe((myTurn: boolean) => {
+      if (myTurn) {
+        this._throwDice();
+      } else {
+        console.debug('You are not the active Player!');
       }
-    } else {
-      console.debug('You are not the active Player!');
+    });
+  }
+
+  private _throwDice(): void {
+    console.debug('throwing Dice', this.physics.dice, PhysicsCommands.getPhysId(this.physics.dice));
+    if (this.physics.dice !== undefined) {
+      const physIdDice = PhysicsCommands.getPhysId(this.physics.dice);
+      this.physics.setPosition(physIdDice, 0, 40, 0);
+
+      const getSignedRandom = () => (Math.random() - 0.5) * 2;
+      const vel = new THREE.Vector3(getSignedRandom(), Math.random() / 5, getSignedRandom());
+      vel.normalize().multiplyScalar(Math.random() * 30);
+      this.physics.setVelocity(physIdDice, vel.x, vel.y, vel.z);
+
+      const rotSpeed = 2 * Math.PI * (getSignedRandom() * 0.5 + 5);
+      const rotation = new THREE.Vector3().setFromSphericalCoords(
+        rotSpeed,
+        (Math.random() * 0.3 + 0.35) * Math.PI, // main rotational axis should not be vertical. therefore restrict phi.
+        Math.random() * 2 * Math.PI
+      );
+      this.physics.setAngularVelocity(physIdDice, rotation.x, rotation.y, rotation.z);
+      this.physics.wakeAll();
     }
   }
 
@@ -125,14 +122,20 @@ export class BoardItemControlService implements ColyseusNotifyable {
     return this.allFigures.length;
   }
 
-  createSprites(onProgressCallback: () => void): void {
-    this.allFigures.forEach((figure: FigureItem) => {
-      if (figure.labelSprite === undefined) {
-        console.debug('adding Sprite for player ', figure.name);
-        figure.labelSprite = this.loader.createPredefLabelSprite(figure.name);
-      }
-      onProgressCallback();
-      figure.labelSprite.position.set(0, 5, 0);
+  createSprites(): Observable<Progress> {
+    return new Observable<Progress>((o: Observer<Progress>) => {
+      let count = 0;
+      o.next([0, this.allFigures.length]);
+      this.allFigures.forEach((figure: FigureItem) => {
+        if (figure.labelSprite === undefined) {
+          console.debug('adding Sprite for player ', figure.name);
+          figure.labelSprite = this.loader.createPredefLabelSprite(figure.name);
+        }
+        figure.labelSprite.position.set(0, 5, 0);
+        count++;
+        o.next([count, this.allFigures.length]);
+      });
+      o.complete();
     });
   }
 

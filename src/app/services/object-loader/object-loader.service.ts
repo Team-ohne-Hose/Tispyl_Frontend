@@ -1,69 +1,10 @@
 import { Injectable } from '@angular/core';
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
-import { PhysicsEntity, PhysicsEntityVariation, PlayerModel } from '../model/WsData';
+import { PhysicsEntity, PhysicsEntityVariation, PlayerModel } from '../../model/WsData';
 import { Texture } from 'three';
-import { Subject, Subscription } from 'rxjs';
-
-interface ResourceData {
-  cname: string;
-  fname: string;
-  objectCache: THREE.Object3D;
-}
-
-export interface DiceVariations<T> {
-  default: T;
-  dice: T;
-  dice2: T;
-}
-
-export interface FigureVariations<T> {
-  default: T;
-}
-
-export interface EntityList<T> {
-  dice: DiceVariations<T>;
-  figure: FigureVariations<T>;
-}
-
-interface PlayerModelData {
-  texFName: string;
-  specFName: string;
-  lowResTex: THREE.Texture;
-  tex: THREE.Texture;
-  spec: THREE.Texture;
-  subject: Subject<{ tex: THREE.Texture; spec: THREE.Texture }>;
-}
-
-export class Color {
-  r: number;
-  g: number;
-  b: number;
-  a: number;
-
-  constructor(r: number, g: number, b: number, a: number) {
-    this.r = r;
-    this.g = g;
-    this.b = b;
-    this.a = a;
-  }
-
-  toCSStext(): string {
-    return `rgba(${Math.round(this.r * 255)},${Math.round(this.g * 255)},${Math.round(this.b * 255)},${this.a})`;
-  }
-}
-
-export interface CubeMap {
-  name: string;
-  tex: THREE.CubeTexture;
-  path: string;
-  px: string;
-  py: string;
-  pz: string;
-  nx: string;
-  ny: string;
-  nz: string;
-}
+import { Observable, Observer, Subject, Subscription } from 'rxjs';
+import { Color, CubeMap, EntityList, PlayerModelData, Progress, ResourceData } from './loaderTypes';
 
 @Injectable({
   providedIn: 'root',
@@ -339,16 +280,16 @@ export class ObjectLoaderService {
     );
   }
 
-  async loadAllObjects(onProgressCallback: (progress: number, total: number) => void): Promise<void> {
-    const myPromise: Promise<void> = new Promise<void>((resolve, reject) => {
+  loadCommonObjects(): Observable<Progress> {
+    return new Observable<Progress>((observer: Observer<Progress>) => {
       // TODO: Load all Playertextures as well
       const toLoad = this.texList.size + this.entities.length;
       let progress = 0;
       const onProgress = () => {
         progress++;
-        onProgressCallback(progress, toLoad);
+        observer.next([progress, toLoad]); // onProgressCallback(progress, toLoad);
         if (progress >= toLoad) {
-          resolve();
+          observer.complete();
         }
       };
 
@@ -360,12 +301,9 @@ export class ObjectLoaderService {
         this.loadObject(value[0], value[1], onProgress);
       });
     });
-
-    return myPromise;
   }
 
   async loadHiResTex(): Promise<void> {
-    console.log('this is:', this, this.texList);
     this.texList.forEach((val: PlayerModelData, key: PlayerModel) => {
       this.loadBcapTex(key, (tex: THREE.Texture, spec: THREE.Texture) => {
         val.subject.next({ tex: tex, spec: spec });
@@ -376,7 +314,7 @@ export class ObjectLoaderService {
   setCurrentCubeMap(cubeMapId: number): void {
     if (cubeMapId >= 0) {
       const cubemap = this.getCubeMap(cubeMapId);
-      console.log('Using now cubemap', this.cubeMaps[cubeMapId].name, cubeMapId, this.cubeMaps[cubeMapId]);
+      console.debug('Using Cubemap:', this.cubeMaps[cubeMapId].name, cubeMapId, this.cubeMaps[cubeMapId]);
       this.currentCubeMap = cubeMapId;
 
       this.gameBoundaryMat.envMap = cubemap;
@@ -539,20 +477,24 @@ export class ObjectLoaderService {
     return gameBoard;
   }
 
-  loadGameTileTexture(texUrl: string, onLoad: (tex: THREE.Texture) => void): void {
-    this.tLoader.load(
-      texUrl,
-      (texture) => {
-        texture.encoding = THREE.sRGBEncoding;
-        texture.anisotropy = 16;
-        onLoad(texture);
-      },
-      undefined,
-      (error) => {
-        console.error(error);
-        onLoad(this.defaultTileTexture);
-      }
-    );
+  loadGameTileTexture(texUrl: string): Observable<THREE.Texture> {
+    return new Observable<Texture>((observer: Observer<Texture>) => {
+      this.tLoader.load(
+        texUrl,
+        (texture) => {
+          texture.encoding = THREE.sRGBEncoding;
+          texture.anisotropy = 16;
+          observer.next(texture);
+          observer.complete();
+        },
+        undefined,
+        (error) => {
+          console.error(error);
+          observer.next(this.defaultTileTexture);
+          observer.complete();
+        }
+      );
+    });
   }
 
   loadGameTile(): THREE.Mesh {

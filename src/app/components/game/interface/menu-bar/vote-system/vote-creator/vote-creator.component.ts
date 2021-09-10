@@ -20,14 +20,16 @@ export class VoteCreatorComponent {
   votingOptions: VoteEntry[] = [];
 
   constructor(private gameState: GameStateService) {
-    if (this.gameState.isGameLoaded()) {
-      this.gameState.forEachPlayer((p: Player) => {
-        this.playerList.push(p);
-      });
-    } else {
-      console.warn('Failed to update player list. GameState was: ', this.gameState.getState());
-    }
-    this.playerList.forEach((p) => this.eligibilities.set(p.displayName, true));
+    this.gameState.isRoomDataAvailable$.subscribe((isAvailable: boolean) => {
+      if (isAvailable) {
+        this.gameState.forEachPlayer((p: Player) => {
+          this.playerList.push(p);
+        });
+      } else {
+        console.warn('Failed to update player list. GameState was: ', this.gameState.getState());
+      }
+      this.playerList.forEach((p) => this.eligibilities.set(p.displayName, true));
+    });
   }
 
   toggleEligibility(player: Player): void {

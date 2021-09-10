@@ -1,4 +1,3 @@
-
 nav a {
   font-size: small;
   color: #8fff00;
@@ -38,4 +37,16 @@ nav a:visited {
   width: 100%;
   left: 0;
   top: 0;
+}
+
+.attribution {
+  pointer-events: visibleFill;
+  position: absolute;
+  left: 3px;
+  bottom: 0px;
+  color: whitesmoke !important;
+}
+
+.attribution a {
+  color: whitesmoke !important;
 }

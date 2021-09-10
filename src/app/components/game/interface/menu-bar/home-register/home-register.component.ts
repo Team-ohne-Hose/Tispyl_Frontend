@@ -2,7 +2,7 @@ import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { UserService, LoginUser } from '../../../../../services/user.service';
 import { FileService } from '../../../../../services/file.service';
 import { ChatMessage } from './helpers/ChatMessage';
-import { ObjectLoaderService } from '../../../../../services/object-loader.service';
+import { ObjectLoaderService } from '../../../../../services/object-loader/object-loader.service';
 import {
   MessageType,
   PlayerMessageType,

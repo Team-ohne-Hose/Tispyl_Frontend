@@ -3,21 +3,14 @@ app-loading-screen {
   width: 100%;
   height: 100%;
   position: fixed;
-  top: 0px;
-  left: 0px;
-  background-color: rgba(0, 0, 0, 0.95);
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 1);
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.attribution {
-  position: absolute;
-  left: 3px;
-  bottom: 0px;
-  color: whitesmoke !important;
-}
-
-.attribution a {
-  color: whitesmoke !important;
+app-viewport {
+  z-index: 1;
 }

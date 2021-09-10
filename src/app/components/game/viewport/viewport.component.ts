@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import * as THREE from 'three';
 import { PerspectiveCamera, Renderer, Scene, Vector3, WebGLRenderer } from 'three';
 import { UserInteractionController } from './helpers/UserInteractionController';
-import { ObjectLoaderService } from '../../../services/object-loader.service';
+import { ObjectLoaderService } from '../../../services/object-loader/object-loader.service';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import { ClickedTarget } from './helpers/PhysicsCommands';
 import { PhysicsEntity, PhysicsEntityVariation } from '../../../model/WsData';
@@ -10,6 +10,8 @@ import { BoardTilesService } from '../../../services/board-tiles.service';
 import { GameStateService } from '../../../services/game-state.service';
 import { ItemService } from '../../../services/items-service/item.service';
 import { BoardItemControlService } from '../../../services/board-item-control.service';
+import { Observable, Observer } from 'rxjs';
+import { Progress } from '../../../services/object-loader/loaderTypes';
 
 export class ObjectUserData {
   physicsId: number;
@@ -61,7 +63,7 @@ export class ViewportComponent implements AfterViewInit {
     this.bic.bind(this);
     this.userInteractionController = new UserInteractionController(this.bic);
 
-    console.info('THREE.js "empty" viewport constructed');
+    console.debug('THREE.js "empty" viewport constructed');
   }
 
   startRendering(): void {
@@ -78,7 +80,15 @@ export class ViewportComponent implements AfterViewInit {
     // this.stats.update();
   }
 
-  initializeScene(): void {
+  initializeScene(): Observable<Progress> {
+    return new Observable<Progress>((o: Observer<Progress>) => {
+      this._initializeScene(o);
+      o.complete();
+    });
+  }
+
+  private _initializeScene(o: Observer<Progress>): void {
+    o.next([0, 4]);
     const width = this.view.nativeElement.offsetWidth;
     const height = this.view.nativeElement.offsetHeight;
 
@@ -90,6 +100,7 @@ export class ViewportComponent implements AfterViewInit {
       this.boardTiles.borderCoords.y[4]
     );
     this.userInteractionController.cameraControls.update();
+    o.next([1, 4]);
 
     /** Configure basic objects */
     this.camera.fov = 75;
@@ -118,15 +129,18 @@ export class ViewportComponent implements AfterViewInit {
 
     this.sceneTree.add(ambient);
     this.sceneTree.add(sun);
+    o.next([2, 4]);
 
     /** Load texture objects that require heavy operations */
     this.sceneTree.background = this.objectLoaderService.getCubeMap(); // sky box
+    o.next([3, 4]);
     const gameBoard = this.objectLoaderService.generateGameBoard(); // game board
     this.sceneTree.add(gameBoard);
 
     /** Keep references */
     this.bic.board = gameBoard;
     this.userInteractionController.mouseInteractions.addInteractable(gameBoard);
+    o.next([4, 4]);
   }
 
   keyDown(event: KeyboardEvent): void {

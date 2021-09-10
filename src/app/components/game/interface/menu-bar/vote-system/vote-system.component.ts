@@ -44,7 +44,7 @@ export class VoteSystemComponent implements OnInit {
     gameState.addVoteCastCallback(this.calcVotes.bind(this));
 
     gameState.addVoteSystemCallback(
-      ((changes: DataChange<any>[]) => {
+      ((changes: DataChange[]) => {
         changes.forEach((change: DataChange) => {
           switch (change.field) {
             case 'closingIn':
@@ -62,15 +62,17 @@ export class VoteSystemComponent implements OnInit {
    * or if the player joins after the remote was altered from its default state.
    */
   ngOnInit(): void {
-    if (this.gameState.isGameLoaded()) {
-      const remoteState = this.gameState.getVoteState();
-      if (remoteState.voteStage === VoteStage.IDLE) {
-        this.voteSystemState = VoteSystemState.default;
-        this.hasConcluded = true;
-      } else {
-        this.onVoteStageChange(remoteState.voteStage);
+    this.gameState.isRoomDataAvailable$.subscribe((isAvailable: boolean) => {
+      if (isAvailable) {
+        const remoteState = this.gameState.getVoteState();
+        if (remoteState.voteStage === VoteStage.IDLE) {
+          this.voteSystemState = VoteSystemState.default;
+          this.hasConcluded = true;
+        } else {
+          this.onVoteStageChange(remoteState.voteStage);
+        }
       }
-    }
+    });
   }
 
   previousHistoricResult(): void {
@@ -171,13 +173,11 @@ export class VoteSystemComponent implements OnInit {
     choices[idx].classList.add(selectionClass);
 
     // Notify server
-    if (this.gameState.isGameLoaded()) {
-      this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
-        type: MessageType.GAME_MESSAGE,
-        action: GameActionType.playerCastVote,
-        elementIndex: idx,
-      });
-    }
+    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
+      type: MessageType.GAME_MESSAGE,
+      action: GameActionType.playerCastVote,
+      elementIndex: idx,
+    });
   }
 
   getPercentile(ve: VoteEntry): number {

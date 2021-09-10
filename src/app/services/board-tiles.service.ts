@@ -1,14 +1,18 @@
 import * as THREE from 'three';
 import { Injectable } from '@angular/core';
-import { ObjectLoaderService } from './object-loader.service';
+import { ObjectLoaderService } from './object-loader/object-loader.service';
 import { BoardLayoutState, Tile } from '../model/state/BoardLayoutState';
 import { GameStateService } from './game-state.service';
-import { ColyseusNotifyable } from './game-initialisation.service';
+import { ColyseusNotifiable } from './game-initialisation.service';
+import { Progress } from './object-loader/loaderTypes';
+import { forkJoin, Observable, Observer } from 'rxjs';
+import { map, subscribeOn, take, tap } from 'rxjs/operators';
+import { Texture } from 'three';
 
 @Injectable({
   providedIn: 'root',
 })
-export class BoardTilesService implements ColyseusNotifyable {
+export class BoardTilesService {
   centerCoords = {
     x: [-30, -20, -10, 0, 10, 20, 30, 40],
     y: [-35, -25, -15, -5, 5, 15, 25, 35],
@@ -99,35 +103,23 @@ export class BoardTilesService implements ColyseusNotifyable {
 
   constructor(private objectLoader: ObjectLoaderService, private gameState: GameStateService) {}
 
-  initialize(addToScene: (grp: THREE.Group) => void, onProgressCallback: () => void): void {
-    const grp: THREE.Group = this.generateField();
-    addToScene(grp);
-
-    this.tiles = this.gameState.getBoardLayoutAsArray();
-    const tileReadable = [];
-    this.tiles.forEach((tile: Tile) => {
-      if (tile !== undefined) {
-        tileReadable[tile.tileId] = tile.title;
-      }
+  initialize(addToScene: (grp: THREE.Group) => void): Observable<Progress> {
+    return new Observable<Progress>((observer: Observer<Progress>) => {
+      const grp: THREE.Group = this.generateField();
+      addToScene(grp);
+      this.gameState
+        .getBoardLayoutAsArray()
+        .subscribe((tiles: Tile[]) => {
+          this.tiles = tiles;
+          observer.next([1, this.tiles.length + 1]);
+          console.info(
+            'Tiles are:',
+            this.tiles.map((t) => t.title)
+          );
+          this._updateFields(observer);
+        })
+        .unsubscribe();
     });
-    console.info('Tiles are:', tileReadable);
-    this.updateField(onProgressCallback);
-  }
-
-  attachColyseusStateCallbacks(gameState: GameStateService): void {
-    gameState.addBoardLayoutCallback(
-      ((layout: BoardLayoutState) => {
-        this.tiles = this.gameState.getBoardLayoutAsArray();
-        console.info('Tiles are updated:', this.tiles, layout);
-        this.updateField(() => {
-          return;
-        });
-      }).bind(this)
-    );
-  }
-
-  attachColyseusMessageCallbacks(gameState: GameStateService): void {
-    return;
   }
 
   getTileRotation(tileID: number): THREE.Quaternion {
@@ -229,16 +221,29 @@ export class BoardTilesService implements ColyseusNotifyable {
     return this.tiles[fieldId];
   }
 
-  updateField(onProgress: () => void): void {
+  _updateFields(observer?: Observer<Progress>): void {
+    let count = 0;
     for (const tileId in this.tiles) {
       if (tileId in this.tiles) {
         const mesh: THREE.Mesh = this.tileMeshes[tileId];
         const mat = mesh.material;
-        this.objectLoader.loadGameTileTexture(this.tiles[tileId].imageUrl, (tex: THREE.Texture) => {
-          mat['map'] = tex;
-          mat['needsUpdate'] = true;
-          onProgress();
-        });
+        this.objectLoader
+          .loadGameTileTexture(this.tiles[tileId].imageUrl)
+          .pipe(
+            tap(() => {
+              if (observer !== undefined) {
+                count++;
+                observer.next([count + 1, this.tiles.length + 1]);
+                if (count + 1 >= this.tiles.length + 1) {
+                  observer.complete();
+                }
+              }
+            })
+          )
+          .subscribe((tex: Texture) => {
+            mat['map'] = tex;
+            mat['needsUpdate'] = true;
+          });
       }
     }
   }

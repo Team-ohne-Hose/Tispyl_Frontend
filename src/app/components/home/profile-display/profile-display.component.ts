@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { UserService, LoginUser } from '../../../services/user.service';
 import { FileService } from '../../../services/file.service';
-import { ObjectLoaderService } from '../../../services/object-loader.service';
+import { ObjectLoaderService } from '../../../services/object-loader/object-loader.service';
 import { JwtTokenService } from 'src/app/services/jwttoken.service';
 import { figureList, environmentList } from '../lobby/lobbyLUTs';
 

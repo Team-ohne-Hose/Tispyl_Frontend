@@ -1,8 +1,7 @@
-import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { GameActionType, GameShowTile, MessageType } from '../../../../model/WsData';
 import { BoardTilesService } from '../../../../services/board-tiles.service';
 import { GameStateService } from '../../../../services/game-state.service';
-import { ColyseusNotifyable } from '../../../../services/game-initialisation.service';
 import { FileService } from '../../../../services/file.service';
 import { Timer } from '../../../framework/Timer';
 import { animate, group, sequence, style, transition, trigger } from '@angular/animations';
@@ -45,7 +44,7 @@ import { animate, group, sequence, style, transition, trigger } from '@angular/a
     ]),
   ],
 })
-export class TileOverlayComponent implements ColyseusNotifyable {
+export class TileOverlayComponent implements OnDestroy {
   /** Child references */
   @ViewChild('options') optionsRef: ElementRef<HTMLDivElement>;
   @ViewChild('optionsCog') optionsCogRef: ElementRef<HTMLDivElement>;
@@ -75,6 +74,9 @@ export class TileOverlayComponent implements ColyseusNotifyable {
   manuallyOpened = false;
   timer: Timer;
 
+  /** Internals */
+  private readonly callbackId = undefined;
+
   constructor(
     private gameState: GameStateService,
     private boardTiles: BoardTilesService,
@@ -91,14 +93,8 @@ export class TileOverlayComponent implements ColyseusNotifyable {
         this.displayState = 'SMALL';
       },
     });
-  }
 
-  attachColyseusStateCallbacks(gameState: GameStateService): void {
-    return;
-  }
-
-  attachColyseusMessageCallbacks(gameState: GameStateService): void {
-    gameState.registerMessageCallback(MessageType.GAME_MESSAGE, {
+    this.callbackId = gameState.registerMessageCallback(MessageType.GAME_MESSAGE, {
       filterSubType: GameActionType.showTile,
       f: (data: GameShowTile) => {
         if (data.action === GameActionType.showTile) {
@@ -183,5 +179,9 @@ export class TileOverlayComponent implements ColyseusNotifyable {
         this.isLit = false;
       }, 500);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.gameState.clearMessageCallback(this.callbackId);
   }
 }

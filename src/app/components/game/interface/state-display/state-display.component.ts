@@ -1,10 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnDestroy } from '@angular/core';
 import { GameStateService } from '../../../../services/game-state.service';
-import { ColyseusNotifyable } from '../../../../services/game-initialisation.service';
 import { GameActionType, MessageType, WsData } from '../../../../model/WsData';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Timer } from '../../../framework/Timer';
 import { SoundService } from '../../../../services/sound.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-state-display',
@@ -26,7 +26,7 @@ import { SoundService } from '../../../../services/sound.service';
     ]),
   ],
 })
-export class StateDisplayComponent implements ColyseusNotifyable {
+export class StateDisplayComponent implements OnDestroy {
   /** External values */
   @Input() round: number;
   @Input() currentPlayerDisplayName: string;
@@ -40,7 +40,7 @@ export class StateDisplayComponent implements ColyseusNotifyable {
 
   /** State values */
   lastClick = 0;
-  isMyTurn = false;
+  isMyTurn$: Observable<boolean>;
   lastTimePlayed = Date.now();
   turnDelayTimer: Timer;
   clickDelayTimer: Timer;
@@ -54,6 +54,9 @@ export class StateDisplayComponent implements ColyseusNotifyable {
   private readonly CD_PLAYER_CLICKED = 5000;
   private readonly CD_SOUND_PLAYED = 5000;
   private readonly NEXT_TURN_CLICK_DELAY = 500;
+
+  /** Internals */
+  private readonly callbackId: number = undefined;
 
   constructor(private gameState: GameStateService, private sounds: SoundService) {
     this.turnDelayTimer = new Timer(this.CD_PLAYER_TURN_CHANGED, this.TIMER_UPDATE_FREQ, {
@@ -78,15 +81,10 @@ export class StateDisplayComponent implements ColyseusNotifyable {
         this.canWake = true;
       },
     });
-  }
+    this.isMyTurn$ = this.gameState.isMyTurn$();
+    this.isMyTurn$.subscribe(this.checkTurn.bind(this));
 
-  attachColyseusStateCallbacks(gameState: GameStateService): void {
-    gameState.addNextTurnCallback(this.checkTurn.bind(this));
-    this.isMyTurn = this.gameState.isMyTurn();
-  }
-
-  attachColyseusMessageCallbacks(gameState: GameStateService): void {
-    gameState.registerMessageCallback(MessageType.GAME_MESSAGE, {
+    this.callbackId = gameState.registerMessageCallback(MessageType.GAME_MESSAGE, {
       filterSubType: GameActionType.wakePlayer,
       f: (data: WsData) => {
         if (data.type === MessageType.GAME_MESSAGE) {
@@ -102,12 +100,10 @@ export class StateDisplayComponent implements ColyseusNotifyable {
         }
       },
     });
-    return;
   }
 
-  checkTurn(): void {
-    this.isMyTurn = this.gameState.isMyTurn();
-    if (!this.isMyTurn) {
+  checkTurn(isMyTurn: boolean): void {
+    if (!isMyTurn) {
       if (this.activeTimer !== undefined) {
         this.activeTimer.reset();
       }
@@ -118,14 +114,16 @@ export class StateDisplayComponent implements ColyseusNotifyable {
   }
 
   nextTurn(): void {
-    if (this.gameState.isMyTurn() && Date.now() - this.lastClick > this.NEXT_TURN_CLICK_DELAY) {
-      this.lastClick = Date.now();
-      console.log('Next turn was triggered');
-      this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
-        type: MessageType.GAME_MESSAGE,
-        action: GameActionType.advanceTurn,
-      });
-    }
+    this.gameState.isMyTurnOnce$().subscribe((myTurn: boolean) => {
+      if (myTurn && Date.now() - this.lastClick > this.NEXT_TURN_CLICK_DELAY) {
+        this.lastClick = Date.now();
+        console.log('Next turn was triggered');
+        this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
+          type: MessageType.GAME_MESSAGE,
+          action: GameActionType.advanceTurn,
+        });
+      }
+    });
   }
 
   playWakeChime(): void {
@@ -149,5 +147,9 @@ export class StateDisplayComponent implements ColyseusNotifyable {
       action: GameActionType.wakePlayer,
       targetLoginName: this.gameState.getCurrentPlayerLogin(),
     });
+  }
+
+  ngOnDestroy(): void {
+    this.gameState.clearMessageCallback(this.callbackId);
   }
 }
