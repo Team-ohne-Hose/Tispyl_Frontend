@@ -9,7 +9,7 @@ import { RoomMetaInfo } from '../../../model/RoomMetaInfo';
 import { JoinGameComponent } from '../dialogs/join-game/join-game.component';
 import { GameState } from '../../../model/state/GameState';
 import { environmentList } from './lobbyLUTs';
-import { ObjectLoaderService } from '../../../services/object-loader.service';
+import { ObjectLoaderService } from '../../../services/object-loader/object-loader.service';
 import { DialogResult } from '../dialogs/open-game-popup/open-game-popup.component';
 
 @Component({
@@ -25,7 +25,6 @@ export class LobbyComponent implements OnInit {
   /** Game room & Colyseus values */
   currentUser: BasicUser;
   activeLobby: Room<GameState>;
-  gameClient: Client;
   availableRooms: RoomAvailable<RoomMetaInfo>[] = [];
 
   /** Player settings */
@@ -46,9 +45,7 @@ export class LobbyComponent implements OnInit {
     private colyseus: ColyseusClientService,
     private objectLoader: ObjectLoaderService,
     private userService: UserService
-  ) {
-    this.gameClient = colyseus.getClient();
-  }
+  ) {}
 
   ngOnInit(): void {
     // Set current user
@@ -56,11 +53,11 @@ export class LobbyComponent implements OnInit {
       this.currentUser = user;
     });
 
-    this.colyseus.getActiveRoom().subscribe((room) => {
+    this.colyseus.activeRoom$.subscribe((room) => {
       this.activeLobby = room;
     });
 
-    this.colyseus.availableRooms.subscribe((availableRooms) => {
+    this.colyseus.availableRooms$.subscribe((availableRooms) => {
       this.availableRooms = availableRooms;
     });
     this.refetchGameRooms();

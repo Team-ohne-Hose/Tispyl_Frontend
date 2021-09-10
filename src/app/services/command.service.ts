@@ -7,7 +7,7 @@ import { ChatService } from './chat.service';
 import { ItemService } from './items-service/item.service';
 import { HintsService } from './hints.service';
 import { GameComponent } from '../components/game/game.component';
-import { ObjectLoaderService } from './object-loader.service';
+import { ObjectLoaderService } from './object-loader/object-loader.service';
 import { BoardItemControlService } from './board-item-control.service';
 import { Item } from './items-service/itemLUT';
 
@@ -321,7 +321,7 @@ export class CommandService {
 
   private playAnthem(rawCMD: string, parameters: string[]): void {
     if (this.gameComponent !== undefined) {
-      this.gameComponent.userInteraction.audioControls.playAudio();
+      this.gameComponent.viewRef.userInteractionController.audioControls.playAudio();
     }
   }
 

@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ViewportComponent } from '../components/game/viewport/viewport.component';
-import { ObjectLoaderService } from './object-loader.service';
-import { PhysicsCommands } from '../components/game/viewport/helpers/PhysicsCommands';
+import { ObjectLoaderService } from './object-loader/object-loader.service';
 import { BoardTilesService } from './board-tiles.service';
 import * as THREE from 'three';
 import { GameComponent } from '../components/game/game.component';
@@ -9,10 +7,12 @@ import { ChatService } from './chat.service';
 import { GameStateService } from './game-state.service';
 import { ItemService } from './items-service/item.service';
 import { BoardItemControlService } from './board-item-control.service';
+import { Observable, Observer, merge, forkJoin } from 'rxjs';
+import { Progress } from './object-loader/loaderTypes';
+import { map, mergeAll, mergeMap, take, tap } from 'rxjs/operators';
+import { ColyseusClientService } from './colyseus-client.service';
 
-export interface ColyseusNotifyable {
-  attachColyseusStateCallbacks(gameState: GameStateService): void;
-
+export interface ColyseusNotifiable {
   attachColyseusMessageCallbacks(gameState: GameStateService): void;
 }
 
@@ -20,126 +20,95 @@ export interface ColyseusNotifyable {
   providedIn: 'root',
 })
 export class GameInitialisationService {
-  private colyseusReady = false;
-  private staticReady = false;
-
-  private viewPort: ViewportComponent;
-  private game: GameComponent;
-
-  private colyseusNotifyableClasses: ColyseusNotifyable[] = [];
-
   constructor(
     private objectLoader: ObjectLoaderService,
     private chatService: ChatService,
     private itemService: ItemService,
     private boardTilesService: BoardTilesService,
+    private colyseusService: ColyseusClientService,
     private bic: BoardItemControlService
-  ) {
-    this.bic.gameState.isColyseusReady$.subscribe((suc) => this.setColyseusReady());
+  ) {}
+
+  /** Access function providing a slim interface for initializations with feedback */
+  init(game: GameComponent): Observable<Progress> {
+    return new Observable((o: Observer<Progress>) => {
+      this._init(game, o);
+    });
   }
 
-  async startInitialisation(game: GameComponent): Promise<void> {
-    this.game = game;
-    this.viewPort = this.game.viewRef;
+  /**
+   * Does the heavy lifting for initializing a given game component by scheduling and
+   * executing all operations needed, while providing feedback to an external observer
+   * @param game the game component that should be initialized.
+   * @param observer the observer that is receiving progress feedback.
+   * @private
+   */
+  private _init(game: GameComponent, observer: Observer<Progress>) {
+    /** Start the loading process by notifying any subscribers with an initial [0, 0] */
+    const totalProgress: Progress = [0, 0];
+    observer.next(totalProgress);
 
-    console.debug('starting Initialisation of game engine');
-    this.game.loadingScreenRef.startTips();
+    /** Build the list of heavy operations that need to be done and bind the total progress to them */
+    const operations: Observable<Progress>[] = [
+      game.viewRef.initializeScene(),
+      this.objectLoader.loadCommonObjects(),
+      this.bic.physics.initializeFromState(),
+      this.boardTilesService.initialize((grp: THREE.Group) => game.viewRef.sceneTree.add(grp)),
+      this.bic.createSprites(),
+    ].map((o: Observable<Progress>) => this._asProgressChunk(o, totalProgress, observer));
 
-    this.colyseusNotifyableClasses = [];
-    this.colyseusNotifyableClasses.push(this.boardTilesService);
-    this.colyseusNotifyableClasses.push(this.bic);
-    this.colyseusNotifyableClasses.push(this.bic.physics);
-    this.colyseusNotifyableClasses.push(this.game.interfaceRef.stateDisplayRef);
-    this.colyseusNotifyableClasses.push(this.game.interfaceRef.tileOverlayRef);
-    this.colyseusNotifyableClasses.push(this.game.interfaceRef);
-    this.colyseusNotifyableClasses.push(this.chatService);
-    this.colyseusNotifyableClasses.push(this.itemService);
-
-    console.debug('loading Textures');
-    await this.objectLoader.loadAllObjects((progress: number, total: number) => {
-      console.debug('loading common files: ' + progress + '/' + total, (progress / total) * 50 + '%');
-      game.loadingScreenRef.setProgress((progress / total) * 50);
-    });
-
-    console.debug('loading of common files done');
-
-    console.debug('creating static Scene');
-    this.viewPort.initializeScene();
-
-    // check/wait for colyseus to recieve first patch
-    this.staticReady = true;
-    if (this.colyseusReady) {
-      this.afterColyseusInitialisation();
-    } else {
-      console.debug('waiting for colyseus initialisation finished');
-    }
+    /** Wait for the room data to be available and execute all heavy operations in parallel afterwards
+     *  @note take(1) is used to .unsubscribe() right after executing the init process once */
+    this.bic.gameState.isRoomDataAvailable$
+      .pipe(
+        take(1),
+        tap((_: boolean) => console.timeEnd('Colyseus ready after')),
+        mergeMap((_: boolean) => forkJoin(operations))
+      )
+      .subscribe((_) => {
+        this._finalizeLoad(game);
+        observer.complete();
+      });
   }
 
-  setColyseusReady(): void {
-    console.info('Setting colyseus ready. Gamestate is: ', this.bic.gameState);
-
-    if (!this.colyseusReady) {
-      console.debug('Colyseus is ready');
-      this.colyseusReady = true;
-
-      // if static has already loaded, proceed to init, because static loading stopped and is waiting for colyseus
-      if (this.staticReady) {
-        this.afterColyseusInitialisation();
-      } else {
-        console.debug('waiting for common initialisation to be finished');
-      }
-    }
+  /**
+   * Binds a large operation that is reporting its progress and is wrapped as an Observable<Progress>
+   * to a bigger sequence of operations that itself is represented through a Progress object.
+   * @param chunk the operation that will be reporting its progress to the totalProgress.
+   * @param overarchingProgress the object representing an overarching operation that consists of multiple smaller chunks
+   * @param overarchingObserver the observer that notifies the external overarchingProgress
+   * @private
+   */
+  private _asProgressChunk(
+    chunk: Observable<Progress>,
+    overarchingProgress: Progress,
+    overarchingObserver: Observer<Progress>
+  ): Observable<Progress> {
+    let isTotalAlreadyAdded = false;
+    let lastValue = 0;
+    return chunk.pipe(
+      map((p: Progress) => {
+        if (!isTotalAlreadyAdded) {
+          overarchingProgress[1] = overarchingProgress[1] + p[1];
+          isTotalAlreadyAdded = true;
+        }
+        overarchingProgress[0] = overarchingProgress[0] + p[0] - lastValue;
+        lastValue = p[0];
+        overarchingObserver.next(overarchingProgress);
+        return p;
+      })
+    );
   }
 
-  private afterColyseusInitialisation(): void {
-    console.info('colyseus is initialized and common files are loaded');
-    console.debug('attaching colyseus callbacks');
-    this.colyseusNotifyableClasses.forEach((obj: ColyseusNotifyable, index: number, array: ColyseusNotifyable[]) => {
-      if (obj === undefined) {
-        console.error('couldnt attach colyseus Callbacks because the object was undefined', index, array);
-      } else {
-        obj.attachColyseusMessageCallbacks(this.bic.gameState);
-        obj.attachColyseusStateCallbacks(this.bic.gameState);
-      }
-    });
-
-    let progress = 0;
-    const initPending = this.bic.physics.getInitializePending();
-    this.bic.physics.initializeFromState(() => {
-      return;
-    });
-    const spritesPending = this.bic.getSpritesPending();
-    const queued = 64 + initPending + spritesPending;
-    console.info('loading: 64 Tiles, ', initPending, ' phys Pending ', spritesPending, ' sprites Pending');
-
-    const doneCallback = () => {
-      /** Resize viewport right before removing loading screen to avoid space where scrollbars would have been previously */
-      this.game.viewRef.onWindowResize(undefined);
-
-      /** Remove loading screen and stop loading screen tips from looping */
-      this.game.loadingScreenRef.stopTips();
-      this.game.loadingScreenVisible = false;
-      console.info('loading done. Entering Game..');
-
-      /** Start render loop */
-      this.viewPort.startRendering();
-    };
-
-    const onProgress = () => {
-      progress++;
-      console.debug('loading instance specific files: ' + progress + '/' + queued, (progress / queued) * 50 + 50 + '%');
-      if (this.game.loadingScreenRef !== undefined) {
-        this.game.loadingScreenRef.setProgress((progress / queued) * 50 + 50);
-      }
-      if (progress === queued) {
-        doneCallback();
-      }
-    };
-    console.debug('creating dynamic gameboard');
-    this.boardTilesService.initialize(((grp: THREE.Group) => this.viewPort.sceneTree.add(grp)).bind(this), onProgress);
-
-    console.debug('creating dynamic objects & players');
-    this.bic.physics.initializeFromState(onProgress);
-    this.bic.createSprites(onProgress);
+  /**
+   * Last actions performed before notifying any subscriber that the loading process finished.
+   * Any final adjustments like resizing the viewport to the correct size should be done here.
+   * @param game the game component that is currently being initialized.
+   * @private
+   */
+  private _finalizeLoad(game: GameComponent) {
+    /** Resize viewport to avoid space where scrollbars would have been previously */
+    game.viewRef.onWindowResize(undefined);
+    game.viewRef.startRendering();
   }
 }

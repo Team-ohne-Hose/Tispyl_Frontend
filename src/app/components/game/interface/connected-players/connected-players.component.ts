@@ -48,8 +48,10 @@ export class ConnectedPlayersComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     /** Clean Bindings */
-    this.playerIsDev$$.unsubscribe();
-    this.playerIsDev$.complete();
+    if (this.playerIsDev$$ !== undefined) {
+      this.playerIsDev$$.unsubscribe();
+      this.playerIsDev$.complete();
+    }
   }
 
   leaveGame(): void {

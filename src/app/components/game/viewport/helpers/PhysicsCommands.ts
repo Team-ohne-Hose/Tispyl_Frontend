@@ -15,9 +15,10 @@ import {
 import { ObjectUserData } from '../viewport.component';
 import { PhysicsObjectState, PhysicsState } from '../../../../model/state/PhysicsState';
 import { Player } from '../../../../model/state/Player';
-import { GameStateService } from '../../../../services/game-state.service';
-import { ColyseusNotifyable } from '../../../../services/game-initialisation.service';
 import { BoardItemControlService } from '../../../../services/board-item-control.service';
+import { map, take } from 'rxjs/operators';
+import { Observable, Observer } from 'rxjs';
+import { Progress } from '../../../../services/object-loader/loaderTypes';
 
 export enum ClickedTarget {
   other,
@@ -34,7 +35,9 @@ export enum CollisionGroups {
   Dice = 8,
 }
 
-export class PhysicsCommands implements ColyseusNotifyable {
+export class PhysicsCommands {
+  private readonly MAX_ALLOWED_OBJECTS = 200;
+
   dice: Object3D;
   currentlyLoadingEntities: Map<number, boolean> = new Map<number, boolean>();
 
@@ -42,45 +45,30 @@ export class PhysicsCommands implements ColyseusNotifyable {
   addPlayer: (mesh: THREE.Object3D, name: string) => void;
   isPlayerCached: (physId: number) => boolean;
 
-  constructor(private bic: BoardItemControlService) {}
+  constructor(private bic: BoardItemControlService) {
+    this.bic.gameState.physicsObjectMoved$.subscribe((item: PhysicsObjectState) => {
+      this._updateOrGenerateItem(item);
+    });
+  }
 
+  /**
+   * Searches the Object3D tree recursively to try to find the Object3D corresponding
+   * @param toSearch object tree that is searched
+   * @param physId physicsId that is searched for recursively
+   */
   static getObjectByPhysId(toSearch: Object3D, physId: number): THREE.Object3D {
-    if (toSearch.name !== undefined) {
-      // console.log('searching for ' + physId + ' in: ',
-      // toSearch.name,
-      // toSearch.userData.physicsId,
-      // toSearch.userData.physicsId === physId);
-    }
     if (toSearch.userData.physicsId === physId) {
-      // console.warn('found', toSearch);
       return toSearch;
     } else {
-      const result: Object3D = toSearch.children.find((obj: THREE.Object3D, index: number) => {
+      return toSearch.children.find((obj: THREE.Object3D, index: number) => {
         const res = PhysicsCommands.getObjectByPhysId(obj, physId);
-        if (res !== undefined) {
-          // console.warn('found', res);
-          return true;
-        }
-        return false;
+        return res !== undefined;
       });
-      return result;
     }
   }
 
   static getPhysId(obj: Object3D): number {
     return obj.userData.physicsId;
-  }
-
-  attachColyseusStateCallbacks(gameState: GameStateService): void {
-    gameState.addPhysicsObjectMovedCallback((item: PhysicsObjectState, key: string) => {
-      this.updateFromState(item, () => {
-        return;
-      });
-    });
-  }
-
-  attachColyseusMessageCallbacks(gameState: GameStateService): void {
-    return;
   }
 
   getInitializePending(): number {
@@ -91,62 +79,54 @@ export class PhysicsCommands implements ColyseusNotifyable {
     return 0;
   }
 
-  initializeFromState(progressCallback: () => void): void {
-    const physState = this.bic.gameState.getPhysicsState();
-    if (physState !== undefined) {
-      physState.objects.forEach((item: PhysicsObjectState, key: string) => {
-        if (item !== undefined) {
-          this.updateFromState(item, progressCallback);
-        } else {
-          console.warn('initializing from State: Object in PhysicsList was undefined');
-          progressCallback();
-        }
-      });
-    } else {
-      console.error('PhysicsState is not accessible');
-    }
+  initializeFromState(): Observable<Progress> {
+    return new Observable<Progress>((observer: Observer<Progress>) => {
+      this.bic.gameState.physicState$
+        .pipe(
+          take(1),
+          map((state: PhysicsState) => {
+            let count = 0;
+            if (state !== undefined) {
+              observer.next([count, state.objects.size]);
+              state.objects.forEach((item: PhysicsObjectState) => {
+                this._updateOrGenerateItem(item);
+                count++;
+                observer.next([count, state.objects.size]);
+              });
+            } else {
+              console.error(
+                'PhysicsState is not accessible in initialization. Ensure loading initialization is done after Room data is available.'
+              );
+            }
+          })
+        )
+        .subscribe(() => {
+          observer.complete();
+        });
+    });
   }
 
-  updateFromState(item: PhysicsObjectState, onDone: () => void): void {
+  private _updateOrGenerateItem(item: PhysicsObjectState): void {
     if (!item.disabled) {
       const obj = PhysicsCommands.getObjectByPhysId(this.bic.sceneTree, item.objectIDPhysics);
-      // console.log('query for physId', item.objectIDPhysics, obj);
       if (obj !== undefined) {
-        obj.position.set(item.position.x, item.position.y, item.position.z);
-        obj.quaternion.set(item.quaternion.x, item.quaternion.y, item.quaternion.z, item.quaternion.w);
-        // console.log('new Position: ', key, item.position.x, item.position.y, item.position.z, item.position);
-        // console.log("rotation is: ", item.quaternion.x, item.quaternion.y, item.quaternion.z, item.quaternion.w);
-        onDone();
+        this._updateCorrelatedObject(item, obj);
       } else {
-        if (item.entity >= 0 && this.bic.sceneTree.children.length < 120) {
-          // TODO balance
-          if (this.currentlyLoadingEntities.get(item.objectIDPhysics)) {
-            // is currently getting loaded
-            onDone();
-          } else {
-            // console.log('adding via State', item.objectIDPhysics);
+        if (item.entity >= 0 && this.bic.sceneTree.children.length < this.MAX_ALLOWED_OBJECTS) {
+          if (!this.currentlyLoadingEntities.get(item.objectIDPhysics)) {
             this.currentlyLoadingEntities.set(item.objectIDPhysics, true);
-            this.generateEntity(
-              onDone,
-              item.entity,
-              item.variant,
-              item.objectIDPhysics,
-              item.position.x,
-              item.position.y,
-              item.position.z,
-              item.quaternion.x,
-              item.quaternion.y,
-              item.quaternion.z
-            );
+            this._generateEntityFromItem(item);
           }
         } else {
           console.error('cannot find/generate object', item.objectIDPhysics, item);
-          onDone();
         }
       }
-    } else {
-      onDone();
     }
+  }
+
+  private _updateCorrelatedObject(item: PhysicsObjectState, obj: THREE.Object3D) {
+    obj.position.set(item.position.x, item.position.y, item.position.z);
+    obj.quaternion.set(item.quaternion.x, item.quaternion.y, item.quaternion.z, item.quaternion.w);
   }
 
   setClickRole(clickRole: ClickedTarget, obj: THREE.Object3D): void {
@@ -223,8 +203,21 @@ export class PhysicsCommands implements ColyseusNotifyable {
     };
   }
 
-  private generateEntity(
-    onDone: () => void,
+  private _generateEntityFromItem(item: PhysicsObjectState): void {
+    this._generateEntity(
+      item.entity,
+      item.variant,
+      item.objectIDPhysics,
+      item.position.x,
+      item.position.y,
+      item.position.z,
+      item.quaternion.x,
+      item.quaternion.y,
+      item.quaternion.z
+    );
+  }
+
+  private _generateEntity(
     entity: PhysicsEntity,
     variant: PhysicsEntityVariation,
     physicsId: number,
@@ -236,11 +229,10 @@ export class PhysicsCommands implements ColyseusNotifyable {
     rotZ?: number,
     rotW?: number
   ): void {
-    if (entity === PhysicsEntity.figure && this.isPlayerCached(physicsId)) {
+    /*if (entity === PhysicsEntity.figure && this.isPlayerCached(physicsId)) {
       // if playerfigure was already cached dont load it
-      onDone();
       return;
-    }
+    }*/
     posX = posX || 0;
     posY = posY || 0;
     posZ = posZ || 0;
@@ -284,7 +276,6 @@ export class PhysicsCommands implements ColyseusNotifyable {
           break;
       }
       this.currentlyLoadingEntities.set(physicsId, false);
-      onDone();
     });
   }
 }

@@ -4,16 +4,23 @@
   <img [src]="logoSource" alt="ONLINE-TISCHSPIEL" class="logo">
 
   <div class="center">
-    <div class="centerText">
-      {{progress}}%
+    <div *ngIf="!isWaiting">
+      <div  class="centerText">{{progress}}%</div>
+      <div class="progressBarContainer">
+        <div [style.width.%]="progress" class="progressBar"></div>
+      </div>
     </div>
-    <div class="progressBarContainer">
-      <div [style.width.%]="progress * .9 + 10" class="progressBar"></div>
+    <div *ngIf="isWaiting">
+      <mat-progress-spinner [diameter]="100" class="progress-spinner" mode="indeterminate"></mat-progress-spinner>
     </div>
   </div>
 
-  <div class="tips">
+  <div *ngIf="!isWaiting" class="tips">
     {{currentTip}}
+  </div>
+
+  <div *ngIf="isWaiting" class="tips">
+    Auf den Raum warten ...
   </div>
 
 </div>

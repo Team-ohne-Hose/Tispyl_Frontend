@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Client, Room, RoomAvailable } from 'colyseus.js';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, ReplaySubject } from 'rxjs';
 import { RoomMetaInfo } from '../model/RoomMetaInfo';
 import { GameState } from '../model/state/GameState';
 import { MessageType, WsData } from '../model/WsData';
@@ -12,6 +12,8 @@ export interface MessageCallback {
   filterSubType: number; // -1/undefined for no filter, otherwise the subtype to filter for
   f: (data: WsData) => void;
 }
+
+export type ChangeCallback = (changes: DataChange<unknown>[]) => void;
 
 export interface CreateRoomOpts {
   roomName: string;
@@ -28,44 +30,57 @@ export interface CreateRoomOpts {
   providedIn: 'root',
 })
 export class ColyseusClientService {
-  readonly backendWsTarget = environment.wsEndpoint;
+  /** Constants and development parameters */
+  private readonly VERBOSE_CALLBACK_LOGGING = false;
+  private readonly BACKEND_WS_TARGET = environment.wsEndpoint;
+  private readonly client: Client = new Client(this.BACKEND_WS_TARGET);
 
-  private client: Client = new Client(this.backendWsTarget);
-  private activeRoom: BehaviorSubject<Room<GameState>>;
-  private messageCallbacks: Map<MessageType, MessageCallback[]> = new Map<MessageType, MessageCallback[]>([]);
-  private onChangeCallbacks: ((changes: DataChange<any>[]) => void)[] = [this.onDataChange.bind(this)];
+  /** Internal values */
+  private registerSeed = 0;
+  private changeCallbacks: Map<number, ChangeCallback> = new Map<number, ChangeCallback>();
+  private messageCallbacks: Map<MessageType, Map<number, MessageCallback>> = new Map<
+    MessageType,
+    Map<number, MessageCallback>
+  >([]);
 
-  availableRooms: BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>;
+  /** Access values mainly used by the state service */
   myLoginName: string;
+  availableRooms$: BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>;
+  activeRoom$: ReplaySubject<Room<GameState>>;
 
   constructor(private router: Router) {
-    this.activeRoom = new BehaviorSubject<Room<GameState>>(undefined);
-    this.availableRooms = new BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>([]);
-  }
+    this.availableRooms$ = new BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>([]);
+    this.activeRoom$ = new ReplaySubject<Room<GameState>>(1);
 
-  onDataChange(changes: DataChange<any>[]): void {
-    changes.forEach((change) => {
-      switch (change.field) {
-        case 'action':
-          break;
+    /** Development logging */
+    if (this.VERBOSE_CALLBACK_LOGGING) {
+      for (let i = 0; i <= 12; i++) {
+        this.registerMessageCallback(i, {
+          filterSubType: -1,
+          f: (data: WsData) => {
+            this._logTypeAndMessage(i, data);
+          },
+        });
+      }
+    }
+
+    /** Manage entering and leaving a room */
+    this.activeRoom$.subscribe((r) => {
+      console.info('[ColyseusService] Active Room changed to:', r);
+      if (r !== undefined) {
+        this._attachKnownMessageCallbacks(r);
+        this._attachKnownChangeCallbacks(r);
+      } else {
+        if (this.VERBOSE_CALLBACK_LOGGING) {
+          console.info('Known message callbacks after leaving the room:', this._prettyPrintMessageCallbacks());
+          console.info('Known change callbacks after leaving the room:', this._prettyPrintMessageCallbacks());
+        }
       }
     });
   }
 
-  getClient(): Client {
-    return this.client;
-  }
-
-  getActiveRoom(): Observable<Room<GameState>> {
-    return this.activeRoom.asObservable();
-  }
-
   setActiveRoom(newRoom?: Room): void {
-    if (newRoom !== undefined) {
-      this.updateRoomCallbacks(newRoom);
-    }
-    console.info('connected to new active Room', newRoom);
-    this.activeRoom.next(newRoom);
+    this.activeRoom$.next(newRoom);
   }
 
   createRoom(opts: CreateRoomOpts): void {
@@ -92,74 +107,80 @@ export class ColyseusClientService {
     });
   }
 
-  watchAvailableRooms(): Observable<RoomAvailable<RoomMetaInfo>[]> {
-    return this.availableRooms.asObservable();
-  }
-
-  getAvailableRooms() {
-    this.client.getAvailableRooms('game').then((rooms) => {
-      this.availableRooms.next(rooms);
-    });
-  }
-
   updateAvailableRooms(): void {
     this.client.getAvailableRooms('game').then((rooms) => {
-      this.availableRooms.next(rooms);
+      this.availableRooms$.next(rooms);
     });
   }
 
-  registerMessageCallback(type: MessageType, cb: MessageCallback): void {
-    this.getActiveRoom().subscribe((activeRoom) => {
-      if (activeRoom !== undefined) {
-        activeRoom.onMessage(type, cb.f);
-        activeRoom.state.onChange = this.distributeOnChange.bind(this);
+  registerMessageCallback(mType: MessageType, cb: MessageCallback): number {
+    const registerId = this._getUniqueId();
+    const callbackMap: Map<number, MessageCallback> =
+      this.messageCallbacks.get(mType) || new Map<number, MessageCallback>();
+    callbackMap.set(registerId, cb);
+    this.messageCallbacks.set(mType, callbackMap);
+    return registerId;
+  }
+
+  clearMessageCallback(id: number): boolean {
+    this.messageCallbacks.forEach((map) => {
+      if (map.delete(id)) {
+        return true;
       }
     });
+    return false;
   }
 
-  addOnChangeCallback(cb: (changes: DataChange<any>[]) => void): void {
-    this.onChangeCallbacks.push(cb);
-  }
-
-  /**
-   * Will distribute WsData to callbacks based on the WsData type.
-   * @note: Excluded from directly being located inside the "updateRoomCallbacks()" to avoid function nesting.
-   * @param data passed on to the callbacks based on its type value.
-   */
-  private gatherFunctionCalls(data: WsData): void {
-    const type: MessageType = data.type;
-    const list: MessageCallback[] = this.messageCallbacks.get(type);
-    if (list !== undefined && list.length > 0) {
-      list.forEach((value: MessageCallback, index: number) => {
-        if (value.filterSubType >= 0) {
-          if (data['subType'] === value.filterSubType || data['action'] === value.filterSubType) {
-            value.f(data);
-          }
-        } else {
-          value.f(data);
-        }
+  private _attachKnownMessageCallbacks(room: Room<GameState>): void {
+    this.messageCallbacks.forEach((callbacks: Map<number, MessageCallback>, mType: MessageType) => {
+      room.onMessage(mType, (msg) => {
+        callbacks.forEach((cb) => cb.f(msg));
       });
-    } else {
-      console.warn('A server message was not addressed. Call back was undefined', data.type, data);
-    }
+    });
   }
 
-  private distributeOnChange(changes: DataChange<any>[]) {
-    this.onChangeCallbacks.map((f) => f(changes));
+  registerChangeCallback(cb: ChangeCallback): number {
+    const registerId = this._getUniqueId();
+    this.changeCallbacks.set(registerId, cb);
+    return registerId;
   }
 
-  private updateRoomCallbacks(currentRoom?: Room<GameState>): void {
-    const onMsg = this.gatherFunctionCalls.bind(this);
-    if (currentRoom === undefined) {
-      this.getActiveRoom().subscribe((activeRoom) => {
-        if (activeRoom !== undefined) {
-          // activeRoom.onMessage('', onMsg);
-          activeRoom.state.onChange = this.distributeOnChange.bind(this);
-        }
-      });
-    } else {
-      // currentRoom.onMessage('', onMsg);
-      currentRoom.state.onChange = this.distributeOnChange.bind(this);
-    }
+  clearChangeCallback(id: number): boolean {
+    return this.changeCallbacks.delete(id);
+  }
+
+  private _getUniqueId(): number {
+    this.registerSeed++;
+    return this.registerSeed;
+  }
+
+  private _attachKnownChangeCallbacks(currentRoom: Room<GameState>): void {
+    const bundledChangeFunctions = (changes: DataChange<unknown>[]) => {
+      this.changeCallbacks.forEach((f) => f(changes));
+    };
+    currentRoom.state.onChange = bundledChangeFunctions.bind(this);
+  }
+
+  /** Debug and Development functions */
+  private _logTypeAndMessage(mType: MessageType, data: WsData): void {
+    console.info(`onMessage(${MessageType[mType]}[${mType}]) => ${JSON.stringify(data, null, 2)}`);
+  }
+
+  private _prettyPrintMessageCallbacks(): string {
+    return (
+      '\n' +
+      Array.from(this.messageCallbacks.entries())
+        .map((value) => {
+          return (
+            MessageType[value[0]] +
+            ' => { \n' +
+            Array.from(value[1].keys())
+              .map((id) => '\t' + id + ' => f(...)')
+              .join(',\n') +
+            '\n}'
+          );
+        })
+        .join(',\n\n')
+    );
   }
 }

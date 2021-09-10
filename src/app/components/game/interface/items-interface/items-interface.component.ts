@@ -78,7 +78,7 @@ export class ItemsInterfaceComponent implements OnDestroy {
     this.itemList$$ = this.itemService.myItems$.subscribe((list: Item[]) => {
       this.itemList = list;
     });
-    this.isHost$ = this.gameState.amIHost();
+    this.isHost$ = this.gameState.amIHost$();
   }
 
   ngOnDestroy(): void {

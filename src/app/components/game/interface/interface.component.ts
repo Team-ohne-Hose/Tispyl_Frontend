@@ -1,14 +1,14 @@
 import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { GameComponent } from '../game.component';
 import { GameStateService } from '../../../services/game-state.service';
 import { NextTurnButtonComponent } from './next-turn-button/next-turn-button.component';
 import { TileOverlayComponent } from './tile-overlay/tile-overlay.component';
-import { ColyseusNotifyable } from '../../../services/game-initialisation.service';
 import { TurnOverlayComponent } from './turn-overlay/turn-overlay.component';
-import { ConnectedPlayersComponent } from './connected-players/connected-players.component';
 import { StateDisplayComponent } from './state-display/state-display.component';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { ShowAttribComponent } from '../show-attrib/show-attrib.component';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-interface',
@@ -20,25 +20,36 @@ import { animate, style, transition, trigger } from '@angular/animations';
     ]),
   ],
 })
-export class InterfaceComponent implements ColyseusNotifyable {
+export class InterfaceComponent {
   routes;
-  gameComponent: GameComponent;
   @ViewChild('nextTurn') nextTurnRef: NextTurnButtonComponent;
   @ViewChild('tileOverlay') tileOverlayRef: TileOverlayComponent;
   @ViewChild('turnOverlay') turnOverlayRef: TurnOverlayComponent;
   @ViewChild('stateDisplay') stateDisplayRef: StateDisplayComponent;
 
-  constructor(private router: Router, public gameState: GameStateService) {
-    this.routes = router.config.filter((route) => route.path !== '**' && route.path.length > 0);
-  }
+  isMyTurn$: Observable<boolean>;
 
-  attachColyseusStateCallbacks(gameState: GameStateService): void {
-    gameState.addNextTurnCallback((activePlayerLogin: string) => {
-      this.turnOverlayRef.show();
+  constructor(private router: Router, public gameState: GameStateService, private dialog: MatDialog) {
+    this.routes = router.config.filter((route) => route.path !== '**' && route.path.length > 0);
+    this.isMyTurn$ = this.gameState.isMyTurn$();
+    this.gameState.activePlayerLogin$.subscribe((_) => {
+      if (this.turnOverlayRef !== undefined) {
+        this.turnOverlayRef.show();
+      }
     });
   }
 
-  attachColyseusMessageCallbacks(gameState: GameStateService): void {
-    return;
+  showAttribution(): void {
+    const dialogRef: MatDialogRef<
+      ShowAttribComponent,
+      { roomName: string; skinName: string; randomizeTiles: boolean }
+    > = this.dialog.open(ShowAttribComponent, {
+      width: '80%',
+      maxWidth: '900px',
+      height: '70%',
+      maxHeight: '750px',
+      data: {},
+      panelClass: 'modalbox-base',
+    });
   }
 }

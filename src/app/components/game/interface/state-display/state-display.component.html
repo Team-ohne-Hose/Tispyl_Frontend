@@ -19,14 +19,14 @@
 
           <div class="button-anchor">
               <button
-                *ngIf="isMyTurn" class="turn-button"
+                *ngIf="isMyTurn$ | async" class="turn-button"
                 [@buttonMovement]="action === 'EXECUTE' ? 'hovering' : 'embedded'"
                 [disabled]="disabled" (click)="nextTurn()"
               >Zug beenden</button>
 
             <button
               @buttonMovement
-              *ngIf="!isMyTurn" class="turn-button"
+              *ngIf="!(isMyTurn$ | async)" class="turn-button"
                [disabled]="disabled || !canWake" (click)="alertPlayer()"
             ><span class="wake-cd" [style.width]=currentCD></span>Spieler wecken</button>
           </div>

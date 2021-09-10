@@ -9,52 +9,66 @@ import { BoardLayoutState, Tile } from '../model/state/BoardLayoutState';
 import { MessageType } from '../model/WsData';
 import { VoteStage, VoteState } from '../model/state/VoteState';
 import { VoteEntry } from '../components/game/interface/menu-bar/vote-system/helpers/VoteEntry';
-import { AsyncSubject, BehaviorSubject, Observable, Subject } from 'rxjs';
+import { AsyncSubject, BehaviorSubject, Observable, Observer, ReplaySubject, Subject } from 'rxjs';
 import { Rule } from '../model/state/Rule';
-import { map, mergeMap } from 'rxjs/operators';
+import { map, mergeMap, take } from 'rxjs/operators';
 
+/**
+ * This class provides an interface to the colyseus data. It provides structures which
+ * fit better to the needs when in-game. All values should be (made) available as Observables.
+ *
+ * @note A subscription to an Observable will stick around until either the Observable completes
+ * or the subscriber unsubscribes. Thus many values have a two access functions. One returning
+ * the observable and one returning a single-use Observable that wil automatically unsubscribe
+ * after one value was received. The later are marked with the key word 'Once'.
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class GameStateService {
-  // This class provides an interface to the colyseus data
-  // It provides structures which fit better to the needs when ingame
-
-  isColyseusReady$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  /** Scheduling values for the loading process */
+  isRoomDataAvailable$: ReplaySubject<boolean> = new ReplaySubject<boolean>(1);
 
   /** Access values for the game state */
   me$: AsyncSubject<Player> = new AsyncSubject<Player>();
   currentHostLogin$: Subject<string> = new Subject<string>();
   activePlayerLogin$: BehaviorSubject<string> = new BehaviorSubject<string>(undefined);
+  activeAction$: ReplaySubject<string> = new ReplaySubject<string>(1);
   playerMap$: BehaviorSubject<Map<string, Player>> = new BehaviorSubject<Map<string, Player>>(new Map());
+  // TODO: This is a one to one replacement for the old PlayerListUpdateCallback. This might be suboptimal. Please check actual calls to it.
+  playerListChanges$: Subject<Player> = new Subject<Player>();
   isTurnOrderReversed$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  activeAction = '';
+  physicState$: ReplaySubject<PhysicsState> = new ReplaySubject<PhysicsState>(1);
+  physicsObjectMoved$: Subject<PhysicsObjectState> = new Subject<PhysicsObjectState>();
+  boardLayoutState$: ReplaySubject<BoardLayoutState> = new ReplaySubject<BoardLayoutState>(1);
 
+  room$: ReplaySubject<Room<GameState>>;
+
+  /** Deprecated callback function */
+  /** @deprecated */
   private room: Room<GameState>;
-  private loaded = false;
-  private nextTurnCallback: ((activePlayerLogin: string) => void)[] = [];
-  private nextActionCallbacks: ((action: string) => void)[] = [];
-  private playerListUpdateCallbacks: ((player: Player, key: string, players: MapSchema<Player>) => void)[] = [];
-  private physicsObjectsMovedCallbacks: ((item: PhysicsObjectState, key: string) => void)[] = [];
-  private boardLayoutCallbacks: ((layout: BoardLayoutState) => void)[] = [];
+  /** @deprecated */
   private voteStageCallbacks: ((stage: VoteStage) => void)[] = [];
+  /** @deprecated */
   private voteCastCallbacks: (() => void)[] = [];
+  /** @deprecated */
   private voteSystemCallbacks: ((change: DataChange[]) => void)[] = [];
+  /** @deprecated */
   private itemCallbacks: (() => void)[] = [];
 
   constructor(private colyseus: ColyseusClientService) {
-    this.colyseus.addOnChangeCallback((changes: DataChange<GameState>[]) => {
+    this.room$ = this.colyseus.activeRoom$;
+
+    this.colyseus.registerChangeCallback((changes: DataChange<GameState>[]) => {
       changes.forEach((change: DataChange) => {
         switch (change.field) {
           case 'currentPlayerLogin':
             console.debug('nextTurn detected. notifying callbacks');
-            this.callNextTurn();
             this.activePlayerLogin$.next(change.value);
             break;
           case 'action':
-            this.activeAction = change.value;
-            this.callNextAction();
+            this.activeAction$.next(change.value);
             break;
           case 'playerList': {
             const m = change.value as MapSchema<Player>;
@@ -75,19 +89,30 @@ export class GameStateService {
         }
       });
     });
-    colyseus.getActiveRoom().subscribe((room: Room<GameState>) => {
+
+    /** Listen to Room changes ( entering / switching / leaving ) */
+    colyseus.activeRoom$.subscribe((room: Room<GameState>) => {
       if (room !== undefined) {
         this.room = room;
-        room.onStateChange.once((state) => {
-          console.debug('first colyseus Patch recieved');
-          this.loaded = true;
-          this.isColyseusReady$.next(true);
-          setTimeout(this.attachCallbacks.bind(this), 100, room);
+        room.onStateChange.once((state: GameState) => {
+          console.info('[GameStateService] Initial GameState was provided. Synchronizing service access values.');
+          this._synchronizeToRoomState(state);
+          this._attachCallbacks(room);
         });
       } else {
-        console.error('room was undefined');
+        console.info(`[GameStateService] Room changed to ${room}. This should only happen when a game is left.`);
+        this.isRoomDataAvailable$.next(false);
       }
     });
+  }
+
+  private _synchronizeToRoomState(state: GameState) {
+    /** the initial values for all access values should be set once here. */ // TODO: Confirm that all needed values are set
+    this.physicState$.next(state.physicsState);
+    state.physicsState.objects.forEach((o: PhysicsObjectState) => this.physicsObjectMoved$.next(o));
+    this.boardLayoutState$.next(state.boardLayout);
+    this.boardLayoutState$.complete();
+    this.isRoomDataAvailable$.next(true);
   }
 
   private _resolveMyPlayerObject(players: MapSchema<Player>): Player {
@@ -96,7 +121,11 @@ export class GameStateService {
     });
   }
 
-  amIHost(): Observable<boolean> {
+  roomOnce$(): Observable<Room<GameState>> {
+    return this.room$.pipe(take(1));
+  }
+
+  amIHost$(): Observable<boolean> {
     return this.currentHostLogin$.pipe(
       mergeMap((hostLogin: string) => {
         return this.me$.pipe(map((me: Player) => hostLogin === me.loginName));
@@ -104,16 +133,12 @@ export class GameStateService {
     );
   }
 
-  isGameLoaded(): boolean {
-    return this.loaded;
-  }
-
-  getRoom(): Room<GameState> {
-    return this.loaded ? this.room : undefined;
-  }
-
+  /**
+   * @deprecated The room state should not be accessed directly anymore. Use either a wrapper function providing
+   * a fitting Observable<T> in the GameStateService or access the ColyseusService.activeRoom$ Observable
+   */
   getState(): GameState {
-    const room = this.getRoom();
+    const room = this.room;
     if (room === undefined || room.state === undefined) {
       return undefined;
     } else {
@@ -121,8 +146,20 @@ export class GameStateService {
     }
   }
 
-  isMyTurn(): boolean {
-    return this.room === undefined ? false : this.room.state.currentPlayerLogin === this.getMyLoginName();
+  isMyTurn$(): Observable<boolean> {
+    return this.activePlayerLogin$.pipe(
+      mergeMap((activeLogin: string) => {
+        return this.me$.pipe(
+          map((me: Player) => {
+            return me.loginName === activeLogin;
+          })
+        );
+      })
+    );
+  }
+
+  isMyTurnOnce$(): Observable<boolean> {
+    return this.isMyTurn$().pipe(take(1));
   }
 
   getMyLoginName(): string {
@@ -134,6 +171,11 @@ export class GameStateService {
     return p.figureId;
   }
 
+  /**
+   * @deprecated This function accesses the room state directly. This is heavily discouraged.
+   * Use either a wrapper function providing a fitting Observable<T> in the GameStateService
+   * or access the ColyseusService.activeRoom$ Observable.
+   */
   findInPlayerList(f: (p: Player) => boolean): Player {
     const s: GameState = this.getState();
     if (s !== undefined) {
@@ -145,6 +187,11 @@ export class GameStateService {
     return this.getByLoginName(this.colyseus.myLoginName);
   }
 
+  /**
+   * @deprecated This function accesses the room state directly. This is heavily discouraged.
+   * Use either a wrapper function providing a fitting Observable<T> in the GameStateService
+   * or access the ColyseusService.activeRoom$ Observable.
+   */
   getCurrentPlayer(): Player {
     const s: GameState = this.getState();
     if (s !== undefined) {
@@ -153,6 +200,11 @@ export class GameStateService {
     return undefined;
   }
 
+  /**
+   * @deprecated This function accesses the room state directly. This is heavily discouraged.
+   * Use either a wrapper function providing a fitting Observable<T> in the GameStateService
+   * or access the ColyseusService.activeRoom$ Observable.
+   */
   getCurrentPlayerLogin(): string {
     const p: Player = this.getCurrentPlayer();
     if (p !== undefined) {
@@ -161,6 +213,11 @@ export class GameStateService {
     return '';
   }
 
+  /**
+   * @deprecated This function accesses the room state directly. This is heavily discouraged.
+   * Use either a wrapper function providing a fitting Observable<T> in the GameStateService
+   * or access the ColyseusService.activeRoom$ Observable.
+   */
   getCurrentPlayerDisplayName(): string {
     const p: Player = this.getCurrentPlayer();
     if (p !== undefined) {
@@ -169,6 +226,11 @@ export class GameStateService {
     return '';
   }
 
+  /**
+   * @deprecated This function accesses the room state directly. This is heavily discouraged.
+   * Use either a wrapper function providing a fitting Observable<T> in the GameStateService
+   * or access the ColyseusService.activeRoom$ Observable.
+   */
   getByLoginName(loginName: string): Player {
     const s: GameState = this.getState();
     if (s !== undefined) {
@@ -176,12 +238,22 @@ export class GameStateService {
     }
   }
 
+  /**
+   * @deprecated This function accesses the room state directly. This is heavily discouraged.
+   * Use either a wrapper function providing a fitting Observable<T> in the GameStateService
+   * or access the ColyseusService.activeRoom$ Observable.
+   */
   getByDisplayName(displayName: string): Player {
     return this.findInPlayerList((p: Player) => {
       return p.displayName === displayName;
     });
   }
 
+  /**
+   * @deprecated This function accesses the room state directly. This is heavily discouraged.
+   * Use either a wrapper function providing a fitting Observable<T> in the GameStateService
+   * or access the ColyseusService.activeRoom$ Observable.
+   */
   getDisplayName(playerlogin: string): string {
     const p: Player = this.getByLoginName(playerlogin);
     if (p !== undefined) {
@@ -190,6 +262,11 @@ export class GameStateService {
     return undefined;
   }
 
+  /**
+   * @deprecated This function accesses the room state directly. This is heavily discouraged.
+   * Use either a wrapper function providing a fitting Observable<T> in the GameStateService
+   * or access the ColyseusService.activeRoom$ Observable.
+   */
   getLoginName(playerDisplayName: string): string {
     const p: Player = this.getByDisplayName(playerDisplayName);
     if (p !== undefined) {
@@ -198,6 +275,11 @@ export class GameStateService {
     return undefined;
   }
 
+  /**
+   * @deprecated This function accesses the room state directly. This is heavily discouraged.
+   * Use either a wrapper function providing a fitting Observable<T> in the GameStateService
+   * or access the ColyseusService.activeRoom$ Observable.
+   */
   getRound(): number {
     const s: GameState = this.getState();
     if (s !== undefined) {
@@ -206,6 +288,11 @@ export class GameStateService {
     return 0;
   }
 
+  /**
+   * @deprecated This function accesses the room state directly. This is heavily discouraged.
+   * Use either a wrapper function providing a fitting Observable<T> in the GameStateService
+   * or access the ColyseusService.activeRoom$ Observable.
+   */
   getAction(): string {
     const s: GameState = this.getState();
     if (s !== undefined) {
@@ -214,6 +301,11 @@ export class GameStateService {
     return undefined;
   }
 
+  /**
+   * @deprecated This function accesses the room state directly. This is heavily discouraged.
+   * Use either a wrapper function providing a fitting Observable<T> in the GameStateService
+   * or access the ColyseusService.activeRoom$ Observable.
+   */
   hasStarted(): boolean {
     const s: GameState = this.getState();
     if (s !== undefined) {
@@ -231,7 +323,9 @@ export class GameStateService {
   }
 
   /**
-   * @deprecated This method accesses state values directly which can result in inconsistencies. Use getPlayerArray$() instead
+   * @deprecated This function accesses the room state directly. This is heavily discouraged.
+   * Use either a wrapper function providing a fitting Observable<T> in the GameStateService
+   * or access the ColyseusService.activeRoom$ Observable.
    */
   getPlayerArray(): Player[] {
     const s: GameState = this.getState();
@@ -241,63 +335,63 @@ export class GameStateService {
     return [];
   }
 
+  /**
+   * @deprecated This function accesses the room state directly. This is heavily discouraged.
+   * Use either a wrapper function providing a fitting Observable<T> in the GameStateService
+   * or access the ColyseusService.activeRoom$ Observable.
+   */
   forEachPlayer(f: (p: Player) => void): void {
     const s: GameState = this.getState();
     s?.playerList?.forEach(f);
   }
 
+  /**
+   * @deprecated This function accesses the room state directly. This is heavily discouraged.
+   * Use either a wrapper function providing a fitting Observable<T> in the GameStateService
+   * or access the ColyseusService.activeRoom$ Observable.
+   */
   getRules(): ArraySchema<Rule> | undefined {
     const s: GameState = this.getState();
     return s?.rules;
   }
 
+  /**
+   * @deprecated This function accesses the room state directly. This is heavily discouraged.
+   * Use either a wrapper function providing a fitting Observable<T> in the GameStateService
+   * or access the ColyseusService.activeRoom$ Observable.
+   */
   getVoteState(): VoteState | undefined {
     const s: GameState = this.getState();
     return s?.voteState;
   }
 
+  /**
+   * @deprecated This function accesses the room state directly. This is heavily discouraged.
+   * Use either a wrapper function providing a fitting Observable<T> in the GameStateService
+   * or access the ColyseusService.activeRoom$ Observable.
+   */
   getPhysicsState(): PhysicsState | undefined {
     const s = this.getState();
     return s?.physicsState;
   }
 
-  getBoardLayoutAsArray(): Tile[] {
-    const s: GameState = this.getState();
-    if (s !== undefined) {
-      const tiles: Tile[] = [];
-      for (let i = 0; i < 64; i++) {
-        tiles.push(s.boardLayout.tileList.get(String(i)));
-      }
-      return tiles;
-    }
-    return [];
+  getBoardLayoutAsArray(): Observable<Tile[]> {
+    return new Observable<Tile[]>((o: Observer<Tile[]>) => {
+      this.boardLayoutState$.pipe(take(1)).subscribe((state: BoardLayoutState) => {
+        const tiles: Tile[] = [];
+        for (let i = 0; i < 64; i++) {
+          tiles.push(state.tileList.get(String(i))); // TODO: This might enforce an ordering, thus it is not changed yet
+        }
+        o.next(tiles);
+        o.complete();
+      });
+    });
   }
 
   sendMessage(type: number | string, data: unknown): void {
-    const room = this.getRoom();
-    if (room !== undefined) {
-      room.send(type, data);
-    }
-  }
-
-  addNextTurnCallback(f: (activePlayerLogin: string) => void): void {
-    this.nextTurnCallback.push(f);
-  }
-
-  addActionCallback(f: (action: string) => void): void {
-    this.nextActionCallbacks.push(f);
-  }
-
-  addPlayerListUpdateCallback(f: (item: Player, key: string, players: MapSchema<Player>) => void): void {
-    this.playerListUpdateCallbacks.push(f);
-  }
-
-  addPhysicsObjectMovedCallback(f: (item: PhysicsObjectState, key: string) => void): void {
-    this.physicsObjectsMovedCallbacks.push(f);
-  }
-
-  addBoardLayoutCallback(f: (layout: BoardLayoutState) => void): void {
-    this.boardLayoutCallbacks.push(f);
+    this.roomOnce$().subscribe((r) => {
+      r.send(type, data);
+    });
   }
 
   addVoteStageCallback(f: (stage: VoteStage) => void): void {
@@ -316,32 +410,36 @@ export class GameStateService {
     this.itemCallbacks.push(f);
   }
 
-  registerMessageCallback(type: MessageType, cb: MessageCallback): void {
-    this.colyseus.registerMessageCallback(type, cb);
+  registerMessageCallback(type: MessageType, cb: MessageCallback): number {
+    return this.colyseus.registerMessageCallback(type, cb);
   }
 
-  private attachPlayerCallbacks(room: Room<GameState>): void {
+  clearMessageCallback(id: number): boolean {
+    return this.colyseus.clearMessageCallback(id);
+  }
+
+  private _attachPlayerCallbacks(room: Room<GameState>): void {
     if (room.state.playerList === undefined) {
       console.warn('GameStateService Callbacks couldnt be attached, Playerlist was undefined');
     } else {
       const addPlayerCbs = (p: Player, key: string) => {
         p.onChange = ((changes: DataChange[]) => {
-          this.callPlayerListUpdate(p, key);
+          this._callPlayerListUpdate(p, key);
           this.playerMap$.next(this.playerMap$.value.set(key, p));
         }).bind(this);
       };
       room.state.playerList.onAdd = (p: Player, key: string) => {
         addPlayerCbs(p, key);
-        this.callPlayerListUpdate(p, key);
+        this._callPlayerListUpdate(p, key);
         this.playerMap$.next(this.playerMap$.value.set(key, p));
       };
       room.state.playerList.forEach((p: Player, key: string) => {
         addPlayerCbs(p, key);
-        this.callPlayerListUpdate(p, key);
+        this._callPlayerListUpdate(p, key);
       });
       room.state.playerList.onRemove = (p: Player, key: string) => {
         addPlayerCbs(p, key);
-        this.callPlayerListUpdate(p, key);
+        this._callPlayerListUpdate(p, key);
         const m = this.playerMap$.value;
         m.delete(key);
         this.playerMap$.next(m);
@@ -349,7 +447,7 @@ export class GameStateService {
     }
   }
 
-  private attachPhysicsMovedCallbacks(room: Room<GameState>): void {
+  private _attachPhysicsMovedCallbacks(room: Room<GameState>): void {
     if (room.state.physicsState === undefined) {
       console.warn('GameStateService Callbacks couldnt be attached, PhysicsState was undefined');
     } else if (room.state.physicsState.objects === undefined) {
@@ -359,47 +457,30 @@ export class GameStateService {
       const attachMovedCallbacks = (pObj: PhysicsObjectState, key: string) => {
         console.debug('attached onChange Callback to physics object', pObj);
         pObj.position.onChange = ((changes: DataChange[]) => {
-          this.callPhysicsObjectMoved(pObj, key);
+          this._callPhysicsObjectMoved(pObj, key);
         }).bind(this);
         pObj.quaternion.onChange = ((changes: DataChange[]) => {
-          this.callPhysicsObjectMoved(pObj, key);
+          this._callPhysicsObjectMoved(pObj, key);
         }).bind(this);
       };
       room.state.physicsState.objects.forEach(attachMovedCallbacks.bind(this));
       room.state.physicsState.objects.onAdd = ((item, key) => {
         console.debug('onAdd triggered', item, key);
         attachMovedCallbacks(item, key);
-        this.callPhysicsObjectMoved(item, key);
+        this._callPhysicsObjectMoved(item, key);
       }).bind(this);
     }
   }
 
-  private attachBoardLayoutCallbacks(room: Room<GameState>): void {
-    if (room.state.boardLayout === undefined) {
-      console.warn('GameStateService Callbacks couldnt be attached, BoardLayout was undefined');
-    } else {
-      const boardLayoutCallbacks = (t: Tile, key: string) => {
-        t.onChange = ((changes: DataChange[]) => {
-          this.callBoardLayoutUpdate();
-        }).bind(this);
-      };
-      room.state.boardLayout.tileList.forEach(boardLayoutCallbacks.bind(this));
-      room.state.boardLayout.tileList.onAdd = ((item, key) => {
-        boardLayoutCallbacks(item, key);
-        this.callBoardLayoutUpdate();
-      }).bind(this);
-    }
-  }
-
-  private attachVoteStateCallbacks(room: Room<GameState>): void {
+  private _attachVoteStateCallbacks(room: Room<GameState>): void {
     if (room.state.voteState === undefined) {
       console.warn('GameStateService Callbacks couldnt be attached, voteState was undefined');
     } else {
-      room.state.voteState.onChange = this.callVoteStageUpdate.bind(this);
+      room.state.voteState.onChange = this._callVoteStageUpdate.bind(this);
     }
   }
 
-  private attachVoteCastCallback(): void {
+  private _attachVoteCastCallback(): void {
     if (this.room?.state?.voteState?.voteConfiguration === undefined) {
       console.warn(
         'GameStateService tried to attach callbacks for casting votes. Something was not defined. Room is:',
@@ -411,71 +492,58 @@ export class GameStateService {
     // it attaches the callVoteCastUpdate to every voting option. For every casted/changed vote, the old entry is removed and a new entry
     // in the corresponding option is added for the player, which just casted the vote. Therefore the onAdd callback should be sufficient.
     this.room.state.voteState.voteConfiguration.votingOptions.forEach((entry: VoteEntry) => {
-      entry.castVotes.onAdd = this.callVoteCastUpdate.bind(this);
+      entry.castVotes.onAdd = this._callVoteCastUpdate.bind(this);
     });
   }
 
-  private attachItemCallback(room: Room<GameState>): void {
+  private _attachItemCallback(room: Room<GameState>): void {
     const playerMe: Player = this.getMe();
     if (playerMe?.itemList === undefined) {
       console.warn('GameStateService Callbacks couldnt be attached, playerMe or its ItemList was undefined');
     } else {
       // onChange works only on Arrays/Maps of primitives. But ItemList is a primitive
-      playerMe.itemList.onChange = this.callItemUpdate.bind(this);
-      playerMe.itemList.onAdd = this.callItemUpdate.bind(this);
-      playerMe.itemList.onRemove = this.callItemUpdate.bind(this);
+      playerMe.itemList.onChange = this._callItemUpdate.bind(this);
+      playerMe.itemList.onAdd = this._callItemUpdate.bind(this);
+      playerMe.itemList.onRemove = this._callItemUpdate.bind(this);
     }
   }
 
-  private attachCallbacks(room: Room<GameState>): void {
+  private _attachCallbacks(room: Room<GameState>): void {
     if (room === undefined) {
       console.warn('GameStateService Callbacks couldnt be attached, Room was undefined!');
     } else {
-      this.attachPlayerCallbacks(room);
-      this.attachPhysicsMovedCallbacks(room);
-      this.attachBoardLayoutCallbacks(room);
-      this.attachVoteStateCallbacks(room);
-      this.attachItemCallback(room);
+      this._attachPlayerCallbacks(room);
+      this._attachPhysicsMovedCallbacks(room);
+      this._attachVoteStateCallbacks(room);
+      this._attachItemCallback(room);
       console.debug('attached GameStateServiceCallbacks');
     }
   }
 
-  private callNextTurn(): void {
-    this.nextTurnCallback.forEach((f) => f(this.room.state.currentPlayerLogin));
+  private _callPlayerListUpdate(player: Player, key: string): void {
+    this.playerListChanges$.next(player);
   }
 
-  private callNextAction(): void {
-    this.nextActionCallbacks.forEach((f) => f(this.room.state.action));
+  private _callPhysicsObjectMoved(item: PhysicsObjectState, key: string): void {
+    this.physicsObjectMoved$.next(item);
   }
 
-  private callPlayerListUpdate(player: Player, key: string): void {
-    this.playerListUpdateCallbacks.forEach((f) => f(player, key, this.room.state.playerList));
-  }
-
-  private callPhysicsObjectMoved(item: PhysicsObjectState, key: string): void {
-    this.physicsObjectsMovedCallbacks.forEach((f) => f(item, key));
-  }
-
-  private callBoardLayoutUpdate(): void {
-    this.boardLayoutCallbacks.forEach((f) => f(this.room.state.boardLayout));
-  }
-
-  private callVoteStageUpdate(changes: DataChange[]): void {
+  private _callVoteStageUpdate(changes: DataChange[]): void {
     const newVal: VoteStage = changes.find((change: DataChange) => change.field === 'voteStage')?.value;
     if (newVal !== undefined) {
       this.voteStageCallbacks.forEach((f) => f(newVal));
     }
     if (newVal === VoteStage.VOTE) {
-      this.attachVoteCastCallback();
+      this._attachVoteCastCallback();
     }
     this.voteSystemCallbacks.forEach((f) => f(changes.filter((v: DataChange) => v.field !== 'voteStage')));
   }
 
-  private callVoteCastUpdate(): void {
+  private _callVoteCastUpdate(): void {
     this.voteCastCallbacks.forEach((f) => f());
   }
 
-  private callItemUpdate(): void {
+  private _callItemUpdate(): void {
     this.itemCallbacks.forEach((f) => f());
   }
 }

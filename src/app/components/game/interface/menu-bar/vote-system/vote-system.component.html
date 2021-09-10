@@ -4,11 +4,11 @@
     <div class="head-text">
       <div>Voting System</div>
     </div>
-    <div *ngIf="gameState.isGameLoaded()" class="head-progress">
+    <div *ngIf="gameState.isRoomDataAvailable$ | async" class="head-progress">
       <!-- VoteStage 2 should be creation -->
       <i [ngClass]="gameState.getVoteState().voteStage === 2 ? 'fas fa-circle-notch fa-spin highlight' : 'far fa-circle'"></i>
     </div>
-    <div *ngIf="!gameState.isGameLoaded()" class="head-progress">
+    <div *ngIf="!(gameState.isRoomDataAvailable$ | async)" class="head-progress">
       <i class="far fa-circle"></i>
     </div>
   </div>
@@ -61,7 +61,7 @@
   <div *ngIf="voteSystemState === stateEnum.voting" class="base-container">
 
     <div class="voting-head-container">
-      <div *ngIf="gameState.isGameLoaded()" class="voting-head">
+      <div *ngIf="gameState.isRoomDataAvailable$ | async" class="voting-head">
         <div class="pre-subscript">Select your option:</div>
         {{gameState.getVoteState().voteConfiguration.title}}
       </div>
@@ -69,7 +69,7 @@
     </div>
 
 
-    <div *ngIf="gameState.isGameLoaded()">
+    <div *ngIf="gameState.isRoomDataAvailable$ | async">
       <div *ngFor="let ve of this.gameState.getVoteState().voteConfiguration.votingOptions; let i = index"
            class="entry-container disable-user-select">
         <div (click)="castVote(i)" class="vote-entry">
@@ -118,13 +118,13 @@
   <div *ngIf="voteSystemState === stateEnum.results" class="base-container">
 
     <div class="voting-head-container">
-      <div *ngIf="gameState.isGameLoaded()" class="voting-head">
+      <div *ngIf="gameState.isRoomDataAvailable$ | async" class="voting-head">
         <div class="pre-subscript">Results:</div>
         {{gameState.getVoteState().voteConfiguration.title}}
       </div>
     </div>
 
-    <div *ngIf="gameState.isGameLoaded()">
+    <div *ngIf="gameState.isRoomDataAvailable$ | async">
       <div *ngFor="let ve of this.gameState.getVoteState().voteConfiguration.votingOptions; let i = index"
            [ngClass]="{'entry-container disable-user-select result': true, 'no1': i === 0, 'no2': i === 1, 'no3': i === 2, 'noN': i > 2}">
 

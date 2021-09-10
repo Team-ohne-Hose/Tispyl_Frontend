@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
 import { HintsService } from '../../../services/hints.service';
 
 @Component({
@@ -8,6 +8,7 @@ import { HintsService } from '../../../services/hints.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoadingScreenComponent {
+  isWaiting = true;
   logoSource = 'assets/logo.png';
   progress = 0;
   currentTip = '...';
@@ -22,12 +23,12 @@ export class LoadingScreenComponent {
 
   startTips(): void {
     this.newTip();
-    this.timeOutRef = window.setInterval(this.newTip.bind(this), 5000);
+    this.timeOutRef = setInterval(this.newTip.bind(this), 5000);
   }
 
   stopTips(): void {
     if (this.timeOutRef !== undefined) {
-      window.clearInterval(this.timeOutRef);
+      clearInterval(this.timeOutRef);
       this.timeOutRef = undefined;
     }
   }
