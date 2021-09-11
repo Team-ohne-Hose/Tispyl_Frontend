@@ -92,7 +92,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   private _handleProgress(p: Progress) {
     if (p[0] === 0 && p[1] === 0) {
       this._startLoading();
-    } else if (this.isLoading) {
+    } else if (this.isLoading && p[0] <= p[1] && p[1] > 0) {
       this.loadingScreenRef.setProgress((p[0] / p[1]) * 100);
     }
   }

@@ -31,7 +31,6 @@ import { ConnectedPlayersComponent } from './components/game/interface/connected
 import { PregameBannerComponent } from './components/game/interface/pregame-banner/pregame-banner.component';
 import { DebugdummyComponent } from './components/debugdummy/debugdummy.component';
 import { IngameRuleBookComponent } from './components/game/interface/menu-bar/ingame-rule-book/ingame-rule-book.component';
-import { NextTurnButtonComponent } from './components/game/interface/next-turn-button/next-turn-button.component';
 import { TurnOverlayComponent } from './components/game/interface/turn-overlay/turn-overlay.component';
 import { TileOverlayComponent } from './components/game/interface/tile-overlay/tile-overlay.component';
 import { LoadingScreenComponent } from './components/game/loading-screen/loading-screen.component';
@@ -133,7 +132,6 @@ const appRoutes: Routes = [
     PregameBannerComponent,
     DebugdummyComponent,
     IngameRuleBookComponent,
-    NextTurnButtonComponent,
     TurnOverlayComponent,
     TileOverlayComponent,
     LoadingScreenComponent,

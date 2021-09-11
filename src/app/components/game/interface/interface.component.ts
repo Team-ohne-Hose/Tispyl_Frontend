@@ -1,7 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { GameStateService } from '../../../services/game-state.service';
-import { NextTurnButtonComponent } from './next-turn-button/next-turn-button.component';
 import { TileOverlayComponent } from './tile-overlay/tile-overlay.component';
 import { TurnOverlayComponent } from './turn-overlay/turn-overlay.component';
 import { StateDisplayComponent } from './state-display/state-display.component';
@@ -22,7 +21,6 @@ import { Observable } from 'rxjs';
 })
 export class InterfaceComponent {
   routes;
-  @ViewChild('nextTurn') nextTurnRef: NextTurnButtonComponent;
   @ViewChild('tileOverlay') tileOverlayRef: TileOverlayComponent;
   @ViewChild('turnOverlay') turnOverlayRef: TurnOverlayComponent;
   @ViewChild('stateDisplay') stateDisplayRef: StateDisplayComponent;

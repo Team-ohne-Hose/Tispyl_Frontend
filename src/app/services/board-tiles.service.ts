@@ -105,20 +105,16 @@ export class BoardTilesService {
 
   initialize(addToScene: (grp: THREE.Group) => void): Observable<Progress> {
     return new Observable<Progress>((observer: Observer<Progress>) => {
-      const grp: THREE.Group = this.generateField();
-      addToScene(grp);
-      this.gameState
-        .getBoardLayoutAsArray()
-        .subscribe((tiles: Tile[]) => {
-          this.tiles = tiles;
-          observer.next([1, this.tiles.length + 1]);
-          console.info(
-            'Tiles are:',
-            this.tiles.map((t) => t.title)
-          );
-          this._updateFields(observer);
-        })
-        .unsubscribe();
+      addToScene(this.generateField());
+      this.gameState.getBoardLayoutAsArray().subscribe((tiles: Tile[]) => {
+        this.tiles = tiles;
+        observer.next([1, this.tiles.length + 1]);
+        console.info(
+          'Tiles are:',
+          this.tiles.map((t) => t.title)
+        );
+        this._updateFields(observer);
+      });
     });
   }
 

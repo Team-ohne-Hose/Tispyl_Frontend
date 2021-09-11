@@ -58,23 +58,26 @@ export class BoardItemControlService {
       const figureItem = this.allFigures.find((val: FigureItem, index: number) => {
         return val.mesh.userData.physicsId === p.figureId;
       });
+
       if (figureItem === undefined) {
         console.warn('figure hasnt been initialized yet, but hiddenState is to be set', p.figureId, this.allFigures);
-      } else {
-        if (p.figureModel !== undefined) {
-          console.debug('loading new playerTex', p.figureModel);
-          // TODO prevent loading Textures all the time/ prevent if not necessary
-          this.loader.switchTex(figureItem.mesh, p.figureModel);
-        }
-        if (p.hasLeft !== figureItem.isHidden) {
-          console.debug('changing hiddenState', p.hasLeft, figureItem.isHidden, this.allFigures);
-          if (figureItem.isHidden) {
-            this.sceneTree.add(figureItem.mesh);
-            figureItem.isHidden = false;
-          } else {
-            this.sceneTree.remove(figureItem.mesh);
-            figureItem.isHidden = true;
-          }
+        return;
+      }
+
+      if (p.figureModel !== undefined) {
+        console.debug('loading new playerTex', p.figureModel);
+        // TODO prevent loading Textures all the time/ prevent if not necessary
+        this.loader.switchTex(figureItem.mesh, p.figureModel);
+      }
+
+      if (p.hasLeft !== figureItem.isHidden) {
+        console.debug('changing hiddenState', p.hasLeft, figureItem.isHidden, this.allFigures);
+        if (figureItem.isHidden) {
+          this.sceneTree.add(figureItem.mesh);
+          figureItem.isHidden = false;
+        } else {
+          this.sceneTree.remove(figureItem.mesh);
+          figureItem.isHidden = true;
         }
       }
     });

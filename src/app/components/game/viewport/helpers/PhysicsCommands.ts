@@ -229,10 +229,6 @@ export class PhysicsCommands {
     rotZ?: number,
     rotW?: number
   ): void {
-    /*if (entity === PhysicsEntity.figure && this.isPlayerCached(physicsId)) {
-      // if playerfigure was already cached dont load it
-      return;
-    }*/
     posX = posX || 0;
     posY = posY || 0;
     posZ = posZ || 0;
