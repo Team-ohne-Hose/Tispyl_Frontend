@@ -44,7 +44,7 @@ export class ViewportComponent implements AfterViewInit {
     public itemService: ItemService,
     private bic: BoardItemControlService
   ) {
-    // this.stats = Stats();
+    // this.stats = Stats(); TODO: Reintroduce this in the game options
   }
 
   async ngAfterViewInit(): Promise<void> {
@@ -77,7 +77,7 @@ export class ViewportComponent implements AfterViewInit {
 
     this.renderer.render(this.sceneTree, this.camera);
     this.userInteractionController.cameraControls.update();
-    // this.stats.update();
+    // this.stats.update(); TODO: Reintroduce this in the game options
   }
 
   initializeScene(): Observable<Progress> {

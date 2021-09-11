@@ -33,7 +33,7 @@ export class ColyseusClientService {
   /** Constants and development parameters */
   private readonly VERBOSE_CALLBACK_LOGGING = false;
   private readonly BACKEND_WS_TARGET = environment.wsEndpoint;
-  private readonly client: Client = new Client(this.BACKEND_WS_TARGET);
+  private readonly CLIENT: Client = new Client(this.BACKEND_WS_TARGET);
 
   /** Internal values */
   private registerSeed = 0;
@@ -73,7 +73,7 @@ export class ColyseusClientService {
       } else {
         if (this.VERBOSE_CALLBACK_LOGGING) {
           console.info('Known message callbacks after leaving the room:', this._prettyPrintMessageCallbacks());
-          console.info('Known change callbacks after leaving the room:', this._prettyPrintMessageCallbacks());
+          console.info('Known change callbacks after leaving the room:', this._prettyPrintChangeCallbacks());
         }
       }
     });
@@ -85,7 +85,7 @@ export class ColyseusClientService {
 
   createRoom(opts: CreateRoomOpts): void {
     if (opts.roomName !== undefined) {
-      this.client.create('game', opts).then((suc) => {
+      this.CLIENT.create('game', opts).then((suc) => {
         this.setActiveRoom(suc);
         this.updateAvailableRooms();
         this.myLoginName = opts.login;
@@ -101,14 +101,14 @@ export class ColyseusClientService {
       login: loginName,
       displayName: displayName,
     };
-    this.client.joinById(roomAva.roomId, options).then((myRoom: Room) => {
+    this.CLIENT.joinById(roomAva.roomId, options).then((myRoom: Room) => {
       this.setActiveRoom(myRoom);
       this.myLoginName = loginName;
     });
   }
 
   updateAvailableRooms(): void {
-    this.client.getAvailableRooms('game').then((rooms) => {
+    this.CLIENT.getAvailableRooms('game').then((rooms) => {
       this.availableRooms$.next(rooms);
     });
   }
@@ -181,6 +181,16 @@ export class ColyseusClientService {
           );
         })
         .join(',\n\n')
+    );
+  }
+
+  private _prettyPrintChangeCallbacks(): string {
+    return (
+      'onChange: {\n' +
+      Array.from(this.changeCallbacks.keys())
+        .map((id) => '\t' + id + ' => f(...)')
+        .join(',\n') +
+      '\n}'
     );
   }
 }

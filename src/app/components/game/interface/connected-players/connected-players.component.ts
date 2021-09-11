@@ -90,25 +90,19 @@ export class ConnectedPlayersComponent implements OnInit, OnDestroy {
   }
 
   private _safeNeighbourIndices(idx: number, listLength: number): [number, number] {
-    let l, r: number;
-    if (idx !== -1) {
-      l = idx - 1;
-      r = idx + 1;
-      if (l < 0) {
-        l = listLength - 1;
-        if (l === idx) {
-          l = -1;
-        }
-      }
-      if (r >= listLength) {
-        r = 0;
-        if (r === idx) {
-          r = -1;
-        }
-      }
-      return [l, r];
-    } else {
+    if (idx < 0 || idx >= listLength || listLength < 2) {
+      // index not in list or list to small to have neighbors
       return [-1, -1];
+    }
+    if (idx === 0) {
+      // you are first in list, your left neighbor is at the end of list
+      return [listLength - 1, idx + 1];
+    } else if (idx === listLength - 1) {
+      // you are last in list, your right neighbor is at the start of list
+      return [idx - 1, 0];
+    } else {
+      // normal case
+      return [idx - 1, idx + 1];
     }
   }
 

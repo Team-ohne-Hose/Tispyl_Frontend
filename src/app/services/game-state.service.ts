@@ -45,9 +45,10 @@ export class GameStateService {
 
   room$: ReplaySubject<Room<GameState>>;
 
-  /** Deprecated callback function */
-  /** @deprecated */
+  /** @deprecated Room access object should not be used anymore as it is prone to inconsistencies */
   private room: Room<GameState>;
+
+  /** Deprecated callback functions */
   /** @deprecated */
   private voteStageCallbacks: ((stage: VoteStage) => void)[] = [];
   /** @deprecated */
@@ -380,7 +381,7 @@ export class GameStateService {
       this.boardLayoutState$.pipe(take(1)).subscribe((state: BoardLayoutState) => {
         const tiles: Tile[] = [];
         for (let i = 0; i < 64; i++) {
-          tiles.push(state.tileList.get(String(i))); // TODO: This might enforce an ordering, thus it is not changed yet
+          tiles.push(state.tileList.get(String(i)));
         }
         o.next(tiles);
         o.complete();

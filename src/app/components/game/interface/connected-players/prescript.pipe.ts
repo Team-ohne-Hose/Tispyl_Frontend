@@ -5,8 +5,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class PrescriptPipe implements PipeTransform {
   private static readonly DEFAULT = 'Name';
-  private static readonly LEFT = 'Linker Nachbar';
-  private static readonly RIGHT = 'Rechter Nachbar';
+  private static readonly LEFT_NEIGHBOR = 'Linker Nachbar';
+  private static readonly RIGHT_NEIGHBOR = 'Rechter Nachbar';
   private static readonly OVERLAP = 'Nachbar';
 
   /** This pipe resolves the neighbors array into a human readable form based on the value i.
@@ -18,9 +18,9 @@ export class PrescriptPipe implements PipeTransform {
       const r = neighbors[1];
 
       if (i === l && i !== r) {
-        return PrescriptPipe.LEFT;
+        return PrescriptPipe.LEFT_NEIGHBOR;
       } else if (i === r && i !== l) {
-        return PrescriptPipe.RIGHT;
+        return PrescriptPipe.RIGHT_NEIGHBOR;
       } else if (i === r && i === l) {
         return PrescriptPipe.OVERLAP;
       } else {
