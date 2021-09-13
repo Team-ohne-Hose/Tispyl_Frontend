@@ -30,7 +30,7 @@
         <img [src]="logoSource" alt="Logo" />
       </div>
       <div class="nav-box">
-        <button class="nav-button" [routerLink]="['./news']">
+        <button class="nav-button" title="Hier findest du aktuelle Neuigkeiten." [routerLink]="['./news']">
           <i class="fas fa-home"></i>
           <span>News</span>
         </button>
@@ -38,7 +38,7 @@
           <i class="fas fa-gamepad"></i>
           <span>Lobby</span>
         </button>
-        <button class="nav-button" [routerLink]="['./faq']">
+        <button class="nav-button" title="Die 'FAQ'-Seite ist noch in bearbeitung." [routerLink]="['./faq']" disabled>
           <i class="fas fa-gavel"></i>
           <span>FAQ</span>
         </button>
@@ -46,11 +46,11 @@
           <i class="fas fa-user-circle"></i>
           <span>Profile</span>
         </button>-->
-        <button class="nav-button" [routerLink]="['./updates']">
+        <button class="nav-button" title="Die 'Update'-Seite ist noch in bearbeitung." [routerLink]="['./updates']" disabled>
           <i class="far fa-clipboard"></i>
           <span>Updates</span>
         </button>
-        <button *ngIf="isLoggedIn" class="nav-button" [routerLink]="['./custom']">
+        <button *ngIf="isLoggedIn" class="nav-button"  title="Die 'Custom'-Seite ist noch in bearbeitung."  [routerLink]="['./custom']" disabled>
           <i class="fas fa-star"></i>
           <span>Custom</span>
         </button>
