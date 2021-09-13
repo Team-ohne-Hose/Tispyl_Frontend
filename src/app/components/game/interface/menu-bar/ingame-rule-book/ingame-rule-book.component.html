@@ -5,18 +5,35 @@
       <div class="top paper-body">
         <div class="rule-list">
           <div class="headline-text">
-            Special Rules
+            Regeln
           </div>
+
+          <div class="static">
+            <div *ngFor="let s of staticRules" class="rule disable-select">
+              <div class="rule-icon">
+                <i class="{{s.icon}}"></i>
+              </div>
+              <div class="rule-text">
+                <span class="text">{{s.text}}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="headline-text special">
+            Extra Regeln
+          </div>
+
           <div *ngFor="let r of rules; let i = index" class="rule">
-            <div class="rule-gavel">
+            <div class="rule-icon">
               <i class="fas fa-gavel"></i>
             </div>
             <div class="rule-text">
-              <span class="author">by {{r.author}}</span>
+              <span class="author">von {{r.author}}</span>
               <span class="text">{{r.text}}</span>
             </div>
             <div (click)="removeRule(i)" class="delete-rule"><i class="fas fa-ban"></i></div>
           </div>
+
         </div>
       </div>
     </div>
@@ -26,7 +43,7 @@
     <div class="gold-border">
       <div class="paper-body">
         <div class="input-section">
-          <textarea #textInput placeholder="Add new rule here ..." rows="4"></textarea>
+          <textarea #textInput placeholder="Neue Regel schreiben ..." rows="4"></textarea>
           <div class="vertical-seperator"></div>
           <div (click)="addRule(textInput)" class="add-button"><i class="fas fa-share"></i></div>
         </div>

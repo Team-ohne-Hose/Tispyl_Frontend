@@ -50,6 +50,10 @@
   border-bottom: var(--text-color) solid 2px;
 }
 
+.special {
+  margin-top: 1rem;
+}
+
 .rule-list {
   padding: 1rem;
   flex-grow: 1;
@@ -67,6 +71,7 @@
   padding-right: 0.2rem;
   border-radius: 5px;
   background-color: var(--light-bg);
+  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12);
 }
 
 .rule span {
@@ -95,13 +100,27 @@
   align-items: center;
 }
 
-.rule-gavel {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-self: stretch;
-  align-items: center;
-  min-height: 0;
+.static {
+  cursor: default;
+}
+
+.static-divider {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  background: var(--golden-radial-bg);
+  height: 2px;
+}
+
+.disable-select {
+  user-select: none; /* supported by Chrome and Opera */
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+}
+
+.rule-icon {
+  min-width: 1.5rem;
+  text-align: center;
 }
 
 .delete-rule {
