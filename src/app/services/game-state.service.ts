@@ -32,7 +32,7 @@ export class GameStateService {
   /** Access values for the game state */
   me$: AsyncSubject<Player> = new AsyncSubject<Player>();
   currentHostLogin$: Subject<string> = new Subject<string>();
-  activePlayerLogin$: BehaviorSubject<string> = new BehaviorSubject<string>(undefined);
+  activePlayerLogin$: ReplaySubject<string> = new ReplaySubject<string>(1);
   activeAction$: ReplaySubject<string> = new ReplaySubject<string>(1);
   playerMap$: BehaviorSubject<Map<string, Player>> = new BehaviorSubject<Map<string, Player>>(new Map());
   // TODO: This is a one to one replacement for the old PlayerListUpdateCallback. This might be suboptimal. Please check actual calls to it.

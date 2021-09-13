@@ -28,7 +28,7 @@ export class IngameRuleBookComponent {
     },
     { text: 'Jede Aktion muss versucht werden.', icon: 'far fa-dizzy' },
     { text: 'Fehlgeschlagene Aufgaben werden mit 2 Strafschlücken bestraft.', icon: 'fas fa-beer' },
-    { text: 'Wer mit spielt akzeptiert automatisch alle Regeln.', icon: 'fas fa-balance-scale' },
+    { text: 'Wer mitspielt akzeptiert automatisch alle Regeln.', icon: 'fas fa-balance-scale' },
   ];
 
   constructor(private gameState: GameStateService) {}

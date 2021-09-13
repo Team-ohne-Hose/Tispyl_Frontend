@@ -147,11 +147,13 @@ export class StateDisplayComponent implements OnDestroy {
     this.activeTimer.start();
 
     this.gameState.activePlayerLogin$.pipe(take(1)).subscribe((name: string) => {
-      this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
-        type: MessageType.GAME_MESSAGE,
-        action: GameActionType.wakePlayer,
-        targetLoginName: name,
-      });
+      if (name !== undefined && name !== '' && name !== null) {
+        this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
+          type: MessageType.GAME_MESSAGE,
+          action: GameActionType.wakePlayer,
+          targetLoginName: name,
+        });
+      }
     });
   }
 
