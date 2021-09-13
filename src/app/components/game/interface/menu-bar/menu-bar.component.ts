@@ -20,7 +20,6 @@ import { Player } from '../../../../model/state/Player';
   selector: 'app-menu-bar',
   templateUrl: './menu-bar.component.html',
   styleUrls: ['./menu-bar.component.css'],
-  animations: [],
 })
 export class MenuBarComponent {
   @Input() playerList: Player[];

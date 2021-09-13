@@ -5,6 +5,8 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { Timer } from '../../../framework/Timer';
 import { SoundService } from '../../../../services/sound.service';
 import { Observable } from 'rxjs';
+import { take } from 'rxjs/operators';
+import { Player } from '../../../../model/state/Player';
 
 @Component({
   selector: 'app-state-display',
@@ -90,9 +92,11 @@ export class StateDisplayComponent implements OnDestroy {
         if (data.type === MessageType.GAME_MESSAGE) {
           switch (data.action) {
             case GameActionType.wakePlayer:
-              if (data.targetLoginName === this.gameState.getMe().loginName) {
-                this.playWakeChime();
-              }
+              this.gameState.me$.pipe(take(1)).subscribe((me: Player) => {
+                if (data.targetLoginName === me.loginName) {
+                  this.playWakeChime();
+                }
+              });
               break;
             default:
               break;
@@ -142,10 +146,12 @@ export class StateDisplayComponent implements OnDestroy {
     this.canWake = false;
     this.activeTimer.start();
 
-    this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
-      type: MessageType.GAME_MESSAGE,
-      action: GameActionType.wakePlayer,
-      targetLoginName: this.gameState.getCurrentPlayerLogin(),
+    this.gameState.activePlayerLogin$.pipe(take(1)).subscribe((name: string) => {
+      this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
+        type: MessageType.GAME_MESSAGE,
+        action: GameActionType.wakePlayer,
+        targetLoginName: name,
+      });
     });
   }
 
