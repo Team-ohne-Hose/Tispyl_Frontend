@@ -107,6 +107,7 @@ export class GameInitialisationService {
    * @private
    */
   private _finalizeLoad(game: GameComponent) {
+    this.bic.physics.wakeAll();
     /** Resize viewport to avoid space where scrollbars would have been previously */
     game.viewRef.onWindowResize(undefined);
     game.viewRef.startRendering();
