@@ -31,7 +31,7 @@ export interface CreateRoomOpts {
 })
 export class ColyseusClientService {
   /** Constants and development parameters */
-  private readonly VERBOSE_CALLBACK_LOGGING = false;
+  private readonly VERBOSE_CALLBACK_LOGGING = true;
   private readonly BACKEND_WS_TARGET = environment.wsEndpoint;
   private readonly CLIENT: Client = new Client(this.BACKEND_WS_TARGET);
 
