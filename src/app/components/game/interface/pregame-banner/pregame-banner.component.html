@@ -4,7 +4,7 @@
 
     <div class="banner-box" [@readyNotReadyBorder]="amIReady ? 'ready' : 'notReady'">
       <div class="banner-headline-box">
-        <div class="headline-text">Waiting for players</div>
+        <div class="headline-text">Warte auf Spieler</div>
         <div class="ready-count">
             <div [ngClass]="{'slight-green': amIReady, 'slight-red': !amIReady}" >
               {{countReadyPlayers()}}/{{players.length}}
@@ -16,7 +16,7 @@
         </div>
         <div class="ready-button">
             <button (click)="readyEvent()" [ngClass]="{'button-red': !amIReady}">
-              {{amIReady ? 'Not yet!' : 'Ready?'}}
+              {{amIReady ? 'Not yet!' : 'Bereit?'}}
             </button>
         </div>
       </div>

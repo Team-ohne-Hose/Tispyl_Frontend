@@ -4,9 +4,9 @@
     <div class="bounding-box">
       <div class="naming">
         <div><span class="heading">{{game.metadata.roomName || "undefined"}}</span><span
-          class="trailing">{{languageObjects.gamesListBy || "undefined"}} {{game.metadata.author ||
+          class="trailing">von: {{game.metadata.author ||
         "undefined"}}</span></div>
-        <div class="date">{{languageObjects.gamesListCreateAt || "undefined"}} {{(game.createdAt | date:' h:mm a') ||
+        <div class="date">Erstellt um: {{(game.createdAt | date:' h:mm a') ||
         "undefined"}}</div>
       </div>
       <div [ngClass]="isActive ? 'count blue-text' : 'count'">
