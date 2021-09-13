@@ -9,12 +9,12 @@
           </div>
 
           <div class="static">
-            <div *ngFor="let s of staticRules" class="rule disable-select">
+            <div *ngFor="let sr of staticRules" class="rule disable-select">
               <div class="rule-icon">
-                <i class="{{s.icon}}"></i>
+                <i class="{{sr.icon}}"></i>
               </div>
               <div class="rule-text">
-                <span class="text">{{s.text}}</span>
+                <span class="text">{{sr.text}}</span>
               </div>
             </div>
           </div>
@@ -43,7 +43,7 @@
     <div class="gold-border">
       <div class="paper-body">
         <div class="input-section">
-          <textarea #textInput placeholder="Neue Regel schreiben ..." rows="4"></textarea>
+          <textarea #textInput placeholder="Neue Regel definieren ..." rows="4"></textarea>
           <div class="vertical-seperator"></div>
           <div (click)="addRule(textInput)" class="add-button"><i class="fas fa-share"></i></div>
         </div>
