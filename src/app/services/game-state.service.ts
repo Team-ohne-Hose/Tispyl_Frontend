@@ -34,7 +34,7 @@ export class GameStateService {
   currentHostLogin$: Subject<string> = new Subject<string>();
   activePlayerLogin$: ReplaySubject<string> = new ReplaySubject<string>(1);
   activeAction$: ReplaySubject<string> = new ReplaySubject<string>(1);
-  playerMap$: BehaviorSubject<Map<string, Player>> = new BehaviorSubject<Map<string, Player>>(new Map());
+  playerMap$: ReplaySubject<Map<string, Player>> = new ReplaySubject<Map<string, Player>>(1);
   // TODO: This is a one to one replacement for the old PlayerListUpdateCallback. This might be suboptimal. Please check actual calls to it.
   playerListChanges$: Subject<Player> = new Subject<Player>();
   isTurnOrderReversed$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -111,6 +111,7 @@ export class GameStateService {
     /** the initial values for all access values should be set once here. */ // TODO: Confirm that all needed values are set
     this.physicState$.next(state.physicsState);
     state.physicsState.objects.forEach((o: PhysicsObjectState) => this.physicsObjectMoved$.next(o));
+    this.playerMap$.next(state.playerList);
     this.boardLayoutState$.next(state.boardLayout);
     this.boardLayoutState$.complete();
     this.isRoomDataAvailable$.next(true);
@@ -426,24 +427,32 @@ export class GameStateService {
       const addPlayerCbs = (p: Player, key: string) => {
         p.onChange = ((changes: DataChange[]) => {
           this._callPlayerListUpdate(p, key);
-          this.playerMap$.next(this.playerMap$.value.set(key, p));
+          this.playerMap$.pipe(take(1)).subscribe((m: Map<string, Player>) => {
+            m.set(key, p);
+            this.playerMap$.next(m);
+          });
         }).bind(this);
       };
+
       room.state.playerList.onAdd = (p: Player, key: string) => {
         addPlayerCbs(p, key);
         this._callPlayerListUpdate(p, key);
-        this.playerMap$.next(this.playerMap$.value.set(key, p));
+        this.playerMap$.pipe(take(1)).subscribe((m: Map<string, Player>) => {
+          m.set(key, p);
+          this.playerMap$.next(m);
+        });
       };
+
       room.state.playerList.forEach((p: Player, key: string) => {
-        addPlayerCbs(p, key);
         this._callPlayerListUpdate(p, key);
       });
+
       room.state.playerList.onRemove = (p: Player, key: string) => {
-        addPlayerCbs(p, key);
         this._callPlayerListUpdate(p, key);
-        const m = this.playerMap$.value;
-        m.delete(key);
-        this.playerMap$.next(m);
+        this.playerMap$.pipe(take(1)).subscribe((m: Map<string, Player>) => {
+          m.delete(key);
+          this.playerMap$.next(m);
+        });
       };
     }
   }
