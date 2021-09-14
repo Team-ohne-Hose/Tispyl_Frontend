@@ -85,6 +85,7 @@ export class ColyseusClientService {
 
   createRoom(opts: CreateRoomOpts): void {
     if (opts.roomName !== undefined) {
+      console.info('Creating room with settings:', opts);
       this.CLIENT.create('game', opts).then((suc) => {
         this.setActiveRoom(suc);
         this.updateAvailableRooms();
