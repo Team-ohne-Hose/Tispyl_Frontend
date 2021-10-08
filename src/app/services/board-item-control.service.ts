@@ -43,20 +43,16 @@ export class BoardItemControlService {
     this.physics = new PhysicsCommands(this);
 
     this.allFigures = [];
+
     this.physics.addPlayer = ((mesh: THREE.Object3D, name: string) => {
       this.allFigures.push({ mesh: mesh, labelSprite: undefined, name: name, isHidden: false });
       console.debug('adding to BoardItemManagement´s list of figures', name, mesh, this.allFigures);
     }).bind(this);
-    this.physics.isPlayerCached = ((physId: number) => {
-      return this.allFigures.some((val: FigureItem, index: number) => {
-        return val.mesh.userData.physicsId === physId;
-      });
-    }).bind(this);
 
     /** This should be cleaned and clarified */
     this.gameState.playerListChanges$.subscribe((p: Player) => {
-      const figureItem = this.allFigures.find((val: FigureItem, index: number) => {
-        return val.mesh.userData.physicsId === p.figureId;
+      const figureItem = this.allFigures.find((item: FigureItem, index: number) => {
+        return item.mesh.userData.physicsId === p.figureId;
       });
 
       if (figureItem === undefined) {
