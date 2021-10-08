@@ -1,0 +1,13 @@
+<p>shortcut-overlay works!</p>
+
+<div *ngFor="let s in shortcuts">
+    <div class="shortcut keyShape" *ngIf="s.type === ShortcutType.key">
+        {{s.name}}
+    </div>
+    <div class="shortcut mouseButtonShape" *ngIf="s.type === ShortcutType.lmb || s.type === ShortcutType.rmb">
+        {{s.name}}
+    </div>
+    <div class="shortcut mouseWheelShape" *ngIf="s.type === ShortcutType.mousewheel">
+        {{s.name}}
+    </div>
+</div>

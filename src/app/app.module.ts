@@ -74,6 +74,7 @@ import { AppToastsComponent } from './components/toast/toast.component';
 import { RomanNumeralsPipe } from './components/framework/roman-numerals.pipe';
 import { CustomPopoverComponent } from './components/framework/custom-popover/custom-popover.component';
 import { PrescriptPipe } from './components/game/interface/connected-players/prescript.pipe';
+import { ShortcutOverlayComponent } from './components/game/interface/shortcut-overlay/shortcut-overlay.component';
 
 const appRoutes: Routes = [
   {
@@ -158,11 +159,15 @@ const appRoutes: Routes = [
     MdContentDirective,
     MdContentListComponent,
     ResolveToHeadlinePipe,
+<<<<<<< HEAD
     ContactComponent,
     AppToastsComponent,
     RomanNumeralsPipe,
     CustomPopoverComponent,
     PrescriptPipe,
+=======
+    ShortcutOverlayComponent,
+>>>>>>> d5863cb (add initial structure)
   ],
   imports: [
     RouterModule.forRoot(
