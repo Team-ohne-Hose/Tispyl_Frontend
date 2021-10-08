@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ColyseusClientService, MessageCallback } from './colyseus-client.service';
 import { Room } from 'colyseus.js';
-import { DataChange, MapSchema, ArraySchema } from '@colyseus/schema';
+import { ArraySchema, DataChange, MapSchema } from '@colyseus/schema';
 import { GameState } from '../model/state/GameState';
 import { Player } from '../model/state/Player';
 import { PhysicsObjectState, PhysicsState } from '../model/state/PhysicsState';
@@ -424,37 +424,49 @@ export class GameStateService {
     if (room.state.playerList === undefined) {
       console.warn('GameStateService Callbacks couldnt be attached, Playerlist was undefined');
     } else {
-      const addPlayerCbs = (p: Player, key: string) => {
-        p.onChange = ((changes: DataChange[]) => {
-          this._callPlayerListUpdate(p, key);
-          this.playerMap$.pipe(take(1)).subscribe((m: Map<string, Player>) => {
-            m.set(key, p);
-            this.playerMap$.next(m);
-          });
-        }).bind(this);
-      };
+      /** Attach onChange call back to the initial player list */
+      this.playerMap$.pipe(take(1)).subscribe((m: Map<string, Player>) => {
+        m.forEach((p: Player, key: string) => {
+          this._attachPlayerChangeCallback(p, key);
+        });
+      });
 
+      /** Attach onAdd call back and onChange to all future players */
       room.state.playerList.onAdd = (p: Player, key: string) => {
-        addPlayerCbs(p, key);
-        this._callPlayerListUpdate(p, key);
+        this._attachPlayerChangeCallback(p, key);
+        this.playerListChanges$.next(p);
         this.playerMap$.pipe(take(1)).subscribe((m: Map<string, Player>) => {
           m.set(key, p);
           this.playerMap$.next(m);
         });
       };
 
-      room.state.playerList.forEach((p: Player, key: string) => {
-        this._callPlayerListUpdate(p, key);
-      });
+      /** Attach onChange on the playerList object */
+      room.state.playerList.onChange = (p: Player, key: string) => {
+        this.playerListChanges$.next(p);
+      };
 
+      /** Attach onRemove on the playerList object */
       room.state.playerList.onRemove = (p: Player, key: string) => {
-        this._callPlayerListUpdate(p, key);
+        this.playerListChanges$.next(p);
         this.playerMap$.pipe(take(1)).subscribe((m: Map<string, Player>) => {
           m.delete(key);
           this.playerMap$.next(m);
         });
       };
     }
+  }
+
+  private _attachPlayerChangeCallback(p: Player, key: string): void {
+    const playerMapRef = this.playerMap$;
+    const playerListUpdateRef = this.playerListChanges$;
+    p.onChange = function (changes: DataChange[]) {
+      playerListUpdateRef.next(p);
+      playerMapRef.pipe(take(1)).subscribe((m: Map<string, Player>) => {
+        m.set(key, p);
+        playerMapRef.next(m);
+      });
+    };
   }
 
   private _attachPhysicsMovedCallbacks(room: Room<GameState>): void {

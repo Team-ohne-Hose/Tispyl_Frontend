@@ -43,7 +43,6 @@ export class PhysicsCommands {
 
   addInteractable: (obj: THREE.Object3D) => void;
   addPlayer: (mesh: THREE.Object3D, name: string) => void;
-  isPlayerCached: (physId: number) => boolean;
 
   constructor(private bic: BoardItemControlService) {
     this.bic.gameState.physicsObjectMoved$.subscribe((item: PhysicsObjectState) => {
