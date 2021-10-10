@@ -14,10 +14,3 @@
 .debug-buttons button {
   margin-left: 1em;
 }
-
-app-shortcut-overlay {
-  display: block;
-  /*position: absolute;
-  bottom: 0.3vh;
-  left: 22.3vw;*/
-}
