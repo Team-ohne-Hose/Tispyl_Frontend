@@ -159,15 +159,12 @@ const appRoutes: Routes = [
     MdContentDirective,
     MdContentListComponent,
     ResolveToHeadlinePipe,
-<<<<<<< HEAD
     ContactComponent,
     AppToastsComponent,
     RomanNumeralsPipe,
     CustomPopoverComponent,
     PrescriptPipe,
-=======
     ShortcutOverlayComponent,
->>>>>>> d5863cb (add initial structure)
   ],
   imports: [
     RouterModule.forRoot(

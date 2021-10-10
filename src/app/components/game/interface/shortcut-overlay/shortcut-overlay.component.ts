@@ -1,14 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 
 export enum ShortcutType {
-  key = 0,
+  key_tab = 0,
   lmb,
   rmb,
   mousewheel,
 }
 interface Shortcut {
   type: ShortcutType;
-  name: string;
   description: string;
 }
 
@@ -21,24 +20,20 @@ export class ShortcutOverlayComponent implements OnInit {
   ShortcutType = ShortcutType;
   shortcuts: Shortcut[] = [
     {
-      type: ShortcutType.key,
-      name: 'tab',
-      description: 'show names of players',
+      type: ShortcutType.key_tab,
+      description: 'Spielernamen anzeigen',
     },
     {
       type: ShortcutType.lmb,
-      name: 'click',
-      description: 'pick up/drop off a figure',
+      description: 'Spielfigur in die Hand nehmen/ablegen',
     },
     {
       type: ShortcutType.rmb,
-      name: 'hold',
-      description: 'move and rotate view',
+      description: 'Kamera bewegen',
     },
     {
       type: ShortcutType.mousewheel,
-      name: '',
-      description: 'get closer to the board',
+      description: 'Zoomen',
     },
   ];
 

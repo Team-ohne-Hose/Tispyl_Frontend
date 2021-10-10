@@ -1,12 +1,51 @@
-.shortcut {
-  background: rgba(1, 1, 1, 0.5);
-  border-radius: 4px;
-  border: 2px solid whitesmoke;
+#shortcut-container {
+  display: grid;
+  grid-template-columns: auto fit-content(1rem);
+  grid-column-gap: 4px;
+  grid-row-gap: 2px;
+  width: fit-content;
+  height: fit-content;
+  background: rgba(5, 5, 5, 0.7);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 1));
 }
 
-.shortcut.keyShape {
+#shortcut-container .shortcutIcon {
+  width: fit-content;
+  height: fit-content;
+  grid-column: 2;
+  justify-self: center;
+  align-self: center;
 }
-.shortcut.mouseButtonShape {
+#shortcut-container .shortcutLabel {
+  grid-column: 1;
+  align-self: center;
+  justify-self: right;
+  padding: 3px;
 }
-.shortcut.mouseWheelShape {
+.shortcutIcon svg {
+  z-index: 90;
+  height: 2rem;
+}
+.shortcutIcon svg path {
+  fill: whitesmoke;
+  stroke: black;
+  stroke-width: 2;
+  filter: drop-shadow(0px 3px 3px rgba(0, 0, 0, 0.4));
+}
+.shortcutIcon svg .mouseSVG_WHEEL {
+  fill: rgba(213, 15, 15, 0.8);
+  stroke: black;
+}
+.mouseButtonShapeLMB svg .mouseSVG_LMB {
+  fill: rgba(213, 15, 15, 0.8);
+  stroke: black;
+}
+.mouseButtonShapeRMB svg .mouseSVG_RMB {
+  fill: rgba(213, 15, 15, 0.8);
+  stroke: black;
+}
+.tabTextSVG {
+  font: bold 28px sans-serif;
 }
