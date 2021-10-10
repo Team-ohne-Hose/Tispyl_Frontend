@@ -1,0 +1,58 @@
+#intro-container {
+  background: var(--ingame-menu-color-bg);
+  position: absolute;
+  top: 12vh;
+  bottom: 14vh;
+  left: 12vw;
+  right: 16vw;
+
+  padding: 2.5rem 1rem 1rem 2rem;
+  filter: drop-shadow(3px 3px 8px rgb(0, 0, 0));
+  pointer-events: all;
+}
+#text-container {
+  height: 100%;
+  overflow-y: scroll;
+  padding: 0px 1rem 0px 4px;
+}
+#text-container h2 {
+  font-family: 'Agency FB';
+  font-weight: bold;
+}
+#text-container h1 {
+  font-family: 'Agency FB';
+  font-weight: bolder;
+}
+#text-container p {
+  padding-left: 1rem;
+}
+
+#close-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.7rem;
+  font-size: 24px;
+}
+
+/* Let's get the scrollbar-party started */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  background: rgba(255, 0, 0, 0.8);
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+}
+::-webkit-scrollbar-thumb:window-inactive {
+  background: rgba(255, 0, 0, 0.4);
+}
