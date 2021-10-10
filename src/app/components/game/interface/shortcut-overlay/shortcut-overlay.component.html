@@ -1,12 +1,20 @@
 <div id="shortcut-container">
-    <ng-container *ngFor="let s of shortcuts">
-        <div class="shortcutLabel" *ngIf="s.type === ShortcutType.key_tab">
-            {{s.description}}
+    <div class="decor-caret-container">
+        <div class="decor-caret" (click)="toggleVisibility()">
+            <i *ngIf="!visible" class="fas fa-caret-up"></i>
+            <i *ngIf="visible"  class="fas fa-caret-down"></i>
+            Steuerung
         </div>
-        <div class="shortcutIcon keyShape" *ngIf="s.type === ShortcutType.key_tab">
-            <svg viewBox="0 0 100 60">
-                <path stroke="4px"
-                      d="M 10,5
+    </div>
+    <div id="shortcut-container-grid" *ngIf="visible">
+        <ng-container *ngFor="let s of shortcuts">
+            <div class="shortcutLabel" *ngIf="s.type === ShortcutType.key_tab">
+                {{s.description}}
+            </div>
+            <div class="shortcutIcon keyShape" *ngIf="s.type === ShortcutType.key_tab">
+                <svg viewBox="0 0 100 60">
+                    <path stroke="4px"
+                          d="M 10,5
                         L 90,5
                         A 5,5 0,0,1 95,10
                         L 95,50
@@ -16,8 +24,8 @@
                         L 5,10
                         A 5,5 0,0,1 10,5
                         z"/>
-                <path stroke-width="12px" stroke-linecap="round" fill="none"
-                      d="M 68,41
+                    <path stroke-width="12px" stroke-linecap="round" fill="none"
+                          d="M 68,41
                       L 82,41
                       M 77,46
                       L 82,41
@@ -25,47 +33,49 @@
                       L 82,41
                       M 85,35
                       L 85,47"/>
-                <text x="11" y="37" class="tabTextSVG">Tab</text>
-            </svg>
-        </div>
+                    <text x="11" y="37" class="tabTextSVG">Tab</text>
+                </svg>
+            </div>
 
-        <div class="shortcutLabel"
-             *ngIf="s.type === ShortcutType.lmb || s.type === ShortcutType.rmb || s.type === ShortcutType.mousewheel">
-            {{s.description}}
-        </div>
-        <div class="shortcutIcon"
-             *ngIf="s.type === ShortcutType.lmb || s.type === ShortcutType.rmb || s.type === ShortcutType.mousewheel"
-             [class.mouseButtonShapeLMB]="s.type === ShortcutType.lmb"
-             [class.mouseButtonShapeRMB]="s.type === ShortcutType.rmb"
-             [class.mouseButtonShapeWHEEL]="s.type === ShortcutType.mousewheel">
-            <svg viewBox="0 0 65 100">
-                <path class="mouseSVG_LMB"
-                    d="M 5,40
+            <div class="shortcutLabel"
+                 *ngIf="s.type === ShortcutType.lmb || s.type === ShortcutType.rmb || s.type === ShortcutType.mousewheel">
+                {{s.description}}
+            </div>
+            <div class="shortcutIcon"
+                 *ngIf="s.type === ShortcutType.lmb || s.type === ShortcutType.rmb || s.type === ShortcutType.mousewheel"
+                 [class.mouseButtonShapeLMB]="s.type === ShortcutType.lmb"
+                 [class.mouseButtonShapeRMB]="s.type === ShortcutType.rmb"
+                 [class.mouseButtonShapeWHEEL]="s.type === ShortcutType.mousewheel">
+                <svg viewBox="0 0 65 100">
+                    <path class="mouseSVG_LMB"
+                          d="M 5,40
                     L 5,30
                     A 25,25 0,0,1 30,5
                     L 30,40
                     z" />
-                <path class="mouseSVG_RMB"
-                    d="M 60,40
+                    <path class="mouseSVG_RMB"
+                          d="M 60,40
                     L 60,30
                     A 25,25 0,0,0 35,5
                     L 35,40
                     z" />
-                <path class="mouseSVG_BODY"
-                    d="M 5,45
+                    <path class="mouseSVG_BODY"
+                          d="M 5,45
                     L 5,65
                     A 25,25 0,0,0 30,90
                     L 35,90
                     A 25,25 0,0,0 60,65
                     L 60,45
                     z" />
-                <path class="mouseSVG_WHEEL" *ngIf="s.type === ShortcutType.mousewheel"
-                    d="M 25,22
+                    <path class="mouseSVG_WHEEL" *ngIf="s.type === ShortcutType.mousewheel"
+                          d="M 25,22
                     A 7.5,7.5 0,0,1 40,22
                     L 40,41
                     A 7.5,7.5 0,0,1 25,41
                     z"  />
-            </svg>
-        </div>
-    </ng-container>
+                </svg>
+            </div>
+        </ng-container>
+    </div>
 </div>
+

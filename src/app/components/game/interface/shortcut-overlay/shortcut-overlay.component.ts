@@ -25,7 +25,7 @@ export class ShortcutOverlayComponent implements OnInit {
     },
     {
       type: ShortcutType.lmb,
-      description: 'Spielfigur in die Hand nehmen/ablegen',
+      description: 'Spielfigur aufnehmen/ablegen',
     },
     {
       type: ShortcutType.rmb,
@@ -36,6 +36,12 @@ export class ShortcutOverlayComponent implements OnInit {
       description: 'Zoomen',
     },
   ];
+
+  visible = true;
+
+  toggleVisibility(): void {
+    this.visible = !this.visible;
+  }
 
   ngOnInit(): void {
     return;

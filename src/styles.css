@@ -23,6 +23,7 @@
 }
 
 body {
+  --ingame-menu-color-bg: rgba(75, 75, 75, 0.8);
   --golden-radial-bg: radial-gradient(
       ellipse farthest-corner at left bottom,
       #fedb37 0%,
@@ -307,5 +308,3 @@ td {
   margin: 0.5em;
   z-index: 1200;
 }
-
-
