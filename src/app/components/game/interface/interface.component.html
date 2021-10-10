@@ -15,9 +15,12 @@
   <app-turn-overlay #turnOverlay
                     [currentPlayerName]="gameState.getCurrentPlayerDisplayName()" [ownTurn]="isMyTurn$ | async">
   </app-turn-overlay>
-  <app-tile-overlay #tileOverlay ></app-tile-overlay>
   <app-items-interface></app-items-interface>
-  <div class="attribution">
-    <a (click)="showAttribution()" href="javascript:;">Attribution</a>
+  <div id="othermenus-container">
+    <div class="attribution">
+      <a (click)="showAttribution()" href="javascript:;">Attribution</a>
+    </div>
+    <app-tile-overlay #tileOverlay ></app-tile-overlay>
+    <app-shortcut-overlay></app-shortcut-overlay>
   </div>
 </div>

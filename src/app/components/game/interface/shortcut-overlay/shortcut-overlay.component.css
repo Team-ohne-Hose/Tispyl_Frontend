@@ -1,7 +1,9 @@
 #shortcut-container {
-  position: absolute;
+  /*position: absolute;
   bottom: 0;
-  left: 33vw;
+  left: 33vw;*/
+  justify-self: center;
+  align-self: end;
 
   display: flex;
   flex-direction: column;
