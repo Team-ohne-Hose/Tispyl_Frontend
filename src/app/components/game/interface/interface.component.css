@@ -50,15 +50,22 @@ nav a:visited {
 }
 app-connected-players {
   grid-area: player_display;
+  justify-self: start;
+  align-self: start;
 }
 app-state-display {
   grid-area: game_state;
+  justify-self: center;
+  align-self: start;
 }
 app-menu-bar {
   grid-area: sidebar;
+  justify-self: end;
 }
 app-items-interface {
   grid-area: items;
+  justify-self: center;
+  align-self: end;
 }
 #othermenus-container {
   grid-area: other_menus;
@@ -71,6 +78,8 @@ app-items-interface {
 }
 app-tile-overlay {
   grid-area: tile_overlay;
+  justify-self: center;
+  align-self: end;
 }
 app-shortcut-overlay {
   grid-area: shortcuts;
@@ -81,9 +90,8 @@ app-shortcut-overlay {
 .attribution {
   grid-area: attribution;
   pointer-events: visibleFill;
-  position: absolute;
-  left: 3px;
-  bottom: 0px;
+  justify-self: start;
+  align-self: end;
   color: whitesmoke !important;
 }
 

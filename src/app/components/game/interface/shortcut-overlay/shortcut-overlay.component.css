@@ -8,6 +8,8 @@
   display: flex;
   flex-direction: column;
   pointer-events: visibleFill;
+  align-items: center;
+  filter: drop-shadow(3px 3px 8px rgb(0, 0, 0));
 }
 .decor-caret-container {
   width: 8rem;
@@ -55,6 +57,7 @@
   grid-column: 1;
   align-self: center;
   justify-self: right;
+  text-align: right;
   padding: 3px;
 }
 .shortcutIcon svg {
