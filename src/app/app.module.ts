@@ -74,6 +74,8 @@ import { AppToastsComponent } from './components/toast/toast.component';
 import { RomanNumeralsPipe } from './components/framework/roman-numerals.pipe';
 import { CustomPopoverComponent } from './components/framework/custom-popover/custom-popover.component';
 import { PrescriptPipe } from './components/game/interface/connected-players/prescript.pipe';
+import { ShortcutOverlayComponent } from './components/game/interface/shortcut-overlay/shortcut-overlay.component';
+import { IntroductionComponent } from './components/game/interface/introduction/introduction.component';
 
 const appRoutes: Routes = [
   {
@@ -163,6 +165,8 @@ const appRoutes: Routes = [
     RomanNumeralsPipe,
     CustomPopoverComponent,
     PrescriptPipe,
+    ShortcutOverlayComponent,
+    IntroductionComponent,
   ],
   imports: [
     RouterModule.forRoot(

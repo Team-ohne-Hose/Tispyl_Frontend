@@ -1,6 +1,4 @@
-
 .outer-register-bounds {
-
   pointer-events: visibleFill;
 
   --register-background: rgba(60, 60, 60, 0.8);
@@ -10,9 +8,7 @@
   background-color: transparent;
   display: flex;
   flex-direction: row;
-  position: fixed;
   height: 100vh;
-  right: 0;
   z-index: 30;
 }
 
@@ -51,7 +47,7 @@
 
 .register-edge {
   min-width: 0.2rem;
-  background-color: var(--register-unselected-background)
+  background-color: var(--register-unselected-background);
 }
 
 .register-edge.selected {

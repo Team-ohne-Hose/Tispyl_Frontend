@@ -1,0 +1,87 @@
+#shortcut-container {
+  /*position: absolute;
+  bottom: 0;
+  left: 33vw;*/
+  justify-self: center;
+  align-self: end;
+
+  display: flex;
+  flex-direction: column;
+  pointer-events: visibleFill;
+  align-items: center;
+  filter: drop-shadow(3px 3px 8px rgb(0, 0, 0));
+}
+.decor-caret-container {
+  width: 8rem;
+  height: 1.5rem;
+
+  transition: 1s;
+}
+.decor-caret {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+
+  background: var(--ingame-menu-color-bg);
+  color: #a8a8a8;
+  clip-path: polygon(12% 0%, 88% 0%, 100% 100%, 0% 100%);
+  user-select: none;
+}
+.decor-caret:hover {
+  color: #dedede;
+}
+
+#shortcut-container-grid {
+  display: grid;
+  grid-template-columns: auto fit-content(1rem);
+  grid-column-gap: 4px;
+  grid-row-gap: 2px;
+  width: fit-content;
+  height: fit-content;
+  background: var(--ingame-menu-color-bg);
+  padding: 0.5rem;
+  user-select: none;
+}
+
+#shortcut-container-grid .shortcutIcon {
+  width: fit-content;
+  height: fit-content;
+  grid-column: 2;
+  justify-self: center;
+  align-self: center;
+}
+#shortcut-container-grid .shortcutLabel {
+  grid-column: 1;
+  align-self: center;
+  justify-self: right;
+  text-align: right;
+  padding: 3px;
+}
+.shortcutIcon svg {
+  z-index: 90;
+  height: 2rem;
+}
+.shortcutIcon svg path {
+  fill: whitesmoke;
+  stroke: black;
+  stroke-width: 2;
+  filter: drop-shadow(0px 3px 3px rgba(0, 0, 0, 0.4));
+}
+.shortcutIcon svg .mouseSVG_WHEEL {
+  fill: rgba(213, 15, 15, 0.8);
+  stroke: black;
+}
+.mouseButtonShapeLMB svg .mouseSVG_LMB {
+  fill: rgba(213, 15, 15, 0.8);
+  stroke: black;
+}
+.mouseButtonShapeRMB svg .mouseSVG_RMB {
+  fill: rgba(213, 15, 15, 0.8);
+  stroke: black;
+}
+.tabTextSVG {
+  font: bold 28px sans-serif;
+}
