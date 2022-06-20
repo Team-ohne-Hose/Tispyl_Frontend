@@ -283,7 +283,9 @@ export class CommandService {
             save(new Blob([output], { type: 'text/plain' }), 'scene.gltf');
           }
         },
-        {}
+        function (error) {
+          console.log(error);
+        }
       );
     }
   }
