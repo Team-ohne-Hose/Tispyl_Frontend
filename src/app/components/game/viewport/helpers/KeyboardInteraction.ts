@@ -1,5 +1,4 @@
 import { BoardItemControlService } from 'src/app/services/board-item-control.service';
-import { Camera } from 'three';
 import { GameBoardOrbitControl } from './GameBoardOrbitControl';
 
 export enum KEY_EVENT {
@@ -26,6 +25,7 @@ export class KeyboardInteraction {
   keyDown(event: KeyboardEvent): void {
     switch (event.key) {
       case KEY_EVENT.TAB:
+        event.preventDefault();
         this.bic.hideNameTags(false);
         break;
       case KEY_EVENT.KEY_W:
