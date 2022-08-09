@@ -17,18 +17,13 @@ let timerVerticalKey = undefined;
 let timerHorizontalKey = undefined;
 
 export class KeyboardInteraction {
-  camera: Camera;
   cameraControls: GameBoardOrbitControl;
-  isFocusTextInput = false;
 
   constructor(private bic: BoardItemControlService, cameraControls: GameBoardOrbitControl) {
-    this.camera = bic.camera;
     this.cameraControls = cameraControls;
   }
 
   keyDown(event: KeyboardEvent): void {
-    if (this.isFocusTextInput) return;
-
     switch (event.key) {
       case KEY_EVENT.TAB:
         this.bic.hideNameTags(false);
@@ -93,8 +88,6 @@ export class KeyboardInteraction {
   }
 
   keyUp(event: KeyboardEvent): void {
-    if (this.isFocusTextInput) return;
-
     switch (event.key) {
       case KEY_EVENT.TAB:
         this.bic.hideNameTags(true);
