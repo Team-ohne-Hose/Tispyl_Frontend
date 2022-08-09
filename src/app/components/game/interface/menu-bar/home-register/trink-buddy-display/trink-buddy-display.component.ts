@@ -5,6 +5,19 @@ import { GameActionType, MessageType } from '../../../../../../model/WsData';
 import { Link } from '../../../../../../model/state/Link';
 import { ArraySchema } from '@colyseus/schema';
 
+export enum Colors {
+  Orange = '#ffa822',
+  DarkBlue = '#134e6f',
+  Red = '#ff6150',
+  WTFBlue = '#1ac0c6',
+  Grey = '#dee0e6',
+  LightGray = 'lightgray',
+  Black = 'black',
+  White = 'white',
+}
+
+export const ColorPalette = [Colors.Orange, Colors.DarkBlue, Colors.Red, Colors.WTFBlue, Colors.Grey];
+
 @Component({
   selector: 'app-trink-buddy-display',
   templateUrl: './trink-buddy-display.component.html',
@@ -50,7 +63,6 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
     const target = String(to.value).trim();
     const validation = this.validateInput(from, to);
     if (validation.isFromValid && validation.isToValid && !validation.isAlreadyLinked) {
-      console.log(source, target, this.gameState.getState().drinkBuddyLinks);
       this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
         type: MessageType.GAME_MESSAGE,
         action: GameActionType.addDrinkbuddies,
@@ -116,7 +128,7 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
     this.svg = d3
       .select('#chart')
       .append('svg')
-      .style('stroke', 'grey')
+      .style('stroke', Colors.Grey)
       .attr('width', chartWidth)
       .attr('height', chartHeight);
 
@@ -132,24 +144,29 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
       .attr('orient', 'auto')
       .append('path')
       .attr('d', 'M 0 0 8 4 0 8 2 4')
-      .style('fill', 'grey');
+      .style('stroke', Colors.White)
+      .style('opacity', '0.9')
+      .style('fill', Colors.White);
 
     // Define look and feel of nodes, labels and lines
+
     const link = this.svg
       .append('g')
       .attr('class', 'links')
-      .attr('stroke', 'grey')
-      .attr('stroke-opacity', 0.6)
+      .attr('stroke-opacity', 1)
       .selectAll('line')
       .data(this.links)
       .join('line')
+      .attr('stroke', (d) => {
+        return ColorPalette[Math.floor(Math.random() * ColorPalette.length)];
+      })
       .attr('stroke-width', 1)
       .attr('marker-end', 'url(#triangle)');
 
     const node = this.svg
       .append('g')
       .attr('class', 'node-group')
-      .attr('stroke', 'black')
+      .attr('stroke', Colors.Black)
       .attr('stroke-width', 1)
       .selectAll('circle')
       .data(this.nodes)
@@ -163,11 +180,12 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
       .attr('stroke', 'none')
       .attr('font-size', 12)
       .attr('text-anchor', 'middle')
-      .attr('fill', 'grey')
+      .attr('fill', Colors.Grey)
       .attr('pointer-events', 'none')
       .selectAll('node-group')
       .data(this.nodes)
       .join('text')
+      .attr('fill', Colors.LightGray)
       .text((d) => d.id);
 
     // Define simulation update function
