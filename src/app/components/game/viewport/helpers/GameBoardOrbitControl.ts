@@ -628,4 +628,20 @@ export class GameBoardOrbitControl extends EventDispatcher {
   getAzimuthalAngle(): number {
     return this.m.camSpherical.theta;
   }
+
+  public moveForward(): void {
+    this.rotateUp(Math.PI * 0.015);
+  }
+
+  public moveBackward(): void {
+    this.rotateUp(Math.PI * -0.015);
+  }
+
+  public moveLeft(): void {
+    this.rotateLeft(Math.PI * 0.015);
+  }
+
+  public moveRight(): void {
+    this.rotateLeft(Math.PI * -0.015);
+  }
 }
