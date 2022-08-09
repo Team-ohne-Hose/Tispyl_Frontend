@@ -143,20 +143,6 @@ export class ViewportComponent implements AfterViewInit {
     o.next([4, 4]);
   }
 
-  keyDown(event: KeyboardEvent): void {
-    if (event.key === 'Tab') {
-      this.bic.hideNameTags(false);
-      event.preventDefault();
-      event.stopPropagation();
-    }
-  }
-
-  keyUp(event: KeyboardEvent): void {
-    if (event.key === 'Tab') {
-      this.bic.hideNameTags(true);
-    }
-  }
-
   onWindowResize(_: Event): void {
     const w = this.view.nativeElement.offsetWidth;
     const h = this.view.nativeElement.offsetHeight;
