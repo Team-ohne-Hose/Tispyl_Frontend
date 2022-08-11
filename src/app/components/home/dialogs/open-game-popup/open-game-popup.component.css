@@ -49,6 +49,7 @@
 .deck-info-tag-container span {
   margin: 1px;
   font-size: medium;
+  width: unset;
 }
 .deck-list {
   overflow-y: scroll;
