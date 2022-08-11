@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { MarkdownContentService, SourceDirectory } from '../../../../services/markdown-content.service';
 import { DomSanitizer } from '@angular/platform-browser';
-import { MarkdownToHtmlPipe } from 'markdown-to-html-pipe/src/markdown-to-html.pipe';
 
 @Component({
   selector: 'app-md-content',
@@ -21,8 +20,7 @@ export class MdContentComponent {
   load(dir: SourceDirectory, fileName: string): void {
     this.mcs.getMarkdownFor(dir, fileName).subscribe(
       (md: string) => {
-        const p = new MarkdownToHtmlPipe();
-        this.mdText = this.sanitizer.bypassSecurityTrustHtml(p.transform(md));
+        this.mdText = this.sanitizer.bypassSecurityTrustHtml(md);
         this.anchorTag = fileName;
       },
       (error) => {
