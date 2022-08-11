@@ -6,7 +6,7 @@ import { JwtTokenService } from 'src/app/services/jwttoken.service';
 import { TranslationService } from '../../../services/translation/translation.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RegisterOptions } from '../../../model/RegisterOptions';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, Validators } from '@angular/forms';
 import { EqualityValidator } from './EqualityValidator';
 
 @Component({
@@ -28,16 +28,16 @@ export class LoginComponent implements OnInit {
   isRequesting = false;
 
   /** Registration form */
-  registration = new FormGroup(
+  registration = new UntypedFormGroup(
     {
-      new_login_name: new FormControl('', Validators.required),
-      new_display_name: new FormControl('', Validators.required),
-      new_password_plain0: new FormControl('', [
+      new_login_name: new UntypedFormControl('', Validators.required),
+      new_display_name: new UntypedFormControl('', Validators.required),
+      new_password_plain0: new UntypedFormControl('', [
         Validators.required,
         Validators.minLength(4),
         Validators.maxLength(64),
       ]),
-      new_password_plain1: new FormControl('', [
+      new_password_plain1: new UntypedFormControl('', [
         Validators.required,
         Validators.minLength(4),
         Validators.maxLength(64),

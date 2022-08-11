@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import * as hash from 'object-hash';
 import { BasicUser, UserService } from 'src/app/services/user.service';
 import { AppToastService } from 'src/app/services/toast.service';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { EqualityValidator } from '../../login/EqualityValidator';
 
 export class EditUserData {
@@ -33,7 +33,7 @@ export class EditProfileComponent implements OnInit {
   newPasswordConfirmed = '';
 
   // edit form
-  edit: FormGroup;
+  edit: UntypedFormGroup;
 
   onSubmit(): void {
     const editUser: EditUserData = new EditUserData();
@@ -55,16 +55,16 @@ export class EditProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.edit = new FormGroup(
+    this.edit = new UntypedFormGroup(
       {
-        newUsername: new FormControl(this.currentUser.display_name, [
+        newUsername: new UntypedFormControl(this.currentUser.display_name, [
           Validators.required,
           Validators.minLength(3),
           Validators.maxLength(48),
         ]),
-        currentPassword: new FormControl('', [Validators.minLength(8), Validators.required]),
-        newPassword: new FormControl('', [Validators.minLength(8), Validators.maxLength(64)]),
-        newPasswordConfirmed: new FormControl('', [Validators.minLength(8), Validators.maxLength(64)]),
+        currentPassword: new UntypedFormControl('', [Validators.minLength(8), Validators.required]),
+        newPassword: new UntypedFormControl('', [Validators.minLength(8), Validators.maxLength(64)]),
+        newPasswordConfirmed: new UntypedFormControl('', [Validators.minLength(8), Validators.maxLength(64)]),
       },
       [EqualityValidator('newPassword', 'newPasswordConfirmed')]
     );

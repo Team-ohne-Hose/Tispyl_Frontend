@@ -62,7 +62,6 @@ import { CustomEditorComponent } from './components/home/custom-editor/custom-ed
 import { ChatCommandListComponent } from './components/game/interface/menu-bar/home-register/chat-command-list/chat-command-list.component';
 import { GameHistoryComponent } from './components/home/profile/gamehistory/gamehistory.component';
 import { EditProfileComponent } from './components/home/profile/edit-profile/edit-profile.component';
-import { MarkdownToHtmlModule } from 'markdown-to-html-pipe';
 import { MdContentComponent } from './components/home/md-content-list/md-content/md-content.component';
 import { MdContentDirective } from './components/home/md-content-list/md-content.directive';
 import { MdContentListComponent } from './components/home/md-content-list/md-content-list.component';
@@ -193,7 +192,6 @@ const appRoutes: Routes = [
     MatStepperModule,
     MatSlideToggleModule,
     CdkStepperModule,
-    MarkdownToHtmlModule,
     NgbModule,
   ],
   providers: [

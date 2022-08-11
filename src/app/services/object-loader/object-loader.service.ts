@@ -375,7 +375,7 @@ export class ObjectLoaderService {
       return;
     }
     // filter out non-Mesh Objects, this makes sure to not refer to the group containing the mesh
-    while (!(obj instanceof THREE.Mesh)) {
+    while (!(obj.type === 'Mesh')) {
       if (obj.children.length <= 0) {
         return;
       }
@@ -389,7 +389,8 @@ export class ObjectLoaderService {
     const tex = this.getTexture(model);
 
     const mesh: THREE.Mesh = obj as THREE.Mesh;
-    if (mesh.material instanceof THREE.Material && tex !== undefined) {
+
+    if (!(mesh.material instanceof Array) && mesh.material.isMaterial && tex !== undefined) {
       mesh.material = mesh.material.clone();
       mesh.material['map'] = tex;
 
@@ -401,7 +402,6 @@ export class ObjectLoaderService {
         next: (newTexture: { tex: THREE.Texture; spec: THREE.Texture }) => {
           mesh.material = (mesh.material as THREE.Material).clone();
           mesh.material['map'] = tex;
-          // mesh.material['spec'] = newTexture.spec;
         },
       });
     }
@@ -589,8 +589,6 @@ export class ObjectLoaderService {
     spriteMaterial.transparent = true;
     const sprite = new THREE.Sprite(spriteMaterial);
     sprite.scale.set(canvas.width / 75, canvas.height / 75, 1);
-    // console.log(canvas, context, context.font, textWidth + borderThickness, fontSize * 1.4 + borderThickness);
-    // document.body.appendChild(canvas);
     sprite.userData.canvas = canvas;
     sprite.userData.text = text;
     sprite.userData.fontSize = fontSize;
