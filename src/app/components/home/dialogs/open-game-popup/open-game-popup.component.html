@@ -25,7 +25,7 @@
     </div>
     <div class="card-deck-select">
       <div class="carousel-container">
-        <ngb-carousel #deckCarousel (slide)="slide($event)">
+        <ngb-carousel #deckCarousel (slide)="slide($event)" [showNavigationIndicators]="false">
           <ng-template ngbSlide id="deckSlide-{{deck.id}}" *ngFor="let deck of this.tileSetList; let i = index" (slid)='slid($event, i)'>
             <div class="carousel-deck-item">
               <img [src]="deck.thumbnailPath" alt="{{deck.name}}">
