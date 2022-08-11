@@ -10,7 +10,7 @@
             einfach.
           </p>
           <form #mailer='ngForm' (ngSubmit)='onClickSubmit(mailer.value)'>
-            <div class='form-group'>
+            <div class='row'>
               <label for='exampleFormControlInput1'>Email Adresse</label>
               <input type='email' ng-model='email' name='email' class='form-control'
                      id='exampleFormControlInput1' placeholder='max@mustermann.de' ngModel>
@@ -22,14 +22,14 @@
             </div>
             <div class='row'>
 
-              <div class='col-md-12 text-right'>
+              <div class='col-md-12 text-end'>
                                 <span class='align-text-bottom'>
                                     <button type='submit' value='submit' class='btn btn-primary'>Abschicken</button>
                                 </span>
               </div>
               <div class='col-md-12 mt-3'>
                 <p>Kontaktformulare sind die zu altmodisch? Wird sind auch bei:</p>
-                <a class='text-light mr-4' href='https://www.reddit.com/r/Tispyl/' target='_blank'><span
+                <a class='text-light me-4' href='https://www.reddit.com/r/Tispyl/' target='_blank'><span
                   style='font-size: 1.2rem; color:#FF5700'><i class='fab fa-reddit'></i>
                                         Reddit</span></a>
                 <a class='text-light' href='https://discord.gg/kG2kKVzNTp' target='_blank'><span

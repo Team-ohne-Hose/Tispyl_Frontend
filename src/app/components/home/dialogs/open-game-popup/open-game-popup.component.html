@@ -32,14 +32,14 @@
               <div class="deck-info-container container">
                 <div class="deck-info-header row">
                   <div class="col-3"><h3>{{deck.name}}</h3></div>
-                  <div class="col-3 font-italic my-auto ml-auto"><h5 class="text-right">{{deck.author.display_name}}</h5></div>
+                  <div class="col-3 font-italic my-auto ms-auto"><h5 class="text-end">{{deck.author.display_name}}</h5></div>
                 </div>
                 <div class="deck-info-tag-container my-2 mx-1 row">
-                  <span *ngFor="let tag of deck.tags" class="badge badge-pill badge-dark" >{{tag.tag}}</span>
+                  <span *ngFor="let tag of deck.tags" class="badge rounded-pill bg-dark" >{{tag.tag}}</span>
                 </div>
                 <p class="row">{{deck.description}}</p>
                 <div class="row">
-                  <div class="ml-auto showTileListButtonContainer">
+                  <div class="showTileListButtonContainer d-flex justify-content-end">
                     <button type="button" (click)="this.popoverVisible = !this.popoverVisible">Show</button>
                     <div class="showTileListPopoverArrow" *ngIf="this.popoverVisible" (click)="this.popoverVisible = false;">
 
@@ -72,10 +72,10 @@
           <div class="col-9 deck-list-item-info">
             <div class="row deck-list-item-info-header">
               <div class="col-3"><h3>{{deck.name}}</h3></div>
-              <div class="col-3 font-italic my-auto ml-auto"><h5 class="text-right">{{deck.author.display_name}}</h5></div>
+              <div class="col-3 font-italic my-auto ms-auto"><h5 class="text-end">{{deck.author.display_name}}</h5></div>
             </div>
             <div class="row deck-info-tag-container my-2 mx-1">
-              <span *ngFor="let tag of deck.tags" class="badge badge-pill badge-dark" >{{tag.tag}}</span>
+              <span *ngFor="let tag of deck.tags" class="badge rounded-pill bg-dark" >{{tag.tag}}</span>
             </div>
           </div>
         </div>

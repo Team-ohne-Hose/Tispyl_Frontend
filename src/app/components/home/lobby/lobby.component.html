@@ -47,13 +47,13 @@
               <div class="card transparent">
                 <div class="card-body">
                   <div class="mb-3">
-                    <button class="btn lobby-btn mr-3" id="" (click)="createGame()"
+                    <button class="btn lobby-btn me-3" id="" (click)="createGame()"
                             [disabled]="activeLobby !== undefined">{{translation.text.gamesListCreate}}</button>
                     <span *ngIf="activeLobby !== undefined" class="blue-text">
                       <i class="fas fa-exclamation-triangle"></i>
                       <span>Du bist in einem Spiel und kannst deshalb kein neues erstellen.</span>
                     </span>
-                    <button class="btn lobby-btn mr-3" (click)="refetchGameRooms()"><i class="fas fa-redo"></i></button>
+                    <button class="btn lobby-btn me-3" (click)="refetchGameRooms()"><i class="fas fa-redo"></i></button>
                   </div>
                   <div>
                     <!-- <div *ngIf="availableRooms.length > 0"> -->

@@ -2,12 +2,12 @@
   <div class='col-sm-12 mb-3'>
     <div class='card h-100 transparent'>
       <div class='card-body'>
-        <h6 class='d-flex align-items-center mb-3'><i class='material-icons text-info mr-2'>assignment</i>Profil
+        <h6 class='d-flex align-items-center mb-3'><i class='material-icons text-info me-2'>assignment</i>Profil
           bearbeiten</h6>
 
         <form class='needs-validation px-5' (submit)='this.onSubmit()' [formGroup]='edit'>
 
-          <div class='form-row mb-3'>
+          <div class='row mb-3'>
             <div class='col-sm-12'>
 
               <label for='display-name'
@@ -32,7 +32,7 @@
             </div>
           </div>
 
-          <div class='form-row mb-3'>
+          <div class='row mb-3'>
             <div class='col-sm-12 my-3'>
               <label for='currentPassword'
                      [ngClass]="edit.controls.currentPassword.invalid ? 'text-danger' : ''">Passwort:
