@@ -1,48 +1,51 @@
-<div class='container'>
-  <div class='card transparent my-5'>
-    <div class='card-body'>
-
-      <div class='row'>
-        <div class='col-md-10 offset-1 my-3'>
-          <div class='h2 mb-4'>Schreib uns!</div>
-          <p class='h6 mb-3'>
-            Dir gefällt das Tischspiel oder hast sogar Verbesserungsvorschläge? Dann schreib uns doch
-            einfach.
+<div class="container">
+  <div class="card transparent my-5">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="h2 mb-4">Schreib uns!</div>
+          <p class="h6 mb-3">
+            Dir gefällt das Tischspiel oder hast sogar Verbesserungsvorschläge? Dann schreib uns doch einfach.
           </p>
-          <form #mailer='ngForm' (ngSubmit)='onClickSubmit(mailer.value)'>
-            <div class='row'>
-              <label for='exampleFormControlInput1'>Email Adresse</label>
-              <input type='email' ng-model='email' name='email' class='form-control'
-                     id='exampleFormControlInput1' placeholder='max@mustermann.de' ngModel>
-
-
-              <label for='exampleFormControlTextarea1'>Dein Text</label>
-              <textarea class='form-control' id='text' ng-model='msg' name='text' rows='3'
-                        ngModel></textarea>
+          <form #mailer="ngForm" (ngSubmit)="onClickSubmit(mailer.value)">
+            <div class="mb-3">
+              <label for="emailFormInput">Email Adresse</label>
+              <input
+                type="email"
+                ng-model="email"
+                name="email"
+                class="form-control"
+                id="emailFormInput"
+                placeholder="max@mustermann.de"
+                ngModel
+              />
             </div>
-            <div class='row'>
 
-              <div class='col-md-12 text-end'>
-                                <span class='align-text-bottom'>
-                                    <button type='submit' value='submit' class='btn btn-primary'>Abschicken</button>
-                                </span>
+            <div class="mb-3">
+              <label for="exampleFormControlTextarea1">Dein Text</label>
+              <textarea class="form-control" id="text" ng-model="msg" name="text" rows="3" ngModel></textarea>
+            </div>
+
+            <div class="row">
+              <div class="col-12 mb-3 d-flex justify-content-end">
+                <button type="submit" value="submit" class="btn btn-primary">Abschicken</button>
               </div>
-              <div class='col-md-12 mt-3'>
+              <div class="col-12">
                 <p>Kontaktformulare sind die zu altmodisch? Wird sind auch bei:</p>
-                <a class='text-light me-4' href='https://www.reddit.com/r/Tispyl/' target='_blank'><span
-                  style='font-size: 1.2rem; color:#FF5700'><i class='fab fa-reddit'></i>
-                                        Reddit</span></a>
-                <a class='text-light' href='https://discord.gg/kG2kKVzNTp' target='_blank'><span
-                  style='font-size: 1.2rem; color:#7289d9'><i class='fab fa-discord'></i>
-                                        Discord</span></a>
+
+                <a class="text-light" href="https://www.reddit.com/r/Tispyl/" target="_blank">
+                  <span style="font-size: 1.2rem; color: #ff5700; margin-right: 0.75rem"
+                    ><i class="fab fa-reddit"></i> Reddit</span
+                  ></a
+                >
+                <a class="text-light" href="https://discord.gg/kG2kKVzNTp" target="_blank">
+                  <span style="font-size: 1.2rem; color: #7289d9"><i class="fab fa-discord"></i> Discord</span></a
+                >
               </div>
             </div>
           </form>
         </div>
-        <div class='col-md-12'>
-
-
-        </div>
+        <div class="col-md-12"></div>
       </div>
     </div>
   </div>
