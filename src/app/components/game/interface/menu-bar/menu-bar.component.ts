@@ -1,20 +1,12 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { BrowserModule } from '@angular/platform-browser';
-import {
-  animate,
-  animateChild,
-  animation,
-  AnimationEvent,
-  group,
-  query,
-  sequence,
-  state,
-  style,
-  transition,
-  trigger,
-} from '@angular/animations';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { Player } from '../../../../model/state/Player';
+
+export enum TabIndex {
+  'Home' = 1,
+  'Rules' = 2,
+  'Vote' = 3,
+  'Settings' = 4,
+}
 
 @Component({
   selector: 'app-menu-bar',
@@ -28,9 +20,9 @@ export class MenuBarComponent {
   @ViewChild('registerFooter') registerFooter: ElementRef;
   @ViewChild('tabEdge') tabEdge: ElementRef;
 
-  tabIndex = 0;
+  public tabIndex: TabIndex = 0;
 
-  toggleTab(targetTabIndex: number): void {
+  toggleTab(targetTabIndex: TabIndex): void {
     if (this.tabIndex === targetTabIndex) {
       this.unselectTab(targetTabIndex);
     } else {
@@ -38,11 +30,11 @@ export class MenuBarComponent {
     }
   }
 
-  private selectTab(targetTabIndex: number): void {
+  private selectTab(targetTabIndex: TabIndex): void {
     this.tabIndex = targetTabIndex;
   }
 
-  private unselectTab(targetTabIndex: number): void {
+  private unselectTab(targetTabIndex: TabIndex): void {
     if (this.tabIndex === targetTabIndex) {
       this.tabIndex = 0;
     }

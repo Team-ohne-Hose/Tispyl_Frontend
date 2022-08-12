@@ -12,6 +12,7 @@ import { ItemService } from '../../../services/items-service/item.service';
 import { BoardItemControlService } from '../../../services/board-item-control.service';
 import { Observable, Observer } from 'rxjs';
 import { Progress } from '../../../services/object-loader/loaderTypes';
+import { GameSettingsService } from 'src/app/services/game-settings.service';
 
 export class ObjectUserData {
   physicsId: number;
@@ -42,7 +43,8 @@ export class ViewportComponent implements AfterViewInit {
     private gameState: GameStateService,
     private boardTiles: BoardTilesService,
     public itemService: ItemService,
-    private bic: BoardItemControlService
+    private bic: BoardItemControlService,
+    private GSS: GameSettingsService
   ) {
     // this.stats = Stats(); TODO: Reintroduce this in the game options
   }
@@ -61,7 +63,7 @@ export class ViewportComponent implements AfterViewInit {
 
     /** Bind viewport to its control objects */
     this.bic.bind(this);
-    this.userInteractionController = new UserInteractionController(this.bic);
+    this.userInteractionController = new UserInteractionController(this.bic, this.GSS);
 
     console.debug('THREE.js "empty" viewport constructed');
   }
