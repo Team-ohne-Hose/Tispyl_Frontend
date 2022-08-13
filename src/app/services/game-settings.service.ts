@@ -6,6 +6,7 @@ import { EventEmitter, Injectable, Output } from '@angular/core';
 export class GameSettingsService {
   // Volume
   @Output() volume = new EventEmitter<number>();
+  @Output() musicVolume = new EventEmitter<number>();
   @Output() isMuted = new EventEmitter<boolean>();
 
   // Display

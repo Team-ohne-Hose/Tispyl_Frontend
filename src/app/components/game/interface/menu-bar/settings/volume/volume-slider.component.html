@@ -1,14 +1,33 @@
 <div class="mb-3">
-  <div class="d-flex justify-content-center mx-5">
-    <input
-      class="w-100"
-      type="range"
-      min="0"
-      max="1"
-      step="0.02"
-      value="GSS.volume"
-      (input)="handleChangeVolume($event)"
-      (change)="handleChangeVolume($event)"
-    />
+  <div class="row justify-content-center mx-3">
+    <div class="col-12 mb-3">
+      <label for="musicVolumeInput" class="form-label">Musik</label>
+      <input
+        id="musicVolumeInput"
+        class="w-100 sound-range"
+        type="range"
+        min="MIN_VOLUME"
+        max="MAX_VOLUME"
+        step="VOLUME_STEPS"
+        value="GSS.musicVolume"
+        (input)="handleChangeMusicVolume($event)"
+        (change)="handleChangeMusicVolume($event)"
+      />
+    </div>
+
+    <div class="col-12 mb-3">
+      <label for="volumeInput" class="form-label">Soundeffekte</label>
+      <input
+        id="volumeInput"
+        class="w-100 sound-range"
+        type="range"
+        min="MIN_VOLUME"
+        max="MAX_VOLUME"
+        step="VOLUME_STEPS"
+        value="GSS.volume"
+        (input)="handleChangeVolume($event)"
+        (change)="handleChangeVolume($event)"
+      />
+    </div>
   </div>
 </div>

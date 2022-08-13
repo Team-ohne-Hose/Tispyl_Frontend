@@ -9,7 +9,7 @@ export class AudioControl {
   audioLoader = new AudioLoader();
 
   constructor(public GSS: GameSettingsService) {
-    this.GSS.volume.subscribe((volume) => {
+    this.GSS.musicVolume.subscribe((volume) => {
       this.sound.setVolume(volume);
     });
   }

@@ -6,6 +6,10 @@ import { GameSettingsService } from 'src/app/services/game-settings.service';
   templateUrl: './volume-slider.component.html',
 })
 export class VolumeSlider {
+  public MAX_VOLUME = 1;
+  public MIN_VOLUME = 0;
+  public VOLUME_STEPS = 0.2;
+
   constructor(public GSS: GameSettingsService) {}
 
   public setVolume(newVolume: number) {
@@ -17,6 +21,10 @@ export class VolumeSlider {
   }
 
   public handleChangeVolume(event: { target: HTMLInputElement }) {
-    this.setVolume(event.target.valueAsNumber);
+    this.GSS.volume.emit(event.target.valueAsNumber);
+  }
+
+  public handleChangeMusicVolume(event: { target: HTMLInputElement }) {
+    this.GSS.musicVolume.emit(event.target.valueAsNumber);
   }
 }

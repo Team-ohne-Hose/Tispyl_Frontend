@@ -1,0 +1,11 @@
+.sound-range::-webkit-slider-thumb {
+  background: gray;
+}
+
+.sound-range::-moz-range-thumb {
+  background: gray;
+}
+
+.sound-range::-ms-thumb {
+  background: gray;
+}
