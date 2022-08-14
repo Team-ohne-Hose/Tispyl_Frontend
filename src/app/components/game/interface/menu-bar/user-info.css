@@ -1,0 +1,101 @@
+.user-info-box {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--base-padding);
+}
+
+.avatar-section {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  color: var(--dim-text-color);
+}
+
+.avatar-section .upload-icon {
+  display: grid;
+  align-content: end;
+}
+
+.upload-icon {
+  margin-left: -1rem;
+  position: absolute;
+  bottom: 1rem;
+  right: 0;
+  cursor: pointer;
+}
+
+.bottle-cap-section {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  color: var(--dim-text-color);
+  pointer-events: all;
+}
+
+.info-section {
+  display: flex;
+  flex-direction: row;
+}
+
+.round-avatar {
+  height: 50px;
+  width: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}
+
+.round-avatar img {
+  border: var(--accent-color) solid 1px;
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.bottle-cap-cover {
+  border-radius: 50%;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.bottle-cap-cover img {
+  height: 145%;
+  width: 145%;
+  border-radius: 0%;
+  border: 0px;
+  object-fit: cover;
+  object-position: -9px -9px;
+}
+
+.golden-border {
+  border-radius: 50%;
+  padding: 5px;
+  background: radial-gradient(
+      ellipse farthest-corner at left bottom,
+      #fedb37 0%,
+      #fdb931 8%,
+      #9f7928 30%,
+      #8a6e2f 40%,
+      transparent 80%
+    ),
+    radial-gradient(
+      ellipse farthest-corner at right top,
+      #ffffff 0%,
+      #ffffac 8%,
+      #d1b464 25%,
+      #5d4a1f 62.5%,
+      #5d4a1f 100%
+    );
+}
+
+.user-name {
+  font-size: large;
+}
+
+.sub-script {
+  font-size: small;
+  color: grey;
+}

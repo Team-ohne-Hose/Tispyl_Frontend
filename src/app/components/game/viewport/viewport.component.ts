@@ -44,7 +44,7 @@ export class ViewportComponent implements AfterViewInit {
     private boardTiles: BoardTilesService,
     public itemService: ItemService,
     private bic: BoardItemControlService,
-    private GSS: GameSettingsService
+    private gss: GameSettingsService
   ) {
     // this.stats = Stats(); TODO: Reintroduce this in the game options
   }
@@ -63,7 +63,7 @@ export class ViewportComponent implements AfterViewInit {
 
     /** Bind viewport to its control objects */
     this.bic.bind(this);
-    this.userInteractionController = new UserInteractionController(this.bic, this.GSS);
+    this.userInteractionController = new UserInteractionController(this.bic, this.gss);
 
     console.debug('THREE.js "empty" viewport constructed');
   }

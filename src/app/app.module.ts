@@ -77,7 +77,7 @@ import { ShortcutOverlayComponent } from './components/game/interface/shortcut-o
 import { IntroductionComponent } from './components/game/interface/introduction/introduction.component';
 import { MenuSettingsComponent } from './components/game/interface/menu-bar/settings/menu-settings.component';
 import { VolumeSlider } from './components/game/interface/menu-bar/settings/volume/volume-slider.component';
-
+import { AvatarSectionComponent } from './components/game/interface/menu-bar/avatar-section/avatar-section.component';
 const appRoutes: Routes = [
   {
     path: '',
@@ -170,6 +170,7 @@ const appRoutes: Routes = [
     IntroductionComponent,
     MenuSettingsComponent,
     VolumeSlider,
+    AvatarSectionComponent,
   ],
   imports: [
     RouterModule.forRoot(

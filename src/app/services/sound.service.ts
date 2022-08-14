@@ -12,8 +12,8 @@ export class SoundService {
   private assetPath = '../../../assets/sounds/';
   private html5Audio: HTMLAudioElement = new Audio();
 
-  constructor(private GSS: GameSettingsService) {
-    this.GSS.volume.subscribe((volume) => {
+  constructor(private gss: GameSettingsService) {
+    this.gss.musicVolume.subscribe((volume) => {
       this.html5Audio.volume = volume;
     });
   }

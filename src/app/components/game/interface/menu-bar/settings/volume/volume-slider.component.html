@@ -6,12 +6,12 @@
         id="musicVolumeInput"
         class="w-100 sound-range"
         type="range"
-        min="MIN_VOLUME"
-        max="MAX_VOLUME"
-        step="VOLUME_STEPS"
-        value="GSS.musicVolume"
-        (input)="handleChangeMusicVolume($event)"
-        (change)="handleChangeMusicVolume($event)"
+        [min]="MIN_VOLUME"
+        [max]="MAX_VOLUME"
+        [step]="VOLUME_STEPS"
+        [value]="volumeMusic"
+        (input)="handleChangeVolume($event)"
+        (change)="handleChangeVolume($event)"
       />
     </div>
 
@@ -21,12 +21,12 @@
         id="volumeInput"
         class="w-100 sound-range"
         type="range"
-        min="MIN_VOLUME"
-        max="MAX_VOLUME"
-        step="VOLUME_STEPS"
-        value="GSS.volume"
-        (input)="handleChangeVolume($event)"
-        (change)="handleChangeVolume($event)"
+        [min]="MIN_VOLUME"
+        [max]="MAX_VOLUME"
+        [step]="VOLUME_STEPS"
+        [value]="volumeSoundEffects"
+        (input)="handleChangeSoundEffectVolume($event)"
+        (change)="handleChangeSoundEffectVolume($event)"
       />
     </div>
   </div>

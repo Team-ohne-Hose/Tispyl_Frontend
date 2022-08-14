@@ -9,3 +9,9 @@
 .sound-range::-ms-thumb {
   background: gray;
 }
+
+.sound-range {
+  --form-range-thumb-bg: gray;
+  --form-range-thumb-active-bg: grey;
+  background-color: var(--accent-color);
+}

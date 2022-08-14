@@ -1,4 +1,38 @@
-<div class="register-card-base settings p-3">
-  <h2>Einstellungen</h2>
-  <app-menu-settings-volume-slider></app-menu-settings-volume-slider>
-</div>
+<form>
+  <div class="register-card-base settings p-3">
+    <h2>Einstellungen</h2>
+
+    <div class="user-info-box">
+      <app-menu-avatar class="d-flex"></app-menu-avatar>
+
+      <!-- <div class="bottle-cap-section">
+        <div (click)="prevBCap($event)"><i class="fas fa-chevron-left"></i></div>
+        <div class="round-avatar golden-border bottle-cap">
+          <div class="bottle-cap-cover">
+            <img [src]="bottleCapSource" alt="'Profile'">
+          </div>
+        </div>
+        <div (click)="nextBCap($event)"><i class="fas fa-chevron-right"></i></div>
+       -->
+    </div>
+
+    <app-menu-settings-volume-slider></app-menu-settings-volume-slider>
+    <div class="mb-3">
+      <div class="row justify-content-center mx-3">
+        <div class="col-12 mb-3">
+          <div class="form-check form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="persistantDisplayCheckbox"
+              name="persistantDisplayCheckbox"
+              [(ngModel)]="persistentNamePlates"
+              (change)="handleChange($event)"
+            />
+            <label class="form-check-label" for="persistantDisplayCheckbox">Spielernamen immer anzeigen</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

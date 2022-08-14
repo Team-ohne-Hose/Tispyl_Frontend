@@ -1,30 +1,51 @@
-import { Component } from '@angular/core';
-import { GameSettingsService } from 'src/app/services/game-settings.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { GameSettingsService, StorageKey } from 'src/app/services/game-settings.service';
 
 @Component({
   selector: 'app-menu-settings-volume-slider',
   templateUrl: './volume-slider.component.html',
+  styleUrls: ['./volume-slider.component.css'],
 })
-export class VolumeSlider {
+export class VolumeSlider implements OnInit, OnDestroy {
   public MAX_VOLUME = 1;
   public MIN_VOLUME = 0;
-  public VOLUME_STEPS = 0.2;
+  public VOLUME_STEPS = 0.05;
 
-  constructor(public GSS: GameSettingsService) {}
+  volumeMusic: number;
+  volumeSoundEffects: number;
 
-  public setVolume(newVolume: number) {
-    this.GSS.volume.emit(newVolume);
+  private subscriptionVolume: Subscription;
+  private subscriptionSoundEffects: Subscription;
+
+  constructor(public gss: GameSettingsService) {}
+
+  ngOnInit(): void {
+    this.subscriptionVolume = this.gss.musicVolume.subscribe((volume: number) => {
+      this.volumeMusic = volume;
+    });
+    this.subscriptionSoundEffects = this.subscriptionVolume = this.gss.soundEffectVolume.subscribe((volume: number) => {
+      this.volumeSoundEffects = volume;
+    });
+
+    this.volumeMusic = this.gss.musicVolume.getValue();
+    this.volumeSoundEffects = this.gss.soundEffectVolume.getValue();
   }
 
-  public toggleMuted() {
-    this.GSS.isMuted.emit(!this.GSS.isMuted);
+  ngOnDestroy(): void {
+    this.subscriptionVolume.unsubscribe();
+    this.subscriptionSoundEffects.unsubscribe();
+  }
+
+  public setVolume(newVolume: number) {
+    this.gss.musicVolume.next(newVolume);
   }
 
   public handleChangeVolume(event: { target: HTMLInputElement }) {
-    this.GSS.volume.emit(event.target.valueAsNumber);
+    this.gss.musicVolume.next(event.target.valueAsNumber);
   }
 
-  public handleChangeMusicVolume(event: { target: HTMLInputElement }) {
-    this.GSS.musicVolume.emit(event.target.valueAsNumber);
+  public handleChangeSoundEffectVolume(event: { target: HTMLInputElement }) {
+    this.gss.soundEffectVolume.next(event.target.valueAsNumber);
   }
 }

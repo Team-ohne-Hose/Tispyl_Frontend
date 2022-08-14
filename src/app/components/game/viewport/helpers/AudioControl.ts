@@ -1,3 +1,4 @@
+import { Subscription } from 'rxjs';
 import { GameSettingsService } from 'src/app/services/game-settings.service';
 import * as THREE from 'three';
 import { AudioLoader, Camera } from 'three';
@@ -8,8 +9,10 @@ export class AudioControl {
   sound = new THREE.Audio(this.listener);
   audioLoader = new AudioLoader();
 
-  constructor(public GSS: GameSettingsService) {
-    this.GSS.musicVolume.subscribe((volume) => {
+  musicVolumeSubscription: Subscription;
+
+  constructor(public gss: GameSettingsService) {
+    this.musicVolumeSubscription = this.gss.musicVolume.subscribe((volume) => {
       this.sound.setVolume(volume);
     });
   }

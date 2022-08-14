@@ -1,0 +1,15 @@
+<div class="avatar-section d-flex">
+  <div class="round-avatar golden-border">
+    <img [src]="userImageUrl" alt="'Userimage'" />
+  </div>
+  <div (click)="fileInput.click()" class="upload-icon"><i class="fas fa-file-upload"></i></div>
+  <input #fileInput (change)="changeImage($event)" style="display: none" type="file" />
+</div>
+
+<div class="info-section ml-3 mb-3">
+  <div>
+    <div class="user-name">{{ currentPlayer?.displayName || 'Not connected' }}</div>
+    <div class="sub-script">Role: {{ getRole() }}</div>
+    <div class="sub-script">Time played: {{ getTimePlayed() }}</div>
+  </div>
+</div>

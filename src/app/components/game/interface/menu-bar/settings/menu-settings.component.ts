@@ -1,20 +1,29 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { GameSettingsService, StorageKey } from 'src/app/services/game-settings.service';
 
 @Component({
   selector: 'app-menu-bar-settings',
   templateUrl: './menu-settings.component.html',
   styleUrls: ['../menu-bar.component.css'],
 })
-export class MenuSettingsComponent {
-  // TODO: Toggle persistant display Usernames
+export class MenuSettingsComponent implements OnInit, OnDestroy {
+  public persistentNamePlates = this.gss.getValueFromLocalStroage(StorageKey.PersistNamePlates);
+  private subscription: Subscription;
 
-  private showPlayerNames = false;
+  constructor(public gss: GameSettingsService) {}
 
-  constructor() {
-    console.log('Settings Component');
+  ngOnInit(): void {
+    this.subscription = this.gss.persistentNamePlates.subscribe((persistentNamePlates) => {
+      this.persistentNamePlates = persistentNamePlates;
+    });
   }
 
-  public toggleDisplayPlayerNames() {
-    this.showPlayerNames = !this.showPlayerNames;
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
+  handleChange(event: { target: HTMLInputElement }) {
+    this.gss.persistentNamePlates.next(event.target.checked);
   }
 }
