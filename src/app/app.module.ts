@@ -78,6 +78,8 @@ import { IntroductionComponent } from './components/game/interface/introduction/
 import { MenuSettingsComponent } from './components/game/interface/menu-bar/settings/menu-settings.component';
 import { VolumeSlider } from './components/game/interface/menu-bar/settings/volume/volume-slider.component';
 import { AvatarSectionComponent } from './components/game/interface/menu-bar/avatar-section/avatar-section.component';
+import { BottleCapPickerComponent } from './components/game/interface/menu-bar/bottle-cap-picker/bottle-cap-picker.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 const appRoutes: Routes = [
   {
     path: '',
@@ -171,6 +173,7 @@ const appRoutes: Routes = [
     MenuSettingsComponent,
     VolumeSlider,
     AvatarSectionComponent,
+    BottleCapPickerComponent,
   ],
   imports: [
     RouterModule.forRoot(
@@ -198,6 +201,7 @@ const appRoutes: Routes = [
     MatSlideToggleModule,
     CdkStepperModule,
     NgbModule,
+    FontAwesomeModule,
   ],
   providers: [
     {

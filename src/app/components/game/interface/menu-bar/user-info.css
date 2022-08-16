@@ -1,7 +1,9 @@
 .user-info-box {
   display: flex;
   justify-content: space-between;
-  padding: var(--base-padding);
+  padding-left: 16px;
+  padding-top: 16px;
+  margin-bottom: -8px;
 }
 
 .avatar-section {
@@ -54,6 +56,11 @@
   object-fit: cover;
 }
 
+.round-avatar.bottle-cap {
+  height: 75px;
+  width: 75px;
+}
+
 .bottle-cap-cover {
   border-radius: 50%;
   height: 100%;
@@ -67,7 +74,7 @@
   border-radius: 0%;
   border: 0px;
   object-fit: cover;
-  object-position: -9px -9px;
+  object-position: -14px -14px;
 }
 
 .golden-border {
@@ -98,4 +105,8 @@
 .sub-script {
   font-size: small;
   color: grey;
+}
+
+.c-pointer {
+  cursor: pointer;
 }

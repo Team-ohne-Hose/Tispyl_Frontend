@@ -1,4 +1,5 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { faClipboard, faGears, faHome, faPersonBooth } from '@fortawesome/free-solid-svg-icons';
 import { Player } from '../../../../model/state/Player';
 
 export enum TabIndex {
@@ -21,6 +22,12 @@ export class MenuBarComponent {
   @ViewChild('tabEdge') tabEdge: ElementRef;
 
   public tabIndex: TabIndex = 0;
+
+  //Font Awesome Icons
+  public faGears = faGears;
+  public faPersonBooth = faPersonBooth;
+  public faClipboard = faClipboard;
+  public faHome = faHome;
 
   toggleTab(targetTabIndex: TabIndex): void {
     if (this.tabIndex === targetTabIndex) {

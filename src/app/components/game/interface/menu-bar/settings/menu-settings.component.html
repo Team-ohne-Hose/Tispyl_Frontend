@@ -4,17 +4,11 @@
 
     <div class="user-info-box">
       <app-menu-avatar class="d-flex"></app-menu-avatar>
-
-      <!-- <div class="bottle-cap-section">
-        <div (click)="prevBCap($event)"><i class="fas fa-chevron-left"></i></div>
-        <div class="round-avatar golden-border bottle-cap">
-          <div class="bottle-cap-cover">
-            <img [src]="bottleCapSource" alt="'Profile'">
-          </div>
-        </div>
-        <div (click)="nextBCap($event)"><i class="fas fa-chevron-right"></i></div>
-       -->
     </div>
+
+    <div class="seperator"></div>
+
+    <app-menu-bottle-cap-picker></app-menu-bottle-cap-picker>
 
     <app-menu-settings-volume-slider></app-menu-settings-volume-slider>
     <div class="mb-3">

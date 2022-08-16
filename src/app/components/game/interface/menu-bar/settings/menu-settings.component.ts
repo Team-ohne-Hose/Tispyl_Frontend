@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { GameSettingsService, StorageKey } from 'src/app/services/game-settings.service';
+import { faGears } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-menu-bar-settings',
   templateUrl: './menu-settings.component.html',
-  styleUrls: ['../menu-bar.component.css'],
+  styleUrls: ['../menu-bar.component.css', '../user-info.css'],
 })
 export class MenuSettingsComponent implements OnInit, OnDestroy {
   public persistentNamePlates = this.gss.getValueFromLocalStroage(StorageKey.PersistNamePlates);
