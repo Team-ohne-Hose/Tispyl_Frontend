@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { GameSettingsService } from './game-settings.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +12,11 @@ export class SoundService {
   private assetPath = '../../../assets/sounds/';
   private html5Audio: HTMLAudioElement = new Audio();
 
-  private volume = 1;
+  constructor(private gss: GameSettingsService) {
+    this.gss.musicVolume.subscribe((volume) => {
+      this.html5Audio.volume = volume;
+    });
+  }
 
   private sounds: Map<string, string> = new Map<string, string>([
     ['own_turn', '234564__foolboymedia__notification-up-i.wav'],
@@ -23,14 +28,9 @@ export class SoundService {
     if (this.sounds.has(soundName)) {
       this.html5Audio.setAttribute('src', this.assetPath + this.sounds.get(soundName));
       this.html5Audio.load();
-      this.html5Audio.volume = 1;
       this.html5Audio.play();
     } else {
       console.warn('No sound known for name: ', soundName);
     }
-  }
-
-  setVolume(newVolume: number): void {
-    this.volume = newVolume;
   }
 }

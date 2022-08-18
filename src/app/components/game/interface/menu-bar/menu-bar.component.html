@@ -1,35 +1,37 @@
 <div class="outer-register-bounds">
-
   <div class="register-tab-container">
-    <div (click)="toggleTab(1)" [class]="{'register-tab': true, 'selected': tabIndex===1}">
-      <div class="register-icon-box"><i class="fas fa-home avoid-clicks"></i></div>
+    <div (click)="toggleTab(TABS.HOME)" [class]="{ 'register-tab': true, selected: tabIndex === TABS.HOME }">
+      <div class="register-icon-box"><fa-icon class="avoid-clicks" [icon]="faHome"></fa-icon></div>
       <div class="corner"></div>
     </div>
 
-    <div (click)="toggleTab(2)" [class]="{'register-tab': true, 'selected': tabIndex===2}">
-      <div class="register-icon-box"><i class="fas fa-clipboard avoid-clicks"></i></div>
+    <div (click)="toggleTab(TABS.RULES)" [class]="{ 'register-tab': true, selected: tabIndex === TABS.RULES }">
+      <div class="register-icon-box"><fa-icon class="avoid-clicks" [icon]="faClipboard"></fa-icon></div>
       <div class="corner selected"></div>
     </div>
 
-    <div (click)="toggleTab(3)" [class]="{'register-tab': true, 'selected': tabIndex===3}">
-      <div class="register-icon-box"><i class="fas fa-person-booth avoid-clicks"></i></div>
+    <div (click)="toggleTab(TABS.VOTE)" [class]="{ 'register-tab': true, selected: tabIndex === TABS.VOTE }">
+      <div class="register-icon-box"><fa-icon class="avoid-clicks" [icon]="faPersonBooth"></fa-icon></div>
       <div class="corner"></div>
     </div>
 
-    <div #registerFooter [class]="{'register-tab-footer': true, 'selected': tabIndex>0}">
+    <div (click)="toggleTab(TABS.SETTINGS)" [class]="{ 'register-tab': true, selected: tabIndex === TABS.SETTINGS }">
+      <div class="register-icon-box"><fa-icon class="avoid-clicks" [icon]="faGears"></fa-icon></div>
+      <div class="corner"></div>
+    </div>
+
+    <div #registerFooter [class]="{ 'register-tab-footer': true, selected: tabIndex !== TABS.CLOSED }">
       <div class="reverse-corner"></div>
       <div class="footer-box"></div>
     </div>
-
   </div>
 
-  <div #tabEdge [class]="{'register-edge': true, 'selected': tabIndex>0}"></div>
+  <div #tabEdge [class]="{ 'register-edge': true, selected: tabIndex !== TABS.CLOSED }"></div>
 
   <div class="register-content">
-    <app-home-register *ngIf="tabIndex === 1"
-                       [playerlist]="this.playerList"></app-home-register>
-    <app-ingame-rule-book *ngIf="tabIndex === 2" [rules]="ruleList"></app-ingame-rule-book>
-    <app-vote-system *ngIf="tabIndex === 3" (notifyPlayer)="tabIndex = 3"></app-vote-system>
+    <app-home-register *ngIf="tabIndex === TABS.HOME" [playerlist]="this.playerList"></app-home-register>
+    <app-ingame-rule-book *ngIf="tabIndex === TABS.RULES" [rules]="ruleList"></app-ingame-rule-book>
+    <app-vote-system *ngIf="tabIndex === TABS.VOTE" (notifyPlayer)="tabIndex = TABS.VOTE"></app-vote-system>
+    <app-menu-bar-settings *ngIf="tabIndex === TABS.SETTINGS"></app-menu-bar-settings>
   </div>
 </div>
-

@@ -11,6 +11,7 @@ import { Observable, Observer, merge, forkJoin } from 'rxjs';
 import { Progress } from './object-loader/loaderTypes';
 import { map, mergeAll, mergeMap, take, tap } from 'rxjs/operators';
 import { ColyseusClientService } from './colyseus-client.service';
+import { GameSettingsService } from './game-settings.service';
 
 export interface ColyseusNotifiable {
   attachColyseusMessageCallbacks(gameState: GameStateService): void;
@@ -26,7 +27,8 @@ export class GameInitialisationService {
     private itemService: ItemService,
     private boardTilesService: BoardTilesService,
     private colyseusService: ColyseusClientService,
-    private bic: BoardItemControlService
+    private bic: BoardItemControlService,
+    private gss: GameSettingsService
   ) {}
 
   /** Access function providing a slim interface for initializations with feedback */

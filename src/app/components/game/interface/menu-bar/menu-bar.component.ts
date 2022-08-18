@@ -1,20 +1,14 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { BrowserModule } from '@angular/platform-browser';
-import {
-  animate,
-  animateChild,
-  animation,
-  AnimationEvent,
-  group,
-  query,
-  sequence,
-  state,
-  style,
-  transition,
-  trigger,
-} from '@angular/animations';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { faClipboard, faGears, faHome, faPersonBooth } from '@fortawesome/free-solid-svg-icons';
 import { Player } from '../../../../model/state/Player';
+
+export enum TabIndex {
+  CLOSED,
+  HOME,
+  RULES,
+  VOTE,
+  SETTINGS,
+}
 
 @Component({
   selector: 'app-menu-bar',
@@ -28,9 +22,17 @@ export class MenuBarComponent {
   @ViewChild('registerFooter') registerFooter: ElementRef;
   @ViewChild('tabEdge') tabEdge: ElementRef;
 
-  tabIndex = 0;
+  readonly TABS = TabIndex;
 
-  toggleTab(targetTabIndex: number): void {
+  public tabIndex: TabIndex = TabIndex.CLOSED;
+
+  //Font Awesome Icons
+  public faGears = faGears;
+  public faPersonBooth = faPersonBooth;
+  public faClipboard = faClipboard;
+  public faHome = faHome;
+
+  toggleTab(targetTabIndex: TabIndex): void {
     if (this.tabIndex === targetTabIndex) {
       this.unselectTab(targetTabIndex);
     } else {
@@ -38,13 +40,13 @@ export class MenuBarComponent {
     }
   }
 
-  private selectTab(targetTabIndex: number): void {
+  private selectTab(targetTabIndex: TabIndex): void {
     this.tabIndex = targetTabIndex;
   }
 
-  private unselectTab(targetTabIndex: number): void {
+  private unselectTab(targetTabIndex: TabIndex): void {
     if (this.tabIndex === targetTabIndex) {
-      this.tabIndex = 0;
+      this.tabIndex = TabIndex.CLOSED;
     }
   }
 }

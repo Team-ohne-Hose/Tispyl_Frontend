@@ -1,9 +1,22 @@
-
 .golden-border {
   border-radius: 50%;
   padding: 5px;
-  background: radial-gradient(ellipse farthest-corner at left bottom, #FEDB37 0%, #FDB931 8%, #9f7928 30%, #8A6E2F 40%, transparent 80%),
-  radial-gradient(ellipse farthest-corner at right top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%);
+  background: radial-gradient(
+      ellipse farthest-corner at left bottom,
+      #fedb37 0%,
+      #fdb931 8%,
+      #9f7928 30%,
+      #8a6e2f 40%,
+      transparent 80%
+    ),
+    radial-gradient(
+      ellipse farthest-corner at right top,
+      #ffffff 0%,
+      #ffffac 8%,
+      #d1b464 25%,
+      #5d4a1f 62.5%,
+      #5d4a1f 100%
+    );
 }
 
 .round-avatar {
@@ -20,5 +33,20 @@
   height: 100%;
   width: 100%;
   border-radius: 50%;
-  object-fit: contain;
+  object-fit: cover;
+}
+
+.icon-container .upload-icon {
+  display: grid;
+  align-content: end;
+
+  margin-left: -1rem;
+  z-index: 100;
+  cursor: pointer;
+}
+
+.icon-container {
+  display: flex;
+  flex-direction: row;
+  color: var(--dim-text-color);
 }

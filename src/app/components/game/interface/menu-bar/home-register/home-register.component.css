@@ -53,23 +53,6 @@
   flex-direction: row;
 }
 
-.round-avatar {
-  height: 50px;
-  width: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-}
-
-.round-avatar img {
-  border: var(--accent-color) solid 1px;
-  height: 100%;
-  width: 100%;
-  border-radius: 50%;
-  object-fit: contain;
-}
-
 .bottle-cap-cover {
   border-radius: 50%;
   height: 100%;

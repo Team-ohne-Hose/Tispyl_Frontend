@@ -75,7 +75,11 @@ import { CustomPopoverComponent } from './components/framework/custom-popover/cu
 import { PrescriptPipe } from './components/game/interface/connected-players/prescript.pipe';
 import { ShortcutOverlayComponent } from './components/game/interface/shortcut-overlay/shortcut-overlay.component';
 import { IntroductionComponent } from './components/game/interface/introduction/introduction.component';
-
+import { MenuSettingsComponent } from './components/game/interface/menu-bar/settings/menu-settings.component';
+import { VolumeSlider } from './components/game/interface/menu-bar/settings/volume/volume-slider.component';
+import { AvatarSectionComponent } from './components/game/interface/menu-bar/avatar-section/avatar-section.component';
+import { BottleCapPickerComponent } from './components/game/interface/menu-bar/bottle-cap-picker/bottle-cap-picker.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 const appRoutes: Routes = [
   {
     path: '',
@@ -166,6 +170,10 @@ const appRoutes: Routes = [
     PrescriptPipe,
     ShortcutOverlayComponent,
     IntroductionComponent,
+    MenuSettingsComponent,
+    VolumeSlider,
+    AvatarSectionComponent,
+    BottleCapPickerComponent,
   ],
   imports: [
     RouterModule.forRoot(
@@ -193,6 +201,7 @@ const appRoutes: Routes = [
     MatSlideToggleModule,
     CdkStepperModule,
     NgbModule,
+    FontAwesomeModule,
   ],
   providers: [
     {
