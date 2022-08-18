@@ -1,10 +1,10 @@
-<div class="avatar-section d-flex">
-  <div class="round-avatar golden-border">
-    <img [src]="userImageUrl" alt="'Userimage'" />
-  </div>
-  <div (click)="fileInput.click()" class="upload-icon"><i class="fas fa-file-upload"></i></div>
-  <input #fileInput (change)="changeImage($event)" style="display: none" type="file" />
-</div>
+<app-player-icon
+  [enableUpload]="true"
+  [player]="currentPlayer"
+  size="65px"
+  borderThickness="5px"
+  style="margin-bottom: 1rem"
+></app-player-icon>
 
 <div class="info-section ms-3 mb-3">
   <div>

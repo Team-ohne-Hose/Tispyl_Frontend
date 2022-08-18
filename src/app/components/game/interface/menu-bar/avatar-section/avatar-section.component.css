@@ -1,0 +1,80 @@
+.user-info-box {
+  display: flex;
+  justify-content: space-between;
+  padding-left: 16px;
+  padding-top: 16px;
+  margin-bottom: -8px;
+}
+
+.info-section {
+  display: flex;
+  flex-direction: row;
+}
+
+.round-avatar {
+  height: 50px;
+  width: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}
+
+.round-avatar img {
+  border: var(--accent-color) solid 1px;
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.round-avatar.bottle-cap {
+  height: 75px;
+  width: 75px;
+}
+
+.bottle-cap-cover {
+  border-radius: 50%;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.bottle-cap-cover img {
+  height: 145%;
+  width: 145%;
+  border-radius: 0%;
+  border: 0px;
+  object-fit: cover;
+  object-position: -14px -14px;
+}
+
+.golden-border {
+  border-radius: 50%;
+  padding: 5px;
+  background: radial-gradient(
+      ellipse farthest-corner at left bottom,
+      #fedb37 0%,
+      #fdb931 8%,
+      #9f7928 30%,
+      #8a6e2f 40%,
+      transparent 80%
+    ),
+    radial-gradient(
+      ellipse farthest-corner at right top,
+      #ffffff 0%,
+      #ffffac 8%,
+      #d1b464 25%,
+      #5d4a1f 62.5%,
+      #5d4a1f 100%
+    );
+}
+
+.user-name {
+  font-size: large;
+}
+
+.sub-script {
+  font-size: small;
+  color: grey;
+}

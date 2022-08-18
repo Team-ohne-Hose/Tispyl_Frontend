@@ -3,10 +3,11 @@ import { faClipboard, faGears, faHome, faPersonBooth } from '@fortawesome/free-s
 import { Player } from '../../../../model/state/Player';
 
 export enum TabIndex {
-  'Home' = 1,
-  'Rules' = 2,
-  'Vote' = 3,
-  'Settings' = 4,
+  CLOSED,
+  HOME,
+  RULES,
+  VOTE,
+  SETTINGS,
 }
 
 @Component({
@@ -21,7 +22,9 @@ export class MenuBarComponent {
   @ViewChild('registerFooter') registerFooter: ElementRef;
   @ViewChild('tabEdge') tabEdge: ElementRef;
 
-  public tabIndex: TabIndex = 0;
+  readonly TABS = TabIndex;
+
+  public tabIndex: TabIndex = TabIndex.CLOSED;
 
   //Font Awesome Icons
   public faGears = faGears;
@@ -43,7 +46,7 @@ export class MenuBarComponent {
 
   private unselectTab(targetTabIndex: TabIndex): void {
     if (this.tabIndex === targetTabIndex) {
-      this.tabIndex = 0;
+      this.tabIndex = TabIndex.CLOSED;
     }
   }
 }

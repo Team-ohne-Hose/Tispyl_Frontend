@@ -24,7 +24,7 @@ export class VolumeSlider implements OnInit, OnDestroy {
     this.subscriptionVolume = this.gss.musicVolume.subscribe((volume: number) => {
       this.volumeMusic = volume;
     });
-    this.subscriptionSoundEffects = this.subscriptionVolume = this.gss.soundEffectVolume.subscribe((volume: number) => {
+    this.subscriptionSoundEffects = this.gss.soundEffectVolume.subscribe((volume: number) => {
       this.volumeSoundEffects = volume;
     });
 

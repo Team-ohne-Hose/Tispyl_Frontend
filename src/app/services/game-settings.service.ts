@@ -4,7 +4,7 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 export enum StorageKey {
   VolumeMusic = 'volume_music',
   VolumeSoundEffects = 'volume_sound_effects',
-  PersistNamePlates = 'persistant_name_plates',
+  PersistNamePlates = 'persistent_name_plates',
 }
 
 @Injectable({
@@ -27,7 +27,6 @@ export class GameSettingsService implements OnDestroy {
   private subSoundEffects: Subscription;
 
   constructor() {
-    console.log('Hi Sett.');
     this.persistentNamePlates.next(this.getValueFromLocalStroage(StorageKey.PersistNamePlates) ?? false);
     this.soundEffectVolume.next(this.getValueFromLocalStroage(StorageKey.VolumeSoundEffects) ?? 0.5);
 
@@ -35,11 +34,9 @@ export class GameSettingsService implements OnDestroy {
       this.setValueInLocalStorage(StorageKey.PersistNamePlates, isPersistent);
     });
     this.subVolume = this.musicVolume.subscribe((volume) => {
-      console.log(volume);
       this.setValueInLocalStorage(StorageKey.VolumeMusic, volume);
     });
     this.subSoundEffects = this.soundEffectVolume.subscribe((volume) => {
-      console.log(volume);
       this.setValueInLocalStorage(StorageKey.VolumeSoundEffects, volume);
     });
   }

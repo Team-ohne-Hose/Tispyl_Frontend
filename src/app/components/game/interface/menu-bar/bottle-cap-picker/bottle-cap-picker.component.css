@@ -1,59 +1,9 @@
-.user-info-box {
-  display: flex;
-  justify-content: space-between;
-  padding-left: 16px;
-  padding-top: 16px;
-  margin-bottom: -8px;
-}
-
-.avatar-section {
-  position: relative;
-  display: flex;
-  flex-direction: row;
-  color: var(--dim-text-color);
-}
-
-.avatar-section .upload-icon {
-  display: grid;
-  align-content: end;
-}
-
-.upload-icon {
-  margin-left: -1rem;
-  position: absolute;
-  bottom: 1rem;
-  right: 0;
-  cursor: pointer;
-}
-
 .bottle-cap-section {
   display: flex;
   align-items: center;
   flex-direction: row;
   color: var(--dim-text-color);
   pointer-events: all;
-}
-
-.info-section {
-  display: flex;
-  flex-direction: row;
-}
-
-.round-avatar {
-  height: 50px;
-  width: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-}
-
-.round-avatar img {
-  border: var(--accent-color) solid 1px;
-  height: 100%;
-  width: 100%;
-  border-radius: 50%;
-  object-fit: cover;
 }
 
 .round-avatar.bottle-cap {
@@ -97,16 +47,6 @@
       #5d4a1f 100%
     );
 }
-
-.user-name {
-  font-size: large;
-}
-
-.sub-script {
-  font-size: small;
-  color: grey;
-}
-
 .c-pointer {
   cursor: pointer;
 }

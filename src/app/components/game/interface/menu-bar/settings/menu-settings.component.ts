@@ -6,7 +6,7 @@ import { faGears } from '@fortawesome/free-solid-svg-icons';
 @Component({
   selector: 'app-menu-bar-settings',
   templateUrl: './menu-settings.component.html',
-  styleUrls: ['../menu-bar.component.css', '../user-info.css'],
+  styleUrls: ['./menu-settings.component.css'],
 })
 export class MenuSettingsComponent implements OnInit, OnDestroy {
   public persistentNamePlates = this.gss.getValueFromLocalStroage(StorageKey.PersistNamePlates);

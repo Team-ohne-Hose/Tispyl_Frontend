@@ -8,7 +8,7 @@ import { LoginUser, UserService } from 'src/app/services/user.service';
 @Component({
   selector: 'app-menu-avatar',
   templateUrl: './avatar-section.component.html',
-  styleUrls: ['../menu-bar.component.css', '../user-info.css'],
+  styleUrls: ['./avatar-section.component.css'],
 })
 export class AvatarSectionComponent {
   userImageUrl = '../assets/defaultImage.jpg';

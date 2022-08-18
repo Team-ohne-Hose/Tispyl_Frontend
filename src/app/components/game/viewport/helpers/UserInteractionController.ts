@@ -11,7 +11,7 @@ export class UserInteractionController {
   cameraControls: GameBoardOrbitControl;
   audioControls: AudioControl;
 
-  constructor(public bic: BoardItemControlService, public gss: GameSettingsService) {
+  constructor(private bic: BoardItemControlService, private gss: GameSettingsService) {
     this.mouseInteractions = new MouseInteraction(bic);
     this.cameraControls = new GameBoardOrbitControl(bic.camera, bic.rendererDomReference);
     this.keyboardInteractions = new KeyboardInteraction(bic, this.cameraControls);

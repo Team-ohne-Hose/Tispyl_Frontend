@@ -7,7 +7,7 @@ import { ObjectLoaderService } from 'src/app/services/object-loader/object-loade
 @Component({
   selector: 'app-menu-bottle-cap-picker',
   templateUrl: './bottle-cap-picker.component.html',
-  styleUrls: ['../menu-bar.component.css', '../user-info.css'],
+  styleUrls: ['./bottle-cap-picker.component.css'],
 })
 export class BottleCapPickerComponent {
   bottleCapUrl: string;
