@@ -5,6 +5,7 @@ import { PhysicsEntity, PhysicsEntityVariation, PlayerModel } from '../../model/
 import { Texture } from 'three';
 import { Observable, Observer, Subject, Subscription } from 'rxjs';
 import { Color, CubeMap, EntityList, PlayerModelData, Progress, ResourceData } from './loaderTypes';
+import { ClickedTarget } from 'src/app/components/game/viewport/helpers/PhysicsCommands';
 
 @Injectable({
   providedIn: 'root',
@@ -459,6 +460,8 @@ export class ObjectLoaderService {
     gameBoard.castShadow = false;
     gameBoard.receiveShadow = true;
     gameBoard.name = 'gameboard';
+    gameBoard.userData.clickRole = ClickedTarget.board;
+
     this.gameBoardMat.roughness = 0.475;
 
     this.tLoader.load(

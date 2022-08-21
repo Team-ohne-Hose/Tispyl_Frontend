@@ -194,14 +194,6 @@ export class PhysicsCommands {
     this.bic.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
   }
 
-  removePhysics(physId: number): void {
-    const cmd: PhysicsCommandRemove = {
-      type: MessageType.PHYSICS_MESSAGE,
-      subType: PhysicsCommandType.remove,
-      objectID: physId,
-    };
-  }
-
   private _generateEntityFromItem(item: PhysicsObjectState): void {
     this._generateEntity(
       item.entity,
