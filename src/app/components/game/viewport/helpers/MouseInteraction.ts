@@ -58,25 +58,33 @@ export class MouseInteraction {
 
   private _mouseMoved(event: MouseEvent): void {
     if (this.currentlySelected !== undefined) {
-      const intersects = this._rayIntersectionsEv(event);
+      const intersects = this._rayIntersections(
+        event.clientX,
+        event.clientY,
+        this.interactable.filter((object: THREE.Object3D) => {
+          return object.userData.clickRole === ClickedTarget.board;
+        })
+      );
       if (intersects.length > 0) {
         const point = intersects[0].point;
+        // hover figure over board
         this.bic.hoverGameFigure(this.currentlySelected.obj, point.x, point.z);
       }
-    } else if (this.bic.itemService.isTargeting()) {
+    } else {
       const intersects = this._rayIntersectionsEv(event);
-      if (intersects.length > 0) {
-        const type = this.getClickedType(intersects[0].object);
-        if (type === ClickedTarget.figure) {
-          const obj = intersects[0].object;
-          const targetFigureId = this.bic.gameState.getMyFigureId();
-          if (targetFigureId !== obj.userData.physicsId) {
-            const targetPlayer: Player = this.bic.gameState
-              .getPlayerArray()
-              .find((p) => p.figureId === obj.userData.physicsId);
-            if (targetPlayer !== undefined) {
-              this.bic.itemService.onTargetHover(obj.userData.physicsId);
-            }
+      if (
+        this.bic.itemService.isTargeting() &&
+        intersects.length > 0 &&
+        this.getClickedType(intersects[0].object) === ClickedTarget.figure
+      ) {
+        const obj = intersects[0].object;
+        const targetFigureId = this.bic.gameState.getMyFigureId();
+        if (targetFigureId !== obj.userData.physicsId) {
+          const targetPlayer: Player = this.bic.gameState
+            .getPlayerArray()
+            .find((p) => p.figureId === obj.userData.physicsId);
+          if (targetPlayer !== undefined) {
+            this.bic.itemService.onTargetHover(obj.userData.physicsId);
           }
         }
       }
@@ -84,14 +92,15 @@ export class MouseInteraction {
   }
 
   private _rayIntersectionsEv(event: MouseEvent): THREE.Intersection[] {
-    return this._rayIntersections(event.clientX, event.clientY);
+    return this._rayIntersections(event.clientX, event.clientY, this.interactable);
   }
 
-  private _rayIntersections(x: number, y: number): THREE.Intersection[] {
+  private _rayIntersections(x: number, y: number, targetCollection: THREE.Object3D[]): THREE.Intersection[] {
     const normX = (x / this.currentSize.width) * 2 - 1;
     const normY = -(y / this.currentSize.height) * 2 + 1;
     this.raycaster.setFromCamera({ x: normX, y: normY }, this.camera);
-    return this.raycaster.intersectObjects(this.interactable);
+
+    return this.raycaster.intersectObjects(targetCollection);
   }
 
   mouseDown(event: MouseEvent): void {
@@ -150,12 +159,11 @@ export class MouseInteraction {
   }
 
   clickCoords(x: number, y: number): void {
-    const intersects = this._rayIntersections(x, y);
+    const intersects = this._rayIntersections(x, y, this.interactable);
 
     if (intersects.length > 0) {
       const point = intersects[0].point;
       const type = this.getClickedType(intersects[0].object);
-      console.log('Intersecting:', intersects[0].object.name, type);
       if (type === ClickedTarget.board) {
         if (!this.handleBoardTileClick(point)) {
           this.bic.addFlummi(

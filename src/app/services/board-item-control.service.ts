@@ -153,10 +153,10 @@ export class BoardItemControlService {
     }
   }
 
-  hoverGameFigure(object: THREE.Object3D, x: number, y: number): void {
+  hoverGameFigure(object: THREE.Object3D, x: number, z: number): void {
     const physID = PhysicsCommands.getPhysId(object);
     // pick up figure, set to no spatial velocity, rotation is ok, but the figure shouldnt move.
-    this.physics.setPosition(physID, x, 10, y);
+    this.physics.setPosition(physID, x, 10, z);
     this.physics.setVelocity(physID, 0, 0, 0);
   }
 
