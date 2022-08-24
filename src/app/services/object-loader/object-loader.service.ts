@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
 import { PhysicsEntity, PhysicsEntityVariation, PlayerModel } from '../../model/WsData';
-import { Texture } from 'three';
 import { Observable, Observer, Subject, Subscription } from 'rxjs';
 import { Color, CubeMap, EntityList, PlayerModelData, Progress, ResourceData } from './loaderTypes';
 import { ClickedTarget } from 'src/app/components/game/viewport/helpers/PhysicsCommands';
@@ -417,7 +416,7 @@ export class ObjectLoaderService {
     return { tex: texture, spec: gloss };
   }
 
-  loadBcapLowRes(model: PlayerModel, onDone: (tex: Texture, spec: Texture) => void): void {
+  loadBcapLowRes(model: PlayerModel, onDone: (tex: THREE.Texture, spec: THREE.Texture) => void): void {
     const texData: PlayerModelData = this.texList.get(model);
     if (texData !== undefined) {
       const fname = texData.texFName || 'kronkorken1';
@@ -438,7 +437,7 @@ export class ObjectLoaderService {
     }
   }
 
-  loadBcapTex(model: PlayerModel, onDone: (tex: Texture, spec: Texture) => void): void {
+  loadBcapTex(model: PlayerModel, onDone: (tex: THREE.Texture, spec: THREE.Texture) => void): void {
     const texData: PlayerModelData = this.texList.get(model);
     if (texData !== undefined) {
       const fname = texData.texFName || 'kronkorken1';
@@ -481,7 +480,7 @@ export class ObjectLoaderService {
   }
 
   loadGameTileTexture(texUrl: string): Observable<THREE.Texture> {
-    return new Observable<Texture>((observer: Observer<Texture>) => {
+    return new Observable<THREE.Texture>((observer: Observer<THREE.Texture>) => {
       this.tLoader.load(
         texUrl,
         (texture) => {

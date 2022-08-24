@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { Object3D } from 'three';
 import {
   MessageType,
   PhysicsCommandAngular,
@@ -38,7 +37,7 @@ export enum CollisionGroups {
 export class PhysicsCommands {
   private readonly MAX_ALLOWED_OBJECTS = 200;
 
-  dice: Object3D;
+  dice: THREE.Object3D;
   currentlyLoadingEntities: Map<number, boolean> = new Map<number, boolean>();
 
   addInteractable: (obj: THREE.Object3D) => void;
@@ -55,7 +54,7 @@ export class PhysicsCommands {
    * @param toSearch object tree that is searched
    * @param physId physicsId that is searched for recursively
    */
-  static getObjectByPhysId(toSearch: Object3D, physId: number): THREE.Object3D {
+  static getObjectByPhysId(toSearch: THREE.Object3D, physId: number): THREE.Object3D {
     if (toSearch.userData.physicsId === physId) {
       return toSearch;
     } else {
@@ -66,7 +65,7 @@ export class PhysicsCommands {
     }
   }
 
-  static getPhysId(obj: Object3D): number {
+  static getPhysId(obj: THREE.Object3D): number {
     return obj.userData.physicsId;
   }
 

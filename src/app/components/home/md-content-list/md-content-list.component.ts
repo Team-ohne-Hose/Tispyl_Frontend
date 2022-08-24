@@ -20,6 +20,7 @@ import { MdContentComponent } from './md-content/md-content.component';
 })
 export class MdContentListComponent implements AfterViewInit {
   @Input() src: SourceDirectory;
+  @Input() reverse: boolean;
   @ViewChild(MdContentDirective, { static: true }) newsListRef: MdContentDirective;
 
   availableContent = [];
@@ -34,10 +35,15 @@ export class MdContentListComponent implements AfterViewInit {
 
   /** Initial trigger to load markdown files recursively */
   triggerNewsRecursion(): void {
-    this.mcs.getAvailableContent(this.src).subscribe((contentList: string[]) => {
-      this.availableContent = contentList;
-      this.loadNext(contentList, true);
-    });
+    this.mcs.getAvailableContent(this.src).subscribe(
+      ((contentList: string[]) => {
+        this.availableContent = contentList;
+        if (this.reverse) {
+          this.availableContent.reverse();
+        }
+        this.loadNext(contentList, true);
+      }).bind(this)
+    );
   }
 
   /** Recursive call that loads tiles until a tile is outside of the viewport */

@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { Camera, Object3D, Vector3 } from 'three';
 import { ClickedTarget, PhysicsCommands } from './PhysicsCommands';
 import { BoardItemControlService } from '../../../../services/board-item-control.service';
 import { Player } from '../../../../model/state/Player';
@@ -20,10 +19,10 @@ export class MouseInteraction {
   raycaster = new THREE.Raycaster();
   currentSize = new THREE.Vector2();
 
-  camera: Camera;
-  interactable: Object3D[] = [];
+  camera: THREE.Camera;
+  interactable: THREE.Object3D[] = [];
 
-  currentlySelected: { obj: THREE.Object3D; oldPos: Vector3 };
+  currentlySelected: { obj: THREE.Object3D; oldPos: THREE.Vector3 };
 
   /** Throttled version of the mouseMove function to avoid too many ray casts */
   mouseMoved = this.throttled(15, this._mouseMoved.bind(this));
@@ -33,7 +32,7 @@ export class MouseInteraction {
     this.bic.physics.addInteractable = this.addInteractable.bind(this);
   }
 
-  addInteractable(obj: Object3D): void {
+  addInteractable(obj: THREE.Object3D): void {
     // console.error('pushing obj', obj);
     this.interactable.push(obj);
   }
@@ -226,7 +225,7 @@ export class MouseInteraction {
     return false;
   }
 
-  private getClickedType(o: Object3D): ClickedTarget {
+  private getClickedType(o: THREE.Object3D): ClickedTarget {
     if (o.name === 'gameboard') {
       return ClickedTarget.board;
     } else {

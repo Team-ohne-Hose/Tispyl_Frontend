@@ -1,13 +1,12 @@
 import { Subscription } from 'rxjs';
 import { GameSettingsService } from 'src/app/services/game-settings.service';
 import * as THREE from 'three';
-import { AudioLoader, Camera } from 'three';
 
 export class AudioControl {
   // Sound
   listener = new THREE.AudioListener();
   sound = new THREE.Audio(this.listener);
-  audioLoader = new AudioLoader();
+  audioLoader = new THREE.AudioLoader();
 
   musicVolumeSubscription: Subscription;
 
@@ -17,7 +16,7 @@ export class AudioControl {
     });
   }
 
-  initAudio(cam: Camera): void {
+  initAudio(cam: THREE.Camera): void {
     cam.add(this.listener);
   }
 

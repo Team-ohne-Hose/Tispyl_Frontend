@@ -1,13 +1,11 @@
 import * as THREE from 'three';
 import { Injectable } from '@angular/core';
 import { ObjectLoaderService } from './object-loader/object-loader.service';
-import { BoardLayoutState, Tile } from '../model/state/BoardLayoutState';
+import { Tile } from '../model/state/BoardLayoutState';
 import { GameStateService } from './game-state.service';
-import { ColyseusNotifiable } from './game-initialisation.service';
 import { Progress } from './object-loader/loaderTypes';
-import { forkJoin, Observable, Observer } from 'rxjs';
-import { map, subscribeOn, take, tap } from 'rxjs/operators';
-import { Texture } from 'three';
+import { Observable, Observer } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -236,7 +234,7 @@ export class BoardTilesService {
               }
             })
           )
-          .subscribe((tex: Texture) => {
+          .subscribe((tex: THREE.Texture) => {
             mat['map'] = tex;
             mat['needsUpdate'] = true;
           });
