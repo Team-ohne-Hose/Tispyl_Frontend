@@ -33,7 +33,8 @@ export class BoardItemControlService {
   board: THREE.Mesh;
   markerGeo = new THREE.ConeBufferGeometry(1, 10, 15, 1, false, 0, 2 * Math.PI);
 
-  subscription_persistentNamePlates: Subscription;
+  // subscriptions
+  persistentNamePlates$$: Subscription;
 
   constructor(
     public gameState: GameStateService,
@@ -52,8 +53,8 @@ export class BoardItemControlService {
     }).bind(this);
 
     // Subscribe to Overriding setting to display Name Plates
-    this.subscription_persistentNamePlates = this.gses.persistentNamePlates.subscribe((persistentNamePlates) => {
-      this._showNameTags(persistentNamePlates);
+    this.persistentNamePlates$$ = this.gses.persistentNamePlates.subscribe((persistentNamePlates) => {
+      this.changeNameTagVisibilityInScene(persistentNamePlates);
     });
 
     /** This should be cleaned and clarified */
@@ -147,21 +148,21 @@ export class BoardItemControlService {
 
   // public function to correctly behave with both key and overriding Setting
   showNameTags(isShown: boolean): void {
-    if (!this.gses.persistentNamePlates.value) this._showNameTags(isShown);
+    if (!this.gses.persistentNamePlates.value) this.changeNameTagVisibilityInScene(isShown);
   }
 
   // private function to actually handle show/hide nametags
-  private _showNameTags(isShown: boolean): void {
-    for (const f of this.allFigures) {
-      if (f.labelSprite === undefined) {
-        console.debug('update: adding Sprite for player ', f.name);
-        f.labelSprite = this.loader.createPredefLabelSprite(f.name);
-        f.labelSprite.position.set(0, 5, 0);
+  private changeNameTagVisibilityInScene(isShown: boolean): void {
+    for (const figure of this.allFigures) {
+      if (figure.labelSprite === undefined) {
+        console.debug('update: adding Sprite for player ', figure.name);
+        figure.labelSprite = this.loader.createPredefLabelSprite(figure.name);
+        figure.labelSprite.position.set(0, 5, 0);
       }
       if (isShown) {
-        f.mesh.add(f.labelSprite);
+        figure.mesh.add(figure.labelSprite);
       } else {
-        f.mesh.remove(f.labelSprite);
+        figure.mesh.remove(figure.labelSprite);
       }
     }
   }
