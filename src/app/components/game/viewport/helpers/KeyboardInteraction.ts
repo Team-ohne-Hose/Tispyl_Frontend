@@ -26,7 +26,7 @@ export class KeyboardInteraction {
     switch (event.key) {
       case KEY_EVENT.TAB:
         event.preventDefault();
-        this.bic.hideNameTags(false);
+        this.bic.showNameTags(true);
         break;
       case KEY_EVENT.KEY_W:
         if (timerVertical === undefined) {
@@ -90,7 +90,7 @@ export class KeyboardInteraction {
   keyUp(event: KeyboardEvent): void {
     switch (event.key) {
       case KEY_EVENT.TAB:
-        this.bic.hideNameTags(true);
+        this.bic.showNameTags(false);
         break;
 
       case KEY_EVENT.KEY_A:
