@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ObjectLoaderService } from './object-loader/object-loader.service';
 import { BoardTilesService } from './board-tiles.service';
-import * as THREE from 'three';
+import { Group } from 'three';
 import { GameComponent } from '../components/game/game.component';
 import { ChatService } from './chat.service';
 import { GameStateService } from './game-state.service';
@@ -55,7 +55,7 @@ export class GameInitialisationService {
       game.viewRef.initializeScene(),
       this.objectLoader.loadCommonObjects(),
       this.bic.physics.initializeFromState(),
-      this.boardTilesService.initialize((grp: THREE.Group) => game.viewRef.sceneTree.add(grp)),
+      this.boardTilesService.initialize((grp: Group) => game.viewRef.sceneTree.add(grp)),
       this.bic.createSprites(),
     ].map((o: Observable<Progress>) => this._asProgressChunk(o, totalProgress, observer));
 

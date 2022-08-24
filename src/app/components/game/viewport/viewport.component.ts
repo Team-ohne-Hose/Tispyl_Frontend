@@ -1,6 +1,5 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import * as THREE from 'three';
-import { PerspectiveCamera, Renderer, Scene, Vector3, WebGLRenderer } from 'three';
+import { Scene, PerspectiveCamera, WebGLRenderer, Object3D, DirectionalLight, AmbientLight, Vector3 } from 'three';
 import { UserInteractionController } from './helpers/UserInteractionController';
 import { ObjectLoaderService } from '../../../services/object-loader/object-loader.service';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
@@ -54,9 +53,9 @@ export class ViewportComponent implements AfterViewInit {
     const height = this.view.nativeElement.offsetHeight;
 
     /** Construct an empty scene */
-    this.sceneTree = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera();
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+    this.sceneTree = new Scene();
+    this.camera = new PerspectiveCamera();
+    this.renderer = new WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     this.renderer.setSize(width, height);
     this.renderer.shadowMap.enabled = true;
     this.view.nativeElement.append(this.renderer.domElement);
@@ -96,7 +95,7 @@ export class ViewportComponent implements AfterViewInit {
 
     /** Finalize userInteraction initialization */
     this.userInteractionController.mouseInteractions.updateScreenSize(width, height);
-    this.userInteractionController.cameraControls.target = new THREE.Vector3(
+    this.userInteractionController.cameraControls.target = new Vector3(
       this.boardTiles.borderCoords.x[4],
       5,
       this.boardTiles.borderCoords.y[4]
@@ -113,9 +112,9 @@ export class ViewportComponent implements AfterViewInit {
     this.camera.updateProjectionMatrix();
 
     /** Lighting - NOTE: this setup is tailored specifically to the current object materials and is far off from any physical model */
-    const ambient = new THREE.AmbientLight(0xb1e1ff, 0.8); // soft blue-ish ambient light
-    const sun = new THREE.DirectionalLight(0xf7eee4, 4.5); // warm yellow-ish sun light
-    const sunTarget = new THREE.Object3D().translateY(5);
+    const ambient = new AmbientLight(0xb1e1ff, 0.8); // soft blue-ish ambient light
+    const sun = new DirectionalLight(0xf7eee4, 4.5); // warm yellow-ish sun light
+    const sunTarget = new Object3D().translateY(5);
     sun.position.set(20, 100, 90);
     sun.shadow.camera.left = -60;
     sun.shadow.camera.right = 60;

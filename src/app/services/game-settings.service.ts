@@ -1,4 +1,4 @@
-import { AfterViewInit, EventEmitter, Injectable, OnDestroy, OnInit, Output } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
 export enum StorageKey {
@@ -51,9 +51,10 @@ export class GameSettingsService implements OnDestroy {
     return JSON.parse(localStorage.getItem(key));
   }
 
-  setValueInLocalStorage(key: StorageKey, value: any) {
+  setValueInLocalStorage(key: StorageKey, value: unknown) {
     try {
       localStorage.setItem(key, JSON.stringify(value));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error(err);
     }

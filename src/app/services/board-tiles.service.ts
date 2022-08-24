@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import { Mesh, Texture, Euler, Vector2, Vector3, Quaternion, Group } from 'three';
 import { Injectable } from '@angular/core';
 import { ObjectLoaderService } from './object-loader/object-loader.service';
 import { Tile } from '../model/state/BoardLayoutState';
@@ -22,7 +22,7 @@ export class BoardTilesService {
   };
 
   tiles: Tile[] = [];
-  tileMeshes: THREE.Mesh[] = [];
+  tileMeshes: Mesh[] = [];
   /*
   centerCoords = {
     x: [-25.725, -16.664, -7.259, 1.793, 11.009, 20.208, 29.398, 38.708],
@@ -101,7 +101,7 @@ export class BoardTilesService {
 
   constructor(private objectLoader: ObjectLoaderService, private gameState: GameStateService) {}
 
-  initialize(addToScene: (grp: THREE.Group) => void): Observable<Progress> {
+  initialize(addToScene: (grp: Group) => void): Observable<Progress> {
     return new Observable<Progress>((observer: Observer<Progress>) => {
       addToScene(this.generateField());
       this.gameState.getBoardLayoutAsArray().subscribe((tiles: Tile[]) => {
@@ -116,12 +116,12 @@ export class BoardTilesService {
     });
   }
 
-  getTileRotation(tileID: number): THREE.Quaternion {
-    return new THREE.Quaternion().setFromEuler(new THREE.Euler(0, (this.tileCoords[tileID].r / 2) * Math.PI, 0));
+  getTileRotation(tileID: number): Quaternion {
+    return new Quaternion().setFromEuler(new Euler(0, (this.tileCoords[tileID].r / 2) * Math.PI, 0));
   }
 
-  generateField(): THREE.Group {
-    const group = new THREE.Group();
+  generateField(): Group {
+    const group = new Group();
     for (let tileId = 0; tileId < 64; tileId++) {
       const tileMesh = this.objectLoader.loadGameTile();
       tileMesh.position.set(
@@ -136,12 +136,12 @@ export class BoardTilesService {
     }
     const landscapeBoundary = (x1: number, x2: number, y: number) => {
       const len = this.borderCoords.x[x2] - this.borderCoords.x[x1];
-      const vec = new THREE.Vector2((this.borderCoords.x[x2] + this.borderCoords.x[x1]) / 2, this.borderCoords.y[y]);
+      const vec = new Vector2((this.borderCoords.x[x2] + this.borderCoords.x[x1]) / 2, this.borderCoords.y[y]);
       group.add(this.objectLoader.createBoundary(len, true, vec));
     };
     const portraitBoundary = (x: number, y1: number, y2: number) => {
       const len = this.borderCoords.y[y2] - this.borderCoords.y[y1];
-      const vec = new THREE.Vector2(this.borderCoords.x[x], (this.borderCoords.y[y2] + this.borderCoords.y[y1]) / 2);
+      const vec = new Vector2(this.borderCoords.x[x], (this.borderCoords.y[y2] + this.borderCoords.y[y1]) / 2);
       group.add(this.objectLoader.createBoundary(len, false, vec));
     };
     landscapeBoundary(1, 8, 1);
@@ -179,7 +179,7 @@ export class BoardTilesService {
     };
   }
 
-  coordsToFieldCoords(coords: THREE.Vector3): { x: number; y: number } {
+  coordsToFieldCoords(coords: Vector3): { x: number; y: number } {
     let x = -1,
       y = -1;
     for (let i = 0; i < 9; i++) {
@@ -219,7 +219,7 @@ export class BoardTilesService {
     let count = 0;
     for (const tileId in this.tiles) {
       if (tileId in this.tiles) {
-        const mesh: THREE.Mesh = this.tileMeshes[tileId];
+        const mesh: Mesh = this.tileMeshes[tileId];
         const mat = mesh.material;
         this.objectLoader
           .loadGameTileTexture(this.tiles[tileId].imageUrl)
@@ -234,7 +234,7 @@ export class BoardTilesService {
               }
             })
           )
-          .subscribe((tex: THREE.Texture) => {
+          .subscribe((tex: Texture) => {
             mat['map'] = tex;
             mat['needsUpdate'] = true;
           });

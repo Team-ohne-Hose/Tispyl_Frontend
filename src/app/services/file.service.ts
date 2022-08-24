@@ -24,8 +24,10 @@ export class FileService {
       .pipe(map((apiResponse) => apiResponse.payload));
   }
 
-  removeProfilePicture(user: LoginUser): Observable<any> {
-    return this.httpClient.delete(this.endpoint + `?login_name=${user.login_name}`);
+  removeProfilePicture(user: LoginUser): Observable<void> {
+    return this.httpClient
+      .delete<APIResponse<void>>(this.endpoint + `?login_name=${user.login_name}`)
+      .pipe(map((apiResponse) => apiResponse.payload));
   }
 
   profilePictureSource(name: string, forceUpdate = false): string {
