@@ -89,6 +89,7 @@ const appRoutes: Routes = [
       { path: 'news', component: NewsComponent },
       { path: 'lobby', component: LobbyComponent },
       { path: 'faq', component: FaqComponent },
+      { path: 'updates', component: UpdatesComponent },
       {
         path: 'profile/:userId',
         component: ProfileComponent,

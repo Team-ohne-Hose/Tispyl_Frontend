@@ -46,11 +46,12 @@
           <i class="fas fa-user-circle"></i>
           <span>Profile</span>
         </button>-->
-        <button class="nav-button" title="Die 'Update'-Seite ist noch in bearbeitung." [routerLink]="['./updates']" disabled>
+        <button class="nav-button" title="Die 'Update'-Seite ist noch in bearbeitung." [routerLink]="['./updates']">
           <i class="far fa-clipboard"></i>
           <span>Updates</span>
         </button>
-        <button *ngIf="isLoggedIn" class="nav-button"  title="Die 'Custom'-Seite ist noch in bearbeitung."  [routerLink]="['./custom']" disabled>
+        <button *ngIf="isLoggedIn" class="nav-button" title="Die 'Custom'-Seite ist noch in bearbeitung."
+          [routerLink]="['./custom']" disabled>
           <i class="fas fa-star"></i>
           <span>Custom</span>
         </button>
@@ -94,10 +95,12 @@
   <footer>
     <div class="foot-notes">
       <div class="info">
-        <a class="text-light" [routerLink]="['bug']"><i class="fas fa-bug bug"></i>Käferbericht einreichen</a><i class="fas fa-circle"></i>
+        <a class="text-light" [routerLink]="['bug']"><i class="fas fa-bug bug"></i>Käferbericht einreichen</a><i
+          class="fas fa-circle"></i>
         <a class="text-light" [routerLink]="['imprint']">Impressum</a><i class="fas fa-circle"></i>
         <a class="text-light" [routerLink]="['contact']">Kontakt</a><i class="fas fa-circle"></i>
-        <a class="text-light" href="https://discord.com/invite/kG2kKVzNTp"><i class='fab fa-discord'></i> Discord</a><i class="fas fa-circle"></i>
+        <a class="text-light" href="https://discord.com/invite/kG2kKVzNTp"><i class='fab fa-discord'></i> Discord</a><i
+          class="fas fa-circle"></i>
         <a class="text-light" [routerLink]="['credits']">Credits</a><i class="fas fa-circle"></i>
         <a class="text-light" [routerLink]="['about']">About</a>
       </div>
