@@ -6,12 +6,11 @@ import { BoardTilesService } from './board-tiles.service';
 import { ItemService } from './items-service/item.service';
 import { ViewportComponent } from '../components/game/viewport/viewport.component';
 import * as THREE from 'three';
-import { ColyseusNotifiable } from './game-initialisation.service';
 import { Player } from '../model/state/Player';
-import { MapSchema } from '@colyseus/schema';
 import { GameActionType, GameSetTile, MessageType } from '../model/WsData';
-import { Observable, Observer } from 'rxjs';
+import { Observable, Observer, Subscription } from 'rxjs';
 import { Progress } from './object-loader/loaderTypes';
+import { GameSettingsService } from './game-settings.service';
 
 export interface FigureItem {
   mesh: THREE.Object3D;
@@ -34,11 +33,15 @@ export class BoardItemControlService {
   board: THREE.Mesh;
   markerGeo = new THREE.ConeBufferGeometry(1, 10, 15, 1, false, 0, 2 * Math.PI);
 
+  // subscriptions
+  persistentNamePlates$$: Subscription;
+
   constructor(
     public gameState: GameStateService,
     public loader: ObjectLoaderService,
     public boardTiles: BoardTilesService,
-    public itemService: ItemService
+    public itemService: ItemService,
+    private gses: GameSettingsService
   ) {
     this.physics = new PhysicsCommands(this);
 
@@ -48,6 +51,11 @@ export class BoardItemControlService {
       this.allFigures.push({ mesh: mesh, labelSprite: undefined, name: name, isHidden: false });
       console.debug('adding to BoardItemManagement´s list of figures', name, mesh, this.allFigures);
     }).bind(this);
+
+    // Subscribe to Overriding setting to display Name Plates
+    this.persistentNamePlates$$ = this.gses.persistentNamePlates.subscribe((persistentNamePlates) => {
+      this.changeNameTagVisibilityInScene(persistentNamePlates);
+    });
 
     /** This should be cleaned and clarified */
     this.gameState.playerListChanges$.subscribe((p: Player) => {
@@ -138,17 +146,23 @@ export class BoardItemControlService {
     });
   }
 
-  hideNameTags(isHidden: boolean): void {
-    for (const f of this.allFigures) {
-      if (f.labelSprite === undefined) {
-        console.debug('update: adding Sprite for player ', f.name);
-        f.labelSprite = this.loader.createPredefLabelSprite(f.name);
-        f.labelSprite.position.set(0, 5, 0);
+  // public function to correctly behave with both key and overriding Setting
+  showNameTags(isShown: boolean): void {
+    if (!this.gses.persistentNamePlates.value) this.changeNameTagVisibilityInScene(isShown);
+  }
+
+  // private function to actually handle show/hide nametags
+  private changeNameTagVisibilityInScene(isShown: boolean): void {
+    for (const figure of this.allFigures) {
+      if (figure.labelSprite === undefined) {
+        console.debug('update: adding Sprite for player ', figure.name);
+        figure.labelSprite = this.loader.createPredefLabelSprite(figure.name);
+        figure.labelSprite.position.set(0, 5, 0);
       }
-      if (isHidden) {
-        f.mesh.remove(f.labelSprite);
+      if (isShown) {
+        figure.mesh.add(figure.labelSprite);
       } else {
-        f.mesh.add(f.labelSprite);
+        figure.mesh.remove(figure.labelSprite);
       }
     }
   }
