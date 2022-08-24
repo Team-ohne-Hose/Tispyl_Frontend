@@ -12,7 +12,9 @@
     "test": "ng test",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "build:analyze": "ng build --configuration production_sourcemap",
+    "analyze:package": "source-map-explorer ./dist/BrettSpiel/*.js --no-border-checks"
   },
   "husky": {
     "hooks": {

@@ -1,7 +1,13 @@
-<div>
-  <h1>Hier kommen dan Patchnodes hin</h1>
-  <p>Braucht eine "karte" oder ähnliches die immer eine Patchnotiz enthält oder so ? Davon dann N stück unter
-    einander mit einem Loading cap oder so.
-  </p>
-</div>
+<div class="updates-layout">
+  <app-md-content-list class="updates" [src]=src [reverse]="true"></app-md-content-list>
 
+  <div class="sticky-swim-lane">
+    <div class="updates-quick-links">
+      <div class="updates-quick-header">Updates:</div>
+      <div class="updates-quick-item" *ngFor="let update of availableUpdates" [attr.id]='update'>
+        <a [routerLink]='"."' [fragment]="update">{{ update | resolveToHeadline | async }}</a>
+      </div>
+    </div>
+  </div>
+
+</div>

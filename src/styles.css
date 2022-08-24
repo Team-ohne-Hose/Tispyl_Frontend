@@ -79,7 +79,8 @@ body {
   font-family: Roboto, sans-serif;
   margin: 0;
   background: #3d3d3d url('assets/triangleBackground.jpg');
-  line-height: 1.2 !important; /*override bootstrap default*/
+  line-height: 1.2 !important;
+  /*override bootstrap default*/
 }
 
 button {
@@ -230,12 +231,18 @@ body {
 }
 
 .disable-user-select {
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Chrome/Safari/Opera */
-  -khtml-user-select: none; /* Konqueror */
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently supported by any browser but < IE9 */
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Chrome/Safari/Opera */
+  -khtml-user-select: none;
+  /* Konqueror */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently supported by any browser but < IE9 */
 }
 
 .popover-body-class {

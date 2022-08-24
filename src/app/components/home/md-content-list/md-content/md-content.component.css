@@ -6,3 +6,17 @@
   -moz-box-shadow: 3px 3px 11px 0 rgb(0, 0, 0);
   box-shadow: 3px 3px 11px 0 rgb(0, 0, 0);
 }
+
+.md img {
+  max-height: 23rem;
+  max-width: 70%;
+  margin-left: 2rem;
+  object-fit: contain;
+  margin-bottom: 1rem;
+}
+
+.md img.centered {
+  width: calc(100% - 4rem);
+  max-width: calc(100% - 4rem);
+  margin-left: 2rem;
+}

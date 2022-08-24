@@ -1,8 +1,23 @@
 import { Injectable } from '@angular/core';
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import * as THREE from 'three';
+import {
+  TextureLoader,
+  Texture,
+  BoxBufferGeometry,
+  sRGBEncoding,
+  MeshStandardMaterial,
+  CubeTextureLoader,
+  CubeTexture,
+  Object3D,
+  Mesh,
+  Material,
+  LinearEncoding,
+  Sprite,
+  Vector2,
+  SpriteMaterial,
+  CanvasTexture,
+} from 'three';
 import { PhysicsEntity, PhysicsEntityVariation, PlayerModel } from '../../model/WsData';
-import { Texture } from 'three';
 import { Observable, Observer, Subject, Subscription } from 'rxjs';
 import { Color, CubeMap, EntityList, PlayerModelData, Progress, ResourceData } from './loaderTypes';
 import { ClickedTarget } from 'src/app/components/game/viewport/helpers/PhysicsCommands';
@@ -191,8 +206,8 @@ export class ObjectLoaderService {
   ];
 
   currentCubeMap = 2;
-  tLoader = new THREE.TextureLoader();
-  defaultTileTexture: THREE.Texture;
+  tLoader = new TextureLoader();
+  defaultTileTexture: Texture;
   defaultTileTexturePath = '/assets/board/default.png';
   gameBoardTextureURL = '/assets/tischspiel_clear.png';
   private readonly resourcePath = '/assets/models/';
@@ -204,7 +219,7 @@ export class ObjectLoaderService {
     lowResTex: undefined,
     tex: undefined,
     spec: undefined,
-    subject: new Subject<{ tex: THREE.Texture; spec: THREE.Texture }>(),
+    subject: new Subject<{ tex: Texture; spec: Texture }>(),
     objectList: [],
   });
 
@@ -260,17 +275,17 @@ export class ObjectLoaderService {
     },
   };
 
-  private gameBoardGeo = new THREE.BoxBufferGeometry(100, 1, 100);
-  private gameTileGeo = new THREE.BoxBufferGeometry(10, 1, 10);
+  private gameBoardGeo = new BoxBufferGeometry(100, 1, 100);
+  private gameTileGeo = new BoxBufferGeometry(10, 1, 10);
 
-  private gameBoardMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
-  private gameBoundaryMat = new THREE.MeshStandardMaterial({ color: 0xfadd12 });
+  private gameBoardMat = new MeshStandardMaterial({ color: 0xffffff });
+  private gameBoundaryMat = new MeshStandardMaterial({ color: 0xfadd12 });
 
   constructor() {
     this.tLoader.load(
       this.defaultTileTexturePath,
       (texture) => {
-        texture.encoding = THREE.sRGBEncoding;
+        texture.encoding = sRGBEncoding;
         texture.anisotropy = 16;
         this.defaultTileTexture = texture;
       },
@@ -306,7 +321,7 @@ export class ObjectLoaderService {
 
   async loadHiResTex(): Promise<void> {
     this.texList.forEach((val: PlayerModelData, key: PlayerModel) => {
-      this.loadBcapTex(key, (tex: THREE.Texture, spec: THREE.Texture) => {
+      this.loadBcapTex(key, (tex: Texture, spec: Texture) => {
         val.subject.next({ tex: tex, spec: spec });
       });
     });
@@ -326,10 +341,10 @@ export class ObjectLoaderService {
     }
   }
 
-  getCubeMap(cubeMapId?: number): THREE.CubeTexture {
+  getCubeMap(cubeMapId?: number): CubeTexture {
     cubeMapId = cubeMapId || this.currentCubeMap;
     if (this.cubeMaps[cubeMapId].tex === undefined) {
-      const tex = new THREE.CubeTextureLoader()
+      const tex = new CubeTextureLoader()
         .setPath(this.cubeMaps[cubeMapId].path)
         .load([
           this.cubeMaps[cubeMapId].px,
@@ -353,7 +368,7 @@ export class ObjectLoaderService {
     return '../assets/models/otherTex/' + (entry === undefined ? 'default' : entry.texFName) + '_128.png';
   }
 
-  loadObject(obj: PhysicsEntity, variation: PhysicsEntityVariation, callback: (model: THREE.Object3D) => void): void {
+  loadObject(obj: PhysicsEntity, variation: PhysicsEntityVariation, callback: (model: Object3D) => void): void {
     const resource = this.getResourceData(obj, variation);
     if (resource.objectCache !== undefined) {
       callback(resource.objectCache.clone(true));
@@ -371,7 +386,7 @@ export class ObjectLoaderService {
     }
   }
 
-  switchTex(obj: THREE.Object3D, model: PlayerModel): void {
+  switchTex(obj: Object3D, model: PlayerModel): void {
     if (model === undefined) {
       return;
     }
@@ -389,7 +404,7 @@ export class ObjectLoaderService {
     // gather correct Texture
     const tex = this.getTexture(model);
 
-    const mesh: THREE.Mesh = obj as THREE.Mesh;
+    const mesh: Mesh = obj as Mesh;
 
     if (!(mesh.material instanceof Array) && mesh.material.isMaterial && tex !== undefined) {
       mesh.material = mesh.material.clone();
@@ -400,20 +415,20 @@ export class ObjectLoaderService {
         subscription.unsubscribe();
       }
       mesh.userData['textureSubscription'] = this.texList.get(model).subject.subscribe({
-        next: (newTexture: { tex: THREE.Texture; spec: THREE.Texture }) => {
-          mesh.material = (mesh.material as THREE.Material).clone();
+        next: (newTexture: { tex: Texture; spec: Texture }) => {
+          mesh.material = (mesh.material as Material).clone();
           mesh.material['map'] = tex;
         },
       });
     }
   }
 
-  loadTex(fname: string, fnameSpec: string): { tex: THREE.Texture; spec: THREE.Texture } {
-    const texture = new THREE.TextureLoader().load('/assets/models/otherTex/' + fname + '.png');
-    texture.encoding = THREE.sRGBEncoding;
+  loadTex(fname: string, fnameSpec: string): { tex: Texture; spec: Texture } {
+    const texture = new TextureLoader().load('/assets/models/otherTex/' + fname + '.png');
+    texture.encoding = sRGBEncoding;
     texture.anisotropy = 16;
-    const gloss = new THREE.TextureLoader().load('/assets/models/otherTex/' + fnameSpec + '.png');
-    gloss.encoding = THREE.LinearEncoding;
+    const gloss = new TextureLoader().load('/assets/models/otherTex/' + fnameSpec + '.png');
+    gloss.encoding = LinearEncoding;
     return { tex: texture, spec: gloss };
   }
 
@@ -454,8 +469,8 @@ export class ObjectLoaderService {
     }
   }
 
-  generateGameBoard(): THREE.Mesh {
-    const gameBoard = new THREE.Mesh(this.gameBoardGeo, this.gameBoardMat);
+  generateGameBoard(): Mesh {
+    const gameBoard = new Mesh(this.gameBoardGeo, this.gameBoardMat);
     gameBoard.position.y = -0.1;
     gameBoard.castShadow = false;
     gameBoard.receiveShadow = true;
@@ -467,7 +482,7 @@ export class ObjectLoaderService {
     this.tLoader.load(
       this.gameBoardTextureURL,
       (texture) => {
-        texture.encoding = THREE.sRGBEncoding;
+        texture.encoding = sRGBEncoding;
         texture.anisotropy = 16;
         this.gameBoardMat.map = texture;
         this.gameBoardMat.needsUpdate = true;
@@ -480,12 +495,12 @@ export class ObjectLoaderService {
     return gameBoard;
   }
 
-  loadGameTileTexture(texUrl: string): Observable<THREE.Texture> {
+  loadGameTileTexture(texUrl: string): Observable<Texture> {
     return new Observable<Texture>((observer: Observer<Texture>) => {
       this.tLoader.load(
         texUrl,
         (texture) => {
-          texture.encoding = THREE.sRGBEncoding;
+          texture.encoding = sRGBEncoding;
           texture.anisotropy = 16;
           observer.next(texture);
           observer.complete();
@@ -500,10 +515,10 @@ export class ObjectLoaderService {
     });
   }
 
-  loadGameTile(): THREE.Mesh {
-    const gameTileMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
+  loadGameTile(): Mesh {
+    const gameTileMat = new MeshStandardMaterial({ color: 0xffffff });
     gameTileMat.roughness = 0.8;
-    const gameTile = new THREE.Mesh(this.gameTileGeo, gameTileMat);
+    const gameTile = new Mesh(this.gameTileGeo, gameTileMat);
     gameTile.receiveShadow = true;
     gameTile.name = 'gametile';
 
@@ -512,7 +527,7 @@ export class ObjectLoaderService {
     return gameTile;
   }
 
-  createBoundary(length: number, rotatedLandscape: boolean, center: THREE.Vector2): THREE.Mesh {
+  createBoundary(length: number, rotatedLandscape: boolean, center: Vector2): Mesh {
     let w = 0.3,
       d = 0.3;
     if (rotatedLandscape) {
@@ -521,17 +536,17 @@ export class ObjectLoaderService {
       d = length + 0.3;
     }
 
-    const gameBoundaryGeo = new THREE.BoxBufferGeometry(w, 0.3, d);
+    const gameBoundaryGeo = new BoxBufferGeometry(w, 0.3, d);
     this.gameBoundaryMat.metalness = 1;
     this.gameBoundaryMat.roughness = 0.06;
-    const gameBoundary = new THREE.Mesh(gameBoundaryGeo, this.gameBoundaryMat);
+    const gameBoundary = new Mesh(gameBoundaryGeo, this.gameBoundaryMat);
     gameBoundary.castShadow = true;
     gameBoundary.receiveShadow = true;
     gameBoundary.position.set(center.x, 0.7, center.y);
     return gameBoundary;
   }
 
-  updateLabelSpriteText(sprite: THREE.Sprite, text: string): void {
+  updateLabelSpriteText(sprite: Sprite, text: string): void {
     sprite.userData.text = ' ' + text + ' ';
     this.drawCanvas(
       sprite.userData.canvas,
@@ -546,7 +561,7 @@ export class ObjectLoaderService {
     );
   }
 
-  createPredefLabelSprite(text: string): THREE.Sprite {
+  createPredefLabelSprite(text: string): Sprite {
     return this.createLabelSprite(
       text,
       70,
@@ -568,7 +583,7 @@ export class ObjectLoaderService {
     borderColor?: Color,
     borderThickness?: number,
     radius?: number
-  ): THREE.Sprite {
+  ): Sprite {
     fontSize = fontSize || 16;
     font = font || 'Arial';
     textColor = textColor || new Color(1, 1, 1, 1);
@@ -585,12 +600,12 @@ export class ObjectLoaderService {
 
     this.drawCanvas(canvas, text, fontSize, font, textColor, backgroundColor, borderColor, borderThickness, radius);
 
-    const spriteMap: THREE.CanvasTexture = new THREE.CanvasTexture(canvas);
+    const spriteMap: CanvasTexture = new CanvasTexture(canvas);
     spriteMap.anisotropy = 16;
     // canvas contents will be used for a texture
-    const spriteMaterial = new THREE.SpriteMaterial({ map: spriteMap });
+    const spriteMaterial = new SpriteMaterial({ map: spriteMap });
     spriteMaterial.transparent = true;
-    const sprite = new THREE.Sprite(spriteMaterial);
+    const sprite = new Sprite(spriteMaterial);
     sprite.scale.set(canvas.width / 75, canvas.height / 75, 1);
     sprite.userData.canvas = canvas;
     sprite.userData.text = text;

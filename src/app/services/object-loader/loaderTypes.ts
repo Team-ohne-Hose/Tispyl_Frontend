@@ -1,10 +1,10 @@
-import * as THREE from 'three';
+import { Object3D, Texture, CubeTexture } from 'three';
 import { Subject } from 'rxjs';
 
 export interface ResourceData {
   cname: string;
   fname: string;
-  objectCache: THREE.Object3D;
+  objectCache: Object3D;
 }
 
 export interface DiceVariations<T> {
@@ -25,10 +25,10 @@ export interface EntityList<T> {
 export interface PlayerModelData {
   texFName: string;
   specFName: string;
-  lowResTex: THREE.Texture;
-  tex: THREE.Texture;
-  spec: THREE.Texture;
-  subject: Subject<{ tex: THREE.Texture; spec: THREE.Texture }>;
+  lowResTex: Texture;
+  tex: Texture;
+  spec: Texture;
+  subject: Subject<{ tex: Texture; spec: Texture }>;
 }
 
 export class Color {
@@ -51,7 +51,7 @@ export class Color {
 
 export interface CubeMap {
   name: string;
-  tex: THREE.CubeTexture;
+  tex: CubeTexture;
   path: string;
   px: string;
   py: string;

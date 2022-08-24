@@ -1,5 +1,4 @@
-import * as THREE from 'three';
-import { Object3D } from 'three';
+import { Object3D, Vector3 } from 'three';
 import {
   MessageType,
   PhysicsCommandAngular,
@@ -41,8 +40,8 @@ export class PhysicsCommands {
   dice: Object3D;
   currentlyLoadingEntities: Map<number, boolean> = new Map<number, boolean>();
 
-  addInteractable: (obj: THREE.Object3D) => void;
-  addPlayer: (mesh: THREE.Object3D, name: string) => void;
+  addInteractable: (obj: Object3D) => void;
+  addPlayer: (mesh: Object3D, name: string) => void;
 
   constructor(private bic: BoardItemControlService) {
     this.bic.gameState.physicsObjectMoved$.subscribe((item: PhysicsObjectState) => {
@@ -55,11 +54,11 @@ export class PhysicsCommands {
    * @param toSearch object tree that is searched
    * @param physId physicsId that is searched for recursively
    */
-  static getObjectByPhysId(toSearch: Object3D, physId: number): THREE.Object3D {
+  static getObjectByPhysId(toSearch: Object3D, physId: number): Object3D {
     if (toSearch.userData.physicsId === physId) {
       return toSearch;
     } else {
-      return toSearch.children.find((obj: THREE.Object3D, index: number) => {
+      return toSearch.children.find((obj: Object3D, index: number) => {
         const res = PhysicsCommands.getObjectByPhysId(obj, physId);
         return res !== undefined;
       });
@@ -123,12 +122,12 @@ export class PhysicsCommands {
     }
   }
 
-  private _updateCorrelatedObject(item: PhysicsObjectState, obj: THREE.Object3D) {
+  private _updateCorrelatedObject(item: PhysicsObjectState, obj: Object3D) {
     obj.position.set(item.position.x, item.position.y, item.position.z);
     obj.quaternion.set(item.quaternion.x, item.quaternion.y, item.quaternion.z, item.quaternion.w);
   }
 
-  setClickRole(clickRole: ClickedTarget, obj: THREE.Object3D): void {
+  setClickRole(clickRole: ClickedTarget, obj: Object3D): void {
     if (obj !== undefined) {
       obj.userData.clickRole = clickRole;
       this.addInteractable(obj);
@@ -146,7 +145,7 @@ export class PhysicsCommands {
     this.bic.gameState.sendMessage(MessageType.PHYSICS_MESSAGE, msg);
   }
 
-  setPositionVec(physId: number, vec: THREE.Vector3): void {
+  setPositionVec(physId: number, vec: Vector3): void {
     this.setPosition(physId, vec.x, vec.y, vec.z);
   }
 
@@ -227,7 +226,7 @@ export class PhysicsCommands {
     rotY = rotY || 0;
     rotZ = rotZ || 0;
     rotW = rotW || 0;
-    this.bic.loader.loadObject(entity, variant, (model: THREE.Object3D) => {
+    this.bic.loader.loadObject(entity, variant, (model: Object3D) => {
       model.quaternion.set(rotX, rotY, rotZ, rotW);
       model.position.set(posX, posY, posZ);
       const userData: ObjectUserData = {

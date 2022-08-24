@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { APIResponse } from '../model/APIResponse';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 export enum SourceDirectory {
   NEWS = 'news/',
+  UPDATES = 'updates/',
 }
 
 @Injectable({
@@ -17,14 +18,26 @@ export class MarkdownContentService {
 
   headlineCache: BehaviorSubject<[string, string][]> = new BehaviorSubject<[string, string][]>(undefined);
 
+  // Subscriptions
+  private headlineMappingNews$$: Subscription;
+  private headlineMappingUpdates$$: Subscription;
+
   constructor(private httpClient: HttpClient) {
-    this.getHeadlineMapping(SourceDirectory.NEWS).subscribe((suc: [string, string][]) => {
+    const addHeadlineToCache = (suc: [string, string][]) => {
       const acc: [string, string][] = [];
       suc.map((pair: [string, string]) => {
         acc[pair[0]] = pair[1];
       });
       this.headlineCache.next(acc);
-    });
+    };
+
+    this.headlineMappingNews$$ = this.getHeadlineMapping(SourceDirectory.NEWS).subscribe(addHeadlineToCache);
+    this.headlineMappingUpdates$$ = this.getHeadlineMapping(SourceDirectory.UPDATES).subscribe(addHeadlineToCache);
+  }
+
+  ngOnDestroy(): void {
+    this.headlineMappingNews$$.unsubscribe();
+    this.headlineMappingUpdates$$.unsubscribe();
   }
 
   getAvailableContent(dir: SourceDirectory): Observable<string[]> {

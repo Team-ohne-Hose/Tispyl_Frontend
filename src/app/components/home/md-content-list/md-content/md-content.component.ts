@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, SecurityContext, ViewEncapsulation } from '@angular/core';
 import { MarkdownContentService, SourceDirectory } from '../../../../services/markdown-content.service';
 import { DomSanitizer } from '@angular/platform-browser';
 
@@ -6,6 +6,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   selector: 'app-md-content',
   templateUrl: './md-content.component.html',
   styleUrls: ['./md-content.component.css'],
+  encapsulation: ViewEncapsulation.None, // no view encapsulation to be able to style the markdown in innerHTML
 })
 export class MdContentComponent {
   mdText = undefined;
@@ -20,7 +21,9 @@ export class MdContentComponent {
   load(dir: SourceDirectory, fileName: string): void {
     this.mcs.getMarkdownFor(dir, fileName).subscribe(
       (md: string) => {
-        this.mdText = this.sanitizer.bypassSecurityTrustHtml(md);
+        // Treats html as safe html, inline style is forbidden, since it allows for XSS.
+        // Define classes in md-content.component.css and use classes!
+        this.mdText = this.sanitizer.sanitize(SecurityContext.HTML, md);
         this.anchorTag = fileName;
       },
       (error) => {

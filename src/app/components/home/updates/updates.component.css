@@ -1,0 +1,38 @@
+.updates-layout {
+  display: grid;
+  grid-template-columns: auto 20%;
+  grid-column-gap: 2.5%;
+}
+
+.updates {
+  grid-column: 1;
+}
+
+.sticky-swim-lane {
+  grid-column: 2;
+}
+
+.updates-quick-header {
+  font-size: larger;
+  padding-bottom: 0.5rem;
+}
+
+.updates-quick-item {
+  padding-bottom: 0.2rem;
+}
+
+.updates-quick-links {
+  margin-top: 5vh;
+
+  position: -webkit-sticky;
+  position: sticky;
+  top: -1px;
+
+  padding: 0.5rem;
+
+  border-left: #4c748d solid 2px;
+  background-color: rgba(48, 48, 48, 0.65);
+  -webkit-box-shadow: 3px 3px 11px 0 rgb(0, 0, 0);
+  -moz-box-shadow: 3px 3px 11px 0 rgb(0, 0, 0);
+  box-shadow: 3px 3px 11px 0 rgb(0, 0, 0);
+}

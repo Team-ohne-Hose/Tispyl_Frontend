@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import * as hash from 'object-hash';
+import { MD5 } from 'object-hash';
 import { BasicUser, UserService } from 'src/app/services/user.service';
 import { AppToastService } from 'src/app/services/toast.service';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
@@ -38,11 +38,11 @@ export class EditProfileComponent implements OnInit {
   onSubmit(): void {
     const editUser: EditUserData = new EditUserData();
     editUser.id = this.currentUser.id;
-    editUser.currentPassword = hash.MD5(this.edit.value.currentPassword);
+    editUser.currentPassword = MD5(this.edit.value.currentPassword);
     editUser.display_name = this.edit.value.newUsername;
 
     if (this.edit.value.newPassword !== '') {
-      editUser.newPassword = hash.MD5(this.edit.value.newPassword);
+      editUser.newPassword = MD5(this.edit.value.newPassword);
     }
 
     this.userService.updateUser(editUser);

@@ -5,7 +5,17 @@ import { ObjectLoaderService } from './object-loader/object-loader.service';
 import { BoardTilesService } from './board-tiles.service';
 import { ItemService } from './items-service/item.service';
 import { ViewportComponent } from '../components/game/viewport/viewport.component';
-import * as THREE from 'three';
+import {
+  Object3D,
+  Sprite,
+  Scene,
+  PerspectiveCamera,
+  Mesh,
+  ConeBufferGeometry,
+  Vector3,
+  MeshStandardMaterial,
+  SphereBufferGeometry,
+} from 'three';
 import { Player } from '../model/state/Player';
 import { GameActionType, GameSetTile, MessageType } from '../model/WsData';
 import { Observable, Observer, Subscription } from 'rxjs';
@@ -13,8 +23,8 @@ import { Progress } from './object-loader/loaderTypes';
 import { GameSettingsService } from './game-settings.service';
 
 export interface FigureItem {
-  mesh: THREE.Object3D;
-  labelSprite: THREE.Sprite;
+  mesh: Object3D;
+  labelSprite: Sprite;
   name: string;
   isHidden: boolean;
 }
@@ -24,14 +34,14 @@ export interface FigureItem {
 })
 export class BoardItemControlService {
   rendererDomReference: HTMLCanvasElement;
-  sceneTree: THREE.Scene;
-  camera: THREE.PerspectiveCamera;
+  sceneTree: Scene;
+  camera: PerspectiveCamera;
 
   physics: PhysicsCommands;
 
   allFigures: FigureItem[];
-  board: THREE.Mesh;
-  markerGeo = new THREE.ConeBufferGeometry(1, 10, 15, 1, false, 0, 2 * Math.PI);
+  board: Mesh;
+  markerGeo = new ConeBufferGeometry(1, 10, 15, 1, false, 0, 2 * Math.PI);
 
   // subscriptions
   persistentNamePlates$$: Subscription;
@@ -47,7 +57,7 @@ export class BoardItemControlService {
 
     this.allFigures = [];
 
-    this.physics.addPlayer = ((mesh: THREE.Object3D, name: string) => {
+    this.physics.addPlayer = ((mesh: Object3D, name: string) => {
       this.allFigures.push({ mesh: mesh, labelSprite: undefined, name: name, isHidden: false });
       console.debug('adding to BoardItemManagement´s list of figures', name, mesh, this.allFigures);
     }).bind(this);
@@ -110,12 +120,12 @@ export class BoardItemControlService {
       this.physics.setPosition(physIdDice, 0, 40, 0);
 
       const getSignedRandom = () => (Math.random() - 0.5) * 2;
-      const vel = new THREE.Vector3(getSignedRandom(), Math.random() / 5, getSignedRandom());
+      const vel = new Vector3(getSignedRandom(), Math.random() / 5, getSignedRandom());
       vel.normalize().multiplyScalar(Math.random() * 30);
       this.physics.setVelocity(physIdDice, vel.x, vel.y, vel.z);
 
       const rotSpeed = 2 * Math.PI * (getSignedRandom() * 0.5 + 5);
-      const rotation = new THREE.Vector3().setFromSphericalCoords(
+      const rotation = new Vector3().setFromSphericalCoords(
         rotSpeed,
         (Math.random() * 0.3 + 0.35) * Math.PI, // main rotational axis should not be vertical. therefore restrict phi.
         Math.random() * 2 * Math.PI
@@ -167,7 +177,7 @@ export class BoardItemControlService {
     }
   }
 
-  hoverGameFigure(object: THREE.Object3D, x: number, z: number): void {
+  hoverGameFigure(object: Object3D, x: number, z: number): void {
     const physID = PhysicsCommands.getPhysId(object);
     // pick up figure, set to no spatial velocity, rotation is ok, but the figure shouldnt move.
     this.physics.setPosition(physID, x, 10, z);
@@ -180,7 +190,7 @@ export class BoardItemControlService {
     this.physics.setVelocity(physID, 0, 0, 0);
   }
 
-  moveGameFigure(object: THREE.Object3D, fieldID: number): void {
+  moveGameFigure(object: Object3D, fieldID: number): void {
     console.debug('move Figure to ', fieldID);
     let playerId: string;
     const userData = object.userData;
@@ -201,10 +211,10 @@ export class BoardItemControlService {
   }
 
   addFlummi(x: number, y: number, z: number, color: number): void {
-    // const geometry = new THREE.SphereGeometry( 2, 32, 32 );
-    const geometry = new THREE.SphereBufferGeometry(2, 32, 32);
-    const material = new THREE.MeshStandardMaterial({ color: color });
-    const sphere = new THREE.Mesh(geometry, material);
+    // const geometry = new SphereGeometry( 2, 32, 32 );
+    const geometry = new SphereBufferGeometry(2, 32, 32);
+    const material = new MeshStandardMaterial({ color: color });
+    const sphere = new Mesh(geometry, material);
     sphere.position.set(x, y, z);
     // this.scene.add( sphere );
     // TODO rebuild Flummis, because important
@@ -213,8 +223,8 @@ export class BoardItemControlService {
 
   addMarker(x: number, y: number, z: number, col: number): void {
     // TODO rebuild Marker, because important
-    const markerMat = new THREE.MeshStandardMaterial({ color: col });
-    const marker = new THREE.Mesh(this.markerGeo, markerMat);
+    const markerMat = new MeshStandardMaterial({ color: col });
+    const marker = new Mesh(this.markerGeo, markerMat);
     marker.castShadow = true;
     marker.receiveShadow = true;
     marker.position.x = x;

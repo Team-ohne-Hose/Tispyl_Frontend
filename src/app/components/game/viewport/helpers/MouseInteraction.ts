@@ -1,5 +1,4 @@
-import * as THREE from 'three';
-import { Camera, Object3D, Vector3 } from 'three';
+import { Camera, Object3D, Raycaster, Vector2, Vector3, Intersection } from 'three';
 import { ClickedTarget, PhysicsCommands } from './PhysicsCommands';
 import { BoardItemControlService } from '../../../../services/board-item-control.service';
 import { Player } from '../../../../model/state/Player';
@@ -17,13 +16,13 @@ enum mouseButton {
 export class MouseInteraction {
   // Raycasting & Mouse
   lastMouseLeftDownCoords: { x: number; y: number; button: number; ts: number };
-  raycaster = new THREE.Raycaster();
-  currentSize = new THREE.Vector2();
+  raycaster = new Raycaster();
+  currentSize = new Vector2();
 
   camera: Camera;
   interactable: Object3D[] = [];
 
-  currentlySelected: { obj: THREE.Object3D; oldPos: Vector3 };
+  currentlySelected: { obj: Object3D; oldPos: Vector3 };
 
   /** Throttled version of the mouseMove function to avoid too many ray casts */
   mouseMoved = this.throttled(15, this._mouseMoved.bind(this));
@@ -61,7 +60,7 @@ export class MouseInteraction {
       const intersects = this._rayIntersections(
         event.clientX,
         event.clientY,
-        this.interactable.filter((object: THREE.Object3D) => {
+        this.interactable.filter((object: Object3D) => {
           return object.userData.clickRole === ClickedTarget.board;
         })
       );
@@ -91,11 +90,11 @@ export class MouseInteraction {
     }
   }
 
-  private _rayIntersectionsEv(event: MouseEvent): THREE.Intersection[] {
+  private _rayIntersectionsEv(event: MouseEvent): Intersection[] {
     return this._rayIntersections(event.clientX, event.clientY, this.interactable);
   }
 
-  private _rayIntersections(x: number, y: number, targetCollection: THREE.Object3D[]): THREE.Intersection[] {
+  private _rayIntersections(x: number, y: number, targetCollection: Object3D[]): Intersection[] {
     const normX = (x / this.currentSize.width) * 2 - 1;
     const normY = -(y / this.currentSize.height) * 2 + 1;
     this.raycaster.setFromCamera({ x: normX, y: normY }, this.camera);
@@ -204,7 +203,7 @@ export class MouseInteraction {
     }
   }
 
-  handleBoardTileClick(intersection: THREE.Vector3): boolean {
+  handleBoardTileClick(intersection: Vector3): boolean {
     const coords = this.bic.boardTiles.coordsToFieldCoords(intersection);
     if (coords.x >= 0 && coords.x < 8 && coords.y >= 0 && coords.y < 8) {
       const tileId = this.bic.boardTiles.getId(coords.x, coords.y);
