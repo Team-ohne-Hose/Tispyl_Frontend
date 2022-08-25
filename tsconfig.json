@@ -7,10 +7,10 @@
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": true,
-    "module": "commonjs",
+    "module": "ESNext",
     "moduleResolution": "node",
     "experimentalDecorators": true,
-    "target": "es6",
+    "target": "ES2016",
     "esModuleInterop": true,
     "typeRoots": [
       "node_modules/@types"
