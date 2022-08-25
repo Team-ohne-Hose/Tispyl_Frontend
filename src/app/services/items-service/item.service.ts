@@ -51,7 +51,9 @@ export class ItemService {
     if (items !== undefined) {
       items.forEach((count, itemId) => {
         if (count > 0) {
-          itemListArray.push(itemTable.list[Number(itemId)]);
+          for (let i = 0; i < count; i++) {
+            itemListArray.push(itemTable.list[Number(itemId)]);
+          }
         }
       });
     }
