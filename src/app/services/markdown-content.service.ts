@@ -16,7 +16,7 @@ export enum SourceDirectory {
 export class MarkdownContentService {
   private readonly baseUrl = environment.endpoint;
 
-  headlineCache: BehaviorSubject<[string, string][]> = new BehaviorSubject<[string, string][]>(undefined);
+  headlineCache: BehaviorSubject<[string, string][]> = new BehaviorSubject<[string, string][]>([]);
 
   // Subscriptions
   private headlineMappingNews$$: Subscription;
@@ -24,7 +24,7 @@ export class MarkdownContentService {
 
   constructor(private httpClient: HttpClient) {
     const addHeadlineToCache = (suc: [string, string][]) => {
-      const acc: [string, string][] = [];
+      const acc: [string, string][] = this.headlineCache.value || [];
       suc.map((pair: [string, string]) => {
         acc[pair[0]] = pair[1];
       });

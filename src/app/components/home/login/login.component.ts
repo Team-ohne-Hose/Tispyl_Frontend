@@ -1,12 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { TextContainer } from '../../../model/TextContainer';
+import { Component, OnInit } from '@angular/core';
 import { MD5 } from 'object-hash';
-import { UserService, BasicUser } from '../../../services/user.service';
+import { BasicUser, UserService } from '../../../services/user.service';
 import { JwtTokenService } from 'src/app/services/jwttoken.service';
-import { TranslationService } from '../../../services/translation/translation.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RegisterOptions } from '../../../model/RegisterOptions';
-import { UntypedFormGroup, UntypedFormControl, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { EqualityValidator } from './EqualityValidator';
 
 @Component({
@@ -15,8 +13,6 @@ import { EqualityValidator } from './EqualityValidator';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
-  @Input() languageObjects: TextContainer = TranslationService.getTranslations('en').text;
-
   /** Login input values */
   login_name = '';
   password_plain = '';
@@ -32,16 +28,8 @@ export class LoginComponent implements OnInit {
     {
       new_login_name: new UntypedFormControl('', Validators.required),
       new_display_name: new UntypedFormControl('', Validators.required),
-      new_password_plain0: new UntypedFormControl('', [
-        Validators.required,
-        Validators.minLength(4),
-        Validators.maxLength(64),
-      ]),
-      new_password_plain1: new UntypedFormControl('', [
-        Validators.required,
-        Validators.minLength(4),
-        Validators.maxLength(64),
-      ]),
+      new_password_plain0: new UntypedFormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(64)]),
+      new_password_plain1: new UntypedFormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(64)]),
     },
     EqualityValidator('new_password_plain0', 'new_password_plain1')
   );
@@ -66,9 +54,7 @@ export class LoginComponent implements OnInit {
       this.router
         .navigate([this.targetRoute], { relativeTo: this.route })
         .catch((reason) =>
-          console.warn(
-            `Failed to navigate to [${this.targetRoute}] even though the user is logged in. Reason: ${reason}`
-          )
+          console.warn(`Failed to navigate to [${this.targetRoute}] even though the user is logged in. Reason: ${reason}`)
         );
     } else {
       this.jwtTokenService.logout();
@@ -115,9 +101,7 @@ export class LoginComponent implements OnInit {
         console.debug('Logged in as: ', usr);
         this.router
           .navigate([this.targetRoute], { relativeTo: this.route })
-          .catch((reason) =>
-            console.warn(`Failed to navigate to [${this.targetRoute}] after login. Reason: ${reason}`)
-          );
+          .catch((reason) => console.warn(`Failed to navigate to [${this.targetRoute}] after login. Reason: ${reason}`));
       },
       (err) => {
         this.isRequesting = false;

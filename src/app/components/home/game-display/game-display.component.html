@@ -3,11 +3,11 @@
     <span class="ornamental-box"></span>
     <div class="bounding-box">
       <div class="naming">
-        <div><span class="heading">{{game.metadata.roomName || "Raum"}}</span><span
-          class="trailing">von: {{game.metadata.author ||
-        "jemandem"}}</span></div>
+        <div><span class="heading">{{game.metadata.roomName || "Raum"}}</span><span class="trailing">von:
+            {{game.metadata.author ||
+            "jemandem"}}</span></div>
         <div class="date">Erstellt um: {{(game.createdAt | date:' h:mm a') ||
-        "0:00 AM"}}</div>
+          "0:00 AM"}}</div>
       </div>
       <div [ngClass]="isActive ? 'count blue-text' : 'count'">
         <i class="fas fa-users"></i>
@@ -29,6 +29,6 @@
 
   <div *ngIf="isDummy" class="component-box">
     <span class="empty-ornamental-box"></span>
-    <div class="empty-bounding-box"><span>{{languageObjects.gamesListNoGame}}</span></div>
+    <div class="empty-bounding-box"><span>Kein Spiel</span></div>
   </div>
 </div>

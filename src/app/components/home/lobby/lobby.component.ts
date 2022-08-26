@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { TranslationService, Translation } from '../../../services/translation/translation.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { OpenGamePopupComponent } from '../dialogs/open-game-popup/open-game-popup.component';
 import { ColyseusClientService, CreateRoomOpts } from '../../../services/colyseus-client.service';
-import { Client, Room, RoomAvailable } from 'colyseus.js';
+import { Room, RoomAvailable } from 'colyseus.js';
 import { BasicUser, UserService } from '../../../services/user.service';
 import { RoomMetaInfo } from '../../../model/RoomMetaInfo';
 import { JoinGameComponent } from '../dialogs/join-game/join-game.component';
@@ -19,7 +18,6 @@ import { DialogResult } from '../dialogs/open-game-popup/open-game-popup.compone
 })
 export class LobbyComponent implements OnInit {
   /** General constants */
-  translation: Translation = TranslationService.getTranslations('en');
   environments = environmentList;
 
   /** Game room & Colyseus values */
@@ -63,10 +61,6 @@ export class LobbyComponent implements OnInit {
     this.refetchGameRooms();
   }
 
-  changeLanguage(lang: string): void {
-    this.translation = TranslationService.getTranslations(lang);
-  }
-
   refetchGameRooms(): void {
     this.colyseus.updateAvailableRooms();
   }
@@ -88,10 +82,7 @@ export class LobbyComponent implements OnInit {
 
   /** Host a new game */
   createGame(): void {
-    const dialogRef: MatDialogRef<OpenGamePopupComponent, DialogResult> = this.dialog.open(
-      OpenGamePopupComponent,
-      this.dialogConfig
-    );
+    const dialogRef: MatDialogRef<OpenGamePopupComponent, DialogResult> = this.dialog.open(OpenGamePopupComponent, this.dialogConfig);
 
     dialogRef.afterClosed().subscribe((res: DialogResult) => {
       if (res !== undefined) {

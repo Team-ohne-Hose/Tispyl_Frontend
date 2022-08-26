@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RoomAvailable } from 'colyseus.js';
 import { RoomMetaInfo } from '../../../model/RoomMetaInfo';
 import { Router } from '@angular/router';
@@ -12,7 +12,6 @@ export class GameDisplayComponent {
   @Input() game: RoomAvailable<RoomMetaInfo>;
   @Input() isDummy: boolean;
   @Input() isActive: boolean;
-  @Input() languageObjects: any;
   @Output() leave = new EventEmitter<void>();
   @Output() join = new EventEmitter<RoomAvailable<RoomMetaInfo>>();
   @Output() enter = new EventEmitter<void>();

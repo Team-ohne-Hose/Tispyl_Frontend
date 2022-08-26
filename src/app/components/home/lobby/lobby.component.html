@@ -35,7 +35,8 @@
                   <h4><i class="fas fa-info-circle"></i> Disclaimer:</h4>
                   <p class="text-justify">
                     Das Spiel enthält unter anderem taktlose Witze und schwarzen Humor. Diese(r) sollte nicht zu ernst
-                    genommen werden und ist nicht gedacht, um einzelne Personen oder Personen-Gruppen zu beleidigen. Sollten dir
+                    genommen werden und ist nicht gedacht, um einzelne Personen oder Personen-Gruppen zu beleidigen.
+                    Sollten dir
                     dennoch Inhalte extrem negativ auffallen, <a href="/contact">melde dich bei uns</a> und wir schauen
                     uns dein Problem gerne an.
                   </p>
@@ -48,7 +49,7 @@
                 <div class="card-body">
                   <div class="mb-3">
                     <button class="btn lobby-btn me-3" id="" (click)="createGame()"
-                            [disabled]="activeLobby !== undefined">{{translation.text.gamesListCreate}}</button>
+                      [disabled]="activeLobby !== undefined">Erstellen</button>
                     <span *ngIf="activeLobby !== undefined" class="blue-text">
                       <i class="fas fa-exclamation-triangle"></i>
                       <span>Du bist in einem Spiel und kannst deshalb kein neues erstellen.</span>
@@ -58,12 +59,10 @@
                   <div>
                     <!-- <div *ngIf="availableRooms.length > 0"> -->
                     <app-game-display *ngFor="let game of availableRooms" (enter)="onEnterGame()"
-                                      (join)="onJoinGame($event)" (leave)="onLeaveGame()" [game]="game" [isActive]="isActive(game)"
-                                      [languageObjects]="translation.text">
+                      (join)="onJoinGame($event)" (leave)="onLeaveGame()" [game]="game" [isActive]="isActive(game)">
                     </app-game-display>
 
-                    <app-game-display *ngIf="availableRooms.length <= 0" [isDummy]="true"
-                                      [languageObjects]="translation.text">
+                    <app-game-display *ngIf="availableRooms.length <= 0" [isDummy]="true">
                     </app-game-display>
                   </div>
                 </div>

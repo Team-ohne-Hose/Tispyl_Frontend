@@ -1,9 +1,8 @@
 <div>
-  <h1 attr.data-heading="{{languageObjects.ruleTitle}}">{{languageObjects.ruleTitle}}</h1>
+  <h1 attr.data-heading="REGELN">REGELN</h1>
   <div class="grid">
     <div *ngFor="let bullet of bulletPoints" class="bullet-point">
       <div style="width: 24px; text-align: center;"><i [ngClass]="bullet.icon"></i></div>
-      <span>{{languageObjects[bullet.key]}}</span>
+      <span>{{bullet.text}}</span>
     </div>
   </div>
-
