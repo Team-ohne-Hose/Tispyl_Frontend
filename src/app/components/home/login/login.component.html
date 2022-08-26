@@ -8,21 +8,20 @@
       <div class="content-section">
 
         <div *ngIf="!swapContent" class="content-content-A">
-          <h1>{{languageObjects.logInTitle}}</h1>
+          <h1>Login</h1>
 
           <div class="input-container">
             <i class="far fa-smile"></i>
-            <input (keyup)="keyPressed($event)" [(ngModel)]="login_name" placeholder="{{languageObjects.logInUser}}">
+            <input (keyup)="keyPressed($event)" [(ngModel)]="login_name" placeholder="Benutzername">
           </div>
           <div class="input-container">
             <i class="fas fa-key"></i>
-            <input (keyup)="keyPressed($event)" [(ngModel)]="password_plain" placeholder="{{languageObjects.logInPass}}"
-                   type="password">
+            <input (keyup)="keyPressed($event)" [(ngModel)]="password_plain" placeholder="Passwort" type="password">
           </div>
 
           <button class="submit-button" (click)="onLogin()">
             <mat-spinner *ngIf="isRequesting" diameter="20"></mat-spinner>
-            <span>{{languageObjects.logInSubmit}}</span>
+            <span>Login</span>
           </button>
 
           <div [ngClass]="{
@@ -82,7 +81,7 @@
               <div class="slim-input-container">
                 <i class="fas fa-key"></i>
                 <input (keyup)="keyPressed($event)" formControlName="new_password_plain0" placeholder="Password"
-                       type="password">
+                  type="password">
               </div>
             </div>
             <div class="requirements">
@@ -101,7 +100,7 @@
               <div class="slim-input-container">
                 <i class="fas fa-key"></i>
                 <input (keyup)="keyPressed($event)" formControlName="new_password_plain1" placeholder="Password"
-                       type="password">
+                  type="password">
               </div>
             </div>
             <div class="requirements">
@@ -159,5 +158,3 @@
     </div>
   </div>
 </div>
-
-

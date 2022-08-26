@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { GameDisplayComponent } from './components/home/game-display/game-display.component';
