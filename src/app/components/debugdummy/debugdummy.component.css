@@ -14,3 +14,21 @@
 .debug-buttons button {
   margin-left: 1em;
 }
+
+.createOrJoin {
+  position: fixed;
+  bottom: 40%;
+  top: 30%;
+  left: 30%;
+  right: 30%;
+  height: auto;
+}
+
+.backHome {
+  position: fixed;
+  bottom: 20%;
+  top: 61%;
+  left: 30%;
+  right: 30%;
+  height: auto;
+}
