@@ -1,6 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { Player } from 'src/app/model/state/Player';
-import { RefreshProfilePics, MessageType, RefreshCommandType } from 'src/app/model/WsData';
+import { MessageType, RefreshCommandType, RefreshProfilePics } from 'src/app/model/WsData';
 import { FileService } from 'src/app/services/file.service';
 import { GameStateService } from 'src/app/services/game-state.service';
 import { LoginUser, UserService } from 'src/app/services/user.service';
@@ -16,11 +16,7 @@ export class AvatarSectionComponent {
   private user: LoginUser;
   public currentPlayer: Player;
 
-  constructor(
-    private fileService: FileService,
-    private userService: UserService,
-    private gameStateService: GameStateService
-  ) {
+  constructor(private fileService: FileService, private userService: UserService, private gameStateService: GameStateService) {
     this.user = this.userService.activeUser.getValue();
     this.currentPlayer = this.gameStateService.getMe();
     this.userImageUrl = this.fileService.profilePictureSource(this.gameStateService.getMe().loginName, true);

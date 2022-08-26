@@ -1,4 +1,4 @@
-import { Schema, MapSchema, type } from '@colyseus/schema';
+import { MapSchema, Schema, type } from '@colyseus/schema';
 
 export class Tile extends Schema {
   @type('number')

@@ -86,7 +86,7 @@ export class ProfileComponent implements OnInit {
           this.onSuccess();
           this.changeDetector.detectChanges();
         },
-        (err) => {
+        () => {
           this.onError();
         }
       );

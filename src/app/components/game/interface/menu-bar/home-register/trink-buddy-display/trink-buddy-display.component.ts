@@ -38,11 +38,11 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
   constructor(private gameState: GameStateService) {
     // TODO: Change callback registration to new version as soon as some one builds one (13/10/20).
     if (gameState.getState() !== undefined) {
-      gameState.getState().drinkBuddyLinks.onAdd = (link, key) => {
+      gameState.getState().drinkBuddyLinks.onAdd = (link) => {
         console.log('Link was added: ', link.source, link.target);
         setTimeout(() => this.refreshChart(), 2000); // find out why this timeout needs to exist !
       };
-      gameState.getState().drinkBuddyLinks.onRemove = (link, key) => {
+      gameState.getState().drinkBuddyLinks.onRemove = (link) => {
         console.log('Link was removed: ', link.source, link.target);
         setTimeout(() => this.refreshChart(), 2000); // find out why this timeout needs to exist !
       };
@@ -121,16 +121,11 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
       .force('center', d3.forceCenter(chartWidth / 2, chartHeight / 2))
       .force(
         'collision',
-        d3.forceCollide().radius((d) => this.radius)
+        d3.forceCollide().radius(() => this.radius)
       );
 
     // Build container svg inside figure tag
-    this.svg = d3
-      .select('#chart')
-      .append('svg')
-      .style('stroke', Colors.Grey)
-      .attr('width', chartWidth)
-      .attr('height', chartHeight);
+    this.svg = d3.select('#chart').append('svg').style('stroke', Colors.Grey).attr('width', chartWidth).attr('height', chartHeight);
 
     // Define triangle-shape
     this.svg
@@ -157,7 +152,7 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
       .selectAll('line')
       .data(this.links)
       .join('line')
-      .attr('stroke', (d) => {
+      .attr('stroke', () => {
         return ColorPalette[Math.floor(Math.random() * ColorPalette.length)];
       })
       .attr('stroke-width', 1)

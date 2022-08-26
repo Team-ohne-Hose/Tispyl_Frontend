@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostBinding, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostBinding, Input, OnInit } from '@angular/core';
 
 export enum popoverDirection {
   ABOVE,
@@ -108,9 +108,7 @@ export class CustomPopoverComponent implements OnInit {
     if (this.forcedAnchor !== undefined) {
       const oldStyle = this.forcedAnchor.style.position;
       if (oldStyle === 'sticky' || oldStyle === 'fixed') {
-        console.warn(
-          'A sticky or fixed parent is changed by a custom-popover component. This will most likely cause style issues.'
-        );
+        console.warn('A sticky or fixed parent is changed by a custom-popover component. This will most likely cause style issues.');
       }
       if (!(oldStyle === 'relative' || oldStyle === 'absolute')) {
         this.forcedAnchor.style.position = 'relative';

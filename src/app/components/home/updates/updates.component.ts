@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { MarkdownContentService, SourceDirectory } from 'src/app/services/markdown-content.service';
 
 @Component({

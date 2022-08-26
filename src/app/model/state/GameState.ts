@@ -1,4 +1,4 @@
-import { Schema, ArraySchema, MapSchema, type } from '@colyseus/schema';
+import { ArraySchema, MapSchema, Schema, type } from '@colyseus/schema';
 import { PhysicsState } from './PhysicsState';
 import { Player } from './Player';
 import { BoardLayoutState } from './BoardLayoutState';

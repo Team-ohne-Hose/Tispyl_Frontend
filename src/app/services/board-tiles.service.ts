@@ -1,4 +1,4 @@
-import { Mesh, Texture, Euler, Vector2, Vector3, Quaternion, Group } from 'three';
+import { Euler, Group, Mesh, Quaternion, Texture, Vector2, Vector3 } from 'three';
 import { Injectable } from '@angular/core';
 import { ObjectLoaderService } from './object-loader/object-loader.service';
 import { Tile } from '../model/state/BoardLayoutState';
@@ -124,11 +124,7 @@ export class BoardTilesService {
     const group = new Group();
     for (let tileId = 0; tileId < 64; tileId++) {
       const tileMesh = this.objectLoader.loadGameTile();
-      tileMesh.position.set(
-        this.centerCoords.x[this.tileCoords[tileId].x],
-        0.01,
-        this.centerCoords.y[this.tileCoords[tileId].y]
-      );
+      tileMesh.position.set(this.centerCoords.x[this.tileCoords[tileId].x], 0.01, this.centerCoords.y[this.tileCoords[tileId].y]);
 
       tileMesh.rotation.setFromQuaternion(this.getTileRotation(Number(tileId)));
       group.add(tileMesh);

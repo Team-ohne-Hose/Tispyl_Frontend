@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { ChatService } from '../chat.service';
-import { ColyseusNotifiable } from '../game-initialisation.service';
 import { GameStateService } from '../game-state.service';
 import { ItemMessageType, MessageType, UseItem, WsData } from '../../model/WsData';
 import { MapSchema } from '@colyseus/schema';
@@ -158,9 +157,6 @@ export class ItemService {
   }
 
   private onItemUsedByMe(item: Item, targetLogin: string): void {
-    this.chatService.addLocalMessage(
-      'Trying to use Item ' + item.id + (targetLogin === '' ? '' : ' on ' + targetLogin),
-      'Items'
-    );
+    this.chatService.addLocalMessage('Trying to use Item ' + item.id + (targetLogin === '' ? '' : ' on ' + targetLogin), 'Items');
   }
 }

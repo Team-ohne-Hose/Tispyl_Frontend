@@ -60,7 +60,7 @@ export class VoteCreatorComponent {
     }
   }
 
-  addAllPlayers(event: Event): void {
+  addAllPlayers(): void {
     this.playerList.forEach((p) => {
       if (this.votingOptions.find((o) => o.text === p.displayName) === undefined) {
         this.votingOptions.push(VoteEntry.fromPlayer(p));
@@ -72,7 +72,7 @@ export class VoteCreatorComponent {
     this.votingOptions.splice(entryIndex, 1);
   }
 
-  clearAllEntries(event: Event): void {
+  clearAllEntries(): void {
     this.votingOptions = [];
   }
 
@@ -82,12 +82,7 @@ export class VoteCreatorComponent {
 
     let voteConfig: VoteConfiguration;
     if (currentPlayer !== undefined) {
-      voteConfig = VoteConfiguration.build(
-        userInput,
-        currentPlayer.displayName,
-        this.eligibilities,
-        this.votingOptions
-      );
+      voteConfig = VoteConfiguration.build(userInput, currentPlayer.displayName, this.eligibilities, this.votingOptions);
     } else {
       voteConfig = VoteConfiguration.build(userInput, 'undefined', this.eligibilities, this.votingOptions);
     }
@@ -99,7 +94,7 @@ export class VoteCreatorComponent {
     }
   }
 
-  cancelVoteCreation(event: Event): void {
+  cancelVoteCreation(): void {
     this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
       type: MessageType.GAME_MESSAGE,
       action: GameActionType.stopVoteCreation,

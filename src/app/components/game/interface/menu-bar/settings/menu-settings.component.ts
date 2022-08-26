@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { GameSettingsService, StorageKey } from 'src/app/services/game-settings.service';
-import { faGears } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-menu-bar-settings',

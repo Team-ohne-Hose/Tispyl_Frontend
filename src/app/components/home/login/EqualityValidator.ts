@@ -6,8 +6,8 @@ import { AbstractControl, ValidatorFn } from '@angular/forms';
  * @param control_b The name of the second control object in the FormGroup to check for value equality
  */
 export function EqualityValidator(control_a: string, control_b: string): ValidatorFn {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (control: AbstractControl): { [key: string]: any } | null => {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
     if (!(control.get(control_a).value === control.get(control_b).value)) {
       return {
         equality: {

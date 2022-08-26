@@ -109,11 +109,7 @@ export class ConnectedPlayersComponent implements OnInit, OnDestroy {
   private bindIsDevSubject(): void {
     this.playerIsDev$$ = this.gameState
       .getPlayerArray$()
-      .pipe(
-        map(this._filterUnresolved.bind(this)),
-        mergeMap(this._resolveLogins.bind(this)),
-        map(this._buildResultMap.bind(this))
-      )
+      .pipe(map(this._filterUnresolved.bind(this)), mergeMap(this._resolveLogins.bind(this)), map(this._buildResultMap.bind(this)))
       .subscribe((suc: Map<string, boolean>) => {
         this.playerIsDev$.next(suc);
       });

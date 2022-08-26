@@ -114,7 +114,7 @@ export class LobbyComponent implements OnInit {
       data: { lobby: lobby, lobbyComponent: this },
       panelClass: 'modalbox-base',
     });
-    dialogRef.afterClosed().subscribe((s) => console.log('closed dialog'));
+    dialogRef.afterClosed().subscribe(() => console.log('closed dialog'));
     const currentUser = this.userService.activeUser.value;
     this.colyseus.joinActiveRoom(lobby, currentUser.login_name, currentUser.display_name);
   }

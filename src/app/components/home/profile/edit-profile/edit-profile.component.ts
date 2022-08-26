@@ -69,8 +69,4 @@ export class EditProfileComponent implements OnInit {
       [EqualityValidator('newPassword', 'newPasswordConfirmed')]
     );
   }
-
-  keyPressed(keyEvent: KeyboardEvent): void {
-    console.log(this.edit);
-  }
 }

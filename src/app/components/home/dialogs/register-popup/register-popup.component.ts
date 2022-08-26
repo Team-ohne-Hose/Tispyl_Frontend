@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { RegisterOptions } from 'src/app/model/RegisterOptions';
 import { JwtTokenService } from 'src/app/services/jwttoken.service';
 import { LoginUser } from '../../../../services/user.service';
@@ -20,6 +20,7 @@ export class RegisterPopupComponent {
   constructor(
     private dialogRef: MatDialogRef<RegisterPopupComponent, LoginUser>,
     private AuthService: JwtTokenService,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 
@@ -48,10 +49,7 @@ export class RegisterPopupComponent {
     const maxPasswordLength = 64;
 
     // validation checks
-    const arePasswordsEqual: [boolean, string] = [
-      this.password_0 === this.password_1,
-      'Password_0 was not equal to Password_1',
-    ];
+    const arePasswordsEqual: [boolean, string] = [this.password_0 === this.password_1, 'Password_0 was not equal to Password_1'];
 
     const hasPasswordCorrectLength: [boolean, string] = [
       this.password_0.length >= minPasswordLength && this.password_0.length <= maxPasswordLength,

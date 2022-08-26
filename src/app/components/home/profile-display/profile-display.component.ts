@@ -1,9 +1,9 @@
 import { Component, Input } from '@angular/core';
-import { UserService, LoginUser } from '../../../services/user.service';
+import { LoginUser, UserService } from '../../../services/user.service';
 import { FileService } from '../../../services/file.service';
 import { ObjectLoaderService } from '../../../services/object-loader/object-loader.service';
 import { JwtTokenService } from 'src/app/services/jwttoken.service';
-import { figureList, environmentList } from '../lobby/lobbyLUTs';
+import { environmentList, figureList } from '../lobby/lobbyLUTs';
 
 @Component({
   selector: 'app-profile-display',
@@ -50,13 +50,7 @@ export class ProfileDisplayComponent {
 
   onFileChanged(event): void {
     const file = event.target.files[0];
-    this.fileManagement.uploadProfilePicture(file, this.user).subscribe((suc) => {
-      this.userManagement.syncUserData(this.user);
-    });
-  }
-
-  removeProfilePic(event): void {
-    this.fileManagement.removeProfilePicture(this.user).subscribe((suc) => {
+    this.fileManagement.uploadProfilePicture(file, this.user).subscribe(() => {
       this.userManagement.syncUserData(this.user);
     });
   }

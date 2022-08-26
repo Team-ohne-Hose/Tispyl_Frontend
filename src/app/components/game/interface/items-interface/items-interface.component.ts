@@ -1,14 +1,14 @@
 import { Component, ElementRef, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { ItemService } from '../../../../services/items-service/item.service';
 import { Observable, Subscription } from 'rxjs';
-import { executeTypes, Item, itemTable } from '../../../../services/items-service/itemLUT';
+import { Item, executeTypes, itemTable } from '../../../../services/items-service/itemLUT';
 import { CommandService } from '../../../../services/command.service';
 import { GameStateService } from '../../../../services/game-state.service';
 import { animate, style, transition, trigger } from '@angular/animations';
 import {
+  PopOverOpts,
   popoverDirection,
   popoverDisplacement,
-  PopOverOpts,
   popoverSpawn,
 } from '../../../framework/custom-popover/custom-popover.component';
 
@@ -69,11 +69,7 @@ export class ItemsInterfaceComponent implements OnDestroy {
   itemList$$: Subscription;
   itemList: Item[] = [];
 
-  constructor(
-    private itemService: ItemService,
-    private commandService: CommandService,
-    public gameState: GameStateService
-  ) {
+  constructor(private itemService: ItemService, private commandService: CommandService, public gameState: GameStateService) {
     this.slotHidden = new Array<boolean>(this.MAX_ITEM_COUNT).fill(true, 0, this.MAX_ITEM_COUNT);
     this.itemList$$ = this.itemService.myItems$.subscribe((list: Item[]) => {
       this.itemList = list;
@@ -130,9 +126,7 @@ export class ItemsInterfaceComponent implements OnDestroy {
       this.giveItem_name = undefined;
       this.giveItem_itemId = undefined;
     } else {
-      alert(
-        'Die Aktion konnte nicht ausgeführt werden da entweder der Spielername oder die ItemID nicht definiert waren.'
-      );
+      alert('Die Aktion konnte nicht ausgeführt werden da entweder der Spielername oder die ItemID nicht definiert waren.');
     }
   }
 

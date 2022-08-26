@@ -59,15 +59,13 @@ export class UserService {
   }
 
   syncUserData(user: LoginUser): void {
-    this.httpClient
-      .get<APIResponse<LoginUser>>(this.userEndpoint + '?login_name=' + user.login_name)
-      .subscribe((response) => {
-        if (response.payload !== undefined) {
-          this.setActiveUser(response.payload as LoginUser);
-        } else {
-          console.error('Failed to update user: ', response);
-        }
-      });
+    this.httpClient.get<APIResponse<LoginUser>>(this.userEndpoint + '?login_name=' + user.login_name).subscribe((response) => {
+      if (response.payload !== undefined) {
+        this.setActiveUser(response.payload as LoginUser);
+      } else {
+        console.error('Failed to update user: ', response);
+      }
+    });
   }
 
   requestUserDatabyId(userId: number): Observable<APIResponse<BasicUser>> {
@@ -80,12 +78,7 @@ export class UserService {
 
     this.httpClient.patch<APIResponse<LoginUser>>(requestUrl, userData).subscribe((response) => {
       if (!response.success) {
-        this.toastService.show(
-          'Error',
-          'Beim aktualisieren deines Profils ist etwas schief gelaufen.',
-          'bg-danger text-light',
-          3000
-        );
+        this.toastService.show('Error', 'Beim aktualisieren deines Profils ist etwas schief gelaufen.', 'bg-danger text-light', 3000);
         return;
       }
 

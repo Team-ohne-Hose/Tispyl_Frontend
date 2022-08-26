@@ -16,14 +16,9 @@ export class ContactComponent {
   constructor(private mailerService: MailerService, private toastService: AppToastService) {}
 
   onClickSubmit(contactMessage: ContactMessage): void {
-    const res = this.mailerService.submitMail(contactMessage.email, contactMessage.msg).subscribe((re) => {
+    this.mailerService.submitMail(contactMessage.email, contactMessage.msg).subscribe((re) => {
       if (re.success) {
-        this.toastService.show(
-          'Init',
-          '✅ Deine Nachricht wurde erfolgreich versendet.',
-          'bg-success text-light',
-          3000
-        );
+        this.toastService.show('Init', '✅ Deine Nachricht wurde erfolgreich versendet.', 'bg-success text-light', 3000);
       } else {
         this.toastService.show('Init', '🙀 Da ist etwas schief gelaufen! ', 'bg-danger text-light', 3000);
       }

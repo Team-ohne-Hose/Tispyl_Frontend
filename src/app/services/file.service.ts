@@ -19,9 +19,7 @@ export class FileService {
     formData.append('img', file, file.name);
     formData.append('login_name', user.login_name);
 
-    return this.httpClient
-      .post<APIResponse<LoginUser>>(this.endpoint, formData)
-      .pipe(map((apiResponse) => apiResponse.payload));
+    return this.httpClient.post<APIResponse<LoginUser>>(this.endpoint, formData).pipe(map((apiResponse) => apiResponse.payload));
   }
 
   removeProfilePicture(user: LoginUser): Observable<void> {

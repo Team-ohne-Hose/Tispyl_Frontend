@@ -1,7 +1,7 @@
 import { AfterContentInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JwtTokenService } from '../../services/jwttoken.service';
-import { UserService, BasicUser, LoginUser } from '../../services/user.service';
+import { BasicUser, LoginUser, UserService } from '../../services/user.service';
 import { APIResponse } from '../../model/APIResponse';
 import { FileService } from 'src/app/services/file.service';
 
@@ -70,10 +70,7 @@ export class HomeComponent implements OnInit, AfterContentInit {
           this.userService.setActiveUser(response.payload as LoginUser);
         },
         (err) => {
-          console.error(
-            'Found JWT token indicating a logged in user, but could not retrieve LoginUser object from server',
-            err
-          );
+          console.error('Found JWT token indicating a logged in user, but could not retrieve LoginUser object from server', err);
         }
       );
     }

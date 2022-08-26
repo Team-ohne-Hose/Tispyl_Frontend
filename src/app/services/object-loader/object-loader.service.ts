@@ -1,21 +1,21 @@
 import { Injectable } from '@angular/core';
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import {
-  TextureLoader,
-  Texture,
   BoxBufferGeometry,
-  sRGBEncoding,
-  MeshStandardMaterial,
-  CubeTextureLoader,
-  CubeTexture,
-  Object3D,
-  Mesh,
-  Material,
-  LinearEncoding,
-  Sprite,
-  Vector2,
-  SpriteMaterial,
   CanvasTexture,
+  CubeTexture,
+  CubeTextureLoader,
+  LinearEncoding,
+  Material,
+  Mesh,
+  MeshStandardMaterial,
+  Object3D,
+  Sprite,
+  SpriteMaterial,
+  Texture,
+  TextureLoader,
+  Vector2,
+  sRGBEncoding,
 } from 'three';
 import { PhysicsEntity, PhysicsEntityVariation, PlayerModel } from '../../model/WsData';
 import { Observable, Observer, Subject, Subscription } from 'rxjs';

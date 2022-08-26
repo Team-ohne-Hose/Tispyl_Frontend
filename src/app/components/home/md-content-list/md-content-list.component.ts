@@ -63,8 +63,7 @@ export class MdContentListComponent implements AfterViewInit {
    * @param mdContentName file name that should be loaded by the DOMElement
    */
   addContentTile(mdContentName: string): void {
-    const factory: ComponentFactory<MdContentComponent> =
-      this.factoryResolver.resolveComponentFactory(MdContentComponent);
+    const factory: ComponentFactory<MdContentComponent> = this.factoryResolver.resolveComponentFactory(MdContentComponent);
     const mdContentRef: ComponentRef<MdContentComponent> = this.newsListRef.viewContainerRef.createComponent(factory);
     mdContentRef.instance.load(this.src, mdContentName);
     this.latestRef = mdContentRef.location;

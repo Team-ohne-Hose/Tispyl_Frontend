@@ -1,9 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Player } from '../../../model/state/Player';
 import { FileService } from '../../../services/file.service';
 import { GameStateService } from '../../../services/game-state.service';
 import { MessageType, RefreshCommandType, RefreshProfilePics } from '../../../model/WsData';
-import { LoginUser, UserService } from '../../../services/user.service';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-player-icon',
@@ -29,17 +29,13 @@ export class PlayerIconComponent {
   @Input()
   enableUpload = false;
 
-  constructor(
-    private fileManagement: FileService,
-    private gameState: GameStateService,
-    private userManagement: UserService
-  ) {}
+  constructor(private fileManagement: FileService, private gameState: GameStateService, private userManagement: UserService) {}
 
   uploadImageFile(event: Event): void {
     const target = event.target as HTMLInputElement;
     const file = target?.files[0];
     if (this.player !== undefined && file !== undefined) {
-      const sub = this.fileManagement.uploadProfilePicture(file, this.currentUser).subscribe((suc: LoginUser) => {
+      const sub = this.fileManagement.uploadProfilePicture(file, this.currentUser).subscribe(() => {
         this.currentSource = this.fileManagement.profilePictureSource(this.player.loginName, true);
         const msg: RefreshProfilePics = {
           type: MessageType.REFRESH_COMMAND,

@@ -1,4 +1,4 @@
-import { Object3D, Texture, CubeTexture } from 'three';
+import { CubeTexture, Object3D, Texture } from 'three';
 import { Subject } from 'rxjs';
 
 export interface ResourceData {

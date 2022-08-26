@@ -1,5 +1,5 @@
 import { Player } from '../../../../../../model/state/Player';
-import { Schema, ArraySchema, type } from '@colyseus/schema';
+import { ArraySchema, Schema, type } from '@colyseus/schema';
 
 export class VoteEntry extends Schema {
   @type('boolean')

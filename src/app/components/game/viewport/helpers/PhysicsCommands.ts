@@ -4,7 +4,6 @@ import {
   PhysicsCommandAngular,
   PhysicsCommandKinematic,
   PhysicsCommandPosition,
-  PhysicsCommandRemove,
   PhysicsCommandType,
   PhysicsCommandVelocity,
   PhysicsCommandWakeAll,
@@ -58,7 +57,7 @@ export class PhysicsCommands {
     if (toSearch.userData.physicsId === physId) {
       return toSearch;
     } else {
-      return toSearch.children.find((obj: Object3D, index: number) => {
+      return toSearch.children.find((obj: Object3D) => {
         const res = PhysicsCommands.getObjectByPhysId(obj, physId);
         return res !== undefined;
       });

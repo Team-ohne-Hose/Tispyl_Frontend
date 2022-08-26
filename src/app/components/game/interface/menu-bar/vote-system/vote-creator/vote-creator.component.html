@@ -1,7 +1,7 @@
 <div class="base">
   <div class="creation-head">
     <div class="head-text">Configure your vote:</div>
-    <button (click)="cancelVoteCreation($event)" class="abort-button">Cancel</button>
+    <button (click)="cancelVoteCreation()" class="abort-button">Cancel</button>
   </div>
 
   <!-- Name of Voting -->
@@ -20,8 +20,8 @@
     </div>
     <div *ngIf="playerList.length > 0" class="wrapping-player-container">
       <div (click)="toggleEligibility(p)" *ngFor="let p of playerList" class="eligibility-selector">
-        <app-player-icon [borderThickness]="'3px'" [enableUpload]="false" [loginName]="p.loginName"
-                         [size]="'30px'"></app-player-icon>
+        <app-player-icon [borderThickness]="'3px'" [enableUpload]="false" [loginName]="p.loginName" [size]="'30px'">
+        </app-player-icon>
         <div class="{{eligibilities.get(p.displayName) ? 'info-container eligible' : 'info-container ineligible'}}">
           <i *ngIf="eligibilities.get(p.displayName)" class="fas fa-check"></i>
           <i *ngIf="!eligibilities.get(p.displayName)" class="fas fa-times"></i>
@@ -36,8 +36,8 @@
 
     <div class="vote-option-head">
       <div>3. What to vote on ?</div>
-      <span (click)="addAllPlayers($event)" class="first-tool-button"><i class="fas fa-user-plus"></i>All</span>
-      <span (click)="clearAllEntries($event)" class="last-tool-button"><i class="fas fa-trash"></i>Clear</span>
+      <span (click)="addAllPlayers()" class="first-tool-button"><i class="fas fa-user-plus"></i>All</span>
+      <span (click)="clearAllEntries()" class="last-tool-button"><i class="fas fa-trash"></i>Clear</span>
     </div>
 
 

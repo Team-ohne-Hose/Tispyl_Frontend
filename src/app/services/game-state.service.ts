@@ -504,10 +504,7 @@ export class GameStateService {
 
   private _attachVoteCastCallback(): void {
     if (this.room?.state?.voteState?.voteConfiguration === undefined) {
-      console.warn(
-        'GameStateService tried to attach callbacks for casting votes. Something was not defined. Room is:',
-        this.room
-      );
+      console.warn('GameStateService tried to attach callbacks for casting votes. Something was not defined. Room is:', this.room);
       return;
     }
     // this should get called everytime a new Vote is started.

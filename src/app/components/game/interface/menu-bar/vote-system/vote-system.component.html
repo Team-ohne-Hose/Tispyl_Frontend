@@ -6,7 +6,8 @@
     </div>
     <div *ngIf="gameState.isRoomDataAvailable$ | async" class="head-progress">
       <!-- VoteStage 2 should be creation -->
-      <i [ngClass]="gameState.getVoteState().voteStage === 2 ? 'fas fa-circle-notch fa-spin highlight' : 'far fa-circle'"></i>
+      <i
+        [ngClass]="gameState.getVoteState().voteStage === 2 ? 'fas fa-circle-notch fa-spin highlight' : 'far fa-circle'"></i>
     </div>
     <div *ngIf="!(gameState.isRoomDataAvailable$ | async)" class="head-progress">
       <i class="far fa-circle"></i>
@@ -22,9 +23,9 @@
       <div class="middle-caret"><i class="fas fa-sort-down"></i></div>
     </div>
     <div class="default-button-container">
-      <button (click)="triggerVoteCreation($event)">Create new Voting</button>
+      <button (click)="triggerVoteCreation()">Create new Voting</button>
       <button (click)="voteSystemState = stateEnum.results" *ngIf="hasConcluded">Last Results<i
-        class="fas fa-angle-double-right"></i></button>
+          class="fas fa-angle-double-right"></i></button>
     </div>
   </div>
 
@@ -55,7 +56,7 @@
 
   <!-- Create page -->
   <app-vote-creator (voteConfiguration)="triggerVoteBegin($event)" *ngIf="voteSystemState === stateEnum.creating"
-                    class="base-container"></app-vote-creator>
+    class="base-container"></app-vote-creator>
 
   <!-- Vote page -->
   <div *ngIf="voteSystemState === stateEnum.voting" class="base-container">
@@ -71,12 +72,12 @@
 
     <div *ngIf="gameState.isRoomDataAvailable$ | async">
       <div *ngFor="let ve of this.gameState.getVoteState().voteConfiguration.votingOptions; let i = index"
-           class="entry-container disable-user-select">
+        class="entry-container disable-user-select">
         <div (click)="castVote(i)" class="vote-entry">
           <div class="info-box">
             <div class="info-text">
               <app-player-icon *ngIf="ve.isPlayerEntry" [borderThickness]="'2px'" [loginName]="ve.playerHandle"
-                               [size]="'20px'"></app-player-icon>
+                [size]="'20px'"></app-player-icon>
               <div class="entry-text">
                 <span class="text">{{ve.text}}</span>
               </div>
@@ -92,7 +93,7 @@
         <div class="participants-container">
           <div *ngFor="let playerHandle of ve.castVotes" class="participants">
             <app-player-icon [borderThickness]="'0px'" [loginName]="gameState.getLoginName(playerHandle)"
-                             [size]="'15px'"></app-player-icon>
+              [size]="'15px'"></app-player-icon>
           </div>
         </div>
       </div>
@@ -105,8 +106,8 @@
     </div>
 
     <div class="host-closure-button">
-      <button (click)="triggerCloseVotingSession($event)" *ngIf="this.gameState.getMe().displayName === voteHost"
-              class="close-vote-button">Close voting session
+      <button (click)="triggerCloseVotingSession()" *ngIf="this.gameState.getMe().displayName === voteHost"
+        class="close-vote-button">Close voting session
       </button>
       <button *ngIf="!(this.gameState.getMe().displayName === voteHost)" disabled>Only {{voteHost}} can close the
         voting.
@@ -126,14 +127,14 @@
 
     <div *ngIf="gameState.isRoomDataAvailable$ | async">
       <div *ngFor="let ve of this.gameState.getVoteState().voteConfiguration.votingOptions; let i = index"
-           [ngClass]="{'entry-container disable-user-select result': true, 'no1': i === 0, 'no2': i === 1, 'no3': i === 2, 'noN': i > 2}">
+        [ngClass]="{'entry-container disable-user-select result': true, 'no1': i === 0, 'no2': i === 1, 'no3': i === 2, 'noN': i > 2}">
 
         <div class="metal-border">
           <div class="vote-entry">
             <div class="info-box">
               <div class="info-text">
                 <app-player-icon *ngIf="ve.isPlayerEntry" [borderThickness]="'2px'" [loginName]="ve.playerHandle"
-                                 [size]="'20px'"></app-player-icon>
+                  [size]="'20px'"></app-player-icon>
                 <div class="entry-text">
                   <span class="text">{{ve.text}}</span>
                 </div>
@@ -146,7 +147,8 @@
             <div class="vertical-separator"></div>
             <div class="vote-counter">
               <div class="gold-laurel"></div>
-              {{ve.castVotes.length || 0}}</div>
+              {{ve.castVotes.length || 0}}
+            </div>
           </div>
         </div>
 
@@ -154,7 +156,7 @@
         <div class="participants-container">
           <div *ngFor="let playerHandle of ve.castVotes" class="participants">
             <app-player-icon [borderThickness]="'0px'" [loginName]="gameState.getLoginName(playerHandle)"
-                             [size]="'15px'"></app-player-icon>
+              [size]="'15px'"></app-player-icon>
           </div>
         </div>
 
@@ -176,4 +178,3 @@
   </div>
 
 </div>
-

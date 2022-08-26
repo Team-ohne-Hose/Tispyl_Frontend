@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { APIResponse } from '../model/APIResponse';
-import { UserService, BasicUser, LoginUser } from './user.service';
+import { BasicUser, LoginUser, UserService } from './user.service';
 import moment from 'moment';
 import { RegisterOptions } from '../model/RegisterOptions';
 import { Observable, throwError } from 'rxjs';
