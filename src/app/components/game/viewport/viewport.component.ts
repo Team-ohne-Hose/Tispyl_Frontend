@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { Scene, PerspectiveCamera, WebGLRenderer, Object3D, DirectionalLight, AmbientLight, Vector3 } from 'three';
+import { AmbientLight, DirectionalLight, Object3D, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from 'three';
 import { UserInteractionController } from './helpers/UserInteractionController';
 import { ObjectLoaderService } from '../../../services/object-loader/object-loader.service';
 import Stats from 'three/examples/jsm/libs/stats.module.js';

@@ -8,8 +8,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class GifViewerComponent implements OnInit {
   diamond = 'https://media1.giphy.com/media/l9UZwz7fhHzkJkAqJ7/giphy.gif';
-  doggy =
-    'https://media0.giphy.com/media/5JEWBLv0mZDYA/giphy.gif?cid=ecf05e472c0346bcd92707d0d34358bf7af0b328676f018b&rid=giphy.gif';
+  doggy = 'https://media0.giphy.com/media/5JEWBLv0mZDYA/giphy.gif?cid=ecf05e472c0346bcd92707d0d34358bf7af0b328676f018b&rid=giphy.gif';
 
   contentUrl = this.diamond;
   giphyURL = encodeURI('https://api.giphy.com/v1/gifs/random?api_key=0UTRbFtkMxAplrohufYco5IY74U8hOes&tag=rainbow'); // &rating=r');

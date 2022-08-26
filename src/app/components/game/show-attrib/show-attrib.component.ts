@@ -7,6 +7,7 @@ import { Component, Inject } from '@angular/core';
   styleUrls: ['./show-attrib.component.css'],
 })
 export class ShowAttribComponent {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(private dialogRef: MatDialogRef<ShowAttribComponent, void>, @Inject(MAT_DIALOG_DATA) public data: any) {}
 
   public closeMe(): void {

@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { GameSettingsService, StorageKey } from 'src/app/services/game-settings.service';
+import { GameSettingsService } from 'src/app/services/game-settings.service';
 
 @Component({
   selector: 'app-menu-settings-volume-slider',

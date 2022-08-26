@@ -358,11 +358,11 @@ export class GameBoardOrbitControl extends EventDispatcher {
     }
   }
 
-  private onMouseUp(event): void {
+  private onMouseUp(): void {
     if (this.enabled === false) {
       return;
     }
-    this.handleMouseUp(event);
+    this.handleMouseUp();
     this.domElement.removeEventListener('mousemove', this.cbs.onMouseMove);
     this.dispatchEvent(this.endEvent);
     this.currentState = this.CONTROL_STATE.NONE;
@@ -383,7 +383,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
     this.dispatchEvent(this.endEvent);
   }
 
-  private onKeyDown(event): void {
+  private onKeyDown(): void {
     if (this.enabled === false || this.enableKeys === false) {
       return;
     }
@@ -471,11 +471,11 @@ export class GameBoardOrbitControl extends EventDispatcher {
     }
   }
 
-  private onTouchEnd(event): void {
+  private onTouchEnd(): void {
     if (this.enabled === false) {
       return;
     }
-    this.handleTouchEnd(event);
+    this.handleTouchEnd();
     this.dispatchEvent(this.endEvent);
     this.currentState = this.CONTROL_STATE.NONE;
   }
@@ -523,7 +523,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
     this.dollyStart.copy(this.dollyEnd);
   }
 
-  private handleMouseUp(event: MouseEvent): void {
+  private handleMouseUp(): void {
     // NO-OP
   }
 
@@ -597,7 +597,7 @@ export class GameBoardOrbitControl extends EventDispatcher {
     }
   }
 
-  private handleTouchEnd(event): void {
+  private handleTouchEnd(): void {
     // no-op
   }
 

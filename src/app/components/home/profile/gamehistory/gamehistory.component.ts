@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { BasicUser, LoginUser } from 'src/app/services/user.service';
+import { BasicUser } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-gamehistory',

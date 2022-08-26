@@ -38,10 +38,7 @@ export class ColyseusClientService {
   /** Internal values */
   private registerSeed = 0;
   private changeCallbacks: Map<number, ChangeCallback> = new Map<number, ChangeCallback>();
-  private messageCallbacks: Map<MessageType, Map<number, MessageCallback>> = new Map<
-    MessageType,
-    Map<number, MessageCallback>
-  >([]);
+  private messageCallbacks: Map<MessageType, Map<number, MessageCallback>> = new Map<MessageType, Map<number, MessageCallback>>([]);
 
   /** Access values mainly used by the state service */
   myLoginName: string;
@@ -116,8 +113,7 @@ export class ColyseusClientService {
 
   registerMessageCallback(mType: MessageType, cb: MessageCallback): number {
     const registerId = this._getUniqueId();
-    const callbackMap: Map<number, MessageCallback> =
-      this.messageCallbacks.get(mType) || new Map<number, MessageCallback>();
+    const callbackMap: Map<number, MessageCallback> = this.messageCallbacks.get(mType) || new Map<number, MessageCallback>();
     callbackMap.set(registerId, cb);
     this.messageCallbacks.set(mType, callbackMap);
     return registerId;

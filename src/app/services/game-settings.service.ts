@@ -12,9 +12,7 @@ export enum StorageKey {
 })
 export class GameSettingsService implements OnDestroy {
   // Volume
-  musicVolume: BehaviorSubject<number> = new BehaviorSubject<number>(
-    this.getValueFromLocalStroage(StorageKey.VolumeMusic) ?? 0.5
-  );
+  musicVolume: BehaviorSubject<number> = new BehaviorSubject<number>(this.getValueFromLocalStroage(StorageKey.VolumeMusic) ?? 0.5);
 
   soundEffectVolume: BehaviorSubject<number> = new BehaviorSubject<number>(0.5);
 

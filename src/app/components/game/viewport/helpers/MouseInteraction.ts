@@ -1,4 +1,4 @@
-import { Camera, Object3D, Raycaster, Vector2, Vector3, Intersection } from 'three';
+import { Camera, Intersection, Object3D, Raycaster, Vector2, Vector3 } from 'three';
 import { ClickedTarget, PhysicsCommands } from './PhysicsCommands';
 import { BoardItemControlService } from '../../../../services/board-item-control.service';
 import { Player } from '../../../../model/state/Player';
@@ -79,9 +79,7 @@ export class MouseInteraction {
         const obj = intersects[0].object;
         const targetFigureId = this.bic.gameState.getMyFigureId();
         if (targetFigureId !== obj.userData.physicsId) {
-          const targetPlayer: Player = this.bic.gameState
-            .getPlayerArray()
-            .find((p) => p.figureId === obj.userData.physicsId);
+          const targetPlayer: Player = this.bic.gameState.getPlayerArray().find((p) => p.figureId === obj.userData.physicsId);
           if (targetPlayer !== undefined) {
             this.bic.itemService.onTargetHover(obj.userData.physicsId);
           }
@@ -165,12 +163,7 @@ export class MouseInteraction {
       const type = this.getClickedType(intersects[0].object);
       if (type === ClickedTarget.board) {
         if (!this.handleBoardTileClick(point)) {
-          this.bic.addFlummi(
-            point.x + (Math.random() - 0.5),
-            30,
-            point.z + (Math.random() - 0.5),
-            Math.random() * 0xffffff
-          );
+          this.bic.addFlummi(point.x + (Math.random() - 0.5), 30, point.z + (Math.random() - 0.5), Math.random() * 0xffffff);
         }
         this.currentlySelected = undefined;
       } else if (type === ClickedTarget.figure) {
@@ -188,9 +181,7 @@ export class MouseInteraction {
             console.log('selected Object');
           } else {
             if (this.bic.itemService.isTargeting()) {
-              const targetPlayer: Player = this.bic.gameState
-                .getPlayerArray()
-                .find((p) => p.figureId === obj.userData.physicsId);
+              const targetPlayer: Player = this.bic.gameState.getPlayerArray().find((p) => p.figureId === obj.userData.physicsId);
               this.bic.itemService.onTargetFinish(targetPlayer);
             } else {
               console.log('This is not your figure');
@@ -207,17 +198,13 @@ export class MouseInteraction {
     const coords = this.bic.boardTiles.coordsToFieldCoords(intersection);
     if (coords.x >= 0 && coords.x < 8 && coords.y >= 0 && coords.y < 8) {
       const tileId = this.bic.boardTiles.getId(coords.x, coords.y);
-      const tile = this.bic.boardTiles.getTile(tileId);
-      // console.log('clicked on Tile: ', tile.translationKey, coords.x, coords.y);
+      this.bic.boardTiles.getTile(tileId);
       if (this.currentlySelected !== undefined) {
         this.bic.moveGameFigure(this.currentlySelected.obj, tileId);
         this.bic.physics.setKinematic(PhysicsCommands.getPhysId(this.currentlySelected.obj), false);
         return true;
       }
     } else {
-      // console.log('clicked outside of playing field');
-      // const oldPos = this.currentlySelected.oldPos;
-      // this.physics.setPosition(PhysicsCommands.getPhysId(this.currentlySelected.obj), oldPos.x, oldPos.y, oldPos.z);
       if (this.currentlySelected !== undefined) {
         this.bic.physics.setKinematic(PhysicsCommands.getPhysId(this.currentlySelected.obj), false);
       }

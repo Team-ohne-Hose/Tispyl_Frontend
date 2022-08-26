@@ -10,12 +10,10 @@
           <div class='row mb-3'>
             <div class='col-sm-12'>
 
-              <label for='display-name'
-                     [ngClass]="edit.controls.newUsername.invalid ? 'text-danger' : ''">Anzeigename:
+              <label for='display-name' [ngClass]="edit.controls.newUsername.invalid ? 'text-danger' : ''">Anzeigename:
               </label>
-              <input (keyup)='keyPressed($event)' id='display-name' formControlName='newUsername' type='text'
-                     name='display_name'
-                     class='form-control' [ngClass]="edit.controls.newUsername.invalid ? 'is-invalid' : ''">
+              <input id='display-name' formControlName='newUsername' type='text' name='display_name'
+                class='form-control' [ngClass]="edit.controls.newUsername.invalid ? 'is-invalid' : ''">
               <label class='text-danger' *ngIf="edit.controls.newUsername.invalid">
                 Der Anzeigename muss mindestens 3 Zeichen enthalten.
               </label>
@@ -35,10 +33,10 @@
           <div class='row mb-3'>
             <div class='col-sm-12 my-3'>
               <label for='currentPassword'
-                     [ngClass]="edit.controls.currentPassword.invalid ? 'text-danger' : ''">Passwort:
+                [ngClass]="edit.controls.currentPassword.invalid ? 'text-danger' : ''">Passwort:
               </label>
               <input id='currentPassword' formControlName='currentPassword' type='password' class='form-control'
-                     [ngClass]="edit.controls.currentPassword.invalid ? 'is-invalid' : ''">
+                [ngClass]="edit.controls.currentPassword.invalid ? 'is-invalid' : ''">
 
               <label class='text-danger' *ngIf="edit.controls.currentPassword.invalid">
                 Must be at least 8 characters!
@@ -47,22 +45,22 @@
 
 
             <div class='col-sm-6'>
-              <label for='newPassword'
-                     [ngClass]="edit.controls.newPassword.invalid ? 'text-danger' : ''">Neues Passwort:
+              <label for='newPassword' [ngClass]="edit.controls.newPassword.invalid ? 'text-danger' : ''">Neues
+                Passwort:
               </label>
               <input id='newPassword' formControlName='newPassword' type='password' class='form-control'
-                     [ngClass]="edit.controls.newPassword.invalid ? 'is-invalid' : ''">
+                [ngClass]="edit.controls.newPassword.invalid ? 'is-invalid' : ''">
               <label class='text-danger' *ngIf="edit.controls.newPassword.invalid">
                 Must be at least 8 characters!
               </label>
             </div>
 
             <div class='col-sm-6'>
-              <label for='new-password-confirmed'
-                     [ngClass]="edit.errors?.equality? 'text-danger' : ''">Passwort wiederholen:
+              <label for='new-password-confirmed' [ngClass]="edit.errors?.equality? 'text-danger' : ''">Passwort
+                wiederholen:
               </label>
               <input id='new-password-confirmed' formControlName='newPasswordConfirmed' type='password'
-                     class='form-control' [ngClass]="edit.errors?.equality ? 'is-invalid' :
+                class='form-control' [ngClass]="edit.errors?.equality ? 'is-invalid' :
                      ''">
 
               <label class='text-danger' *ngIf='edit.errors?.equality'>
@@ -71,9 +69,9 @@
             </div>
           </div>
 
-            <button type='submit' value='submit' class='btn btn-primary'>
-              Abschicken
-            </button>
+          <button type='submit' value='submit' class='btn btn-primary'>
+            Abschicken
+          </button>
         </form>
       </div>
     </div>

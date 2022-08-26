@@ -99,6 +99,7 @@ export class OpenGamePopupComponent {
         this.tileSetList = ts;
         this.loadTileSetData(this.tileSetList[0].id);
       },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (error: any) => {
         console.error('couldnt retrieve list of available decks', error);
       }
@@ -126,6 +127,7 @@ export class OpenGamePopupComponent {
         this.selectedTileSet = ts;
         this.generateTileListAsSet();
       },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (error: any) => {
         this.selectedTileSet = undefined;
         console.error('couldnt retrieve list of available decks', error);
@@ -155,7 +157,6 @@ export class OpenGamePopupComponent {
   slid(evt: NgbSingleSlideEvent, slide: number): void {
     if (evt.isShown) {
       this.selectedTileSetId = slide;
-      const elmnt = document.getElementById('deck-list-entry-' + slide);
     }
   }
 

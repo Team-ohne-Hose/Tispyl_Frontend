@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
-import { UserService, LoginUser } from '../../../../../services/user.service';
+import { LoginUser, UserService } from '../../../../../services/user.service';
 import { FileService } from '../../../../../services/file.service';
 import { ChatMessage } from './helpers/ChatMessage';
 import { ObjectLoaderService } from '../../../../../services/object-loader/object-loader.service';
@@ -49,8 +49,7 @@ export class HomeRegisterComponent {
     private commandService: CommandService
   ) {
     this.myPlayer = this.gameState.getMe();
-    this.profileSource =
-      this.fileManagement.profilePictureSource(this.myPlayer?.loginName) || '../assets/defaultImage.jpg';
+    this.profileSource = this.fileManagement.profilePictureSource(this.myPlayer?.loginName) || '../assets/defaultImage.jpg';
     this.myBCapIndex = this.myPlayer.figureModel || PlayerModel.bcap_NukaCola;
     console.debug('Initialized bottle cap index to: ', this.myBCapIndex);
     this.bottleCapSource = this.loader.getBCapTextureThumbPath(this.myBCapIndex);
@@ -125,22 +124,6 @@ export class HomeRegisterComponent {
 
   executeCommand(cmdStr: string): void {
     this.commandService.executeChatCommand(cmdStr);
-  }
-
-  nextBCap($event: Event): void {
-    this.myBCapIndex++;
-    if (this.myBCapIndex > this.loader.getBCapCount()) {
-      this.myBCapIndex = 1;
-    }
-    this.setBCap();
-  }
-
-  prevBCap($event: Event): void {
-    this.myBCapIndex--;
-    if (this.myBCapIndex < 1) {
-      this.myBCapIndex = this.loader.getBCapCount();
-    }
-    this.setBCap();
   }
 
   getTimePlayed(): string {

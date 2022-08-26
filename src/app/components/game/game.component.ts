@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ViewChild, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ColyseusClientService } from '../../services/colyseus-client.service';
 import { ViewportComponent } from './viewport/viewport.component';
@@ -11,18 +11,13 @@ import { Subscription } from 'rxjs';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { GameState } from '../../model/state/GameState';
 import { Room } from 'colyseus.js';
-import { map, take, timeout } from 'rxjs/operators';
 import { Progress } from '../../services/object-loader/loaderTypes';
 
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.css'],
-  animations: [
-    trigger('fadeOutAnimation', [
-      transition(':leave', [style({ opacity: '1' }), animate('0.5s', style({ opacity: '0' }))]),
-    ]),
-  ],
+  animations: [trigger('fadeOutAnimation', [transition(':leave', [style({ opacity: '1' }), animate('0.5s', style({ opacity: '0' }))])])],
 })
 export class GameComponent implements AfterViewInit, OnDestroy {
   @ViewChild('viewRef') viewRef: ViewportComponent;

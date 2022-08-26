@@ -11,6 +11,7 @@ export class JoinGameComponent {
   constructor(
     private router: Router,
     private dialogRef: MatDialogRef<JoinGameComponent, void>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 
@@ -20,6 +21,6 @@ export class JoinGameComponent {
 
   public join(): void {
     this.data.lobbyComponent.onEnterGame();
-    this.router.navigateByUrl('/game').then((e) => this.dialogRef.close());
+    this.router.navigateByUrl('/game').then(() => this.dialogRef.close());
   }
 }

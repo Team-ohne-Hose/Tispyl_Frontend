@@ -7,9 +7,9 @@ import { ChatService } from './chat.service';
 import { GameStateService } from './game-state.service';
 import { ItemService } from './items-service/item.service';
 import { BoardItemControlService } from './board-item-control.service';
-import { Observable, Observer, merge, forkJoin } from 'rxjs';
+import { Observable, Observer, forkJoin } from 'rxjs';
 import { Progress } from './object-loader/loaderTypes';
-import { map, mergeAll, mergeMap, take, tap } from 'rxjs/operators';
+import { map, mergeMap, take, tap } from 'rxjs/operators';
 import { ColyseusClientService } from './colyseus-client.service';
 import { GameSettingsService } from './game-settings.service';
 

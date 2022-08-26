@@ -13,27 +13,18 @@ import { animate, group, sequence, style, transition, trigger } from '@angular/a
   animations: [
     trigger('largeContentAnimation', [
       transition('void => *', [
-        sequence([
-          style({ opacity: '0', height: '0rem' }),
-          animate('0.5s ease-out', style({ opacity: '1', height: '31.25rem' })),
-        ]),
+        sequence([style({ opacity: '0', height: '0rem' }), animate('0.5s ease-out', style({ opacity: '1', height: '31.25rem' }))]),
       ]),
       transition('* => void', [
         sequence([
           style({ opacity: '1', position: 'absolute', height: '31.25rem' }),
-          group([
-            animate('0.25s ease-out', style({ opacity: '0' })),
-            animate('0.5s ease-out', style({ height: '0rem' })),
-          ]),
+          group([animate('0.25s ease-out', style({ opacity: '0' })), animate('0.5s ease-out', style({ height: '0rem' }))]),
         ]),
       ]),
     ]),
     trigger('smallContentAnimation', [
       transition('void => *', [
-        sequence([
-          style({ opacity: '0', height: '31.25rem' }),
-          animate('0.5s ease-out', style({ opacity: '1', height: '5rem' })),
-        ]),
+        sequence([style({ opacity: '0', height: '31.25rem' }), animate('0.5s ease-out', style({ opacity: '1', height: '5rem' }))]),
       ]),
       transition('* => void', [
         sequence([
@@ -77,11 +68,7 @@ export class TileOverlayComponent implements OnDestroy {
   /** Internals */
   private readonly callbackId = undefined;
 
-  constructor(
-    private gameState: GameStateService,
-    private boardTiles: BoardTilesService,
-    private fileManagement: FileService
-  ) {
+  constructor(private gameState: GameStateService, private boardTiles: BoardTilesService, private fileManagement: FileService) {
     this.timer = new Timer(5000, 25, {
       onProgress: () => {
         this.currentProgress = `${Math.round((this.timer.getCurrentTime() * 100) / this.timer.getMaxTime())}%`;

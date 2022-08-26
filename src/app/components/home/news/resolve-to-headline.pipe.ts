@@ -13,8 +13,6 @@ export class ResolveToHeadlinePipe implements PipeTransform {
    * @param markdownName name of the file that will be translated through the cache
    */
   transform(markdownName: string): Observable<string> {
-    return this.mdc.headlineCache.pipe(
-      map((cache: [string, string][]) => (cache !== undefined ? cache[markdownName] : 'undefined'))
-    );
+    return this.mdc.headlineCache.pipe(map((cache: [string, string][]) => (cache !== undefined ? cache[markdownName] : 'undefined')));
   }
 }

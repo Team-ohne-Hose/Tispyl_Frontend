@@ -100,7 +100,7 @@ export class VoteSystemComponent implements OnInit {
     this.gameState.sendMessage(MessageType.GAME_MESSAGE, messageData);
   }
 
-  triggerVoteCreation(event: Event): void {
+  triggerVoteCreation(): void {
     if (this.gameState.getMe() !== undefined) {
       this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
         type: MessageType.GAME_MESSAGE,
@@ -110,7 +110,7 @@ export class VoteSystemComponent implements OnInit {
     }
   }
 
-  triggerCloseVotingSession(event: Event): void {
+  triggerCloseVotingSession(): void {
     this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
       type: MessageType.GAME_MESSAGE,
       action: GameActionType.closeVotingSession,

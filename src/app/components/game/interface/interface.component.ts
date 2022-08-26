@@ -5,7 +5,7 @@ import { TileOverlayComponent } from './tile-overlay/tile-overlay.component';
 import { TurnOverlayComponent } from './turn-overlay/turn-overlay.component';
 import { StateDisplayComponent } from './state-display/state-display.component';
 import { animate, style, transition, trigger } from '@angular/animations';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { ShowAttribComponent } from '../show-attrib/show-attrib.component';
 import { Observable } from 'rxjs';
 
@@ -14,9 +14,7 @@ import { Observable } from 'rxjs';
   templateUrl: './interface.component.html',
   styleUrls: ['./interface.component.css'],
   animations: [
-    trigger('fadeOutAnimation', [
-      transition(':leave', [style({ opacity: '1' }), animate('0.25s ease-in', style({ opacity: '0' }))]),
-    ]),
+    trigger('fadeOutAnimation', [transition(':leave', [style({ opacity: '1' }), animate('0.25s ease-in', style({ opacity: '0' }))])]),
   ],
 })
 export class InterfaceComponent {
@@ -38,10 +36,7 @@ export class InterfaceComponent {
   }
 
   showAttribution(): void {
-    const dialogRef: MatDialogRef<
-      ShowAttribComponent,
-      { roomName: string; skinName: string; randomizeTiles: boolean }
-    > = this.dialog.open(ShowAttribComponent, {
+    this.dialog.open(ShowAttribComponent, {
       width: '80%',
       maxWidth: '900px',
       height: '70%',

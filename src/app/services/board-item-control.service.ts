@@ -6,15 +6,15 @@ import { BoardTilesService } from './board-tiles.service';
 import { ItemService } from './items-service/item.service';
 import { ViewportComponent } from '../components/game/viewport/viewport.component';
 import {
-  Object3D,
-  Sprite,
-  Scene,
-  PerspectiveCamera,
-  Mesh,
   ConeBufferGeometry,
-  Vector3,
+  Mesh,
   MeshStandardMaterial,
+  Object3D,
+  PerspectiveCamera,
+  Scene,
   SphereBufferGeometry,
+  Sprite,
+  Vector3,
 } from 'three';
 import { Player } from '../model/state/Player';
 import { GameActionType, GameSetTile, MessageType } from '../model/WsData';
@@ -69,7 +69,7 @@ export class BoardItemControlService {
 
     /** This should be cleaned and clarified */
     this.gameState.playerListChanges$.subscribe((p: Player) => {
-      const figureItem = this.allFigures.find((item: FigureItem, index: number) => {
+      const figureItem = this.allFigures.find((item: FigureItem) => {
         return item.mesh.userData.physicsId === p.figureId;
       });
 

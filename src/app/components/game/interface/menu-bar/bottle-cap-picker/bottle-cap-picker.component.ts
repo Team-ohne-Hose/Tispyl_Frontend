@@ -22,7 +22,7 @@ export class BottleCapPickerComponent {
     this.numberOfBottleCaps = this.objectLoaderService.getBCapCount();
   }
 
-  nextBCap($event: Event): void {
+  nextBCap(): void {
     this.currentCapId++;
     if (this.currentCapId > this.numberOfBottleCaps) {
       this.currentCapId = 1;
@@ -30,7 +30,7 @@ export class BottleCapPickerComponent {
     this.setBCap();
   }
 
-  prevBCap($event: Event): void {
+  prevBCap(): void {
     this.currentCapId--;
     if (this.currentCapId < 1) {
       this.currentCapId = this.numberOfBottleCaps;
