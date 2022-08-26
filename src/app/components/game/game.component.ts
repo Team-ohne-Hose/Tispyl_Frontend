@@ -12,6 +12,7 @@ import { animate, style, transition, trigger } from '@angular/animations';
 import { GameState } from '../../model/state/GameState';
 import { Room } from 'colyseus.js';
 import { Progress } from '../../services/object-loader/loaderTypes';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-game',
@@ -40,10 +41,17 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     /** Redirect if the room is not available after 5000ms */
     const roomTimeoutId = setTimeout(() => {
-      this.router.navigateByUrl('').then(() => {
-        this.gameInitialization$$.unsubscribe();
-        alert(`Der Raum dem du beitreten wolltest antwortet nicht oder existiert nicht.`);
-      });
+      if (!environment.production) {
+        this.router.navigateByUrl('_debug').then(() => {
+          this.gameInitialization$$.unsubscribe();
+          console.log(`Der Raum dem du beitreten wolltest antwortet nicht oder existiert nicht.`);
+        });
+      } else {
+        this.router.navigateByUrl('').then(() => {
+          this.gameInitialization$$.unsubscribe();
+          alert(`Der Raum dem du beitreten wolltest antwortet nicht oder existiert nicht.`);
+        });
+      }
     }, 1000);
 
     /** Redirect if a user has no Room hes in, notify all players and start the initialization otherwise */
