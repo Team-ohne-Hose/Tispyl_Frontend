@@ -35,7 +35,6 @@ export class DebugdummyComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.availableRooms$$ = this.colyseus.availableRooms$.subscribe((availableRooms) => {
       this.availableRooms = availableRooms;
-      //this.setNames();
     });
     this.colyseus.updateAvailableRooms();
   }
