@@ -1,4 +1,4 @@
-import { Object3D, Quaternion, Vector3 } from 'three';
+import { Object3D, Vector3 } from 'three';
 import {
   MessageType,
   PhysicsCommandAngular,
@@ -35,8 +35,6 @@ export enum CollisionGroups {
 
 export class PhysicsCommands {
   private readonly MAX_ALLOWED_OBJECTS = 200;
-
-  private readonly FIGURE_QUATERNION_OFFSET = new Quaternion(-0.7095707365365208, 0, 0, 0.7046342099635947).normalize();
 
   dice: Object3D;
   currentlyLoadingEntities: Map<number, boolean> = new Map<number, boolean>();
@@ -128,7 +126,7 @@ export class PhysicsCommands {
     obj.quaternion.set(item.quaternion.x, item.quaternion.y, item.quaternion.z, item.quaternion.w);
     //return;
     // update nametag sprite if needed
-    if (item.entity == PhysicsEntity.figure) {
+    if (item.entity === PhysicsEntity.figure) {
       const labelSprite = obj.children.find((val: Object3D) => {
         return val.type === 'Sprite';
       });
