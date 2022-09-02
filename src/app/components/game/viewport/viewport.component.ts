@@ -113,7 +113,9 @@ export class ViewportComponent implements AfterViewInit {
 
     /** Lighting - NOTE: this setup is tailored specifically to the current object materials and is far off from any physical model */
     const ambient = new AmbientLight(0xb1e1ff, 0.8); // soft blue-ish ambient light
+    ambient.name = 'ambient light';
     const sun = new DirectionalLight(0xf7eee4, 4.5); // warm yellow-ish sun light
+    sun.name = 'sun';
     const sunTarget = new Object3D().translateY(5);
     sun.position.set(20, 100, 90);
     sun.shadow.camera.left = -60;

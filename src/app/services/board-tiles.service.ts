@@ -122,6 +122,7 @@ export class BoardTilesService {
 
   generateField(): Group {
     const group = new Group();
+    group.name = 'gametiles';
     for (let tileId = 0; tileId < 64; tileId++) {
       const tileMesh = this.objectLoader.loadGameTile();
       tileMesh.position.set(this.centerCoords.x[this.tileCoords[tileId].x], 0.01, this.centerCoords.y[this.tileCoords[tileId].y]);
