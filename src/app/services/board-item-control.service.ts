@@ -58,8 +58,16 @@ export class BoardItemControlService {
     this.allFigures = [];
 
     this.physics.addPlayer = ((mesh: Object3D, name: string) => {
-      this.allFigures.push({ mesh: mesh, labelSprite: undefined, name: name, isHidden: false });
+      const figure = { mesh: mesh, labelSprite: undefined, name: name, isHidden: false };
+      this.generatePlayerSprite(figure);
+      this.allFigures.push(figure);
       console.debug('adding to BoardItemManagement´s list of figures', name, mesh, this.allFigures);
+
+      // add label into scene if nametags are shown
+      if (this.gses.persistentNamePlates.value) {
+        console.log('show Sprite');
+        figure.mesh.add(figure.labelSprite);
+      }
     }).bind(this);
 
     // Subscribe to Overriding setting to display Name Plates
@@ -146,12 +154,12 @@ export class BoardItemControlService {
       this.allFigures.forEach((figure: FigureItem) => {
         if (figure.labelSprite === undefined) {
           console.debug('adding Sprite for player ', figure.name);
-          figure.labelSprite = this.loader.createPredefLabelSprite(figure.name);
+          this.generatePlayerSprite(figure);
         }
-        figure.labelSprite.position.set(0, 5, 0);
 
         // add label into scene if nametags are shown
         if (this.gses.persistentNamePlates.value) {
+          console.log('show Sprite');
           figure.mesh.add(figure.labelSprite);
         }
         count++;
@@ -159,6 +167,12 @@ export class BoardItemControlService {
       });
       o.complete();
     });
+  }
+
+  private generatePlayerSprite(figure: FigureItem) {
+    console.debug('adding Sprite for player ', figure.name);
+    figure.labelSprite = this.loader.createPredefLabelSprite(figure.name);
+    figure.labelSprite.position.set(0, 5, 0);
   }
 
   // public function to correctly behave with both key and overriding Setting
