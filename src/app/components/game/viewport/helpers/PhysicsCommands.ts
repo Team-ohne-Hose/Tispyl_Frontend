@@ -124,7 +124,6 @@ export class PhysicsCommands {
   private _updateCorrelatedObject(item: PhysicsObjectState, obj: Object3D) {
     obj.position.set(item.position.x, item.position.y, item.position.z);
     obj.quaternion.set(item.quaternion.x, item.quaternion.y, item.quaternion.z, item.quaternion.w);
-    //return;
     // update nametag sprite if needed
     if (item.entity === PhysicsEntity.figure) {
       const labelSprite = obj.children.find((val: Object3D) => {

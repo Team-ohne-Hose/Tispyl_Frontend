@@ -375,7 +375,7 @@ export class ObjectLoaderService {
     } else {
       const loader = new GLTFLoader().setPath(this.resourcePath);
       loader.load(resource.fname, (gltf: GLTF) => {
-        gltf.scene.name = resource.cname + '(loaded)';
+        gltf.scene.name = resource.cname + ' (loaded)';
         gltf.scene.castShadow = true;
         gltf.scene.receiveShadow = true;
         gltf.scene.children.forEach((o) => {
