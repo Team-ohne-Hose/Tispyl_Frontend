@@ -1,7 +1,7 @@
 import { AfterContentInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JwtTokenService } from '../../services/jwttoken.service';
-import { BasicUser, LoginUser, UserService } from '../../services/user.service';
+import { BasicUser, UserService } from '../../services/user.service';
 import { APIResponse } from '../../model/APIResponse';
 import { FileService } from 'src/app/services/file.service';
 
@@ -66,11 +66,11 @@ export class HomeComponent implements OnInit, AfterContentInit {
     /** Check for active JWT Token */
     if (this.AuthService.isLoggedIn()) {
       this.userService.getUserByLoginName(localStorage.getItem('username')).subscribe(
-        (response: APIResponse<LoginUser>) => {
-          this.userService.setActiveUser(response.payload as LoginUser);
+        (response: APIResponse<BasicUser>) => {
+          this.userService.setActiveUser(response.payload as BasicUser);
         },
         (err) => {
-          console.error('Found JWT token indicating a logged in user, but could not retrieve LoginUser object from server', err);
+          console.error('Found JWT token indicating a logged in user, but could not retrieve BasicUser object from server', err);
         }
       );
     }

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { LoginUser, UserService } from '../../../../services/user.service';
+import { BasicUser, UserService } from '../../../../services/user.service';
 
 @Component({
   selector: 'app-introduction',
@@ -10,7 +10,7 @@ export class IntroductionComponent {
   visible = false;
 
   constructor(userService: UserService) {
-    userService.activeUser.subscribe((loginUsr: LoginUser) => {
+    userService.activeUser.subscribe((loginUsr: BasicUser) => {
       if (loginUsr.time_played < 300) {
         this.visible = true;
       }

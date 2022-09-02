@@ -18,33 +18,20 @@ export class BasicUser {
   is_dev: boolean;
 }
 
-export class LoginUser extends BasicUser {
-  password_hash;
-}
-
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  activeUser: BehaviorSubject<LoginUser>;
-  profileUser: BasicUser;
+  activeUser: BehaviorSubject<BasicUser>;
 
   private userEndpoint = environment.endpoint + 'user';
 
   constructor(private httpClient: HttpClient, private toastService: AppToastService) {
-    this.activeUser = new BehaviorSubject<LoginUser>(undefined);
+    this.activeUser = new BehaviorSubject<BasicUser>(undefined);
   }
 
-  setActiveUser(user: LoginUser): void {
+  setActiveUser(user: BasicUser): void {
     this.activeUser.next(user);
-  }
-
-  /**
-   * @deprecated The method should not be used as it removes the benefits of using a BehaviorSubject
-   * @See {rxjs.BehaviorSubject}
-   */
-  getActiveUser(): Observable<BasicUser> {
-    return this.activeUser.asObservable();
   }
 
   // REQUESTS
@@ -58,10 +45,10 @@ export class UserService {
     return this.httpClient.delete<number>(requestUrl);
   }
 
-  syncUserData(user: LoginUser): void {
-    this.httpClient.get<APIResponse<LoginUser>>(this.userEndpoint + '?login_name=' + user.login_name).subscribe((response) => {
+  syncUserData(user: BasicUser): void {
+    this.httpClient.get<APIResponse<BasicUser>>(this.userEndpoint + '?login_name=' + user.login_name).subscribe((response) => {
       if (response.payload !== undefined) {
-        this.setActiveUser(response.payload as LoginUser);
+        this.setActiveUser(response.payload as BasicUser);
       } else {
         console.error('Failed to update user: ', response);
       }
@@ -76,7 +63,7 @@ export class UserService {
   updateUser(userData: EditUserData): void {
     const requestUrl = this.userEndpoint;
 
-    this.httpClient.patch<APIResponse<LoginUser>>(requestUrl, userData).subscribe((response) => {
+    this.httpClient.patch<APIResponse<BasicUser>>(requestUrl, userData).subscribe((response) => {
       if (!response.success) {
         this.toastService.show('Error', 'Beim aktualisieren deines Profils ist etwas schief gelaufen.', 'bg-danger text-light', 3000);
         return;

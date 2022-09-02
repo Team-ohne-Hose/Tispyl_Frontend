@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LoginUser } from './user.service';
+import { BasicUser } from './user.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
@@ -14,15 +14,15 @@ export class FileService {
 
   constructor(private httpClient: HttpClient) {}
 
-  uploadProfilePicture(file: File, user: LoginUser): Observable<LoginUser> {
+  uploadProfilePicture(file: File, user: BasicUser): Observable<BasicUser> {
     const formData: FormData = new FormData();
     formData.append('img', file, file.name);
     formData.append('login_name', user.login_name);
 
-    return this.httpClient.post<APIResponse<LoginUser>>(this.endpoint, formData).pipe(map((apiResponse) => apiResponse.payload));
+    return this.httpClient.post<APIResponse<BasicUser>>(this.endpoint, formData).pipe(map((apiResponse) => apiResponse.payload));
   }
 
-  removeProfilePicture(user: LoginUser): Observable<void> {
+  removeProfilePicture(user: BasicUser): Observable<void> {
     return this.httpClient
       .delete<APIResponse<void>>(this.endpoint + `?login_name=${user.login_name}`)
       .pipe(map((apiResponse) => apiResponse.payload));

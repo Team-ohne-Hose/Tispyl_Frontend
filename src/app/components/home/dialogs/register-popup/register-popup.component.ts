@@ -3,7 +3,7 @@ import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { RegisterOptions } from 'src/app/model/RegisterOptions';
 import { JwtTokenService } from 'src/app/services/jwttoken.service';
-import { LoginUser } from '../../../../services/user.service';
+import { BasicUser } from '../../../../services/user.service';
 
 @Component({
   templateUrl: './register-popup.component.html',
@@ -18,7 +18,7 @@ export class RegisterPopupComponent {
   errorMsg: string[] = [];
 
   constructor(
-    private dialogRef: MatDialogRef<RegisterPopupComponent, LoginUser>,
+    private dialogRef: MatDialogRef<RegisterPopupComponent, BasicUser>,
     private AuthService: JwtTokenService,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     @Inject(MAT_DIALOG_DATA) public data: any

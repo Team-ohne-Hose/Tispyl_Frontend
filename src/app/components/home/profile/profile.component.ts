@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { FileService } from 'src/app/services/file.service';
-import { BasicUser, LoginUser, UserService } from 'src/app/services/user.service';
+import { BasicUser, UserService } from 'src/app/services/user.service';
 
 class ImageSnippet {
   pending = false;
@@ -18,7 +18,7 @@ class ImageSnippet {
 })
 export class ProfileComponent implements OnInit {
   timePlayed: string;
-  currentUser: LoginUser;
+  currentUser: BasicUser;
   profileSource: string;
   selectedFile: ImageSnippet;
   isCurrentUser: boolean;
@@ -60,7 +60,7 @@ export class ProfileComponent implements OnInit {
       this.changeDetector.markForCheck();
     });
 
-    this.userService.activeUser.subscribe((user: LoginUser) => {
+    this.userService.activeUser.subscribe((user: BasicUser) => {
       if (user !== undefined) {
         this.currentUser = user;
         this.profileSource = this.fileService.profilePictureSource(user.login_name, true);
@@ -80,7 +80,7 @@ export class ProfileComponent implements OnInit {
       this.selectedFile = new ImageSnippet(event.target.result as string, file);
 
       this.fileService.uploadProfilePicture(this.selectedFile.file, this.currentUser).subscribe(
-        (user: LoginUser) => {
+        (user: BasicUser) => {
           this.userService.setActiveUser(user);
           this.profileSource = this.fileService.profilePictureSource(this.currentUser.login_name, true);
           this.onSuccess();

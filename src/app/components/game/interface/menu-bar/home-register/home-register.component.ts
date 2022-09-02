@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
-import { LoginUser, UserService } from '../../../../../services/user.service';
+import { BasicUser, UserService } from '../../../../../services/user.service';
 import { FileService } from '../../../../../services/file.service';
 import { ChatMessage } from './helpers/ChatMessage';
 import { ObjectLoaderService } from '../../../../../services/object-loader/object-loader.service';
@@ -26,7 +26,7 @@ export class HomeRegisterComponent {
   bottleCapSource = '../assets/models/otherTex/default.png';
   myBCapIndex = PlayerModel.bcap_NukaCola;
 
-  user: LoginUser;
+  user: BasicUser;
   myPlayer: Player;
   @Input() playerlist: Player[];
 

@@ -3,7 +3,7 @@ import { Player } from 'src/app/model/state/Player';
 import { MessageType, RefreshCommandType, RefreshProfilePics } from 'src/app/model/WsData';
 import { FileService } from 'src/app/services/file.service';
 import { GameStateService } from 'src/app/services/game-state.service';
-import { LoginUser, UserService } from 'src/app/services/user.service';
+import { BasicUser, UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-menu-avatar',
@@ -13,7 +13,7 @@ import { LoginUser, UserService } from 'src/app/services/user.service';
 export class AvatarSectionComponent {
   userImageUrl = '../assets/defaultImage.jpg';
 
-  private user: LoginUser;
+  private user: BasicUser;
   public currentPlayer: Player;
 
   constructor(private fileService: FileService, private userService: UserService, private gameStateService: GameStateService) {
