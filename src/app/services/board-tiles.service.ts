@@ -134,12 +134,16 @@ export class BoardTilesService {
     const landscapeBoundary = (x1: number, x2: number, y: number) => {
       const len = this.borderCoords.x[x2] - this.borderCoords.x[x1];
       const vec = new Vector2((this.borderCoords.x[x2] + this.borderCoords.x[x1]) / 2, this.borderCoords.y[y]);
-      group.add(this.objectLoader.createBoundary(len, true, vec));
+      const boundary = this.objectLoader.createBoundary(len, true, vec);
+      boundary.name = 'boundaryLandscape_y' + y;
+      group.add(boundary);
     };
     const portraitBoundary = (x: number, y1: number, y2: number) => {
       const len = this.borderCoords.y[y2] - this.borderCoords.y[y1];
       const vec = new Vector2(this.borderCoords.x[x], (this.borderCoords.y[y2] + this.borderCoords.y[y1]) / 2);
-      group.add(this.objectLoader.createBoundary(len, false, vec));
+      const boundary = this.objectLoader.createBoundary(len, false, vec);
+      boundary.name = 'boundaryPortrait_x' + x;
+      group.add(boundary);
     };
     landscapeBoundary(1, 8, 1);
     portraitBoundary(1, 1, 7);
