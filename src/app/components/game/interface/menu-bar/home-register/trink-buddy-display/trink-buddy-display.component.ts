@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
 import * as d3 from 'd3';
 import { GameStateService } from '../../../../../../services/game-state.service';
 import { GameActionType, MessageType } from '../../../../../../model/WsData';
@@ -22,6 +22,7 @@ export const ColorPalette = [Colors.Orange, Colors.DarkBlue, Colors.Red, Colors.
   selector: 'app-trink-buddy-display',
   templateUrl: './trink-buddy-display.component.html',
   styleUrls: ['./trink-buddy-display.component.css'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class TrinkBuddyDisplayComponent implements AfterViewInit {
   @ViewChild('chart') chart: ElementRef;
@@ -171,11 +172,12 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
 
     const labels = this.svg
       .append('g')
-      .attr('class', 'labels-group')
+      .attr('class', 'labels-group disable-select')
       .attr('stroke', 'none')
       .attr('font-size', 12)
       .attr('text-anchor', 'middle')
       .attr('fill', Colors.Grey)
+
       .attr('pointer-events', 'none')
       .selectAll('node-group')
       .data(this.nodes)
