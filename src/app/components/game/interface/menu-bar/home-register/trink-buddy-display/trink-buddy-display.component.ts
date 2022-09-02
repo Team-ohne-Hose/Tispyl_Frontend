@@ -177,7 +177,6 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
       .attr('font-size', 12)
       .attr('text-anchor', 'middle')
       .attr('fill', Colors.Grey)
-
       .attr('pointer-events', 'none')
       .selectAll('node-group')
       .data(this.nodes)
