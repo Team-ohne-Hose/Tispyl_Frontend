@@ -149,6 +149,11 @@ export class BoardItemControlService {
           figure.labelSprite = this.loader.createPredefLabelSprite(figure.name);
         }
         figure.labelSprite.position.set(0, 5, 0);
+
+        // add label into scene if nametags are shown
+        if (this.gses.persistentNamePlates.value) {
+          figure.mesh.add(figure.labelSprite);
+        }
         count++;
         o.next([count, this.allFigures.length]);
       });
