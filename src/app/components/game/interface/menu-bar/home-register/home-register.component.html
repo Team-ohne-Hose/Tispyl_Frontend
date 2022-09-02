@@ -21,10 +21,8 @@
     <div class="input-section">
       <div class="command-hint" (click)="showChatCmdDropdown = !showChatCmdDropdown">
         <i class="fas fa-terminal"></i>
-        <app-chat-command-list
-          *ngIf="showChatCmdDropdown"
-          (selectCmdEmitter)="selectCmd($event)"
-        ></app-chat-command-list>
+        <app-chat-command-list *ngIf="showChatCmdDropdown" (selectCmdEmitter)="selectCmd($event)">
+        </app-chat-command-list>
       </div>
       <div (keyup)="sendChatMessageByKey($event, chatInput)" class="text-input-container">
         <input #chatInput placeholder="Type here ..." type="text" spellcheck="false" />
@@ -32,5 +30,4 @@
       <div (click)="sendChatMessage(chatInput)" class="post-button"><i class="fas fa-share"></i></div>
     </div>
   </div>
-  <input #fileInput (change)="newProfilePic($event)" style="display: none" type="file" />
 </div>

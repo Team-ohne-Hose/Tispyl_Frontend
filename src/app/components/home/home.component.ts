@@ -1,18 +1,19 @@
-import { AfterContentInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { AfterContentInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JwtTokenService } from '../../services/jwttoken.service';
 import { BasicUser, UserService } from '../../services/user.service';
 import { APIResponse } from '../../model/APIResponse';
 import { FileService } from 'src/app/services/file.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
-export class HomeComponent implements OnInit, AfterContentInit {
+export class HomeComponent implements OnInit, AfterContentInit, OnDestroy {
   constructor(
-    public router: Router,
+    private router: Router,
     private route: ActivatedRoute,
     private AuthService: JwtTokenService,
     private userService: UserService,
@@ -20,7 +21,7 @@ export class HomeComponent implements OnInit, AfterContentInit {
   ) {}
 
   /** Images displayed in the header carousel (expects 16:9 images) */
-  imageSources: string[] = [
+  protected imageSources: string[] = [
     'assets/carousel/george-cox-l9Z93oauxgs-unsplash.jpg',
     'assets/carousel/kazuend-NmvMhov1sYc-unsplash.jpg',
     'assets/carousel/radovan-46Yad80Ynp4-unsplash.jpg',
@@ -29,20 +30,22 @@ export class HomeComponent implements OnInit, AfterContentInit {
   ];
 
   /** Carousel auxiliaries */
-  scrollInterval = 5000;
-  activeSlide = 1;
+  private scrollInterval = 5000;
+  protected activeSlide = 1;
+  protected originalSourceCount = this.imageSources.length;
   @ViewChild('banner') banner: ElementRef;
-  originalSourceCount = this.imageSources.length;
 
   /** Navbar auxiliaries */
-  logoSource = 'assets/logo.png';
-  userSource = 'assets/defaultImage.jpg';
+  protected logoSource = 'assets/logo.png';
   @ViewChild('dropdown') dropDown: ElementRef;
 
   /** State values */
-  currentUser: BasicUser;
-  isLoggedIn = false;
-  profileSource: string;
+  protected currentUser: BasicUser;
+  protected isLoggedIn = false;
+  protected profileSource: string;
+
+  // subscriptions
+  private activeUser$$: Subscription;
 
   /**
    * Prepares {@link imageSources} for infinite scrolling by pre- and appending new elements. Example:
@@ -76,7 +79,7 @@ export class HomeComponent implements OnInit, AfterContentInit {
     }
 
     /** Triggers as soon as a user logs in or out */
-    this.userService.activeUser.subscribe((u: BasicUser) => {
+    this.activeUser$$ = this.userService.activeUser.subscribe((u: BasicUser) => {
       if (u !== undefined) {
         this.currentUser = u;
         this.isLoggedIn = true;
@@ -98,6 +101,10 @@ export class HomeComponent implements OnInit, AfterContentInit {
     setInterval(() => {
       this.nextSlide('right');
     }, this.scrollInterval);
+  }
+
+  ngOnDestroy(): void {
+    this.activeUser$$.unsubscribe();
   }
 
   public navigate(target: string): void {

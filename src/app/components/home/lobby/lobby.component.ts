@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { OpenGamePopupComponent } from '../dialogs/open-game-popup/open-game-popup.component';
 import { ColyseusClientService, CreateRoomOpts } from '../../../services/colyseus-client.service';
@@ -10,26 +10,27 @@ import { GameState } from '../../../model/state/GameState';
 import { environmentList } from './lobbyLUTs';
 import { ObjectLoaderService } from '../../../services/object-loader/object-loader.service';
 import { DialogResult } from '../dialogs/open-game-popup/open-game-popup.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-lobby',
   templateUrl: './lobby.component.html',
   styleUrls: ['./lobby.component.css'],
 })
-export class LobbyComponent implements OnInit {
+export class LobbyComponent implements OnInit, OnDestroy {
   /** General constants */
-  environments = environmentList;
+  protected environments = environmentList;
 
   /** Game room & Colyseus values */
-  currentUser: BasicUser;
-  activeLobby: Room<GameState>;
-  availableRooms: RoomAvailable<RoomMetaInfo>[] = [];
+  protected currentUser: BasicUser;
+  protected activeLobby: Room<GameState>;
+  protected availableRooms: RoomAvailable<RoomMetaInfo>[] = [];
 
   /** Player settings */
-  currentEnvironmentIdx = 0;
+  protected currentEnvironmentIdx = 0;
 
   /** Pop-up config */
-  dialogConfig = {
+  private dialogConfig = {
     width: '80%',
     maxWidth: '1000px',
     height: '70%',
@@ -37,6 +38,9 @@ export class LobbyComponent implements OnInit {
     data: {},
     panelClass: 'modalbox-base',
   };
+
+  // subscriptions
+  private currentUser$$: Subscription;
 
   constructor(
     private dialog: MatDialog,
@@ -47,7 +51,7 @@ export class LobbyComponent implements OnInit {
 
   ngOnInit(): void {
     // Set current user
-    this.userService.activeUser.subscribe((user) => {
+    this.currentUser$$ = this.userService.activeUser.subscribe((user) => {
       this.currentUser = user;
     });
 
@@ -59,6 +63,10 @@ export class LobbyComponent implements OnInit {
       this.availableRooms = availableRooms;
     });
     this.refetchGameRooms();
+  }
+
+  ngOnDestroy(): void {
+    this.currentUser$$.unsubscribe();
   }
 
   refetchGameRooms(): void {
@@ -115,8 +123,7 @@ export class LobbyComponent implements OnInit {
       panelClass: 'modalbox-base',
     });
     dialogRef.afterClosed().subscribe(() => console.log('closed dialog'));
-    const currentUser = this.userService.activeUser.value;
-    this.colyseus.joinActiveRoom(lobby, currentUser.login_name, currentUser.display_name);
+    this.colyseus.joinActiveRoom(lobby, this.currentUser.login_name, this.currentUser.display_name);
   }
 
   /** Enter a game (switch to in game view) you are already assigned to */

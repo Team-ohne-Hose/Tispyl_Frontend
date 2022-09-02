@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { FileService } from 'src/app/services/file.service';
 import { BasicUser, UserService } from 'src/app/services/user.service';
 
@@ -16,15 +17,17 @@ class ImageSnippet {
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./profile.component.css'],
 })
-export class ProfileComponent implements OnInit {
-  timePlayed: string;
-  currentUser: BasicUser;
-  profileSource: string;
-  selectedFile: ImageSnippet;
-  isCurrentUser: boolean;
-  foreignUser: BasicUser;
+export class ProfileComponent implements OnInit, OnDestroy {
+  protected currentUser: BasicUser;
+  protected profileSource: string;
+  protected selectedFile: ImageSnippet;
+  protected isCurrentUser: boolean;
+  protected foreignUser: BasicUser;
 
-  isShownLastGames = true;
+  protected isShownLastGames = true;
+
+  // subscriptions
+  private currentUser$$: Subscription;
 
   toggleShow = (): void => {
     this.isShownLastGames = !this.isShownLastGames;
@@ -36,6 +39,10 @@ export class ProfileComponent implements OnInit {
     private userService: UserService,
     private fileService: FileService
   ) {}
+
+  ngOnDestroy(): void {
+    this.currentUser$$.unsubscribe();
+  }
 
   private onSuccess(): void {
     this.selectedFile.pending = false;
@@ -60,13 +67,10 @@ export class ProfileComponent implements OnInit {
       this.changeDetector.markForCheck();
     });
 
-    this.userService.activeUser.subscribe((user: BasicUser) => {
+    this.currentUser$$ = this.userService.activeUser.subscribe((user: BasicUser) => {
       if (user !== undefined) {
         this.currentUser = user;
         this.profileSource = this.fileService.profilePictureSource(user.login_name, true);
-
-        const min = user.time_played;
-        this.timePlayed = `${Math.floor(min / 60)} hours ${Math.floor(min % 60)} minutes`;
       }
       this.changeDetector.markForCheck();
     });

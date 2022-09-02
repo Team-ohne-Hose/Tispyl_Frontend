@@ -1,17 +1,6 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
-import { BasicUser, UserService } from '../../../../../services/user.service';
-import { FileService } from '../../../../../services/file.service';
 import { ChatMessage } from './helpers/ChatMessage';
-import { ObjectLoaderService } from '../../../../../services/object-loader/object-loader.service';
-import {
-  MessageType,
-  PlayerMessageType,
-  PlayerModel,
-  RefreshCommandType,
-  RefreshProfilePics,
-  SetFigure,
-} from '../../../../../model/WsData';
-import { GameStateService } from '../../../../../services/game-state.service';
+
 import { Player } from '../../../../../model/state/Player';
 import { ChatService } from '../../../../../services/chat.service';
 import { Command, CommandService } from '../../../../../services/command.service';
@@ -22,40 +11,19 @@ import { Command, CommandService } from '../../../../../services/command.service
   styleUrls: ['./home-register.component.css'],
 })
 export class HomeRegisterComponent {
-  profileSource = '../assets/defaultImage.jpg';
-  bottleCapSource = '../assets/models/otherTex/default.png';
-  myBCapIndex = PlayerModel.bcap_NukaCola;
-
-  user: BasicUser;
-  myPlayer: Player;
   @Input() playerlist: Player[];
 
   @ViewChild('textSection') textSection: ElementRef;
   @ViewChild('chatInput') chatInput: ElementRef;
-  chatMessages: ChatMessage[] = [];
+
+  protected chatMessages: ChatMessage[] = [];
+  protected showChatCmdDropdown = false;
 
   private commandHistory: string[] = [];
   private curCmdHistoryOffset = -1; // -1 means no selection has been made
   private readonly maxCmdHistory = 32;
 
-  showChatCmdDropdown = false;
-
-  constructor(
-    private userManagement: UserService,
-    private fileManagement: FileService,
-    public gameState: GameStateService,
-    private loader: ObjectLoaderService,
-    private chatService: ChatService,
-    private commandService: CommandService
-  ) {
-    this.myPlayer = this.gameState.getMe();
-    this.profileSource = this.fileManagement.profilePictureSource(this.myPlayer?.loginName) || '../assets/defaultImage.jpg';
-    this.myBCapIndex = this.myPlayer.figureModel || PlayerModel.bcap_NukaCola;
-    console.debug('Initialized bottle cap index to: ', this.myBCapIndex);
-    this.bottleCapSource = this.loader.getBCapTextureThumbPath(this.myBCapIndex);
-
-    this.user = this.userManagement.activeUser.value;
-
+  constructor(private chatService: ChatService, private commandService: CommandService) {
     this.chatMessages = this.chatService.getChatMessages();
     this.chatService.setMessageCallback(this.onChatMessage.bind(this));
 
@@ -124,56 +92,6 @@ export class HomeRegisterComponent {
 
   executeCommand(cmdStr: string): void {
     this.commandService.executeChatCommand(cmdStr);
-  }
-
-  getTimePlayed(): string {
-    if (this.user !== undefined) {
-      const min = this.user.time_played;
-      return `${Math.floor(min / 60)} hours ${Math.floor(min % 60)} minutes`;
-    } else {
-      return '0 hours 0 minutes';
-    }
-  }
-
-  getRole(): string {
-    if (this.myPlayer === undefined) {
-      return 'undefined';
-    } else if (this.myPlayer.isCurrentHost) {
-      return 'Host';
-    } else if (this.user.is_dev) {
-      return 'Dev';
-    } else {
-      return 'Player';
-    }
-  }
-
-  newProfilePic(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    const file = target?.files[0];
-    if (file !== undefined) {
-      this.fileManagement.uploadProfilePicture(file, this.user).subscribe((suc) => {
-        console.log('Uploaded new profile picture: ', suc);
-        this.profileSource = this.fileManagement.profilePictureSource(this.myPlayer.loginName, true);
-        const msg: RefreshProfilePics = {
-          type: MessageType.REFRESH_COMMAND,
-          subType: RefreshCommandType.refreshProfilePic,
-        };
-        this.gameState.sendMessage(MessageType.REFRESH_COMMAND, msg);
-      });
-    }
-  }
-
-  private setBCap(): void {
-    console.debug('Update bottle cap index to: ', this.myBCapIndex);
-    this.bottleCapSource = this.loader.getBCapTextureThumbPath(this.myBCapIndex);
-
-    const msg: SetFigure = {
-      type: MessageType.PLAYER_MESSAGE,
-      subType: PlayerMessageType.setFigure,
-      playerId: this.gameState.getMyLoginName(),
-      playerModel: this.myBCapIndex,
-    };
-    this.gameState.sendMessage(MessageType.PLAYER_MESSAGE, msg);
   }
 
   selectCmd(c: Command): void {
