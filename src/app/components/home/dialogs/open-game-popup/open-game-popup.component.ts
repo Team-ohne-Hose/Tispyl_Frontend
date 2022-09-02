@@ -5,6 +5,7 @@ import { environment } from '../../../../../environments/environment';
 import { APIResponse } from '../../../../model/APIResponse';
 import { NgbCarousel, NgbCarouselConfig, NgbSlideEvent } from '@ng-bootstrap/ng-bootstrap';
 import { NgbSingleSlideEvent } from '@ng-bootstrap/ng-bootstrap/carousel/carousel';
+import { ApiEndpointsService } from 'src/app/services/API/api-endpoints.service';
 
 interface BoardTile {
   id: number;
@@ -81,14 +82,14 @@ export class OpenGamePopupComponent {
   constructor(
     private dialogRef: MatDialogRef<OpenGamePopupComponent, DialogResult>,
     private httpClient: HttpClient,
+    private apiEndpointsService: ApiEndpointsService,
     config: NgbCarouselConfig
   ) {
     config.interval = 0;
     config.showNavigationIndicators = false;
     config.showNavigationArrows = false;
 
-    const req = this.httpClient.get<APIResponse<TileSet[]>>(OpenGamePopupComponent.requestUrl);
-    req.subscribe(
+    this.httpClient.get<APIResponse<TileSet[]>>(apiEndpointsService.getTileSets()).subscribe(
       (res: APIResponse<TileSet[]>) => {
         const ts = res.payload;
         ts.forEach((val: TileSet) => {
