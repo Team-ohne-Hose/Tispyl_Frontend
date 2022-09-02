@@ -65,7 +65,6 @@ export class BoardItemControlService {
 
       // add label into scene if nametags are shown
       if (this.gses.persistentNamePlates.value) {
-        console.log('show Sprite');
         figure.mesh.add(figure.labelSprite);
       }
     }).bind(this);
@@ -159,7 +158,6 @@ export class BoardItemControlService {
 
         // add label into scene if nametags are shown
         if (this.gses.persistentNamePlates.value) {
-          console.log('show Sprite');
           figure.mesh.add(figure.labelSprite);
         }
         count++;
