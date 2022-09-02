@@ -169,7 +169,6 @@ export class MouseInteraction {
       } else if (type === ClickedTarget.figure) {
         const obj = intersects[0].object.parent;
         if (this.currentlySelected !== undefined) {
-          console.log('clicked on other figure');
           this.handleBoardTileClick(point);
           this.currentlySelected = undefined;
         } else {
@@ -178,7 +177,6 @@ export class MouseInteraction {
             this.bic.physics.setKinematic(PhysicsCommands.getPhysId(obj), true);
             this.bic.physics.wakeAll();
             this.bic.hoverGameFigure(this.currentlySelected.obj, point.x, point.z);
-            console.log('selected Object');
           } else {
             if (this.bic.itemService.isTargeting()) {
               const targetPlayer: Player = this.bic.gameState.getPlayerArray().find((p) => p.figureId === obj.userData.physicsId);
