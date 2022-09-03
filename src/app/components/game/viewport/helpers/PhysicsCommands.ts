@@ -14,9 +14,10 @@ import { ObjectUserData } from '../viewport.component';
 import { PhysicsObjectState, PhysicsState } from '../../../../model/state/PhysicsState';
 import { Player } from '../../../../model/state/Player';
 import { BoardItemControlService } from '../../../../services/board-item-control.service';
-import { map, take } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 import { Observable, Observer } from 'rxjs';
 import { Progress } from '../../../../services/object-loader/loaderTypes';
+import { MapSchema } from '@colyseus/schema';
 
 export enum ClickedTarget {
   other,
@@ -78,28 +79,16 @@ export class PhysicsCommands {
 
   initializeFromState(): Observable<Progress> {
     return new Observable<Progress>((observer: Observer<Progress>) => {
-      this.bic.gameState.physicState$
-        .pipe(
-          take(1),
-          map((state: PhysicsState) => {
-            let count = 0;
-            if (state !== undefined) {
-              observer.next([count, state.objects.size]);
-              state.objects.forEach((item: PhysicsObjectState) => {
-                this._updateOrGenerateItem(item);
-                count++;
-                observer.next([count, state.objects.size]);
-              });
-            } else {
-              console.error(
-                'PhysicsState is not accessible in initialization. Ensure loading initialization is done after Room data is available.'
-              );
-            }
-          })
-        )
-        .subscribe(() => {
-          observer.complete();
+      this.bic.gameState.observableState.physicsState.objects$.pipe(take(1)).subscribe((physicsObjects: MapSchema<PhysicsObjectState>) => {
+        let count = 0;
+        observer.next([count, physicsObjects.size]);
+        physicsObjects.forEach((item: PhysicsObjectState) => {
+          this._updateOrGenerateItem(item);
+          count++;
+          observer.next([count, physicsObjects.size]);
         });
+        observer.complete();
+      });
     });
   }
 

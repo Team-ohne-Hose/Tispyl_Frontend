@@ -231,7 +231,20 @@ export class ColyseusObservableState {
         room.state.voteState.voteConfiguration.votingOptions,
         this.gameState.voteState.voteConfiguration.votingOptions$,
         () => this.gameState.voteState.voteConfiguration.votingOptions$.next(room.state.voteState.voteConfiguration.votingOptions),
-        () => {}
+        () => {},
+        (item: VoteEntry, trigger: () => void) => {
+          if (item.castVotes) {
+            item.castVotes.onAdd = trigger;
+            item.castVotes.onRemove = trigger;
+            item.castVotes.onChange = trigger;
+          } else {
+            item.listen('castVotes', (castVotes: ArraySchema<string>) => {
+              castVotes.onAdd = trigger;
+              castVotes.onRemove = trigger;
+              castVotes.onChange = trigger;
+            });
+          }
+        }
       );
     };
     const touchVoteState = () => {

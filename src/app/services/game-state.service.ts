@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { ColyseusClientService, MessageCallback } from './colyseus-client.service';
 import { Room } from 'colyseus.js';
-import { ArraySchema, DataChange, MapSchema } from '@colyseus/schema';
+import { ArraySchema, MapSchema } from '@colyseus/schema';
 import { GameState } from '../model/state/GameState';
 import { Player } from '../model/state/Player';
 import { PhysicsObjectState, PhysicsState } from '../model/state/PhysicsState';
 import { BoardLayoutState, Tile } from '../model/state/BoardLayoutState';
 import { MessageType } from '../model/WsData';
-import { VoteStage, VoteState } from '../model/state/VoteState';
+import { VoteState } from '../model/state/VoteState';
 import { AsyncSubject, BehaviorSubject, Observable, Observer, ReplaySubject, Subject } from 'rxjs';
 import { Rule } from '../model/state/Rule';
 import { debounceTime, filter, map, mergeMap, take } from 'rxjs/operators';
@@ -59,16 +59,6 @@ export class GameStateService {
 
   /** @deprecated Room access object should not be used anymore as it is prone to inconsistencies */
   private room: Room<GameState>;
-
-  /** Deprecated callback functions */
-  /** @deprecated */
-  private voteStageCallbacks: ((stage: VoteStage) => void)[] = [];
-  /** @deprecated */
-  private voteCastCallbacks: (() => void)[] = [];
-  /** @deprecated */
-  private voteSystemCallbacks: ((change: DataChange[]) => void)[] = [];
-  /** @deprecated */
-  private itemCallbacks: (() => void)[] = [];
 
   constructor(private colyseus: ColyseusClientService, private userService: UserService) {
     this.room$ = this.colyseus.activeRoom$;
@@ -205,9 +195,7 @@ export class GameStateService {
   }
 
   getMe$(): Observable<Player> {
-    return this.observableState.playerChange$
-      .pipe(filter((p: Player) => p.loginName === this.userService.activeUser.getValue().login_name))
-      .pipe(debounceTime(0));
+    return this.observableState.playerChange$.pipe(filter((p: Player) => p.loginName === this.colyseus.myLoginName)).pipe(debounceTime(0));
   }
 
   getMe(): Player {
@@ -419,22 +407,6 @@ export class GameStateService {
     this.roomOnce$().subscribe((r) => {
       r.send(type, data);
     });
-  }
-
-  addVoteStageCallback(f: (stage: VoteStage) => void): void {
-    this.voteStageCallbacks.push(f);
-  }
-
-  addVoteCastCallback(f: () => void): void {
-    this.voteCastCallbacks.push(f);
-  }
-
-  addVoteSystemCallback(f: (change: DataChange[]) => void): void {
-    this.voteSystemCallbacks.push(f);
-  }
-
-  addItemUpdateCallback(f: () => void): void {
-    this.itemCallbacks.push(f);
   }
 
   registerMessageCallback(type: MessageType, cb: MessageCallback): number {

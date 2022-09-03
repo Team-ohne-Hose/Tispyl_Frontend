@@ -1,12 +1,13 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { GameStateService } from '../../../../../services/game-state.service';
 import { GameActionType, MessageType } from '../../../../../model/WsData';
-import { DataChange } from '@colyseus/schema';
+import { ArraySchema, MapSchema } from '@colyseus/schema';
 import { VoteSystemState } from './helpers/VoteSystemState';
 import { VoteResult } from './helpers/VoteResult';
 import { VoteEntry } from './helpers/VoteEntry';
 import { VoteConfiguration } from './helpers/VoteConfiguration';
 import { VoteStage } from '../../../../../model/state/VoteState';
+import { Player } from 'src/app/model/state/Player';
 
 @Component({
   selector: 'app-vote-system',
@@ -31,9 +32,13 @@ export class VoteSystemComponent implements OnInit {
   @Output()
   notifyPlayer: EventEmitter<number> = new EventEmitter<number>();
 
-  constructor(public gameState: GameStateService) {
-    gameState.addVoteStageCallback(this.onVoteStageChange.bind(this));
+  // variables for calculating Voting Metrics
+  private votingOptions: ArraySchema<VoteEntry>;
+  private totalPlayerCount = 0;
+  private ineligibles: ArraySchema<string>;
+  private voteStateAuthor: string;
 
+  constructor(public gameState: GameStateService) {
     /**
      * This recalculates voting percentages
      * for the displayed vote entries to avoid a function call inside of the Angular html template.
@@ -41,19 +46,26 @@ export class VoteSystemComponent implements OnInit {
      * This would cause a large performance hit.
      * @see [https://medium.com/showpad-engineering/why-you-should-never-use-function-calls-in-angular-template-expressions-e1a50f9c0496]
      */
-    gameState.addVoteCastCallback(this.calcVotes.bind(this));
 
-    gameState.addVoteSystemCallback(
-      ((changes: DataChange[]) => {
-        changes.forEach((change: DataChange) => {
-          switch (change.field) {
-            case 'closingIn':
-              this.timerDisplay = this.gameState.getVoteState().closingIn;
-              break;
-          }
-        });
-      }).bind(this)
-    );
+    this.gameState.observableState.voteState.voteStage$.subscribe(this.onVoteStageChange.bind(this));
+    this.gameState.observableState.voteState.author$.subscribe((author: string) => {
+      this.voteStateAuthor = author;
+    });
+    this.gameState.observableState.voteState.voteConfiguration.votingOptions$.subscribe((votingOptions: ArraySchema<VoteEntry>) => {
+      this.votingOptions = votingOptions;
+      this.calcVotes();
+    });
+    this.gameState.observableState.voteState.voteConfiguration.ineligibles$.subscribe((ineligibles: ArraySchema<string>) => {
+      this.ineligibles = ineligibles;
+      this.calcVotes();
+    });
+    this.gameState.observableState.playerList$.subscribe((playerList: MapSchema<Player>) => {
+      this.totalPlayerCount = playerList.size;
+      this.calcVotes();
+    });
+    this.gameState.observableState.voteState.closingIn$.subscribe((closingIn: number) => {
+      this.timerDisplay = closingIn;
+    });
   }
 
   /**
@@ -120,8 +132,17 @@ export class VoteSystemComponent implements OnInit {
   // Reactions
   calcVotes(): void {
     this.voteEntryPercentileDisplay = [];
-    for (const votingOption of this.gameState.getVoteState().voteConfiguration.votingOptions) {
+    for (const votingOption of this.votingOptions) {
       this.voteEntryPercentileDisplay.push(this.getPercentile(votingOption));
+    }
+  }
+
+  getPercentile(ve: VoteEntry): number {
+    if (this.ineligibles === undefined || ve?.castVotes === undefined || this.totalPlayerCount === this.ineligibles.length) {
+      return 0;
+    } else {
+      const max = this.totalPlayerCount - this.ineligibles.length;
+      return (ve.castVotes.length / max) * 100;
     }
   }
 
@@ -129,7 +150,7 @@ export class VoteSystemComponent implements OnInit {
     switch (stage) {
       case VoteStage.IDLE:
         this.hasConcluded = true;
-        if (this.gameState.getVoteState().voteConfiguration?.votingOptions?.length > 0) {
+        if (this.votingOptions?.length > 0) {
           this.voteSystemState = VoteSystemState.results;
           this.notifyPlayer.emit(VoteSystemState.results);
           this.calcVotes();
@@ -139,7 +160,7 @@ export class VoteSystemComponent implements OnInit {
         break;
       case VoteStage.CREATION:
         this.hasConcluded = true;
-        this.voteHost = this.gameState.getVoteState().author;
+        this.voteHost = this.voteStateAuthor;
         console.log('setting voteHost to', this.voteHost.toString());
         if (this.voteHost === this.gameState.getMe().displayName) {
           this.voteSystemState = VoteSystemState.creating;
@@ -149,8 +170,8 @@ export class VoteSystemComponent implements OnInit {
         break;
       case VoteStage.VOTE:
         this.hasConcluded = false;
-        this.voteHost = this.gameState.getVoteState().author;
-        if (this.gameState.getVoteState().voteConfiguration.ineligibles.includes(this.gameState.getMe().displayName)) {
+        this.voteHost = this.voteStateAuthor;
+        if (this.ineligibles.includes(this.gameState.getMe().displayName)) {
           this.voteSystemState = VoteSystemState.notEligible;
         } else {
           this.voteSystemState = VoteSystemState.voting;
@@ -178,17 +199,5 @@ export class VoteSystemComponent implements OnInit {
       action: GameActionType.playerCastVote,
       elementIndex: idx,
     });
-  }
-
-  getPercentile(ve: VoteEntry): number {
-    const voteState = this.gameState.getVoteState();
-    let percentile = 0;
-    if (voteState?.voteConfiguration !== undefined) {
-      const playerListSize = this.gameState.getPlayerArray().length;
-      ///////////////////////////////////
-      const max = playerListSize - voteState.voteConfiguration.ineligibles.length;
-      percentile = (ve.castVotes.length / max) * 100;
-    }
-    return percentile;
   }
 }

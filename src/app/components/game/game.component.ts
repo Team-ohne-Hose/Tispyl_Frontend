@@ -60,18 +60,18 @@ export class GameComponent implements AfterViewInit, OnDestroy {
         if (currentRoom !== undefined) {
           clearTimeout(roomTimeoutId);
           this._forceOnChange(currentRoom); // <--- might be useless
-          this.gameInit.init(this).subscribe(
-            (p: Progress) => {
+          this.gameInit.init(this).subscribe({
+            next: ((p: Progress) => {
               console.debug('Loading:', p);
               this._handleProgress(p);
-            },
-            (err) => {
+            }).bind(this),
+            error: (err) => {
               console.error(err);
             },
-            () => {
+            complete: (() => {
               this._endLoading();
-            }
-          );
+            }).bind(this),
+          });
         }
       },
       (err) => {
