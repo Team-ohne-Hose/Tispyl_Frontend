@@ -4,6 +4,7 @@ import { Player } from '../../../../../../model/state/Player';
 import { VoteEntry } from '../helpers/VoteEntry';
 import { VoteConfiguration } from '../helpers/VoteConfiguration';
 import { GameActionType, MessageType } from '../../../../../../model/WsData';
+import { ArraySchema } from '@colyseus/schema';
 
 @Component({
   selector: 'app-vote-creator',
@@ -17,7 +18,7 @@ export class VoteCreatorComponent {
   playerList: Player[] = [];
 
   eligibilities: Map<string, boolean> = new Map<string, boolean>();
-  votingOptions: VoteEntry[] = [];
+  votingOptions = new ArraySchema<VoteEntry>();
 
   constructor(private gameState: GameStateService) {
     this.gameState.isRoomDataAvailable$.subscribe((isAvailable: boolean) => {
@@ -73,7 +74,7 @@ export class VoteCreatorComponent {
   }
 
   clearAllEntries(): void {
-    this.votingOptions = [];
+    this.votingOptions.clear();
   }
 
   emitVoting(titleElement: HTMLInputElement): void {

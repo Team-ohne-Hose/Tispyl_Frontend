@@ -63,6 +63,7 @@ export class GameStateService {
 
     this.colyseus.registerChangeCallback((changes: DataChange<GameState>[]) => {
       changes.forEach((change: DataChange) => {
+        console.log('colyseus callback', change.field, change);
         switch (change.field) {
           case 'currentPlayerLogin':
             console.debug('nextTurn detected. notifying callbacks');
@@ -151,8 +152,10 @@ export class GameStateService {
   isMyTurn$(): Observable<boolean> {
     return this.activePlayerLogin$.pipe(
       mergeMap((activeLogin: string) => {
+        console.log('isMyTurn$', activeLogin);
         return this.me$.pipe(
           map((me: Player) => {
+            console.log('isMyTurn$->me', me.loginName);
             return me.loginName === activeLogin;
           })
         );

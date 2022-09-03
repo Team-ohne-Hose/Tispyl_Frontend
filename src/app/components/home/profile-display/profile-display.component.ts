@@ -44,6 +44,7 @@ export class ProfileDisplayComponent {
   }
 
   logout(): void {
+    console.log('logout');
     this.AuthService.logout();
     this.userManagement.setActiveUser(undefined);
   }

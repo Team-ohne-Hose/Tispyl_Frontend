@@ -3,15 +3,11 @@ import { ObjectLoaderService } from './object-loader/object-loader.service';
 import { BoardTilesService } from './board-tiles.service';
 import { Group } from 'three';
 import { GameComponent } from '../components/game/game.component';
-import { ChatService } from './chat.service';
 import { GameStateService } from './game-state.service';
-import { ItemService } from './items-service/item.service';
 import { BoardItemControlService } from './board-item-control.service';
 import { Observable, Observer, forkJoin } from 'rxjs';
 import { Progress } from './object-loader/loaderTypes';
 import { map, mergeMap, take, tap } from 'rxjs/operators';
-import { ColyseusClientService } from './colyseus-client.service';
-import { GameSettingsService } from './game-settings.service';
 
 export interface ColyseusNotifiable {
   attachColyseusMessageCallbacks(gameState: GameStateService): void;
@@ -23,12 +19,8 @@ export interface ColyseusNotifiable {
 export class GameInitialisationService {
   constructor(
     private objectLoader: ObjectLoaderService,
-    private chatService: ChatService,
-    private itemService: ItemService,
     private boardTilesService: BoardTilesService,
-    private colyseusService: ColyseusClientService,
-    private bic: BoardItemControlService,
-    private gss: GameSettingsService
+    private bic: BoardItemControlService
   ) {}
 
   /** Access function providing a slim interface for initializations with feedback */

@@ -7,6 +7,7 @@ import { MessageType, WsData } from '../model/WsData';
 import { DataChange } from '@colyseus/schema';
 import { environment } from '../../environments/environment';
 import { Router } from '@angular/router';
+import { ColyseusObservableState, GameStateAsObservables } from './colyseus-observable-state';
 
 export interface MessageCallback {
   filterSubType: number; // -1/undefined for no filter, otherwise the subtype to filter for
@@ -45,9 +46,12 @@ export class ColyseusClientService {
   availableRooms$: BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>;
   activeRoom$: ReplaySubject<Room<GameState>>;
 
+  private observableState: ColyseusObservableState;
+
   constructor(private router: Router) {
     this.availableRooms$ = new BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>([]);
     this.activeRoom$ = new ReplaySubject<Room<GameState>>(1);
+    this.observableState = new ColyseusObservableState(this.activeRoom$);
 
     /** Development logging */
     if (this.VERBOSE_CALLBACK_LOGGING) {
@@ -74,6 +78,10 @@ export class ColyseusClientService {
         }
       }
     });
+  }
+
+  getStateAsObservables(): GameStateAsObservables {
+    return this.observableState.gameState;
   }
 
   setActiveRoom(newRoom?: Room): void {

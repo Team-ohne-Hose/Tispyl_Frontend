@@ -15,9 +15,13 @@ export class FileService {
   constructor(private httpClient: HttpClient) {}
 
   uploadProfilePicture(file: File, user: BasicUser): Observable<BasicUser> {
+    return this.uploadProfilePictureByLoginName(file, user.login_name);
+  }
+
+  uploadProfilePictureByLoginName(file: File, login_name: string): Observable<BasicUser> {
     const formData: FormData = new FormData();
     formData.append('img', file, file.name);
-    formData.append('login_name', user.login_name);
+    formData.append('login_name', login_name);
 
     return this.httpClient.post<APIResponse<BasicUser>>(this.endpoint, formData).pipe(map((apiResponse) => apiResponse.payload));
   }

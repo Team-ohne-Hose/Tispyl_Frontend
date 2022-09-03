@@ -40,10 +40,10 @@ export class AvatarSectionComponent implements OnDestroy {
   changeImage(event: { target: HTMLInputElement }): void {
     const file = event.target?.files[0];
     if (file !== undefined) {
-      this.fileService.uploadProfilePicture(file, this.currentUser).subscribe((suc) => {
+      this.fileService.uploadProfilePictureByLoginName(file, this.currentPlayer.loginName).subscribe((suc) => {
         console.log('Uploaded new profile picture: ', suc);
 
-        this.userImageUrl = this.fileService.profilePictureSource(this.currentUser.login_name, true);
+        this.userImageUrl = this.fileService.profilePictureSource(this.currentPlayer.loginName, true);
         const msg: RefreshProfilePics = {
           type: MessageType.REFRESH_COMMAND,
           subType: RefreshCommandType.refreshProfilePic,
@@ -54,7 +54,7 @@ export class AvatarSectionComponent implements OnDestroy {
   }
 
   getRole(): string {
-    if (this.currentPlayer === undefined) {
+    if (this.currentPlayer === undefined || this.currentUser === undefined) {
       return 'undefined';
     } else if (this.currentPlayer.isCurrentHost) {
       return 'Host';

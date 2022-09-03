@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { skipWhile, take } from 'rxjs/operators';
 import { BasicUser, UserService } from '../../../../services/user.service';
 
 @Component({
@@ -7,19 +7,22 @@ import { BasicUser, UserService } from '../../../../services/user.service';
   templateUrl: './introduction.component.html',
   styleUrls: ['./introduction.component.css'],
 })
-export class IntroductionComponent {
+export class IntroductionComponent implements OnInit {
   visible = false;
 
-  // subscriptions
-  private activeUser$$: Subscription;
+  constructor(private userService: UserService) {}
 
-  constructor(userService: UserService) {
-    this.activeUser$$ = userService.activeUser.subscribe((loginUsr: BasicUser) => {
-      if (loginUsr.time_played < 300) {
-        this.visible = true;
-      }
-      this.activeUser$$.unsubscribe();
-    });
+  ngOnInit(): void {
+    this.userService.activeUser
+      .pipe(skipWhile((user: BasicUser) => user === undefined))
+      .pipe(take(1))
+      .subscribe(
+        ((user: BasicUser) => {
+          if (user.time_played < 300) {
+            this.visible = true;
+          }
+        }).bind(this)
+      );
   }
 
   hide() {

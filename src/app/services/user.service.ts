@@ -22,13 +22,11 @@ export class BasicUser {
   providedIn: 'root',
 })
 export class UserService {
-  activeUser: BehaviorSubject<BasicUser>;
+  activeUser: BehaviorSubject<BasicUser> = new BehaviorSubject<BasicUser>(undefined);
 
   private userEndpoint = environment.endpoint + 'user';
 
-  constructor(private httpClient: HttpClient, private toastService: AppToastService) {
-    this.activeUser = new BehaviorSubject<BasicUser>(undefined);
-  }
+  constructor(private httpClient: HttpClient, private toastService: AppToastService) {}
 
   setActiveUser(user: BasicUser): void {
     this.activeUser.next(user);
@@ -47,6 +45,7 @@ export class UserService {
 
   syncUserData(user: BasicUser): void {
     this.httpClient.get<APIResponse<BasicUser>>(this.userEndpoint + '?login_name=' + user.login_name).subscribe((response) => {
+      console.log('login user', response);
       if (response.payload !== undefined) {
         this.setActiveUser(response.payload as BasicUser);
       } else {
