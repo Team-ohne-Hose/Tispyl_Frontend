@@ -205,7 +205,7 @@ export class CommandService {
 
   private showItems(rawCMD: string, parameters: string[]): void {
     const myPlayer: Player = this.gameState.getMe();
-    const myItems: Item[] = this.items.getMyItemsList();
+    const myItems: Item[] = this.items.myItems$.getValue();
     if (myPlayer !== undefined) {
       if (myItems.length > 0) {
         const itemStrings: string[] = myItems.map((it: Item, idx: number) => {

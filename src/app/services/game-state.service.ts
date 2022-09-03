@@ -8,10 +8,11 @@ import { PhysicsObjectState, PhysicsState } from '../model/state/PhysicsState';
 import { BoardLayoutState, Tile } from '../model/state/BoardLayoutState';
 import { MessageType } from '../model/WsData';
 import { VoteStage, VoteState } from '../model/state/VoteState';
-import { VoteEntry } from '../components/game/interface/menu-bar/vote-system/helpers/VoteEntry';
 import { AsyncSubject, BehaviorSubject, Observable, Observer, ReplaySubject, Subject } from 'rxjs';
 import { Rule } from '../model/state/Rule';
-import { map, mergeMap, take } from 'rxjs/operators';
+import { debounceTime, filter, map, mergeMap, take } from 'rxjs/operators';
+import { GameStateAsObservables } from './colyseus-observable-state';
+import { UserService } from './user.service';
 
 /**
  * This class provides an interface to the colyseus data. It provides structures which
@@ -30,20 +31,31 @@ export class GameStateService {
   isRoomDataAvailable$: ReplaySubject<boolean> = new ReplaySubject<boolean>(1);
 
   /** Access values for the game state */
+  /** @deprecated */
   me$: AsyncSubject<Player> = new AsyncSubject<Player>();
+  /** @deprecated */
   currentHostLogin$: Subject<string> = new Subject<string>();
+  /** @deprecated */
   activePlayerLogin$: ReplaySubject<string> = new ReplaySubject<string>(1);
+  /** @deprecated */
   activeAction$: ReplaySubject<string> = new ReplaySubject<string>(1);
+  /** @deprecated */
   playerMap$: ReplaySubject<Map<string, Player>> = new ReplaySubject<Map<string, Player>>(1);
   // TODO: This is a one to one replacement for the old PlayerListUpdateCallback. This might be suboptimal. Please check actual calls to it.
+  /** @deprecated */
   playerListChanges$: Subject<Player> = new Subject<Player>();
+  /** @deprecated */
   isTurnOrderReversed$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
+  /** @deprecated */
   physicState$: ReplaySubject<PhysicsState> = new ReplaySubject<PhysicsState>(1);
+  /** @deprecated */
   physicsObjectMoved$: Subject<PhysicsObjectState> = new Subject<PhysicsObjectState>();
   boardLayoutState$: ReplaySubject<BoardLayoutState> = new ReplaySubject<BoardLayoutState>(1);
 
   room$: ReplaySubject<Room<GameState>>;
+
+  public observableState: GameStateAsObservables;
 
   /** @deprecated Room access object should not be used anymore as it is prone to inconsistencies */
   private room: Room<GameState>;
@@ -58,38 +70,46 @@ export class GameStateService {
   /** @deprecated */
   private itemCallbacks: (() => void)[] = [];
 
-  constructor(private colyseus: ColyseusClientService) {
+  constructor(private colyseus: ColyseusClientService, private userService: UserService) {
     this.room$ = this.colyseus.activeRoom$;
+    this.observableState = this.colyseus.getStateAsObservables();
 
-    this.colyseus.registerChangeCallback((changes: DataChange<GameState>[]) => {
-      changes.forEach((change: DataChange) => {
-        console.log('colyseus callback', change.field, change);
-        switch (change.field) {
-          case 'currentPlayerLogin':
-            console.debug('nextTurn detected. notifying callbacks');
-            this.activePlayerLogin$.next(change.value);
-            break;
-          case 'action':
-            this.activeAction$.next(change.value);
-            break;
-          case 'playerList': {
-            const m = change.value as MapSchema<Player>;
-            this.playerMap$.next(m);
+    this.observableState.currentPlayerLogin$.subscribe((currentPlayerLogin: string) => {
+      console.log('nextTurn detected. notifying callbacks');
+      this.activePlayerLogin$.next(currentPlayerLogin);
+    });
+    this.observableState.action$.subscribe((action: string) => {
+      console.log('nextAction detected');
+      this.activeAction$.next(action);
+    });
+    this.observableState.playerList$.subscribe((playerList: MapSchema<Player>) => {
+      console.log('playerList update detected', playerList);
+      this.playerMap$.next(playerList);
+      if (!this.me$.isStopped) {
+        this.me$.next(this._resolveMyPlayerObject(playerList));
+        this.me$.complete();
+      }
+    });
+    this.observableState.playerChange$.subscribe((player: Player) => {
+      console.log('Player update detected', player);
+    });
+    this.observableState.hostLoginName$.subscribe((hostLoginName: string) => {
+      console.log('hostLoginName update detected');
+      this.currentHostLogin$.next(hostLoginName);
+    });
+    this.observableState.reversed$.subscribe((reversed: boolean) => {
+      console.log('reversed update detected');
+      this.isTurnOrderReversed$.next(reversed);
+    });
 
-            if (!this.me$.isStopped) {
-              this.me$.next(this._resolveMyPlayerObject(m));
-              this.me$.complete();
-            }
-            break;
-          }
-          case 'hostLoginName':
-            this.currentHostLogin$.next(change.value);
-            break;
-          case 'reversed':
-            this.isTurnOrderReversed$.next(change.value);
-            break;
-        }
-      });
+    this.observableState.playerList$.subscribe((playerList: MapSchema<Player>) => {
+      this.playerMap$.next(playerList);
+    });
+    this.observableState.playerChange$.subscribe((player: Player) => {
+      this.playerListChanges$.next(player);
+    });
+    this.observableState.physicsState.objectsMoved$.subscribe((pObj: PhysicsObjectState) => {
+      this.physicsObjectMoved$.next(pObj);
     });
 
     /** Listen to Room changes ( entering / switching / leaving ) */
@@ -99,7 +119,6 @@ export class GameStateService {
         room.onStateChange.once((state: GameState) => {
           console.info('[GameStateService] Initial GameState was provided. Synchronizing service access values.');
           this._synchronizeToRoomState(state);
-          this._attachCallbacks(room);
         });
       } else {
         console.info(`[GameStateService] Room changed to ${room}. This should only happen when a game is left.`);
@@ -110,9 +129,6 @@ export class GameStateService {
 
   private _synchronizeToRoomState(state: GameState) {
     /** the initial values for all access values should be set once here. */ // TODO: Confirm that all needed values are set
-    this.physicState$.next(state.physicsState);
-    state.physicsState.objects.forEach((o: PhysicsObjectState) => this.physicsObjectMoved$.next(o));
-    this.playerMap$.next(state.playerList);
     this.boardLayoutState$.next(state.boardLayout);
     this.boardLayoutState$.complete();
     this.isRoomDataAvailable$.next(true);
@@ -186,6 +202,12 @@ export class GameStateService {
     if (s !== undefined) {
       return Array.from(s.playerList.values()).find(f);
     }
+  }
+
+  getMe$(): Observable<Player> {
+    return this.observableState.playerChange$
+      .pipe(filter((p: Player) => p.loginName === this.userService.activeUser.getValue().login_name))
+      .pipe(debounceTime(0));
   }
 
   getMe(): Player {
@@ -421,151 +443,5 @@ export class GameStateService {
 
   clearMessageCallback(id: number): boolean {
     return this.colyseus.clearMessageCallback(id);
-  }
-
-  private _attachPlayerCallbacks(room: Room<GameState>): void {
-    if (room.state.playerList === undefined) {
-      console.warn('GameStateService Callbacks couldnt be attached, Playerlist was undefined');
-    } else {
-      /** Attach onChange call back to the initial player list */
-      this.playerMap$.pipe(take(1)).subscribe((m: Map<string, Player>) => {
-        m.forEach((p: Player, key: string) => {
-          this._attachPlayerChangeCallback(p, key);
-        });
-      });
-
-      /** Attach onAdd call back and onChange to all future players */
-      room.state.playerList.onAdd = (p: Player, key: string) => {
-        this._attachPlayerChangeCallback(p, key);
-        this.playerListChanges$.next(p);
-        this.playerMap$.pipe(take(1)).subscribe((m: Map<string, Player>) => {
-          m.set(key, p);
-          this.playerMap$.next(m);
-        });
-      };
-
-      /** Attach onChange on the playerList object */
-      room.state.playerList.onChange = (p: Player, key: string) => {
-        this.playerListChanges$.next(p);
-      };
-
-      /** Attach onRemove on the playerList object */
-      room.state.playerList.onRemove = (p: Player, key: string) => {
-        this.playerListChanges$.next(p);
-        this.playerMap$.pipe(take(1)).subscribe((m: Map<string, Player>) => {
-          m.delete(key);
-          this.playerMap$.next(m);
-        });
-      };
-    }
-  }
-
-  private _attachPlayerChangeCallback(p: Player, key: string): void {
-    const playerMapRef = this.playerMap$;
-    const playerListUpdateRef = this.playerListChanges$;
-    p.onChange = function (changes: DataChange[]) {
-      playerListUpdateRef.next(p);
-      playerMapRef.pipe(take(1)).subscribe((m: Map<string, Player>) => {
-        m.set(key, p);
-        playerMapRef.next(m);
-      });
-    };
-  }
-
-  private _attachPhysicsMovedCallbacks(room: Room<GameState>): void {
-    if (room.state.physicsState === undefined) {
-      console.warn('GameStateService Callbacks couldnt be attached, PhysicsState was undefined');
-    } else if (room.state.physicsState.objects === undefined) {
-      console.warn('GameStateService Callbacks couldnt be attached, PhysicsState.objects was undefined');
-    } else {
-      console.debug('PhysicsUpdates attached', room, room.state, room.state.physicsState.objects);
-      const attachMovedCallbacks = (pObj: PhysicsObjectState, key: string) => {
-        console.debug('attached onChange Callback to physics object', pObj);
-        pObj.position.onChange = ((changes: DataChange[]) => {
-          this._callPhysicsObjectMoved(pObj, key);
-        }).bind(this);
-        pObj.quaternion.onChange = ((changes: DataChange[]) => {
-          this._callPhysicsObjectMoved(pObj, key);
-        }).bind(this);
-      };
-      room.state.physicsState.objects.forEach(attachMovedCallbacks.bind(this));
-      room.state.physicsState.objects.onAdd = ((item, key) => {
-        console.debug('onAdd triggered', item, key);
-        attachMovedCallbacks(item, key);
-        this._callPhysicsObjectMoved(item, key);
-      }).bind(this);
-    }
-  }
-
-  private _attachVoteStateCallbacks(room: Room<GameState>): void {
-    if (room.state.voteState === undefined) {
-      console.warn('GameStateService Callbacks couldnt be attached, voteState was undefined');
-    } else {
-      room.state.voteState.onChange = this._callVoteStageUpdate.bind(this);
-    }
-  }
-
-  private _attachVoteCastCallback(): void {
-    if (this.room?.state?.voteState?.voteConfiguration === undefined) {
-      console.warn('GameStateService tried to attach callbacks for casting votes. Something was not defined. Room is:', this.room);
-      return;
-    }
-    // this should get called everytime a new Vote is started.
-    // it attaches the callVoteCastUpdate to every voting option. For every casted/changed vote, the old entry is removed and a new entry
-    // in the corresponding option is added for the player, which just casted the vote. Therefore the onAdd callback should be sufficient.
-    this.room.state.voteState.voteConfiguration.votingOptions.forEach((entry: VoteEntry) => {
-      entry.castVotes.onAdd = this._callVoteCastUpdate.bind(this);
-    });
-  }
-
-  private _attachItemCallback(room: Room<GameState>): void {
-    const playerMe: Player = this.getMe();
-    if (playerMe?.itemList === undefined) {
-      console.warn('GameStateService Callbacks couldnt be attached, playerMe or its ItemList was undefined');
-    } else {
-      // onChange works only on Arrays/Maps of primitives. But ItemList is a primitive
-      playerMe.itemList.onChange = this._callItemUpdate.bind(this);
-      playerMe.itemList.onAdd = this._callItemUpdate.bind(this);
-      playerMe.itemList.onRemove = this._callItemUpdate.bind(this);
-    }
-  }
-
-  private _attachCallbacks(room: Room<GameState>): void {
-    if (room === undefined) {
-      console.warn('GameStateService Callbacks couldnt be attached, Room was undefined!');
-    } else {
-      this._attachPlayerCallbacks(room);
-      this._attachPhysicsMovedCallbacks(room);
-      this._attachVoteStateCallbacks(room);
-      this._attachItemCallback(room);
-      console.debug('attached GameStateServiceCallbacks');
-    }
-  }
-
-  private _callPlayerListUpdate(player: Player, key: string): void {
-    this.playerListChanges$.next(player);
-  }
-
-  private _callPhysicsObjectMoved(item: PhysicsObjectState, key: string): void {
-    this.physicsObjectMoved$.next(item);
-  }
-
-  private _callVoteStageUpdate(changes: DataChange[]): void {
-    const newVal: VoteStage = changes.find((change: DataChange) => change.field === 'voteStage')?.value;
-    if (newVal !== undefined) {
-      this.voteStageCallbacks.forEach((f) => f(newVal));
-    }
-    if (newVal === VoteStage.VOTE) {
-      this._attachVoteCastCallback();
-    }
-    this.voteSystemCallbacks.forEach((f) => f(changes.filter((v: DataChange) => v.field !== 'voteStage')));
-  }
-
-  private _callVoteCastUpdate(): void {
-    this.voteCastCallbacks.forEach((f) => f());
-  }
-
-  private _callItemUpdate(): void {
-    this.itemCallbacks.forEach((f) => f());
   }
 }

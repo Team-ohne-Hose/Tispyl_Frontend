@@ -1,5 +1,7 @@
+/* eslint-disable no-empty-function */
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { Room } from 'colyseus.js';
-import { Observable, ReplaySubject, map, mergeWith } from 'rxjs';
+import { Observable, ReplaySubject, debounceTime, map, mergeWith } from 'rxjs';
 import { GameState } from '../model/state/GameState';
 import { VoteEntry } from '../components/game/interface/menu-bar/vote-system/helpers/VoteEntry';
 import { Tile } from '../model/state/BoardLayoutState';
@@ -35,6 +37,7 @@ export type GameStateAsObservables = {
   };
   physicsState: {
     objects$: ReplaySubject<MapSchema<PhysicsObjectState>>;
+    objectsMoved$: ReplaySubject<PhysicsObjectState>;
   };
   // tracks the whole MapSchema, and the MapSchema gets transmitted
   playerList$: ReplaySubject<MapSchema<Player>>;
@@ -73,6 +76,7 @@ export class ColyseusObservableState {
     },
     physicsState: {
       objects$: new ReplaySubject<MapSchema<PhysicsObjectState>>(1),
+      objectsMoved$: new ReplaySubject<PhysicsObjectState>(1),
     },
     // tracks the whole MapSchema, and the MapSchema gets transmitted
     playerList$: new ReplaySubject<MapSchema<Player>>(1),
@@ -90,9 +94,11 @@ export class ColyseusObservableState {
      *    more like 5-10ms, but events in that quick succession should be
      *    pretty uncommon.
      */
-    playerChange$: new ReplaySubject<Player>(1),
+    playerChange$: new ReplaySubject<Player>(),
     voteState$: new Observable<VoteState>(),
   };
+
+  private room;
 
   constructor(activeRoom$: ReplaySubject<Room<GameState>>) {
     this.setupObservables(activeRoom$);
@@ -100,8 +106,8 @@ export class ColyseusObservableState {
 
   // returns a function to push a given value into a subject
   // used to convert from callbacks to observables
-  private pushToSubject<Type>(subject: ReplaySubject<Type>): (currentValue: Type) => void {
-    return (currentValue: Type) => {
+  private pushToSubject<T>(subject: ReplaySubject<T>): (currentValue: T) => void {
+    return (currentValue: T) => {
       subject.next(currentValue);
     };
   }
@@ -115,72 +121,75 @@ export class ColyseusObservableState {
    * @param additionalTrigger is a function called
    */
   // Tipp: Hol dir erstmal noch nen Kaffee, bevor du hier anfängst zu lesen
-  private attachToSchemaCollection<Type, SchemaCollection extends ArraySchema<Type> | MapSchema<Type>>(
+  private attachToSchemaCollection<T, SchemaCollection extends ArraySchema<T> | MapSchema<T>>(
     schema: SchemaCollection,
     subject: ReplaySubject<SchemaCollection>,
-    forEachChild?: (item: Type, trigger: () => void) => void,
-    additionalTrigger?: (item: Type) => void
+    triggerList: () => void,
+    triggerItem: (item: T) => void,
+    forEachChild?: (item: T, trigger: () => void) => void
   ): void {
     if (schema === undefined || subject === undefined) {
       console.error('Trying to attach undefined or attach to undefined: ', schema, subject);
       return;
     }
 
-    const trigger = (item: Type) => {
-      if (additionalTrigger) {
-        additionalTrigger(item);
-      }
-      subject.next(schema);
+    const bothTriggers = (item: T) => {
+      triggerList();
+      triggerItem(item);
     };
 
     // attach callback when items get added to array,
     // also add onChange callbacks for them when they are added and not primitives
-    schema.onAdd = (newItem: Type) => {
+    schema.onAdd = (newItem: T) => {
       if (newItem instanceof Schema) {
         newItem.onChange = () => {
-          trigger(newItem);
+          bothTriggers(newItem);
         };
       }
       if (forEachChild) {
-        forEachChild(newItem, () => trigger(newItem));
+        forEachChild(newItem, () => bothTriggers(newItem));
       }
-      trigger(newItem);
+      bothTriggers(newItem);
     };
 
     // attach callback when items get removed from array
-    schema.onRemove = trigger;
-    schema.onChange = trigger;
+    schema.onRemove = bothTriggers;
+    schema.onChange = bothTriggers;
 
     if ((schema instanceof ArraySchema && schema.length > 0) || (schema instanceof MapSchema && schema.size > 0)) {
       // attach onChange callbacks to all existing properties
-      schema.forEach((item: Type) => {
+      schema.forEach((item: T) => {
         if (item instanceof Schema) {
           item.onChange = () => {
-            trigger(item);
+            bothTriggers(item);
           };
         }
         if (forEachChild) {
-          forEachChild(item, () => trigger(item));
+          forEachChild(item, () => bothTriggers(item));
         }
-        if (additionalTrigger) {
-          additionalTrigger(item);
-        }
+        triggerItem(item);
       });
-
-      subject.next(schema);
+      triggerList();
     }
   }
 
   // Set up all callbacks for correct acting of the observables for the state
   private setupObservables(activeRoom$: ReplaySubject<Room<GameState>>) {
     activeRoom$.subscribe((room: Room<GameState>) => {
+      this.room = room;
       // easy accessible direct primitives
       room.state.listen('round', this.pushToSubject<number>(this.gameState.round$));
+      if (room.state.round) this.gameState.round$.next(room.state.round);
       room.state.listen('action', this.pushToSubject<string>(this.gameState.action$));
+      if (room.state.action) this.gameState.action$.next(room.state.action);
       room.state.listen('hostLoginName', this.pushToSubject<string>(this.gameState.hostLoginName$));
+      if (room.state.hostLoginName) this.gameState.hostLoginName$.next(room.state.hostLoginName);
       room.state.listen('hasStarted', this.pushToSubject<boolean>(this.gameState.hasStarted$));
+      if (room.state.hasStarted) this.gameState.hasStarted$.next(room.state.hasStarted);
       room.state.listen('currentPlayerLogin', this.pushToSubject<string>(this.gameState.currentPlayerLogin$));
+      if (room.state.currentPlayerLogin) this.gameState.currentPlayerLogin$.next(room.state.currentPlayerLogin);
       room.state.listen('reversed', this.pushToSubject<boolean>(this.gameState.reversed$));
+      if (room.state.reversed) this.gameState.reversed$.next(room.state.reversed);
 
       // children Schemas, keep aware, these are only to be attached once the corresponding state object has been created
       this.setupObservablesVoting(room);
@@ -207,20 +216,31 @@ export class ColyseusObservableState {
         'author',
         this.pushToSubject<string>(this.gameState.voteState.voteConfiguration.author$)
       );
+      if (room.state.voteState.voteConfiguration.author)
+        this.gameState.voteState.voteConfiguration.author$.next(room.state.voteState.voteConfiguration.author);
       room.state.voteState.voteConfiguration.listen('title', this.pushToSubject<string>(this.gameState.voteState.voteConfiguration.title$));
+      if (room.state.voteState.voteConfiguration.title)
+        this.gameState.voteState.voteConfiguration.title$.next(room.state.voteState.voteConfiguration.title);
       this.attachToSchemaCollection<string, ArraySchema<string>>(
         room.state.voteState.voteConfiguration.ineligibles,
-        this.gameState.voteState.voteConfiguration.ineligibles$
+        this.gameState.voteState.voteConfiguration.ineligibles$,
+        () => this.gameState.voteState.voteConfiguration.ineligibles$.next(room.state.voteState.voteConfiguration.ineligibles),
+        () => {}
       );
       this.attachToSchemaCollection<VoteEntry, ArraySchema<VoteEntry>>(
         room.state.voteState.voteConfiguration.votingOptions,
-        this.gameState.voteState.voteConfiguration.votingOptions$
+        this.gameState.voteState.voteConfiguration.votingOptions$,
+        () => this.gameState.voteState.voteConfiguration.votingOptions$.next(room.state.voteState.voteConfiguration.votingOptions),
+        () => {}
       );
     };
     const touchVoteState = () => {
       room.state.voteState.listen('author', this.pushToSubject<string>(this.gameState.voteState.author$));
+      if (room.state.voteState.author) this.gameState.voteState.author$.next(room.state.voteState.author);
       room.state.voteState.listen('voteStage', this.pushToSubject<number>(this.gameState.voteState.voteStage$));
+      if (room.state.voteState.voteStage) this.gameState.voteState.voteStage$.next(room.state.voteState.voteStage);
       room.state.voteState.listen('closingIn', this.pushToSubject<number>(this.gameState.voteState.closingIn$));
+      if (room.state.voteState.closingIn) this.gameState.voteState.closingIn$.next(room.state.voteState.closingIn);
       if (room.state.voteState.voteConfiguration !== undefined) {
         touchVoteConfiguration();
       } else {
@@ -241,7 +261,12 @@ export class ColyseusObservableState {
 
   private setupObservablesRules(room: Room<GameState>): void {
     const attachRules = () => {
-      this.attachToSchemaCollection<Rule, ArraySchema<Rule>>(room.state.rules, this.gameState.rules$);
+      this.attachToSchemaCollection<Rule, ArraySchema<Rule>>(
+        room.state.rules,
+        this.gameState.rules$,
+        () => this.gameState.rules$.next(this.room.state.rules),
+        () => {}
+      );
     };
     if (room.state.rules !== undefined) {
       attachRules();
@@ -252,7 +277,12 @@ export class ColyseusObservableState {
 
   private setupObservablesBuddyLinks(room: Room<GameState>): void {
     const attachBuddyLinks = () => {
-      this.attachToSchemaCollection<Link, ArraySchema<Link>>(room.state.drinkBuddyLinks, this.gameState.drinkBuddyLinks$);
+      this.attachToSchemaCollection<Link, ArraySchema<Link>>(
+        room.state.drinkBuddyLinks,
+        this.gameState.drinkBuddyLinks$,
+        () => this.gameState.drinkBuddyLinks$.next(this.room.state.drinkBuddyLinks),
+        () => {}
+      );
     };
     if (room.state.drinkBuddyLinks !== undefined) {
       attachBuddyLinks();
@@ -263,7 +293,12 @@ export class ColyseusObservableState {
 
   private setupObservablesBoardLayout(room: Room<GameState>): void {
     const touchTileList = () => {
-      this.attachToSchemaCollection<Tile, MapSchema<Tile>>(room.state.boardLayout.tileList, this.gameState.boardLayout.tileList$);
+      this.attachToSchemaCollection<Tile, MapSchema<Tile>>(
+        room.state.boardLayout.tileList,
+        this.gameState.boardLayout.tileList$,
+        () => this.gameState.boardLayout.tileList$.next(room.state.boardLayout.tileList),
+        () => {}
+      );
     };
     const touchBoardLayout = () => {
       if (room.state.boardLayout.tileList !== undefined) {
@@ -284,9 +319,17 @@ export class ColyseusObservableState {
       this.attachToSchemaCollection<PhysicsObjectState, MapSchema<PhysicsObjectState>>(
         room.state.physicsState.objects,
         this.gameState.physicsState.objects$,
+        () => this.gameState.physicsState.objects$.next(room.state.physicsState.objects),
+        () => {},
         (item: PhysicsObjectState, trigger: () => void) => {
-          item.position.onChange = trigger;
-          item.quaternion.onChange = trigger;
+          item.position.onChange = () => {
+            trigger();
+            this.gameState.physicsState.objectsMoved$.next(item);
+          };
+          item.quaternion.onChange = () => {
+            trigger();
+            this.gameState.physicsState.objectsMoved$.next(item);
+          };
         }
       );
     };
@@ -309,14 +352,23 @@ export class ColyseusObservableState {
       this.attachToSchemaCollection<Player, MapSchema<Player>>(
         room.state.playerList,
         this.gameState.playerList$,
-        (item: Player, trigger: () => void) => {
-          // only a mapschema of primitives
-          item.itemList.onAdd = trigger;
-          item.itemList.onRemove = trigger;
-          item.itemList.onChange = trigger;
-        },
+        () => this.gameState.playerList$.next(room.state.playerList),
         (item: Player) => {
           this.gameState.playerChange$.next(item);
+        },
+        (item: Player, trigger: () => void) => {
+          // only a mapschema of primitives
+          if (item.itemList !== undefined) {
+            item.itemList.onAdd = trigger;
+            item.itemList.onRemove = trigger;
+            item.itemList.onChange = trigger;
+          } else {
+            item.listen('itemList', () => {
+              item.itemList.onAdd = trigger;
+              item.itemList.onRemove = trigger;
+              item.itemList.onChange = trigger;
+            });
+          }
         }
       );
     };
@@ -339,6 +391,7 @@ export class ColyseusObservableState {
           this.gameState.voteState.voteConfiguration.votingOptions$
         )
       )
-      .pipe(map(() => room.state.voteState));
+      .pipe(map(() => room.state.voteState))
+      .pipe(debounceTime(0));
   }
 }

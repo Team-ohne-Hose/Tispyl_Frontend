@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { ChatService } from '../chat.service';
 import { GameStateService } from '../game-state.service';
 import { ItemMessageType, MessageType, UseItem, WsData } from '../../model/WsData';
-import { MapSchema } from '@colyseus/schema';
 import { Player } from '../../model/state/Player';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { Item, itemTable } from './itemLUT';
@@ -27,8 +26,16 @@ export class ItemService {
   myItems$: BehaviorSubject<Item[]> = new BehaviorSubject<Item[]>([]);
 
   constructor(private chatService: ChatService, private gameState: GameStateService) {
-    gameState.addItemUpdateCallback(() => {
-      this.myItems$.next(this.getMyItemsList());
+    this.gameState.getMe$().subscribe((player: Player) => {
+      const itemListArray: Item[] = [];
+      player.itemList.forEach((count, itemId) => {
+        if (count > 0) {
+          for (let i = 0; i < count; i++) {
+            itemListArray.push(itemTable.list[Number(itemId)]);
+          }
+        }
+      });
+      this.myItems$.next(itemListArray);
     });
     gameState.registerMessageCallback(MessageType.ITEM_MESSAGE, {
       filterSubType: -1,
@@ -42,21 +49,6 @@ export class ItemService {
         }
       },
     });
-  }
-
-  getMyItemsList(): Item[] {
-    const itemListArray: Item[] = [];
-    const items = this.getMyItemsSchema();
-    if (items !== undefined) {
-      items.forEach((count, itemId) => {
-        if (count > 0) {
-          for (let i = 0; i < count; i++) {
-            itemListArray.push(itemTable.list[Number(itemId)]);
-          }
-        }
-      });
-    }
-    return itemListArray;
   }
 
   /** Starts the targeting process resulting in an observable that is completed if the player aborts
@@ -138,14 +130,6 @@ export class ItemService {
     });
 
     this.onItemUsedByMe(item, targetLogin);
-  }
-
-  private getMyItemsSchema(): MapSchema<number> {
-    const playerMe: Player = this.gameState.getMe();
-    if (playerMe !== undefined) {
-      return playerMe.itemList;
-    }
-    return undefined;
   }
 
   private onItemUsedByTeammate(item: UseItem): void {

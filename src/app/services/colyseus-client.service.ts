@@ -42,6 +42,7 @@ export class ColyseusClientService {
   private messageCallbacks: Map<MessageType, Map<number, MessageCallback>> = new Map<MessageType, Map<number, MessageCallback>>([]);
 
   /** Access values mainly used by the state service */
+  /** @deprecated */
   myLoginName: string;
   availableRooms$: BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>;
   activeRoom$: ReplaySubject<Room<GameState>>;
@@ -70,7 +71,6 @@ export class ColyseusClientService {
       console.info('[ColyseusService] Active Room changed to:', r);
       if (r !== undefined) {
         this._attachKnownMessageCallbacks(r);
-        this._attachKnownChangeCallbacks(r);
       } else {
         if (this.VERBOSE_CALLBACK_LOGGING) {
           console.info('Known message callbacks after leaving the room:', this._prettyPrintMessageCallbacks());
@@ -144,26 +144,9 @@ export class ColyseusClientService {
     });
   }
 
-  registerChangeCallback(cb: ChangeCallback): number {
-    const registerId = this._getUniqueId();
-    this.changeCallbacks.set(registerId, cb);
-    return registerId;
-  }
-
-  clearChangeCallback(id: number): boolean {
-    return this.changeCallbacks.delete(id);
-  }
-
   private _getUniqueId(): number {
     this.registerSeed++;
     return this.registerSeed;
-  }
-
-  private _attachKnownChangeCallbacks(currentRoom: Room<GameState>): void {
-    const bundledChangeFunctions = (changes: DataChange<unknown>[]) => {
-      this.changeCallbacks.forEach((f) => f(changes));
-    };
-    currentRoom.state.onChange = bundledChangeFunctions.bind(this);
   }
 
   /** Debug and Development functions */

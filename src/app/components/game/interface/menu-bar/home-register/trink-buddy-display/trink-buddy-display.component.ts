@@ -3,7 +3,8 @@ import * as d3 from 'd3';
 import { GameStateService } from '../../../../../../services/game-state.service';
 import { GameActionType, MessageType } from '../../../../../../model/WsData';
 import { Link } from '../../../../../../model/state/Link';
-import { ArraySchema } from '@colyseus/schema';
+import { ArraySchema, MapSchema } from '@colyseus/schema';
+import { Player } from 'src/app/model/state/Player';
 
 export enum Colors {
   Orange = '#ffa822',
@@ -34,28 +35,34 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
   simulation = undefined;
 
   links = [];
+  private drawnLinks;
   nodes = [];
+
+  // prevent rendering before view is initialized
+  private viewInitialized = false;
 
   constructor(private gameState: GameStateService) {
     // TODO: Change callback registration to new version as soon as some one builds one (13/10/20).
-    if (gameState.getState() !== undefined) {
-      gameState.getState().drinkBuddyLinks.onAdd = (link) => {
-        console.log('Link was added: ', link.source, link.target);
-        setTimeout(() => this.refreshChart(), 2000); // find out why this timeout needs to exist !
-      };
-      gameState.getState().drinkBuddyLinks.onRemove = (link) => {
-        console.log('Link was removed: ', link.source, link.target);
-        setTimeout(() => this.refreshChart(), 2000); // find out why this timeout needs to exist !
-      };
-    } else {
-      console.warn(
-        'Unable to register Trinkbuddy-link onAdd & onRemove callbacks. GameStateService.getState() returned: ',
-        gameState.getState()
-      );
-    }
+    this.gameState.observableState.drinkBuddyLinks$.subscribe((drinkBuddyLinks: ArraySchema<Link>) => {
+      this.links = drinkBuddyLinks.map((link: Link) => ({ source: link.source, target: link.target }));
+      console.log('links are', this.links);
+      this.refreshChart();
+    });
+    this.gameState.observableState.playerList$.subscribe((playerList: MapSchema<Player>) => {
+      this.nodes = [];
+      playerList.forEach((player: Player) => {
+        this.nodes.push({ id: player.displayName });
+      });
+      console.log('nodes are', this.nodes);
+      if (this.nodes.length <= 0) {
+        console.warn('Failed to fetch new node data. Nodes now: ', this.nodes);
+      }
+      this.refreshChart();
+    });
   }
 
   ngAfterViewInit(): void {
+    this.viewInitialized = true;
     this.refreshChart();
   }
 
@@ -72,7 +79,7 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
       });
     }
     if (validation.isAlreadyLinked) {
-      this.errorText = target + ' is already the drinking buddy of' + source;
+      this.errorText = target + ' is already the drinking buddy of ' + source;
     }
   }
 
@@ -89,24 +96,29 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
       });
     }
     if (!validation.isAlreadyLinked) {
-      this.errorText = target + ' is not the drinking buddy of' + source;
+      this.errorText = target + ' is not the drinking buddy of ' + source;
     }
   }
 
   refreshChart(): void {
-    if (this.simulation !== undefined) {
-      this.simulation.stop();
-      this.svg.remove();
+    if (this.viewInitialized) {
+      if (this.simulation !== undefined) {
+        this.simulation.stop();
+        this.svg.remove();
+      }
+      this.simulation = undefined;
+      this.simulation = this.buildSimulation();
     }
-    this.simulation = undefined;
-    this.fetchNodeData();
-    this.fetchLinkData();
-    this.simulation = this.buildSimulation();
   }
 
   private buildSimulation() {
     const chartWidth = this.chart.nativeElement.offsetWidth;
     const chartHeight = this.chart.nativeElement.offsetHeight;
+
+    const knownNodes = this.nodes.map((n) => n.id);
+    this.drawnLinks = this.links.filter((link: Link) => {
+      return knownNodes.indexOf(link.source) !== -1 && knownNodes.indexOf(link.target) !== -1;
+    });
 
     // Define simulation
     const simulation = d3
@@ -114,7 +126,7 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
       .force(
         'link',
         d3
-          .forceLink(this.links)
+          .forceLink(this.drawnLinks)
           .id((d) => d['id'])
           .distance(50)
       )
@@ -151,7 +163,7 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
       .attr('class', 'links')
       .attr('stroke-opacity', 1)
       .selectAll('line')
-      .data(this.links)
+      .data(this.drawnLinks)
       .join('line')
       .attr('stroke', () => {
         return ColorPalette[Math.floor(Math.random() * ColorPalette.length)];
@@ -245,7 +257,8 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
         isToValid = true;
       }
     }
-    for (const link of this.links) {
+    for (const link of this.drawnLinks) {
+      console.log('indexes', link.source, link.target);
       if (this.nodes[link.source.index].id === source && this.nodes[link.target.index].id === target) {
         isAlreadyLinked = true;
       }
@@ -265,31 +278,5 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
     }, 6000);
 
     return { isFromValid: isFromValid, isToValid: isToValid, isAlreadyLinked: isAlreadyLinked };
-  }
-
-  private fetchNodeData() {
-    this.nodes = [];
-    this.gameState.forEachPlayer((p) => {
-      this.nodes.push({ id: p.displayName });
-    });
-    if (this.nodes.length <= 0) {
-      console.warn('Failed to fetch new node data, because the game state was not defined. Nodes now: ', this.nodes);
-    }
-  }
-
-  private fetchLinkData() {
-    const state = this.gameState.getState();
-    if (state !== undefined) {
-      this.links = [];
-      const remoteLinks: ArraySchema<Link> = state.drinkBuddyLinks;
-      const knownNodes = this.nodes.map((n) => n.id);
-      remoteLinks.forEach((link: Link) => {
-        if (knownNodes.indexOf(link.source) !== -1 && knownNodes.indexOf(link.target) !== -1) {
-          this.links.push({ source: link.source, target: link.target });
-        }
-      });
-    } else {
-      console.warn('Failed to fetch new link data, because the game state was not defined. Links now: ', this.links);
-    }
   }
 }
