@@ -20,7 +20,7 @@
         </div>
       </div>
 
-      <div *ngIf="true" class="player-box-wrapper">
+      <div class="player-box-wrapper">
         <div @joinLeave *ngFor="let p of (players$ | asPlayerArray | async); let i = index"
           [ngClass]="{'player-box': true, 'player-box-first': i === 0}">
           <app-player-icon [borderThickness]="'3px'" [enableUpload]="false" [loginName]="p.loginName" [size]="'30px'">

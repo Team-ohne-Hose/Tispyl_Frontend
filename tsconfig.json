@@ -20,5 +20,8 @@
       "es6",
       "dom"
     ]
+  },
+  "angularComplierOptions": {
+    "strictTemplates": true
   }
 }

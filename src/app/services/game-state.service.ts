@@ -1,15 +1,13 @@
 import { Injectable } from '@angular/core';
 import { ColyseusClientService, MessageCallback } from './colyseus-client.service';
 import { Room } from 'colyseus.js';
-import { ArraySchema, MapSchema } from '@colyseus/schema';
+import { MapSchema } from '@colyseus/schema';
 import { GameState } from '../model/state/GameState';
 import { Player } from '../model/state/Player';
-import { PhysicsObjectState, PhysicsState } from '../model/state/PhysicsState';
+import { PhysicsObjectState } from '../model/state/PhysicsState';
 import { Tile } from '../model/state/BoardLayoutState';
 import { MessageType } from '../model/WsData';
-import { VoteState } from '../model/state/VoteState';
 import { AsyncSubject, BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
-import { Rule } from '../model/state/Rule';
 import { combineLatestWith, debounceTime, filter, map, mergeMap, take } from 'rxjs/operators';
 import { GameStateAsObservables } from './colyseus-observable-state';
 import { UserService } from './user.service';
@@ -63,11 +61,9 @@ export class GameStateService {
     this.observableState = this.colyseus.getStateAsObservables();
 
     this.observableState.currentPlayerLogin$.subscribe((currentPlayerLogin: string) => {
-      console.log('nextTurn detected. notifying callbacks');
       this.activePlayerLogin$.next(currentPlayerLogin);
     });
     this.observableState.action$.subscribe((action: string) => {
-      console.log('nextAction detected');
       this.activeAction$.next(action);
     });
     this.observableState.playerList$.subscribe((playerList: MapSchema<Player>) => {
@@ -83,11 +79,9 @@ export class GameStateService {
       console.log('Player update detected', player);
     });
     this.observableState.hostLoginName$.subscribe((hostLoginName: string) => {
-      console.log('hostLoginName update detected');
       this.currentHostLogin$.next(hostLoginName);
     });
     this.observableState.reversed$.subscribe((reversed: boolean) => {
-      console.log('reversed update detected');
       this.isTurnOrderReversed$.next(reversed);
     });
 
@@ -114,14 +108,6 @@ export class GameStateService {
         this.isRoomDataAvailable$.next(false);
       }
     });
-    console.log(
-      'after pipe is',
-      this.observableState.playerList$.pipe(
-        map((playerList: MapSchema<Player>) => {
-          return playerList.get('Anon 0');
-        })
-      )
-    );
   }
 
   private _resolveMyPlayerObject(players: MapSchema<Player>): Player {
@@ -137,7 +123,7 @@ export class GameStateService {
   amIHost$(): Observable<boolean> {
     return this.currentHostLogin$.pipe(
       mergeMap((hostLogin: string) => {
-        return this.me$.pipe(map((me: Player) => hostLogin === me.loginName));
+        return this.me$.pipe(filter((p: Player) => p !== undefined)).pipe(map((me: Player) => hostLogin === me.loginName));
       })
     );
   }
@@ -157,10 +143,8 @@ export class GameStateService {
   isMyTurn$(): Observable<boolean> {
     return this.activePlayerLogin$.pipe(
       mergeMap((activeLogin: string) => {
-        console.log('isMyTurn$', activeLogin);
         return this.me$.pipe(
           map((me: Player) => {
-            console.log('isMyTurn$->me', me.loginName);
             return me.loginName === activeLogin;
           })
         );
@@ -185,7 +169,7 @@ export class GameStateService {
    * or access the ColyseusService.activeRoom$ Observable.
    */
   getMyFigureId(): number {
-    const p: Player = this.getByLoginName(this.colyseus.myLoginName);
+    const p: Player = this.getByLoginName(this.getMyLoginName());
     return p.figureId;
   }
 
@@ -195,21 +179,8 @@ export class GameStateService {
       .pipe(map((playerList: MapSchema<Player>) => Array.from(playerList.values()).find(f)));
   }
 
-  /**
-   * @deprecated This function accesses the room state directly. This is heavily discouraged.
-   * Use either a wrapper function providing a fitting Observable<T> in the GameStateService
-   * or access the ColyseusService.activeRoom$ Observable.
-   */
-  findInPlayerList(f: (p: Player) => boolean): Player | undefined {
-    if (this.playerList !== undefined) {
-      return Array.from(this.playerList.values()).find(f);
-    } else {
-      return undefined;
-    }
-  }
-
   getMe$(): Observable<Player> {
-    return this.observableState.playerChange$.pipe(filter((p: Player) => p.loginName === this.colyseus.myLoginName)).pipe(debounceTime(0));
+    return this.observableState.playerChange$.pipe(filter((p: Player) => p.loginName === this.getMyLoginName())).pipe(debounceTime(0));
   }
 
   /**
@@ -270,60 +241,6 @@ export class GameStateService {
         return Array.from(m.values());
       })
     );
-  }
-
-  /**
-   * @deprecated This function accesses the room state directly. This is heavily discouraged.
-   * Use either a wrapper function providing a fitting Observable<T> in the GameStateService
-   * or access the ColyseusService.activeRoom$ Observable.
-   */
-  getPlayerArray(): Player[] {
-    this.getPlayerArray$();
-    const s: GameState = this.getState();
-    if (s !== undefined) {
-      return Array.from(s.playerList.values());
-    }
-    return [];
-  }
-
-  /**
-   * @deprecated This function accesses the room state directly. This is heavily discouraged.
-   * Use either a wrapper function providing a fitting Observable<T> in the GameStateService
-   * or access the ColyseusService.activeRoom$ Observable.
-   */
-  forEachPlayer(f: (p: Player) => void): void {
-    const s: GameState = this.getState();
-    s?.playerList?.forEach(f);
-  }
-
-  /**
-   * @deprecated This function accesses the room state directly. This is heavily discouraged.
-   * Use either a wrapper function providing a fitting Observable<T> in the GameStateService
-   * or access the ColyseusService.activeRoom$ Observable.
-   */
-  getRules(): ArraySchema<Rule> | undefined {
-    const s: GameState = this.getState();
-    return s?.rules;
-  }
-
-  /**
-   * @deprecated This function accesses the room state directly. This is heavily discouraged.
-   * Use either a wrapper function providing a fitting Observable<T> in the GameStateService
-   * or access the ColyseusService.activeRoom$ Observable.
-   */
-  getVoteState(): VoteState | undefined {
-    const s: GameState = this.getState();
-    return s?.voteState;
-  }
-
-  /**
-   * @deprecated This function accesses the room state directly. This is heavily discouraged.
-   * Use either a wrapper function providing a fitting Observable<T> in the GameStateService
-   * or access the ColyseusService.activeRoom$ Observable.
-   */
-  getPhysicsState(): PhysicsState | undefined {
-    const s = this.getState();
-    return s?.physicsState;
   }
 
   getBoardLayoutAsArray$(): Observable<Tile[]> {

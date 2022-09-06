@@ -11,7 +11,7 @@ import {
   PhysicsEntityVariation,
 } from '../../../../model/WsData';
 import { ObjectUserData } from '../viewport.component';
-import { PhysicsObjectState, PhysicsState } from '../../../../model/state/PhysicsState';
+import { PhysicsObjectState } from '../../../../model/state/PhysicsState';
 import { Player } from '../../../../model/state/Player';
 import { BoardItemControlService } from '../../../../services/board-item-control.service';
 import { take } from 'rxjs/operators';
@@ -67,14 +67,6 @@ export class PhysicsCommands {
 
   static getPhysId(obj: Object3D): number {
     return obj.userData.physicsId;
-  }
-
-  getInitializePending(): number {
-    const physState: PhysicsState = this.bic.gameState.getPhysicsState();
-    if (physState !== undefined && physState.objects !== undefined) {
-      return physState.objects.size;
-    }
-    return 0;
   }
 
   initializeFromState(): Observable<Progress> {

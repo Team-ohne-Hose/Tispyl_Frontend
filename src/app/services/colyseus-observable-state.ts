@@ -1,7 +1,7 @@
 /* eslint-disable no-empty-function */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { Room } from 'colyseus.js';
-import { Observable, ReplaySubject, debounceTime, map, mergeWith } from 'rxjs';
+import { Observable, ReplaySubject, debounceTime, map, mergeWith, share } from 'rxjs';
 import { GameState } from '../model/state/GameState';
 import { VoteEntry } from '../components/game/interface/menu-bar/vote-system/helpers/VoteEntry';
 import { Tile } from '../model/state/BoardLayoutState';
@@ -85,7 +85,7 @@ export class ColyseusObservableState {
       objectsMoved$: new ReplaySubject<PhysicsObjectState>(1),
     },
     // tracks the whole MapSchema, and the MapSchema gets transmitted
-    playerList$: new ReplaySubject<MapSchema<Player>>(1),
+    playerList$: new ReplaySubject<MapSchema<Player>>(50),
 
     /** tracks all players in PlayerList, but transmits Players.
      *    tracks more than 1 change
@@ -228,7 +228,7 @@ export class ColyseusObservableState {
         });
 
         // send initial Values if already present
-        if (room.state.voteState.voteConfiguration.ineligibles.length > 0) {
+        if (room.state.voteState.voteConfiguration.ineligibles) {
           this.gameState.voteState.voteConfiguration.ineligibles$.next(room.state.voteState.voteConfiguration.ineligibles);
         }
 
@@ -255,7 +255,7 @@ export class ColyseusObservableState {
         });
 
         // send initial Values if already present
-        if (room.state.voteState.voteConfiguration.votingOptions.length > 0) {
+        if (room.state.voteState.voteConfiguration.votingOptions) {
           this.gameState.voteState.voteConfiguration.votingOptions$.next(room.state.voteState.voteConfiguration.votingOptions);
         }
       });
@@ -269,7 +269,7 @@ export class ColyseusObservableState {
       });
 
       // send initial Values if already present
-      if (room.state.rules.length > 0) {
+      if (room.state.rules) {
         this.gameState.rules$.next(room.state.rules);
       }
     });
@@ -282,7 +282,7 @@ export class ColyseusObservableState {
       });
 
       // send initial Values if already present
-      if (room.state.drinkBuddyLinks.length > 0) {
+      if (room.state.drinkBuddyLinks) {
         this.gameState.drinkBuddyLinks$.next(room.state.drinkBuddyLinks);
       }
     });
@@ -296,7 +296,7 @@ export class ColyseusObservableState {
         });
 
         // send initial Values if already present
-        if (room.state.boardLayout.tileList.size > 0) {
+        if (room.state.boardLayout.tileList) {
           this.gameState.boardLayout.tileList$.next(room.state.boardLayout.tileList);
         }
       });
@@ -332,7 +332,7 @@ export class ColyseusObservableState {
         });
 
         // send initial Values if already present
-        if (room.state.physicsState.objects.size > 0) {
+        if (room.state.physicsState.objects) {
           this.gameState.physicsState.objects$.next(room.state.physicsState.objects);
         }
       });
@@ -343,45 +343,38 @@ export class ColyseusObservableState {
     this.touchOnExistence(room.state, 'playerList', () => {
       this.touchCollectionCallbacks(room.state.playerList, {
         onChange: (player: Player) => {
-          console.log('onChange PlayerList', player, room.state.playerList);
           this.gameState.playerList$.next(room.state.playerList);
           this.gameState.playerChange$.next(player);
         },
         onRemove: (player: Player) => {
-          console.log('onRemove PlayerList', player, room.state.playerList);
           this.gameState.playerList$.next(room.state.playerList);
           // TODO: Need to notify playerChange?
         },
         onAdd: (player: Player) => {
-          console.log('onAdd PlayerList', player, room.state.playerList);
           this.gameState.playerList$.next(room.state.playerList);
           this.gameState.playerChange$.next(player);
 
           player.onChange = (datachange) => {
             this.gameState.playerList$.next(room.state.playerList); // TODO: should PlayerList get updates when one Player Changes?
             this.gameState.playerChange$.next(player);
-            console.log('onChange Player', player, datachange);
           };
 
           this.touchCollectionCallbacks<number, MapSchema<number>>(player.itemList, {
             onChange: (item) => {
               this.gameState.playerChange$.next(player);
-              console.log('onChange item', player, room.state.playerList, item);
             },
             onRemove: (item) => {
               this.gameState.playerChange$.next(player);
-              console.log('onRemove item', player, room.state.playerList, item);
             },
             onAdd: (item) => {
               this.gameState.playerChange$.next(player);
-              console.log('onAdd item', player, room.state.playerList, item);
             },
           });
         },
       });
 
       // send initial Values if already present
-      if (room.state.playerList.size > 0) {
+      if (room.state.playerList) {
         this.gameState.playerList$.next(room.state.playerList);
       }
       room.state.playerList.forEach((player: Player) => {
@@ -403,6 +396,7 @@ export class ColyseusObservableState {
         )
       )
       .pipe(map(() => room.state.voteState))
-      .pipe(debounceTime(0));
+      .pipe(debounceTime(0))
+      .pipe(share());
   }
 }

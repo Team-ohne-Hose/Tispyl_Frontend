@@ -3,7 +3,7 @@ import { Player } from '../../../../model/state/Player';
 import { GameStateService } from '../../../../services/game-state.service';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import { filter, map, mergeMap } from 'rxjs/operators';
 import { BasicUser, UserService } from '../../../../services/user.service';
 import { APIResponse } from '../../../../model/APIResponse';
 import { forkJoin } from 'rxjs';
@@ -59,7 +59,7 @@ export class ConnectedPlayersComponent implements OnInit, OnDestroy {
   }
 
   private getLoginName(): Observable<string> {
-    return this.gameState.me$.pipe(
+    return this.gameState.me$.pipe(filter((p: Player) => p !== undefined)).pipe(
       map((p: Player) => {
         return p.loginName;
       })

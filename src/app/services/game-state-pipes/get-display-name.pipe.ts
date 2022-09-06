@@ -6,10 +6,10 @@ import { Player } from 'src/app/model/state/Player';
   name: 'getDisplayName',
 })
 export class GetDisplayNamePipe implements PipeTransform {
-  transform(player$: Observable<Player>): unknown {
+  transform(player$: Observable<Player>): Observable<string> {
     return player$.pipe(
       map((player: Player) => {
-        return player;
+        return player.displayName;
       })
     );
   }
