@@ -25,8 +25,9 @@ export class ChatService implements OnDestroy {
         filterSubType: -1,
         f: (data: WsData) => {
           if (data.type === MessageType.CHAT_MESSAGE) {
-            const dn = this.gameState.getDisplayName(data.authorLoginName);
-            this.onChatMessageReceived(data.message, dn || data.authorLoginName);
+            this.gameState.getDisplayName$(data.authorLoginName).subscribe((displayName: string) => {
+              this.onChatMessageReceived(data.message, displayName || data.authorLoginName);
+            });
           }
         },
       })

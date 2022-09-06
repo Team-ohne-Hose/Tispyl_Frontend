@@ -12,6 +12,12 @@ import { Rule } from '../model/state/Rule';
 import { ArraySchema, MapSchema, Schema } from '@colyseus/schema';
 import { VoteState } from '../model/state/VoteState';
 
+// This line is fine for using Function, since Function is used to exclude types
+export declare type NonFunctionPropNames<T> = {
+  /* eslint-disable-next-line @typescript-eslint/ban-types */
+  [K in keyof T]: T[K] extends Function ? never : K;
+}[keyof T];
+
 export type GameStateAsObservables = {
   round$: ReplaySubject<number>;
   action$: ReplaySubject<string>;
@@ -98,8 +104,6 @@ export class ColyseusObservableState {
     voteState$: new Observable<VoteState>(),
   };
 
-  private room;
-
   constructor(activeRoom$: ReplaySubject<Room<GameState>>) {
     this.setupObservables(activeRoom$);
   }
@@ -112,71 +116,57 @@ export class ColyseusObservableState {
     };
   }
 
-  /** attaches necessary callbacks to notify replaySubjects for changes on
-   *    an ArraySchema or MapSchema
-   * @param schema the schema to monitor
-   * @param subject the subject to feed the events to
-   * @param forEachChild is a function called for each Child once.
-   *              forEachChild allows to attach additional events to the trigger
-   * @param additionalTrigger is a function called
-   */
-  // Tipp: Hol dir erstmal noch nen Kaffee, bevor du hier anfängst zu lesen
-  private attachToSchemaCollection<T, SchemaCollection extends ArraySchema<T> | MapSchema<T>>(
-    schema: SchemaCollection,
-    subject: ReplaySubject<SchemaCollection>,
-    triggerList: () => void,
-    triggerItem: (item: T) => void,
-    forEachChild?: (item: T, trigger: () => void) => void
-  ): void {
-    if (schema === undefined || subject === undefined) {
-      console.error('Trying to attach undefined or attach to undefined: ', schema, subject);
-      return;
+  private touchOnExistence<T extends Schema, K extends NonFunctionPropNames<T>>(root: T, target: K, touchCallbacks: () => void) {
+    if (root[target] !== undefined) {
+      touchCallbacks();
+    } else {
+      root.listen<K>(target, () => touchCallbacks());
     }
+  }
 
-    const bothTriggers = (item: T) => {
-      triggerList();
-      triggerItem(item);
-    };
+  private touchCollectionCallbacks<T, S extends MapSchema<T> | ArraySchema<T>>(
+    collection: S,
+    callbacks: {
+      onChange: (item: T, key: string) => void;
+      onRemove: (item: T, key: string) => void;
+      onAdd: (item: T, key: string) => void;
+    }
+  ) {
+    collection.onChange = callbacks.onChange;
+    collection.onRemove = callbacks.onRemove;
+    collection.onAdd = callbacks.onAdd;
+  }
 
-    // attach callback when items get added to array,
-    // also add onChange callbacks for them when they are added and not primitives
-    schema.onAdd = (newItem: T) => {
-      if (newItem instanceof Schema) {
-        newItem.onChange = () => {
-          bothTriggers(newItem);
+  private touchCollectionCallbacksSchemaSimple<T extends Schema, S extends MapSchema<T> | ArraySchema<T>>(
+    collection: S,
+    trigger: () => void
+  ) {
+    this.touchCollectionCallbacks<T, S>(collection, {
+      onChange: trigger,
+      onRemove: trigger,
+      onAdd: (item: T) => {
+        trigger();
+        item.onChange = () => {
+          trigger();
         };
-      }
-      if (forEachChild) {
-        forEachChild(newItem, () => bothTriggers(newItem));
-      }
-      bothTriggers(newItem);
-    };
+      },
+    });
+  }
 
-    // attach callback when items get removed from array
-    schema.onRemove = bothTriggers;
-    schema.onChange = bothTriggers;
-
-    if ((schema instanceof ArraySchema && schema.length > 0) || (schema instanceof MapSchema && schema.size > 0)) {
-      // attach onChange callbacks to all existing properties
-      schema.forEach((item: T) => {
-        if (item instanceof Schema) {
-          item.onChange = () => {
-            bothTriggers(item);
-          };
-        }
-        if (forEachChild) {
-          forEachChild(item, () => bothTriggers(item));
-        }
-        triggerItem(item);
-      });
-      triggerList();
-    }
+  private touchCollectionCallbacksPrimitiveSimple<T extends string | number, S extends MapSchema<T> | ArraySchema<T>>(
+    collection: S,
+    trigger: () => void
+  ) {
+    this.touchCollectionCallbacks<T, S>(collection, {
+      onChange: trigger,
+      onRemove: trigger,
+      onAdd: trigger,
+    });
   }
 
   // Set up all callbacks for correct acting of the observables for the state
   private setupObservables(activeRoom$: ReplaySubject<Room<GameState>>) {
     activeRoom$.subscribe((room: Room<GameState>) => {
-      this.room = room;
       // easy accessible direct primitives
       room.state.listen('round', this.pushToSubject<number>(this.gameState.round$));
       if (room.state.round) this.gameState.round$.next(room.state.round);
@@ -211,185 +201,193 @@ export class ColyseusObservableState {
   }
 
   private setupObservablesVoting(room: Room<GameState>): void {
-    const touchVoteConfiguration = () => {
-      room.state.voteState.voteConfiguration.listen(
-        'author',
-        this.pushToSubject<string>(this.gameState.voteState.voteConfiguration.author$)
-      );
-      if (room.state.voteState.voteConfiguration.author)
-        this.gameState.voteState.voteConfiguration.author$.next(room.state.voteState.voteConfiguration.author);
-      room.state.voteState.voteConfiguration.listen('title', this.pushToSubject<string>(this.gameState.voteState.voteConfiguration.title$));
-      if (room.state.voteState.voteConfiguration.title)
-        this.gameState.voteState.voteConfiguration.title$.next(room.state.voteState.voteConfiguration.title);
-      this.attachToSchemaCollection<string, ArraySchema<string>>(
-        room.state.voteState.voteConfiguration.ineligibles,
-        this.gameState.voteState.voteConfiguration.ineligibles$,
-        () => this.gameState.voteState.voteConfiguration.ineligibles$.next(room.state.voteState.voteConfiguration.ineligibles),
-        () => {}
-      );
-      this.attachToSchemaCollection<VoteEntry, ArraySchema<VoteEntry>>(
-        room.state.voteState.voteConfiguration.votingOptions,
-        this.gameState.voteState.voteConfiguration.votingOptions$,
-        () => this.gameState.voteState.voteConfiguration.votingOptions$.next(room.state.voteState.voteConfiguration.votingOptions),
-        () => {},
-        (item: VoteEntry, trigger: () => void) => {
-          if (item.castVotes) {
-            item.castVotes.onAdd = trigger;
-            item.castVotes.onRemove = trigger;
-            item.castVotes.onChange = trigger;
-          } else {
-            item.listen('castVotes', (castVotes: ArraySchema<string>) => {
-              castVotes.onAdd = trigger;
-              castVotes.onRemove = trigger;
-              castVotes.onChange = trigger;
-            });
-          }
-        }
-      );
-    };
-    const touchVoteState = () => {
+    this.touchOnExistence(room.state, 'voteState', () => {
       room.state.voteState.listen('author', this.pushToSubject<string>(this.gameState.voteState.author$));
       if (room.state.voteState.author) this.gameState.voteState.author$.next(room.state.voteState.author);
       room.state.voteState.listen('voteStage', this.pushToSubject<number>(this.gameState.voteState.voteStage$));
       if (room.state.voteState.voteStage) this.gameState.voteState.voteStage$.next(room.state.voteState.voteStage);
       room.state.voteState.listen('closingIn', this.pushToSubject<number>(this.gameState.voteState.closingIn$));
       if (room.state.voteState.closingIn) this.gameState.voteState.closingIn$.next(room.state.voteState.closingIn);
-      if (room.state.voteState.voteConfiguration !== undefined) {
-        touchVoteConfiguration();
-      } else {
-        room.state.voteState.listen('voteConfiguration', () => {
-          touchVoteConfiguration();
-        });
-      }
-    };
 
-    if (room.state.voteState !== undefined) {
-      touchVoteState();
-    } else {
-      room.state.listen('voteState', () => {
-        touchVoteState();
+      this.touchOnExistence(room.state.voteState, 'voteConfiguration', () => {
+        room.state.voteState.voteConfiguration.listen(
+          'author',
+          this.pushToSubject<string>(this.gameState.voteState.voteConfiguration.author$)
+        );
+        if (room.state.voteState.voteConfiguration.author)
+          this.gameState.voteState.voteConfiguration.author$.next(room.state.voteState.voteConfiguration.author);
+        room.state.voteState.voteConfiguration.listen(
+          'title',
+          this.pushToSubject<string>(this.gameState.voteState.voteConfiguration.title$)
+        );
+        if (room.state.voteState.voteConfiguration.title)
+          this.gameState.voteState.voteConfiguration.title$.next(room.state.voteState.voteConfiguration.title);
+
+        this.touchCollectionCallbacksPrimitiveSimple(room.state.voteState.voteConfiguration.ineligibles, () => {
+          this.gameState.voteState.voteConfiguration.ineligibles$.next(room.state.voteState.voteConfiguration.ineligibles);
+        });
+
+        // send initial Values if already present
+        if (room.state.voteState.voteConfiguration.ineligibles.length > 0) {
+          this.gameState.voteState.voteConfiguration.ineligibles$.next(room.state.voteState.voteConfiguration.ineligibles);
+        }
+
+        this.touchCollectionCallbacks(room.state.voteState.voteConfiguration.votingOptions, {
+          onChange: () => {
+            this.gameState.voteState.voteConfiguration.votingOptions$.next(room.state.voteState.voteConfiguration.votingOptions);
+          },
+          onRemove: () => {
+            this.gameState.voteState.voteConfiguration.votingOptions$.next(room.state.voteState.voteConfiguration.votingOptions);
+          },
+          onAdd: (voteEntry: VoteEntry) => {
+            this.gameState.voteState.voteConfiguration.votingOptions$.next(room.state.voteState.voteConfiguration.votingOptions);
+
+            voteEntry.onChange = () => {
+              this.gameState.voteState.voteConfiguration.votingOptions$.next(room.state.voteState.voteConfiguration.votingOptions);
+            };
+
+            this.touchOnExistence(voteEntry, 'castVotes', () => {
+              this.touchCollectionCallbacksPrimitiveSimple(voteEntry.castVotes, () => {
+                this.gameState.voteState.voteConfiguration.votingOptions$.next(room.state.voteState.voteConfiguration.votingOptions);
+              });
+            });
+          },
+        });
+
+        // send initial Values if already present
+        if (room.state.voteState.voteConfiguration.votingOptions.length > 0) {
+          this.gameState.voteState.voteConfiguration.votingOptions$.next(room.state.voteState.voteConfiguration.votingOptions);
+        }
       });
-    }
+    });
   }
 
   private setupObservablesRules(room: Room<GameState>): void {
-    const attachRules = () => {
-      this.attachToSchemaCollection<Rule, ArraySchema<Rule>>(
-        room.state.rules,
-        this.gameState.rules$,
-        () => this.gameState.rules$.next(this.room.state.rules),
-        () => {}
-      );
-    };
-    if (room.state.rules !== undefined) {
-      attachRules();
-    } else {
-      room.state.listen('rules', attachRules);
-    }
+    this.touchOnExistence(room.state, 'rules', () => {
+      this.touchCollectionCallbacksSchemaSimple(room.state.rules, () => {
+        this.gameState.rules$.next(room.state.rules);
+      });
+
+      // send initial Values if already present
+      if (room.state.rules.length > 0) {
+        this.gameState.rules$.next(room.state.rules);
+      }
+    });
   }
 
   private setupObservablesBuddyLinks(room: Room<GameState>): void {
-    const attachBuddyLinks = () => {
-      this.attachToSchemaCollection<Link, ArraySchema<Link>>(
-        room.state.drinkBuddyLinks,
-        this.gameState.drinkBuddyLinks$,
-        () => this.gameState.drinkBuddyLinks$.next(this.room.state.drinkBuddyLinks),
-        () => {}
-      );
-    };
-    if (room.state.drinkBuddyLinks !== undefined) {
-      attachBuddyLinks();
-    } else {
-      room.state.listen('drinkBuddyLinks', attachBuddyLinks);
-    }
+    this.touchOnExistence(room.state, 'drinkBuddyLinks', () => {
+      this.touchCollectionCallbacksSchemaSimple(room.state.drinkBuddyLinks, () => {
+        this.gameState.drinkBuddyLinks$.next(room.state.drinkBuddyLinks);
+      });
+
+      // send initial Values if already present
+      if (room.state.drinkBuddyLinks.length > 0) {
+        this.gameState.drinkBuddyLinks$.next(room.state.drinkBuddyLinks);
+      }
+    });
   }
 
   private setupObservablesBoardLayout(room: Room<GameState>): void {
-    const touchTileList = () => {
-      this.attachToSchemaCollection<Tile, MapSchema<Tile>>(
-        room.state.boardLayout.tileList,
-        this.gameState.boardLayout.tileList$,
-        () => this.gameState.boardLayout.tileList$.next(room.state.boardLayout.tileList),
-        () => {}
-      );
-    };
-    const touchBoardLayout = () => {
-      if (room.state.boardLayout.tileList !== undefined) {
-        touchTileList();
-      } else {
-        room.state.boardLayout.listen('tileList', touchTileList);
-      }
-    };
-    if (room.state.boardLayout !== undefined) {
-      touchBoardLayout();
-    } else {
-      room.state.listen('boardLayout', touchBoardLayout);
-    }
+    this.touchOnExistence(room.state, 'boardLayout', () => {
+      this.touchOnExistence(room.state.boardLayout, 'tileList', () => {
+        this.touchCollectionCallbacksSchemaSimple(room.state.boardLayout.tileList, () => {
+          this.gameState.boardLayout.tileList$.next(room.state.boardLayout.tileList);
+        });
+
+        // send initial Values if already present
+        if (room.state.boardLayout.tileList.size > 0) {
+          this.gameState.boardLayout.tileList$.next(room.state.boardLayout.tileList);
+        }
+      });
+    });
   }
 
   private setupObservablesPhysicsState(room: Room<GameState>): void {
-    const touchPhysicsObjects = () => {
-      this.attachToSchemaCollection<PhysicsObjectState, MapSchema<PhysicsObjectState>>(
-        room.state.physicsState.objects,
-        this.gameState.physicsState.objects$,
-        () => this.gameState.physicsState.objects$.next(room.state.physicsState.objects),
-        () => {},
-        (item: PhysicsObjectState, trigger: () => void) => {
-          item.position.onChange = () => {
-            trigger();
-            this.gameState.physicsState.objectsMoved$.next(item);
-          };
-          item.quaternion.onChange = () => {
-            trigger();
-            this.gameState.physicsState.objectsMoved$.next(item);
-          };
+    this.touchOnExistence(room.state, 'physicsState', () => {
+      this.touchOnExistence(room.state.physicsState, 'objects', () => {
+        this.touchCollectionCallbacks(room.state.physicsState.objects, {
+          onChange: () => {
+            this.gameState.physicsState.objects$.next(room.state.physicsState.objects);
+          },
+          onRemove: () => {
+            this.gameState.physicsState.objects$.next(room.state.physicsState.objects);
+          },
+          onAdd: (physicsObjectState: PhysicsObjectState) => {
+            this.gameState.physicsState.objects$.next(room.state.physicsState.objects);
+
+            physicsObjectState.onChange = () => {
+              // TODO: should objectList get updates when one object Changes?
+              this.gameState.physicsState.objects$.next(room.state.physicsState.objects);
+            };
+            physicsObjectState.position.onChange = () => {
+              this.gameState.physicsState.objects$.next(room.state.physicsState.objects);
+              this.gameState.physicsState.objectsMoved$.next(physicsObjectState);
+            };
+            physicsObjectState.quaternion.onChange = () => {
+              this.gameState.physicsState.objects$.next(room.state.physicsState.objects);
+              this.gameState.physicsState.objectsMoved$.next(physicsObjectState);
+            };
+          },
+        });
+
+        // send initial Values if already present
+        if (room.state.physicsState.objects.size > 0) {
+          this.gameState.physicsState.objects$.next(room.state.physicsState.objects);
         }
-      );
-    };
-    const touchPhysicsState = () => {
-      if (room.state.physicsState.objects !== undefined) {
-        touchPhysicsObjects();
-      } else {
-        room.state.physicsState.listen('objects', touchPhysicsObjects);
-      }
-    };
-    if (room.state.physicsState !== undefined) {
-      touchPhysicsState();
-    } else {
-      room.state.listen('physicsState', touchPhysicsState);
-    }
+      });
+    });
   }
 
   private setupObservablesPlayerlist(room: Room<GameState>): void {
-    const touchPlayerList = () => {
-      this.attachToSchemaCollection<Player, MapSchema<Player>>(
-        room.state.playerList,
-        this.gameState.playerList$,
-        () => this.gameState.playerList$.next(room.state.playerList),
-        (item: Player) => {
-          this.gameState.playerChange$.next(item);
+    this.touchOnExistence(room.state, 'playerList', () => {
+      this.touchCollectionCallbacks(room.state.playerList, {
+        onChange: (player: Player) => {
+          console.log('onChange PlayerList', player, room.state.playerList);
+          this.gameState.playerList$.next(room.state.playerList);
+          this.gameState.playerChange$.next(player);
         },
-        (item: Player, trigger: () => void) => {
-          // only a mapschema of primitives
-          if (item.itemList !== undefined) {
-            item.itemList.onAdd = trigger;
-            item.itemList.onRemove = trigger;
-            item.itemList.onChange = trigger;
-          } else {
-            item.listen('itemList', () => {
-              item.itemList.onAdd = trigger;
-              item.itemList.onRemove = trigger;
-              item.itemList.onChange = trigger;
-            });
-          }
-        }
-      );
-    };
-    if (room.state.playerList !== undefined) {
-      touchPlayerList();
-    } else {
-      room.state.listen('playerList', touchPlayerList);
-    }
+        onRemove: (player: Player) => {
+          console.log('onRemove PlayerList', player, room.state.playerList);
+          this.gameState.playerList$.next(room.state.playerList);
+          // TODO: Need to notify playerChange?
+        },
+        onAdd: (player: Player) => {
+          console.log('onAdd PlayerList', player, room.state.playerList);
+          this.gameState.playerList$.next(room.state.playerList);
+          this.gameState.playerChange$.next(player);
+
+          player.onChange = (datachange) => {
+            this.gameState.playerList$.next(room.state.playerList); // TODO: should PlayerList get updates when one Player Changes?
+            this.gameState.playerChange$.next(player);
+            console.log('onChange Player', player, datachange);
+          };
+
+          this.touchCollectionCallbacks<number, MapSchema<number>>(player.itemList, {
+            onChange: (item) => {
+              this.gameState.playerChange$.next(player);
+              console.log('onChange item', player, room.state.playerList, item);
+            },
+            onRemove: (item) => {
+              this.gameState.playerChange$.next(player);
+              console.log('onRemove item', player, room.state.playerList, item);
+            },
+            onAdd: (item) => {
+              this.gameState.playerChange$.next(player);
+              console.log('onAdd item', player, room.state.playerList, item);
+            },
+          });
+        },
+      });
+
+      // send initial Values if already present
+      if (room.state.playerList.size > 0) {
+        this.gameState.playerList$.next(room.state.playerList);
+      }
+      room.state.playerList.forEach((player: Player) => {
+        this.gameState.playerChange$.next(player);
+      });
+    });
   }
 
   private setupObservableConsolidatedVoteState(room: Room<GameState>): void {

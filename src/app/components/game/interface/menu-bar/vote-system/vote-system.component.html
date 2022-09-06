@@ -92,7 +92,7 @@
         </div>
         <div class="participants-container">
           <div *ngFor="let playerHandle of ve.castVotes" class="participants">
-            <app-player-icon [borderThickness]="'0px'" [loginName]="gameState.getLoginName(playerHandle)"
+            <app-player-icon [borderThickness]="'0px'" [loginName$]="gameState.getLoginName$(playerHandle)"
               [size]="'15px'"></app-player-icon>
           </div>
         </div>
@@ -155,7 +155,7 @@
 
         <div class="participants-container">
           <div *ngFor="let playerHandle of ve.castVotes" class="participants">
-            <app-player-icon [borderThickness]="'0px'" [loginName]="gameState.getLoginName(playerHandle)"
+            <app-player-icon [borderThickness]="'0px'" [loginName$]="gameState.getLoginName$(playerHandle)"
               [size]="'15px'"></app-player-icon>
           </div>
         </div>

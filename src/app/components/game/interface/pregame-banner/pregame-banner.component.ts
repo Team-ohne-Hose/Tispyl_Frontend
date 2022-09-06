@@ -1,8 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { GameActionType, MessageType } from '../../../../model/WsData';
 import { Player } from '../../../../model/state/Player';
 import { GameStateService } from '../../../../services/game-state.service';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { MapSchema } from '@colyseus/schema';
+import { Observable, Subject, map, share } from 'rxjs';
 
 @Component({
   selector: 'app-pregame-banner',
@@ -27,13 +29,63 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
     ]),
   ],
 })
-export class PregameBannerComponent {
+export class PregameBannerComponent implements OnInit {
   @Input()
-  players: Player[];
+  players$: Subject<MapSchema<Player>>;
 
   amIReady = false;
 
+  protected readyPlayers$: Observable<number>;
+  protected totalPlayers$: Observable<number>;
+
   constructor(private gameState: GameStateService) {}
+
+  ngOnInit(): void {
+    this.players$.subscribe((playerList: MapSchema<Player>) => {
+      console.log('new PlayerList1', playerList);
+      for (const p of playerList) {
+        console.log('player', p);
+      }
+    });
+    this.players$.subscribe((playerList: MapSchema<Player>) => {
+      console.log('new PlayerList2', playerList);
+    });
+    this.readyPlayers$ = this.players$
+      .pipe<number>(
+        map((playerList: MapSchema<Player>) => {
+          let len = 0;
+          console.log('readyplayers', playerList);
+          playerList.forEach((player: Player) => {
+            console.log('readyplayers', player);
+            if (player.isReady) {
+              len++;
+            }
+          });
+          return len;
+          /*
+            const len = Array.from(playerList.values()).filter((player: Player) => {
+              return player.isReady;
+            }).length;
+            console.log("ready", len, playerList);
+            return len;*/
+        })
+      )
+      .pipe(share());
+    this.totalPlayers$ = this.players$
+      .pipe(
+        map((playerList: MapSchema<Player>) => {
+          return Array.from(playerList.values()).length;
+        })
+      )
+      .pipe(share());
+
+    this.readyPlayers$.subscribe((value: number) => {
+      console.log('ready Players:', value);
+    });
+    this.totalPlayers$.subscribe((value: number) => {
+      console.log('total Players:', value);
+    });
+  }
 
   readyEvent(): void {
     this.amIReady = !this.amIReady;
@@ -42,9 +94,5 @@ export class PregameBannerComponent {
       action: GameActionType.readyPropertyChange,
       isReady: this.amIReady,
     });
-  }
-
-  countReadyPlayers(): number {
-    return this.players.filter((p) => p.isReady).length;
   }
 }

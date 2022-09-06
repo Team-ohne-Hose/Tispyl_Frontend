@@ -5,6 +5,8 @@ import { GameStateService } from '../../../../services/game-state.service';
 import { FileService } from '../../../../services/file.service';
 import { Timer } from '../../../framework/Timer';
 import { animate, group, sequence, style, transition, trigger } from '@angular/animations';
+import { Player } from 'src/app/model/state/Player';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-tile-overlay',
@@ -119,11 +121,16 @@ export class TileOverlayComponent implements OnDestroy {
   }
 
   setActiveTile(tileId: number): void {
-    this.playerName = this.gameState.getCurrentPlayerDisplayName();
-    this.tileTitle = this.titleOf(tileId).toUpperCase();
-    this.tileDescription = this.descriptionOf(tileId);
-    this.tileImgPath = this.imgOf(tileId);
-    this.tileImgDynBg = `url(${this.fileManagement.profilePictureSource(this.gameState.getCurrentPlayerLogin())})`;
+    this.gameState
+      .getCurrentPlayer$()
+      .pipe(take(1))
+      .subscribe((currentPlayer: Player) => {
+        this.playerName = currentPlayer.displayName;
+        this.tileTitle = this.titleOf(tileId).toUpperCase();
+        this.tileDescription = this.descriptionOf(tileId);
+        this.tileImgPath = this.imgOf(tileId);
+        this.tileImgDynBg = `url(${this.fileManagement.profilePictureSource(currentPlayer.loginName)})`;
+      });
   }
 
   /** Switched between large and small display state while maintaining the corresponding timer */

@@ -5,7 +5,7 @@ import { Tile } from '../model/state/BoardLayoutState';
 import { GameStateService } from './game-state.service';
 import { Progress } from './object-loader/loaderTypes';
 import { Observable, Observer } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { take, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -104,15 +104,18 @@ export class BoardTilesService {
   initialize(addToScene: (grp: Group) => void): Observable<Progress> {
     return new Observable<Progress>((observer: Observer<Progress>) => {
       addToScene(this.generateField());
-      this.gameState.getBoardLayoutAsArray().subscribe((tiles: Tile[]) => {
-        this.tiles = tiles;
-        observer.next([1, this.tiles.length + 1]);
-        console.info(
-          'Tiles are:',
-          this.tiles.map((t) => t.title)
-        );
-        this._updateFields(observer);
-      });
+      this.gameState
+        .getBoardLayoutAsArray$()
+        .pipe(take(1))
+        .subscribe((tiles: Tile[]) => {
+          this.tiles = tiles;
+          observer.next([1, this.tiles.length + 1]);
+          console.info(
+            'Tiles are:',
+            this.tiles.map((t) => t.title)
+          );
+          this._updateFields(observer);
+        });
     });
   }
 

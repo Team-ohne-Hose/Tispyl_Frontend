@@ -44,7 +44,7 @@ export class PhysicsCommands {
   addPlayer: (mesh: Object3D, name: string) => void;
 
   constructor(private bic: BoardItemControlService) {
-    this.bic.gameState.physicsObjectMoved$.subscribe((item: PhysicsObjectState) => {
+    this.bic.gameState.observableState.physicsState.objectsMoved$.subscribe((item: PhysicsObjectState) => {
       this._updateOrGenerateItem(item);
     });
   }
@@ -238,26 +238,27 @@ export class PhysicsCommands {
       console.debug('Adding physics object', model.userData.physicsId, model.name, entity, variant);
       this.bic.sceneTree.add(model);
 
-      let player: Player;
       // set the various references in other classes
       switch (entity) {
         case PhysicsEntity.dice:
           this.setClickRole(ClickedTarget.dice, model);
           this.dice = model;
-          // console.log('set dice');
           break;
         case PhysicsEntity.figure:
           this.setClickRole(ClickedTarget.figure, model);
 
           // Load other playermodels
-          player = this.bic.gameState.findInPlayerList((p: Player) => {
-            return p.figureId === physicsId;
-          });
-          if (player !== undefined) {
-            this.bic.loader.switchTex(model, player.figureModel);
-            this.addPlayer(model, player.displayName);
-            model.userData.displayName = player.displayName;
-          }
+          this.bic.gameState
+            .findInPlayerList$((p: Player) => {
+              return p.figureId === physicsId;
+            })
+            .subscribe((player: Player | undefined) => {
+              if (player !== undefined) {
+                this.bic.loader.switchTex(model, player.figureModel);
+                this.addPlayer(model, player.displayName);
+                model.userData.displayName = player.displayName;
+              }
+            });
           break;
       }
       this.currentlyLoadingEntities.set(physicsId, false);

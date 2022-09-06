@@ -79,10 +79,15 @@ export class MouseInteraction {
         const obj = intersects[0].object;
         const targetFigureId = this.bic.gameState.getMyFigureId();
         if (targetFigureId !== obj.userData.physicsId) {
-          const targetPlayer: Player = this.bic.gameState.getPlayerArray().find((p) => p.figureId === obj.userData.physicsId);
-          if (targetPlayer !== undefined) {
-            this.bic.itemService.onTargetHover(obj.userData.physicsId);
-          }
+          this.bic.gameState
+            .findInPlayerList$((player: Player) => {
+              return player.figureId === obj.userData.physicsId;
+            })
+            .subscribe((targetPlayer: Player) => {
+              if (targetPlayer !== undefined) {
+                this.bic.itemService.onTargetHover(obj.userData.physicsId);
+              }
+            });
         }
       }
     }
@@ -179,8 +184,13 @@ export class MouseInteraction {
             this.bic.hoverGameFigure(this.currentlySelected.obj, point.x, point.z);
           } else {
             if (this.bic.itemService.isTargeting()) {
-              const targetPlayer: Player = this.bic.gameState.getPlayerArray().find((p) => p.figureId === obj.userData.physicsId);
-              this.bic.itemService.onTargetFinish(targetPlayer);
+              this.bic.gameState
+                .findInPlayerList$((player: Player) => {
+                  return player.figureId === obj.userData.physicsId;
+                })
+                .subscribe((targetPlayer: Player) => {
+                  this.bic.itemService.onTargetFinish(targetPlayer);
+                });
             } else {
               console.log('This is not your figure');
             }

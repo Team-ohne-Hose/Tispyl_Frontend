@@ -4,7 +4,7 @@ import { Player } from '../../../../../../model/state/Player';
 import { VoteEntry } from '../helpers/VoteEntry';
 import { VoteConfiguration } from '../helpers/VoteConfiguration';
 import { GameActionType, MessageType } from '../../../../../../model/WsData';
-import { ArraySchema } from '@colyseus/schema';
+import { ArraySchema, MapSchema } from '@colyseus/schema';
 
 @Component({
   selector: 'app-vote-creator',
@@ -17,26 +17,31 @@ export class VoteCreatorComponent {
 
   playerList: Player[] = [];
 
-  eligibilities: Map<string, boolean> = new Map<string, boolean>();
+  private eligibilities: Map<string, boolean> = new Map<string, boolean>();
   votingOptions = new ArraySchema<VoteEntry>();
 
   constructor(private gameState: GameStateService) {
-    this.gameState.isRoomDataAvailable$.subscribe((isAvailable: boolean) => {
-      if (isAvailable) {
-        this.gameState.forEachPlayer((p: Player) => {
-          this.playerList.push(p);
-        });
-      } else {
-        console.warn('Failed to update player list. GameState was: ', this.gameState.getState());
-      }
-      this.playerList.forEach((p) => this.eligibilities.set(p.displayName, true));
+    this.gameState.observableState.playerList$.subscribe((playerList: MapSchema<Player>) => {
+      this.playerList = [];
+      playerList.forEach((player: Player) => {
+        this.playerList.push(player);
+      });
     });
+  }
+
+  isEligible(player: Player): boolean {
+    if (this.eligibilities.has(player.displayName)) {
+      return this.eligibilities.get(player.displayName);
+    } else {
+      this.eligibilities.set(player.displayName, true);
+      return true;
+    }
   }
 
   toggleEligibility(player: Player): void {
     // TODO: build solution to close vote if the host is ineligible
     if (!(this.gameState.getMe().displayName === player.displayName)) {
-      this.eligibilities.set(player.displayName, !this.eligibilities.get(player.displayName));
+      this.eligibilities.set(player.displayName, !this.isEligible(player));
     }
   }
 

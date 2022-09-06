@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription, map } from 'rxjs';
 import { Player } from 'src/app/model/state/Player';
 import { MessageType, RefreshCommandType, RefreshProfilePics } from 'src/app/model/WsData';
 import { FileService } from 'src/app/services/file.service';
@@ -20,6 +20,7 @@ export class AvatarSectionComponent implements OnDestroy {
   // subscriptions
   private currentPlayer$$: Subscription;
   private currentUser$$: Subscription;
+  protected currentPlayerLogin$: Observable<string>;
 
   constructor(private fileService: FileService, private userService: UserService, private gameStateService: GameStateService) {
     this.currentPlayer$$ = this.gameStateService.me$.subscribe((player: Player) => {
@@ -28,6 +29,12 @@ export class AvatarSectionComponent implements OnDestroy {
     this.currentUser$$ = this.userService.activeUser.subscribe((user: BasicUser) => {
       this.currentUser = user;
     });
+
+    this.currentPlayerLogin$ = this.gameStateService.me$.pipe(
+      map((player: Player) => {
+        return player.loginName;
+      })
+    );
 
     this.userImageUrl = this.fileService.profilePictureSource(this.currentPlayer.loginName, true);
   }

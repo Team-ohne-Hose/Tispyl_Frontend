@@ -211,20 +211,23 @@ export class BoardItemControlService {
     console.debug('move Figure to ', fieldID);
     let playerId: string;
     const userData = object.userData;
-    const player = this.gameState.findInPlayerList((p: Player) => {
-      return p.figureId === userData.physicsId;
-    });
-    if (player !== undefined) {
-      playerId = player.loginName;
-    }
-    const msg: GameSetTile = {
-      type: MessageType.GAME_MESSAGE,
-      action: GameActionType.setTile,
-      figureId: userData.physicsId,
-      playerId: playerId,
-      tileId: fieldID,
-    };
-    this.gameState.sendMessage(MessageType.GAME_MESSAGE, msg);
+    this.gameState
+      .findInPlayerList$((p: Player) => {
+        return p.figureId === userData.physicsId;
+      })
+      .subscribe((player: Player | undefined) => {
+        if (player !== undefined) {
+          playerId = player.loginName;
+        }
+        const msg: GameSetTile = {
+          type: MessageType.GAME_MESSAGE,
+          action: GameActionType.setTile,
+          figureId: userData.physicsId,
+          playerId: playerId,
+          tileId: fieldID,
+        };
+        this.gameState.sendMessage(MessageType.GAME_MESSAGE, msg);
+      });
   }
 
   addFlummi(x: number, y: number, z: number, color: number): void {

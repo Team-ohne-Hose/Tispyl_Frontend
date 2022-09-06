@@ -81,6 +81,11 @@ import { AvatarSectionComponent } from './components/game/interface/menu-bar/ava
 import { BottleCapPickerComponent } from './components/game/interface/menu-bar/bottle-cap-picker/bottle-cap-picker.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { environment } from 'src/environments/environment';
+import { GetLoginNamePipe } from './services/game-state-pipes/get-login-name.pipe';
+import { GetDisplayNamePipe } from './services/game-state-pipes/get-display-name.pipe';
+import { FilterReadyPlayersPipe } from './services/game-state-pipes/filter-ready-players.pipe';
+import { CountPlayersPipe } from './services/game-state-pipes/count-players.pipe';
+import { AsPlayerArrayPipe } from './services/game-state-pipes/as-player-array.pipe';
 const appRoutes: Routes = [
   {
     path: '',
@@ -179,6 +184,11 @@ appRoutes.push({ path: '**', component: PageNotFoundComponent });
     VolumeSlider,
     AvatarSectionComponent,
     BottleCapPickerComponent,
+    GetLoginNamePipe,
+    GetDisplayNamePipe,
+    FilterReadyPlayersPipe,
+    CountPlayersPipe,
+    AsPlayerArrayPipe,
   ],
   imports: [
     RouterModule.forRoot(
