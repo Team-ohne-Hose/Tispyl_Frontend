@@ -49,7 +49,7 @@ export class PlayerIconComponent {
   }
 
   ngOnInit(): void {
-    if (this.loginName$ !== undefined) {
+    if (this.loginName$ !== undefined && this.loginName$ !== null) {
       this.loginName$.subscribe((loginName: string) => {
         //this.currentSource = this.fileService.profilePictureSource(loginName);
         this.loginNameCached = loginName;

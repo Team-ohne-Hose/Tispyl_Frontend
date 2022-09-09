@@ -23,7 +23,9 @@ export class MenuSettingsComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  handleChange(event: { target: HTMLInputElement }) {
-    this.gss.persistentNamePlates.next(event.target.checked);
+  handleChange(event: Event) {
+    if (event && event.target && event.target instanceof HTMLInputElement) {
+      this.gss.persistentNamePlates.next(event.target.checked);
+    }
   }
 }

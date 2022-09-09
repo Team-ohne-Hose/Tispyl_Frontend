@@ -18,7 +18,7 @@ import {
 } from 'three';
 import { Player } from '../model/state/Player';
 import { GameActionType, GameSetTile, MessageType } from '../model/WsData';
-import { Observable, Observer, Subscription } from 'rxjs';
+import { Observable, Observer, Subscription, take } from 'rxjs';
 import { Progress } from './object-loader/loaderTypes';
 import { GameSettingsService } from './game-settings.service';
 
@@ -75,7 +75,7 @@ export class BoardItemControlService {
     });
 
     /** This should be cleaned and clarified */
-    this.gameState.playerListChanges$.subscribe((p: Player) => {
+    this.gameState.observableState.playerChange$.subscribe((p: Player) => {
       const figureItem = this.allFigures.find((item: FigureItem) => {
         return item.mesh.userData.physicsId === p.figureId;
       });
@@ -202,9 +202,14 @@ export class BoardItemControlService {
   }
 
   respawnMyFigure(): void {
-    const physID = this.gameState.getMe().figureId;
-    this.physics.setPosition(physID, 0, 15, 0);
-    this.physics.setVelocity(physID, 0, 0, 0);
+    this.gameState
+      .getMe$()
+      .pipe(take(1))
+      .subscribe((me: Player) => {
+        const physID = me.figureId;
+        this.physics.setPosition(physID, 0, 15, 0);
+        this.physics.setVelocity(physID, 0, 0, 0);
+      });
   }
 
   moveGameFigure(object: Object3D, fieldID: number): void {

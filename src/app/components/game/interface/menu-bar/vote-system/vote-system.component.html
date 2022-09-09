@@ -49,7 +49,8 @@
       <div class="frowny-face"><i class="fas fa-frown"></i></div>
     </div>
     <div class="Ineligible-button-container">
-      <button disabled>{{activeVotesCast}} / 10 Voted</button>
+      <button disabled>{{(gameState.observableState.voteState.voteConfiguration.votingOptions$ | countAllVotes |
+        async)}} / {{eligibleCount$ | async}} Voted</button>
     </div>
   </div>
 
@@ -66,7 +67,7 @@
         <div class="pre-subscript">Select your option:</div>
         {{(gameState.observableState.voteState.voteConfiguration.title$ | async)}}
       </div>
-      <button *ngIf="gameState.getMe().displayName === voteHost" class="abort-button">Cancel</button>
+      <button *ngIf="(gameState.getMe$() | getDisplayName | async ) === voteHost" class="abort-button">Cancel</button>
     </div>
 
 
@@ -107,10 +108,14 @@
     </div>
 
     <div class="host-closure-button">
-      <button (click)="triggerCloseVotingSession()" *ngIf="this.gameState.getMe().displayName === voteHost"
-        class="close-vote-button">Close voting session
+      <button (click)="triggerCloseVotingSession()" *ngIf="(gameState.getMe$() | getDisplayName | async) === voteHost"
+        class="close-vote-button">Close
+        voting session
       </button>
-      <button *ngIf="!(this.gameState.getMe().displayName === voteHost)" disabled>Only {{voteHost}} can close the
+      <button *ngIf="!((gameState.getMe$() | getDisplayName | async | logFromHTML) === voteHost)" disabled>
+        {{(gameState.getMe$() | getDisplayName | async | logFromHTML:"displayName_GameState")}}
+        Only {{voteHost}} can
+        close the
         voting.
       </button>
     </div>

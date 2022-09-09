@@ -5,8 +5,8 @@
 
       <div class="player-list">
         <div *ngFor="let p of (players$ | async); index as i"
-          [ngClass]="{'player-box-custom-border': true, 'active': p.loginName === (activePlayerLogin$ | async)}"
-          [@turnMovement]="p.loginName === (activePlayerLogin$ | async) ? 'yours' : 'others'">
+          [ngClass]="{'player-box-custom-border': true, 'active': p.loginName === (gameState.observableState.currentPlayerLogin$ | async)}"
+          [@turnMovement]="p.loginName === (gameState.observableState.currentPlayerLogin$ | async) ? 'yours' : 'others'">
           <div class="player-box">
             <div class="background-layer">
               <div class="index">{{(i + 1) | asRomanNumeral}}</div>
@@ -26,8 +26,10 @@
               </div>
 
               <div class="player-text">
-                <div *ngIf="p.loginName === (myLogin$ | async)" class="pre-script">Du selbst</div>
-                <div *ngIf="p.loginName !== (myLogin$ | async)" class="pre-script">{{neighbours$ | async | prescript:
+                <div *ngIf="p.loginName === (gameState.getMe$() | getLoginName | async)" class="pre-script">Du selbst
+                </div>
+                <div *ngIf="p.loginName !== (gameState.getMe$() | getLoginName | async)" class="pre-script">
+                  {{neighbours$ | async | prescript:
                   i}}</div>
                 <span class="name">{{p.displayName}}</span>
               </div>
@@ -38,7 +40,7 @@
       </div>
 
       <div title="Zeigt die Zugreihenfolge an." class="turn-direction">
-        <div *ngIf="(isTurnOrderReversed$ | async)" class="arrows">
+        <div *ngIf="(gameState.observableState.reversed$ | async)" class="arrows">
           <div class="clip-arrow up"></div>
           <div class="clip-arrow up"></div>
           <div class="clip-arrow up"></div>
@@ -46,7 +48,7 @@
 
         <div class="spacer"></div>
 
-        <div *ngIf="!(isTurnOrderReversed$ | async)" class="arrows">
+        <div *ngIf="!(gameState.observableState.reversed$ | async)" class="arrows">
           <div class="clip-arrow down"></div>
           <div class="clip-arrow down"></div>
           <div class="clip-arrow down"></div>

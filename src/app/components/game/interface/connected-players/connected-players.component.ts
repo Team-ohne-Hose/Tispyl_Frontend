@@ -2,8 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Player } from '../../../../model/state/Player';
 import { GameStateService } from '../../../../services/game-state.service';
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { filter, map, mergeMap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subscription, combineLatest } from 'rxjs';
+import { map, mergeMap, share } from 'rxjs/operators';
 import { BasicUser, UserService } from '../../../../services/user.service';
 import { APIResponse } from '../../../../model/APIResponse';
 import { forkJoin } from 'rxjs';
@@ -24,9 +24,6 @@ import { Router } from '@angular/router';
 export class ConnectedPlayersComponent implements OnInit, OnDestroy {
   /** Visibility state */
   players$: Observable<Player[]>;
-  myLogin$: Observable<string>;
-  activePlayerLogin$: Observable<string>;
-  isTurnOrderReversed$: Observable<boolean>;
 
   /** Visibility state - flags */
   // TODO: This is to be extended to retrieve roles instead of just the is_dev flag
@@ -34,15 +31,12 @@ export class ConnectedPlayersComponent implements OnInit, OnDestroy {
   playerIsDev$: BehaviorSubject<Map<string, boolean>> = new BehaviorSubject<Map<string, boolean>>(new Map());
   neighbours$: Observable<[number, number]>;
 
-  constructor(private gameState: GameStateService, private userService: UserService, private router: Router) {}
+  constructor(protected gameState: GameStateService, private userService: UserService, private router: Router) {}
 
   ngOnInit(): void {
     /** GameState bindings */
-    this.isTurnOrderReversed$ = this.gameState.isTurnOrderReversed$;
-    this.activePlayerLogin$ = this.gameState.activePlayerLogin$;
-    this.myLogin$ = this.getLoginName();
-    this.players$ = this.getActivePlayers();
-    this.neighbours$ = this.getNeighbours();
+    this.players$ = this.getActivePlayers$().pipe(share());
+    this.neighbours$ = this.getNeighbours$().pipe(share());
     this.bindIsDevSubject();
   }
 
@@ -58,15 +52,7 @@ export class ConnectedPlayersComponent implements OnInit, OnDestroy {
     const _ = this.router.navigateByUrl('/lobby');
   }
 
-  private getLoginName(): Observable<string> {
-    return this.gameState.me$.pipe(filter((p: Player) => p !== undefined)).pipe(
-      map((p: Player) => {
-        return p.loginName;
-      })
-    );
-  }
-
-  private getActivePlayers(): Observable<Player[]> {
+  private getActivePlayers$(): Observable<Player[]> {
     return this.gameState.getPlayerArray$().pipe(
       map((pList: Player[]) => {
         return pList.filter((p: Player) => {
@@ -76,15 +62,14 @@ export class ConnectedPlayersComponent implements OnInit, OnDestroy {
     );
   }
 
-  private getNeighbours(): Observable<[number, number]> {
-    return this.getActivePlayers().pipe(
-      mergeMap((pList: Player[]) => {
-        return this.myLogin$.pipe(
-          map((myLogin: string) => {
-            const myIdx: number = pList.findIndex((p) => p.loginName === myLogin);
-            return this._safeNeighbourIndices(myIdx, pList.length);
-          })
-        );
+  private getNeighbours$(): Observable<[number, number]> {
+    return combineLatest({
+      playerArray: this.getActivePlayers$(),
+      me: this.gameState.getMe$(),
+    }).pipe(
+      map((values: { playerArray: Player[]; me: Player }) => {
+        const myIdx = values.playerArray.findIndex((p: Player) => p.loginName === values.me.loginName);
+        return this._safeNeighbourIndices(myIdx, values.playerArray.length);
       })
     );
   }

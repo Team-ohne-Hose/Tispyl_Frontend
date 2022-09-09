@@ -28,7 +28,7 @@ export class InterfaceComponent {
   constructor(private router: Router, public gameState: GameStateService, private dialog: MatDialog) {
     this.routes = router.config.filter((route) => route.path !== '**' && route.path.length > 0);
     this.isMyTurn$ = this.gameState.isMyTurn$();
-    this.gameState.activePlayerLogin$.subscribe((_) => {
+    this.gameState.observableState.currentPlayerLogin$.subscribe((_) => {
       if (this.turnOverlayRef !== undefined) {
         this.turnOverlayRef.show();
       }

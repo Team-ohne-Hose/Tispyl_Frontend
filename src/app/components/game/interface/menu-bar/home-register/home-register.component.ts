@@ -4,6 +4,7 @@ import { ChatMessage } from './helpers/ChatMessage';
 import { Player } from '../../../../../model/state/Player';
 import { ChatService } from '../../../../../services/chat.service';
 import { Command, CommandService } from '../../../../../services/command.service';
+import { GameStateService } from 'src/app/services/game-state.service';
 
 @Component({
   selector: 'app-home-register',
@@ -23,7 +24,7 @@ export class HomeRegisterComponent {
   private curCmdHistoryOffset = -1; // -1 means no selection has been made
   private readonly maxCmdHistory = 32;
 
-  constructor(private chatService: ChatService, private commandService: CommandService) {
+  constructor(private chatService: ChatService, private commandService: CommandService, protected gameStateService: GameStateService) {
     this.chatMessages = this.chatService.getChatMessages();
     this.chatService.setMessageCallback(this.onChatMessage.bind(this));
 

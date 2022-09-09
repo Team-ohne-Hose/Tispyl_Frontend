@@ -92,11 +92,14 @@ export class StateDisplayComponent implements OnDestroy {
         if (data.type === MessageType.GAME_MESSAGE) {
           switch (data.action) {
             case GameActionType.wakePlayer:
-              this.gameState.me$.pipe(take(1)).subscribe((me: Player) => {
-                if (data.targetLoginName === me.loginName) {
-                  this.playWakeChime();
-                }
-              });
+              this.gameState
+                .getMe$()
+                .pipe(take(1))
+                .subscribe((me: Player) => {
+                  if (data.targetLoginName === me.loginName) {
+                    this.playWakeChime();
+                  }
+                });
               break;
             default:
               break;
@@ -146,7 +149,7 @@ export class StateDisplayComponent implements OnDestroy {
     this.canWake = false;
     this.activeTimer.start();
 
-    this.gameState.activePlayerLogin$.pipe(take(1)).subscribe((name: string) => {
+    this.gameState.observableState.currentPlayerLogin$.pipe(take(1)).subscribe((name: string) => {
       if (name !== undefined && name !== '' && name !== null) {
         this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
           type: MessageType.GAME_MESSAGE,

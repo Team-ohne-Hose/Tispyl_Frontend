@@ -41,11 +41,15 @@ export class VolumeSlider implements OnInit, OnDestroy {
     this.gss.musicVolume.next(newVolume);
   }
 
-  public handleChangeVolume(event: { target: HTMLInputElement }) {
-    this.gss.musicVolume.next(event.target.valueAsNumber);
+  public handleChangeVolume(event: Event) {
+    if (event && event.target && event.target instanceof HTMLInputElement) {
+      this.gss.musicVolume.next(event.target.valueAsNumber);
+    }
   }
 
-  public handleChangeSoundEffectVolume(event: { target: HTMLInputElement }) {
-    this.gss.soundEffectVolume.next(event.target.valueAsNumber);
+  public handleChangeSoundEffectVolume(event: Event) {
+    if (event && event.target && event.target instanceof HTMLInputElement) {
+      this.gss.soundEffectVolume.next(event.target.valueAsNumber);
+    }
   }
 }

@@ -8,7 +8,7 @@ import { VoteEntry } from './helpers/VoteEntry';
 import { VoteConfiguration } from './helpers/VoteConfiguration';
 import { VoteStage } from '../../../../../model/state/VoteState';
 import { Player } from 'src/app/model/state/Player';
-import { Subscription, combineLatest } from 'rxjs';
+import { Observable, Subscription, combineLatest, map, share, take } from 'rxjs';
 
 @Component({
   selector: 'app-vote-system',
@@ -36,6 +36,8 @@ export class VoteSystemComponent implements OnInit, OnDestroy {
   // variables for calculating Voting Metrics
   private votingOptions: ArraySchema<VoteEntry>;
   private ineligibles: ArraySchema<string>;
+
+  protected eligibleCount$: Observable<number>;
 
   // subscriptions
   private setWaitingCreating$$: Subscription;
@@ -82,13 +84,11 @@ export class VoteSystemComponent implements OnInit, OnDestroy {
       ineligibles: this.gameState.observableState.voteState.voteConfiguration.ineligibles$,
       playerList: this.gameState.observableState.playerList$,
     }).subscribe((values: { votingOptions: ArraySchema<VoteEntry>; ineligibles: ArraySchema<string>; playerList: MapSchema<Player> }) => {
-      console.log('combineLatest calcVotes ', values.votingOptions, values.ineligibles, values.playerList);
       const totalPlayerCount = values.playerList.size;
       this.voteEntryPercentileDisplay = [];
       values.votingOptions.forEach((voteEntry: VoteEntry) => {
         const val = this.getPercentile(voteEntry, values.ineligibles, totalPlayerCount);
         this.voteEntryPercentileDisplay.push(val);
-        console.log('calculating percentile for ', voteEntry, val);
       });
     });
 
@@ -106,6 +106,17 @@ export class VoteSystemComponent implements OnInit, OnDestroy {
         }
       }
     });
+
+    this.eligibleCount$ = combineLatest({
+      playerList: this.gameState.observableState.playerList$,
+      ineligibles: this.gameState.observableState.voteState.voteConfiguration.ineligibles$,
+    })
+      .pipe(
+        map((values: { playerList: MapSchema<Player>; ineligibles: ArraySchema<string> }) => {
+          return values.playerList.size - values.ineligibles.length;
+        })
+      )
+      .pipe(share());
   }
 
   ngOnDestroy(): void {
@@ -123,7 +134,6 @@ export class VoteSystemComponent implements OnInit, OnDestroy {
     if (this.currentHistoryResult < 0) {
       this.currentHistoryResult = this.resultHistory.length - 1;
     }
-    console.log(this.currentHistoryResult, this.resultHistory);
   }
 
   nextHistoricResult(): void {
@@ -135,7 +145,6 @@ export class VoteSystemComponent implements OnInit, OnDestroy {
 
   // Triggers
   triggerVoteBegin(config: VoteConfiguration): void {
-    console.error('begin vote', config);
     const messageData = {
       type: MessageType.GAME_MESSAGE,
       action: GameActionType.beginVotingSession,
@@ -145,13 +154,18 @@ export class VoteSystemComponent implements OnInit, OnDestroy {
   }
 
   triggerVoteCreation(): void {
-    if (this.gameState.getMe() !== undefined) {
-      this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
-        type: MessageType.GAME_MESSAGE,
-        action: GameActionType.startVoteCreation,
-        author: this.gameState.getMe().displayName,
+    this.gameState
+      .getMe$()
+      .pipe(take(1))
+      .subscribe((me: Player) => {
+        if (me !== undefined) {
+          this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
+            type: MessageType.GAME_MESSAGE,
+            action: GameActionType.startVoteCreation,
+            author: me.displayName,
+          });
+        }
       });
-    }
   }
 
   triggerCloseVotingSession(): void {
@@ -175,7 +189,6 @@ export class VoteSystemComponent implements OnInit, OnDestroy {
     switch (stage) {
       case VoteStage.IDLE:
         this.hasConcluded = true;
-        console.log('Entering Voting IDLE, ', this.votingOptions?.length > 0, this.votingOptions);
         if (this.votingOptions?.length > 0) {
           this.voteSystemState = VoteSystemState.results;
           this.notifyPlayer.emit(VoteSystemState.results);
@@ -189,13 +202,18 @@ export class VoteSystemComponent implements OnInit, OnDestroy {
         break;
       case VoteStage.VOTE:
         this.hasConcluded = false;
-        if (this.ineligibles && this.ineligibles.includes(this.gameState.getMe().displayName)) {
-          this.voteSystemState = VoteSystemState.notEligible;
-        } else {
-          this.voteSystemState = VoteSystemState.voting;
-          this.notifyPlayer.emit(VoteSystemState.voting);
-        }
-        // TODO: maybe need to force Vote calculation here
+        this.gameState
+          .getMe$()
+          .pipe(take(1))
+          .subscribe((me: Player) => {
+            if (this.ineligibles && this.ineligibles.includes(me.displayName)) {
+              this.voteSystemState = VoteSystemState.notEligible;
+            } else {
+              this.voteSystemState = VoteSystemState.voting;
+              this.notifyPlayer.emit(VoteSystemState.voting);
+            }
+            // TODO: maybe need to force Vote calculation here
+          });
         break;
       default:
         console.warn('undefined VoteStage! Something likely went wrong', stage);

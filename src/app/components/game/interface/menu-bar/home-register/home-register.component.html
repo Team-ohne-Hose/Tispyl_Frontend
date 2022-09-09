@@ -5,7 +5,8 @@
 
   <div class="chat-box">
     <div #textSection class="text-section">
-      <div *ngFor="let msg of chatMessages" [ngClass]="{ 'move-right': msg.sender === myPlayer?.displayName }">
+      <div *ngFor="let msg of chatMessages"
+        [ngClass]="{ 'move-right': msg.sender === (gameStateService.getMe$() | getDisplayName | async)}">
         <div class="chat-message">
           <div class="head-row">
             <div class="sender"><i class="fas fa-user"></i>{{ msg.sender }}</div>

@@ -55,10 +55,10 @@ export class PhysicsCommands {
    * @param physId physicsId that is searched for recursively
    */
   static getObjectByPhysId(toSearch: Object3D, physId: number): Object3D {
-    if (toSearch.userData.physicsId === physId) {
+    if (toSearch?.userData && toSearch.userData.physicsId === physId) {
       return toSearch;
     } else {
-      return toSearch.children.find((obj: Object3D) => {
+      return toSearch?.children?.find((obj: Object3D) => {
         const res = PhysicsCommands.getObjectByPhysId(obj, physId);
         return res !== undefined;
       });

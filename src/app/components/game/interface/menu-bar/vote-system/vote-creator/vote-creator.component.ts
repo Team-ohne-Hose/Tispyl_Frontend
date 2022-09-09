@@ -5,6 +5,7 @@ import { VoteEntry } from '../helpers/VoteEntry';
 import { VoteConfiguration } from '../helpers/VoteConfiguration';
 import { GameActionType, MessageType } from '../../../../../../model/WsData';
 import { ArraySchema, MapSchema } from '@colyseus/schema';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-vote-creator',
@@ -40,9 +41,14 @@ export class VoteCreatorComponent {
 
   toggleEligibility(player: Player): void {
     // TODO: build solution to close vote if the host is ineligible
-    if (!(this.gameState.getMe().displayName === player.displayName)) {
-      this.eligibilities.set(player.displayName, !this.isEligible(player));
-    }
+    this.gameState
+      .getMe$()
+      .pipe(take(1))
+      .subscribe((me: Player) => {
+        if (!(me.displayName === player.displayName)) {
+          this.eligibilities.set(player.displayName, !this.isEligible(player));
+        }
+      });
   }
 
   addVoteEntryByKey(inputElement: HTMLInputElement, event: KeyboardEvent): void {

@@ -213,19 +213,14 @@ export class CommandService {
   }
 
   private showItems(rawCMD: string, parameters: string[]): void {
-    const myPlayer: Player = this.gameState.getMe();
     const myItems: Item[] = this.items.myItems$.getValue();
-    if (myPlayer !== undefined) {
-      if (myItems.length > 0) {
-        const itemStrings: string[] = myItems.map((it: Item, idx: number) => {
-          return `${idx}. ${it.name} - ${it.description}`;
-        });
-        this.print(itemStrings.join('\r\n\r\n'), '/showItems');
-      } else {
-        this.print('You have no Item', '/showItems');
-      }
+    if (myItems.length > 0) {
+      const itemStrings: string[] = myItems.map((it: Item, idx: number) => {
+        return `${idx}. ${it.name} - ${it.description}`;
+      });
+      this.print(itemStrings.join('\r\n\r\n'), '/showItems');
     } else {
-      this.print('Your "Player" object was undefined. This should never happen.', '/showItems');
+      this.print('You have no Item', '/showItems');
     }
   }
 
@@ -311,12 +306,17 @@ export class CommandService {
   private askGame(rawCMD: string, parameters: string[]): void {
     const question = parameters.slice(1).join(' ');
 
-    this.gameState.sendMessage(MessageType.CHAT_COMMAND, {
-      type: MessageType.CHAT_COMMAND,
-      subType: ChatCommandType.commandAsk,
-      question: question,
-      authorDisplayName: this.gameState.getMe().displayName,
-    });
+    this.gameState
+      .getMe$()
+      .pipe(take(1))
+      .subscribe((me: Player) => {
+        this.gameState.sendMessage(MessageType.CHAT_COMMAND, {
+          type: MessageType.CHAT_COMMAND,
+          subType: ChatCommandType.commandAsk,
+          question: question,
+          authorDisplayName: me.displayName,
+        });
+      });
   }
 
   private randomNum(rawCMD: string, parameters: string[]): void {
