@@ -142,7 +142,9 @@ export class GameStateService {
   }
 
   getCurrentPlayerDisplayName$(): Observable<string> {
-    return this.getCurrentPlayer$().pipe(map((player: Player) => player.displayName));
+    return this.getCurrentPlayer$()
+      .pipe(filter((player: Player) => player !== undefined))
+      .pipe(map((player: Player) => player.displayName));
   }
 
   getByLoginName$(loginName: string): Observable<Player | undefined> {

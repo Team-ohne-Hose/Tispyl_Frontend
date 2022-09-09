@@ -85,7 +85,7 @@ export class ColyseusObservableState {
       objectsMoved$: new ReplaySubject<PhysicsObjectState>(1),
     },
     // tracks the whole MapSchema, and the MapSchema gets transmitted
-    playerList$: new ReplaySubject<MapSchema<Player>>(50),
+    playerList$: new ReplaySubject<MapSchema<Player>>(1),
 
     /** tracks all players in PlayerList, but transmits Players.
      *    tracks more than 1 change

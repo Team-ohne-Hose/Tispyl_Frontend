@@ -112,8 +112,7 @@
         class="close-vote-button">Close
         voting session
       </button>
-      <button *ngIf="!((gameState.getMe$() | getDisplayName | async | logFromHTML) === voteHost)" disabled>
-        {{(gameState.getMe$() | getDisplayName | async | logFromHTML:"displayName_GameState")}}
+      <button *ngIf="!((gameState.getMe$() | getDisplayName | async) === voteHost)" disabled>
         Only {{voteHost}} can
         close the
         voting.
