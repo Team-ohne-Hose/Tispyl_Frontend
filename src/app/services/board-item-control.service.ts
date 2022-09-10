@@ -225,7 +225,7 @@ export class BoardItemControlService implements OnInit, OnDestroy {
     let playerId: string;
     const userData = object.userData;
     this.gameState
-      .findInPlayerList$((p: Player) => {
+      .findInPlayerListOnce$((p: Player) => {
         return p.figureId === userData.physicsId;
       })
       .subscribe((player: Player | undefined) => {

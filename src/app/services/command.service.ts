@@ -201,9 +201,9 @@ export class CommandService {
       }
     };
 
-    this.gameState.getByLoginName$(playerTag).subscribe((targetPlayer: Player | undefined) => {
+    this.gameState.getByLoginNameOnce$(playerTag).subscribe((targetPlayer: Player | undefined) => {
       if (targetPlayer === undefined) {
-        this.gameState.getByDisplayName$(playerTag).subscribe((targetPlayer: Player | undefined) => {
+        this.gameState.getByDisplayNameOnce$(playerTag).subscribe((targetPlayer: Player | undefined) => {
           sendOutMessage(targetPlayer);
         });
       } else {
@@ -245,10 +245,10 @@ export class CommandService {
     const playerTag = parameters.slice(2).join(' ');
 
     // first try login names
-    this.gameState.getByLoginName$(playerTag).subscribe((targetPlayer: Player | undefined) => {
+    this.gameState.getByLoginNameOnce$(playerTag).subscribe((targetPlayer: Player | undefined) => {
       if (targetPlayer === undefined) {
         // afterwards try display names
-        this.gameState.getByDisplayName$(playerTag).subscribe((targetPlayer: Player | undefined) => {
+        this.gameState.getByDisplayNameOnce$(playerTag).subscribe((targetPlayer: Player | undefined) => {
           // send out
           if (targetPlayer !== undefined) {
             sendUseMessage(targetPlayer.loginName);

@@ -86,7 +86,7 @@ export class MouseInteraction {
             const targetFigureId = me.figureId;
             if (targetFigureId !== obj.userData.physicsId) {
               this.bic.gameState
-                .findInPlayerList$((player: Player) => {
+                .findInPlayerListOnce$((player: Player) => {
                   return player.figureId === obj.userData.physicsId;
                 })
                 .subscribe((targetPlayer: Player) => {
@@ -196,7 +196,7 @@ export class MouseInteraction {
               } else {
                 if (this.bic.itemService.isTargeting()) {
                   this.bic.gameState
-                    .findInPlayerList$((player: Player) => {
+                    .findInPlayerListOnce$((player: Player) => {
                       return player.figureId === obj.userData.physicsId;
                     })
                     .subscribe((targetPlayer: Player) => {

@@ -17,6 +17,10 @@ export class AudioControl {
     });
   }
 
+  onDestroy(): void {
+    this.musicVolume$$.unsubscribe();
+  }
+
   initAudio(cam: Camera): void {
     cam.add(this.listener);
   }

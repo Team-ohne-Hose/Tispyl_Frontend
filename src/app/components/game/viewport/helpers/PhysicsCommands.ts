@@ -237,7 +237,7 @@ export class PhysicsCommands {
 
           // Load other playermodels
           this.bic.gameState
-            .findInPlayerList$((p: Player) => {
+            .findInPlayerListOnce$((p: Player) => {
               return p.figureId === physicsId;
             })
             .subscribe((player: Player | undefined) => {

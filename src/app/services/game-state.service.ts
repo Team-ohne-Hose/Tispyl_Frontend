@@ -122,7 +122,7 @@ export class GameStateService implements OnDestroy {
     return this.colyseus.myLoginName;
   }
 
-  findInPlayerList$(f: (p: Player) => boolean): Observable<Player | undefined> {
+  findInPlayerListOnce$(f: (p: Player) => boolean): Observable<Player | undefined> {
     return this.observableState.playerList$
       .pipe(take(1))
       .pipe(map((playerList: MapSchema<Player>) => Array.from(playerList.values()).find(f)));
@@ -157,22 +157,22 @@ export class GameStateService implements OnDestroy {
       .pipe(map((player: Player) => player.displayName));
   }
 
-  getByLoginName$(loginName: string): Observable<Player | undefined> {
+  getByLoginNameOnce$(loginName: string): Observable<Player | undefined> {
     return this.observableState.playerList$.pipe(take(1)).pipe(map((playerList: MapSchema<Player>) => playerList.get(loginName)));
   }
 
-  getByDisplayName$(displayName: string): Observable<Player | undefined> {
-    return this.findInPlayerList$((p: Player) => {
+  getByDisplayNameOnce$(displayName: string): Observable<Player | undefined> {
+    return this.findInPlayerListOnce$((p: Player) => {
       return p.displayName === displayName;
     });
   }
 
-  getDisplayName$(playerlogin: string): Observable<string | undefined> {
-    return this.getByLoginName$(playerlogin).pipe(map((player: Player) => player?.displayName));
+  getDisplayNameOnce$(playerlogin: string): Observable<string | undefined> {
+    return this.getByLoginNameOnce$(playerlogin).pipe(map((player: Player) => player?.displayName));
   }
 
-  getLoginName$(playerDisplayName: string): Observable<string | undefined> {
-    return this.getByDisplayName$(playerDisplayName).pipe(map((player: Player) => player?.loginName));
+  getLoginNameOnce$(playerDisplayName: string): Observable<string | undefined> {
+    return this.getByDisplayNameOnce$(playerDisplayName).pipe(map((player: Player) => player?.loginName));
   }
 
   getPlayerArray$(): Observable<Player[]> {
