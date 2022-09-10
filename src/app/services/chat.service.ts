@@ -3,6 +3,7 @@ import { MessageType, WsData } from '../model/WsData';
 import { GameStateService } from './game-state.service';
 import { ChatMessage } from '../components/game/interface/menu-bar/home-register/helpers/ChatMessage';
 import { ColyseusClientService } from './colyseus-client.service';
+import { Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -12,8 +13,11 @@ export class ChatService implements OnDestroy {
   private chatMessages: ChatMessage[] = [];
   private callbackIds: number[] = [];
 
+  // subscriptions
+  private activeRoom$$: Subscription;
+
   constructor(private gameState: GameStateService, private colyseus: ColyseusClientService) {
-    this.colyseus.activeRoom$.subscribe((r) => {
+    this.activeRoom$$ = this.colyseus.activeRoom$.subscribe((r) => {
       if (r === undefined) {
         console.info('Resetting chat messages');
         this.chatMessages = [];
@@ -67,6 +71,10 @@ export class ChatService implements OnDestroy {
     );
   }
 
+  ngOnInit(): void {
+    throw new Error('Method not implemented.');
+  }
+
   sendMessage(currentMessage: string): void {
     if (this.gameState !== undefined) {
       this.gameState.sendMessage(MessageType.CHAT_MESSAGE, { type: MessageType.CHAT_MESSAGE, message: currentMessage });
@@ -100,5 +108,6 @@ export class ChatService implements OnDestroy {
     this.callbackIds.forEach((id) => {
       this.gameState.clearMessageCallback(id);
     });
+    this.activeRoom$$.unsubscribe();
   }
 }

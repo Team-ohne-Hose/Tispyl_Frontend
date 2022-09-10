@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { skipWhile, take } from 'rxjs/operators';
 import { BasicUser, UserService } from '../../../../services/user.service';
 
@@ -7,13 +8,16 @@ import { BasicUser, UserService } from '../../../../services/user.service';
   templateUrl: './introduction.component.html',
   styleUrls: ['./introduction.component.css'],
 })
-export class IntroductionComponent implements OnInit {
+export class IntroductionComponent implements OnInit, OnDestroy {
   visible = false;
+
+  // subscriptions
+  private activeUser$$: Subscription;
 
   constructor(private userService: UserService) {}
 
   ngOnInit(): void {
-    this.userService.activeUser
+    this.activeUser$$ = this.userService.activeUser
       .pipe(skipWhile((user: BasicUser) => user === undefined))
       .pipe(take(1))
       .subscribe(
@@ -23,6 +27,10 @@ export class IntroductionComponent implements OnInit {
           }
         }).bind(this)
       );
+  }
+
+  ngOnDestroy(): void {
+    this.activeUser$$.unsubscribe();
   }
 
   hide() {

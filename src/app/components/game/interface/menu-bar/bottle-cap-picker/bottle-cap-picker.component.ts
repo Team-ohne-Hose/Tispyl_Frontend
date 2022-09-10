@@ -16,6 +16,7 @@ export class BottleCapPickerComponent implements OnInit, OnDestroy {
   private currentCapId: PlayerModel;
   private player: Player;
 
+  // subscriptions
   private player$$: Subscription;
 
   constructor(private objectLoaderService: ObjectLoaderService, private gameStateService: GameStateService) {

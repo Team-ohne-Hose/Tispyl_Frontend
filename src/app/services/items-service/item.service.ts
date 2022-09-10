@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { ChatService } from '../chat.service';
 import { GameStateService } from '../game-state.service';
 import { ItemMessageType, MessageType, UseItem, WsData } from '../../model/WsData';
 import { Player } from '../../model/state/Player';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { Item, itemTable } from './itemLUT';
 
 export enum itemTargetErrorType {
@@ -20,13 +20,16 @@ export interface ItemTargetError {
 @Injectable({
   providedIn: 'root',
 })
-export class ItemService {
+export class ItemService implements OnDestroy {
   private latestTarget: Player;
   target$: Subject<Player> = undefined;
   myItems$: BehaviorSubject<Item[]> = new BehaviorSubject<Item[]>([]);
 
+  // subscriptions
+  private me$$: Subscription;
+
   constructor(private chatService: ChatService, private gameState: GameStateService) {
-    this.gameState.getMe$().subscribe((player: Player) => {
+    this.me$$ = this.gameState.getMe$().subscribe((player: Player) => {
       const itemListArray: Item[] = [];
       player.itemList.forEach((count, itemId) => {
         if (count > 0) {
@@ -51,9 +54,16 @@ export class ItemService {
     });
   }
 
+  ngOnDestroy(): void {
+    this.me$$.unsubscribe();
+  }
+
   /** Starts the targeting process resulting in an observable that is completed if the player aborts
    * the operation or successfully selects a Player. */
   targetPlayer(): Subject<Player> {
+    if (this.target$ && !this.target$.closed) {
+      this.target$.complete();
+    }
     this.target$ = new Subject<Player>();
     return this.target$;
   }

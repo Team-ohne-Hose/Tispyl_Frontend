@@ -43,11 +43,7 @@ export class PhysicsCommands {
   addInteractable: (obj: Object3D) => void;
   addPlayer: (mesh: Object3D, name: string) => void;
 
-  constructor(private bic: BoardItemControlService) {
-    this.bic.gameState.observableState.physicsState.objectsMoved$.subscribe((item: PhysicsObjectState) => {
-      this._updateOrGenerateItem(item);
-    });
-  }
+  constructor(private bic: BoardItemControlService) {}
 
   /**
    * Searches the Object3D tree recursively to try to find the Object3D corresponding

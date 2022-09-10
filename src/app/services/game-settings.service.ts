@@ -20,29 +20,29 @@ export class GameSettingsService implements OnDestroy {
   persistentNamePlates: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   // Subscriptions
-  private subPersistNamePlates: Subscription;
-  private subVolume: Subscription;
-  private subSoundEffects: Subscription;
+  private persistNamePlates$$: Subscription;
+  private volume$$: Subscription;
+  private soundEffects$$: Subscription;
 
   constructor() {
     this.persistentNamePlates.next(this.getValueFromLocalStroage(StorageKey.PersistNamePlates) ?? false);
     this.soundEffectVolume.next(this.getValueFromLocalStroage(StorageKey.VolumeSoundEffects) ?? 0.5);
 
-    this.subPersistNamePlates = this.persistentNamePlates.subscribe((isPersistent) => {
+    this.persistNamePlates$$ = this.persistentNamePlates.subscribe((isPersistent) => {
       this.setValueInLocalStorage(StorageKey.PersistNamePlates, isPersistent);
     });
-    this.subVolume = this.musicVolume.subscribe((volume) => {
+    this.volume$$ = this.musicVolume.subscribe((volume) => {
       this.setValueInLocalStorage(StorageKey.VolumeMusic, volume);
     });
-    this.subSoundEffects = this.soundEffectVolume.subscribe((volume) => {
+    this.soundEffects$$ = this.soundEffectVolume.subscribe((volume) => {
       this.setValueInLocalStorage(StorageKey.VolumeSoundEffects, volume);
     });
   }
 
   ngOnDestroy(): void {
-    this.subPersistNamePlates.unsubscribe();
-    this.subVolume.unsubscribe();
-    this.subSoundEffects.unsubscribe();
+    this.persistNamePlates$$.unsubscribe();
+    this.volume$$.unsubscribe();
+    this.soundEffects$$.unsubscribe();
   }
 
   getValueFromLocalStroage(key: StorageKey) {

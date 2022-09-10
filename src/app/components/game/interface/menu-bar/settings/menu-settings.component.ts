@@ -9,18 +9,20 @@ import { GameSettingsService, StorageKey } from 'src/app/services/game-settings.
 })
 export class MenuSettingsComponent implements OnInit, OnDestroy {
   public persistentNamePlates = this.gss.getValueFromLocalStroage(StorageKey.PersistNamePlates);
-  private subscription: Subscription;
+
+  // subscriptions
+  private persistentNamePlates$$: Subscription;
 
   constructor(public gss: GameSettingsService) {}
 
   ngOnInit(): void {
-    this.subscription = this.gss.persistentNamePlates.subscribe((persistentNamePlates) => {
+    this.persistentNamePlates$$ = this.gss.persistentNamePlates.subscribe((persistentNamePlates) => {
       this.persistentNamePlates = persistentNamePlates;
     });
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.persistentNamePlates$$.unsubscribe();
   }
 
   handleChange(event: Event) {

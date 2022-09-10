@@ -27,9 +27,11 @@ export class ConnectedPlayersComponent implements OnInit, OnDestroy {
 
   /** Visibility state - flags */
   // TODO: This is to be extended to retrieve roles instead of just the is_dev flag
-  playerIsDev$$: Subscription;
-  playerIsDev$: BehaviorSubject<Map<string, boolean>> = new BehaviorSubject<Map<string, boolean>>(new Map());
+  playerIsDev$: BehaviorSubject<Map<string, boolean>>;
   neighbours$: Observable<[number, number]>;
+
+  // subscriptions
+  playerIsDev$$: Subscription;
 
   constructor(protected gameState: GameStateService, private userService: UserService, private router: Router) {}
 
@@ -38,6 +40,7 @@ export class ConnectedPlayersComponent implements OnInit, OnDestroy {
     this.players$ = this.getActivePlayers$().pipe(share());
     this.neighbours$ = this.getNeighbours$().pipe(share());
     this.bindIsDevSubject();
+    this.playerIsDev$ = new BehaviorSubject<Map<string, boolean>>(new Map());
   }
 
   ngOnDestroy(): void {

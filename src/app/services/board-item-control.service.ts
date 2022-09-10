@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy, OnInit } from '@angular/core';
 import { PhysicsCommands } from '../components/game/viewport/helpers/PhysicsCommands';
 import { GameStateService } from './game-state.service';
 import { ObjectLoaderService } from './object-loader/object-loader.service';
@@ -32,7 +32,7 @@ export interface FigureItem {
 @Injectable({
   providedIn: 'root',
 })
-export class BoardItemControlService {
+export class BoardItemControlService implements OnInit, OnDestroy {
   rendererDomReference: HTMLCanvasElement;
   sceneTree: Scene;
   camera: PerspectiveCamera;
@@ -44,7 +44,8 @@ export class BoardItemControlService {
   markerGeo = new ConeBufferGeometry(1, 10, 15, 1, false, 0, 2 * Math.PI);
 
   // subscriptions
-  persistentNamePlates$$: Subscription;
+  private persistentNamePlates$$: Subscription;
+  private playerChange$$: Subscription;
 
   constructor(
     public gameState: GameStateService,
@@ -68,14 +69,16 @@ export class BoardItemControlService {
         figure.mesh.add(figure.labelSprite);
       }
     }).bind(this);
+  }
 
+  ngOnInit(): void {
     // Subscribe to Overriding setting to display Name Plates
     this.persistentNamePlates$$ = this.gses.persistentNamePlates.subscribe((persistentNamePlates) => {
       this.changeNameTagVisibilityInScene(persistentNamePlates);
     });
 
     /** This should be cleaned and clarified */
-    this.gameState.observableState.playerChange$.subscribe((p: Player) => {
+    this.playerChange$$ = this.gameState.observableState.playerChange$.subscribe((p: Player) => {
       const figureItem = this.allFigures.find((item: FigureItem) => {
         return item.mesh.userData.physicsId === p.figureId;
       });
@@ -102,6 +105,11 @@ export class BoardItemControlService {
         }
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.persistentNamePlates$$.unsubscribe();
+    this.playerChange$$.unsubscribe();
   }
 
   public bind(viewport: ViewportComponent): void {

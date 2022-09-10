@@ -15,16 +15,17 @@ export class VolumeSlider implements OnInit, OnDestroy {
   volumeMusic: number;
   volumeSoundEffects: number;
 
-  private subscriptionVolume: Subscription;
-  private subscriptionSoundEffects: Subscription;
+  // subscriptions
+  private musicVolume$$: Subscription;
+  private soundEffectVolume$$: Subscription;
 
   constructor(public gss: GameSettingsService) {}
 
   ngOnInit(): void {
-    this.subscriptionVolume = this.gss.musicVolume.subscribe((volume: number) => {
+    this.musicVolume$$ = this.gss.musicVolume.subscribe((volume: number) => {
       this.volumeMusic = volume;
     });
-    this.subscriptionSoundEffects = this.gss.soundEffectVolume.subscribe((volume: number) => {
+    this.soundEffectVolume$$ = this.gss.soundEffectVolume.subscribe((volume: number) => {
       this.volumeSoundEffects = volume;
     });
 
@@ -33,8 +34,8 @@ export class VolumeSlider implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscriptionVolume.unsubscribe();
-    this.subscriptionSoundEffects.unsubscribe();
+    this.musicVolume$$.unsubscribe();
+    this.soundEffectVolume$$.unsubscribe();
   }
 
   public setVolume(newVolume: number) {

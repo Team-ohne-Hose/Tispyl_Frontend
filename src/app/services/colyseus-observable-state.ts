@@ -1,7 +1,7 @@
 /* eslint-disable no-empty-function */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { Room } from 'colyseus.js';
-import { Observable, ReplaySubject, debounceTime, map, mergeWith, share } from 'rxjs';
+import { Observable, ReplaySubject, Subscription, debounceTime, map, mergeWith, share } from 'rxjs';
 import { GameState } from '../model/state/GameState';
 import { VoteEntry } from '../components/game/interface/menu-bar/vote-system/helpers/VoteEntry';
 import { Tile } from '../model/state/BoardLayoutState';
@@ -11,6 +11,7 @@ import { Player } from '../model/state/Player';
 import { Rule } from '../model/state/Rule';
 import { ArraySchema, MapSchema, Schema } from '@colyseus/schema';
 import { VoteState } from '../model/state/VoteState';
+import { OnDestroy } from '@angular/core';
 
 // This line is fine for using Function, since Function is used to exclude types
 export declare type NonFunctionPropNames<T> = {
@@ -55,7 +56,7 @@ export type GameStateAsObservables = {
 
 // Tipp: Hol dir erstmal nen Kaffee, bevor du hier anfängst zu lesen
 
-export class ColyseusObservableState {
+export class ColyseusObservableState implements OnDestroy {
   /** Subjects for State */
   public gameState: GameStateAsObservables = {
     round$: new ReplaySubject<number>(1),
@@ -104,8 +105,15 @@ export class ColyseusObservableState {
     voteState$: new Observable<VoteState>(),
   };
 
+  // subscriptions
+  private activeRoom$$: Subscription;
+
   constructor(activeRoom$: ReplaySubject<Room<GameState>>) {
     this.setupObservables(activeRoom$);
+  }
+
+  ngOnDestroy(): void {
+    this.activeRoom$$.unsubscribe();
   }
 
   // returns a function to push a given value into a subject
@@ -166,7 +174,7 @@ export class ColyseusObservableState {
 
   // Set up all callbacks for correct acting of the observables for the state
   private setupObservables(activeRoom$: ReplaySubject<Room<GameState>>) {
-    activeRoom$.subscribe((room: Room<GameState>) => {
+    this.activeRoom$$ = activeRoom$.subscribe((room: Room<GameState>) => {
       // easy accessible direct primitives
       room.state.listen('round', this.pushToSubject<number>(this.gameState.round$));
       if (room.state.round) this.gameState.round$.next(room.state.round);

@@ -1,11 +1,11 @@
-import { Component, Input, OnDestroy } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { GameStateService } from '../../../../services/game-state.service';
 import { GameActionType, MessageType, WsData } from '../../../../model/WsData';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Timer } from '../../../framework/Timer';
 import { SoundService } from '../../../../services/sound.service';
-import { Observable } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { Observable, Subscription } from 'rxjs';
+import { share, take } from 'rxjs/operators';
 import { Player } from '../../../../model/state/Player';
 
 @Component({
@@ -28,7 +28,7 @@ import { Player } from '../../../../model/state/Player';
     ]),
   ],
 })
-export class StateDisplayComponent implements OnDestroy {
+export class StateDisplayComponent implements OnInit, OnDestroy {
   /** External values */
   @Input() round: number;
   @Input() currentPlayerDisplayName: string;
@@ -60,6 +60,9 @@ export class StateDisplayComponent implements OnDestroy {
   /** Internals */
   private readonly callbackId: number = undefined;
 
+  // subscriptions
+  private isMyTurn$$: Subscription;
+
   constructor(private gameState: GameStateService, private sounds: SoundService) {
     this.turnDelayTimer = new Timer(this.CD_PLAYER_TURN_CHANGED, this.TIMER_UPDATE_FREQ, {
       onProgress: () => {
@@ -83,8 +86,7 @@ export class StateDisplayComponent implements OnDestroy {
         this.canWake = true;
       },
     });
-    this.isMyTurn$ = this.gameState.isMyTurn$();
-    this.isMyTurn$.subscribe(this.checkTurn.bind(this));
+    this.isMyTurn$ = this.gameState.isMyTurn$().pipe(share());
 
     this.callbackId = gameState.registerMessageCallback(MessageType.GAME_MESSAGE, {
       filterSubType: GameActionType.wakePlayer,
@@ -107,6 +109,10 @@ export class StateDisplayComponent implements OnDestroy {
         }
       },
     });
+  }
+
+  ngOnInit(): void {
+    this.isMyTurn$$ = this.isMyTurn$.subscribe(this.checkTurn.bind(this));
   }
 
   checkTurn(isMyTurn: boolean): void {
@@ -162,5 +168,6 @@ export class StateDisplayComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.gameState.clearMessageCallback(this.callbackId);
+    this.isMyTurn$$.unsubscribe();
   }
 }

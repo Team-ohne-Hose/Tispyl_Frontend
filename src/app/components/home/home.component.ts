@@ -68,14 +68,14 @@ export class HomeComponent implements OnInit, AfterContentInit, OnDestroy {
 
     /** Check for active JWT Token */
     if (this.AuthService.isLoggedIn()) {
-      this.userService.getUserByLoginName(localStorage.getItem('username')).subscribe(
-        (response: APIResponse<BasicUser>) => {
+      this.userService.getUserByLoginName(localStorage.getItem('username')).subscribe({
+        next: (response: APIResponse<BasicUser>) => {
           this.userService.setActiveUser(response.payload as BasicUser);
         },
-        (err) => {
+        error: (err) => {
           console.error('Found JWT token indicating a logged in user, but could not retrieve BasicUser object from server', err);
-        }
-      );
+        },
+      });
     }
 
     /** Triggers as soon as a user logs in or out */

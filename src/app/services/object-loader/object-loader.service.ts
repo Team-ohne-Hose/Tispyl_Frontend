@@ -418,7 +418,7 @@ export class ObjectLoaderService {
       mesh.userData['textureSubscription'] = this.texList.get(model).subject.subscribe({
         next: (newTexture: { tex: Texture; spec: Texture }) => {
           mesh.material = (mesh.material as Material).clone();
-          mesh.material['map'] = tex;
+          mesh.material['map'] = newTexture.tex;
         },
       });
     }

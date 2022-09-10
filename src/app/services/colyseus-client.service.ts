@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { Client, Room, RoomAvailable } from 'colyseus.js';
-import { BehaviorSubject, ReplaySubject } from 'rxjs';
+import { BehaviorSubject, ReplaySubject, Subscription } from 'rxjs';
 import { RoomMetaInfo } from '../model/RoomMetaInfo';
 import { GameState } from '../model/state/GameState';
 import { MessageType, WsData } from '../model/WsData';
@@ -30,7 +30,7 @@ export interface CreateRoomOpts {
 @Injectable({
   providedIn: 'root',
 })
-export class ColyseusClientService {
+export class ColyseusClientService implements OnDestroy {
   /** Constants and development parameters */
   private readonly VERBOSE_CALLBACK_LOGGING = true;
   private readonly BACKEND_WS_TARGET = environment.wsEndpoint;
@@ -48,6 +48,9 @@ export class ColyseusClientService {
   activeRoom$: ReplaySubject<Room<GameState>>;
 
   private observableState: ColyseusObservableState;
+
+  // subscriptions
+  private activeRoom$$: Subscription;
 
   constructor(private router: Router) {
     this.availableRooms$ = new BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>([]);
@@ -67,7 +70,7 @@ export class ColyseusClientService {
     }
 
     /** Manage entering and leaving a room */
-    this.activeRoom$.subscribe((r) => {
+    this.activeRoom$$ = this.activeRoom$.subscribe((r) => {
       console.info('[ColyseusService] Active Room changed to:', r);
       if (r !== undefined) {
         this._attachKnownMessageCallbacks(r);
@@ -78,6 +81,10 @@ export class ColyseusClientService {
         }
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.activeRoom$$.unsubscribe();
   }
 
   getStateAsObservables(): GameStateAsObservables {

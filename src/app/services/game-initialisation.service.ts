@@ -59,7 +59,7 @@ export class GameInitialisationService {
         tap((_: boolean) => console.timeEnd('Colyseus ready after')),
         mergeMap((_: boolean) => forkJoin(operations))
       )
-      .subscribe((_) => {
+      .subscribe(() => {
         this._finalizeLoad(game);
         observer.complete();
       });

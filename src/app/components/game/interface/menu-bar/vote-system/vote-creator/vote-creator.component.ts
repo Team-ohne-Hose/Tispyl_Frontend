@@ -1,18 +1,18 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { GameStateService } from '../../../../../../services/game-state.service';
 import { Player } from '../../../../../../model/state/Player';
 import { VoteEntry } from '../helpers/VoteEntry';
 import { VoteConfiguration } from '../helpers/VoteConfiguration';
 import { GameActionType, MessageType } from '../../../../../../model/WsData';
 import { ArraySchema, MapSchema } from '@colyseus/schema';
-import { take } from 'rxjs';
+import { Subscription, take } from 'rxjs';
 
 @Component({
   selector: 'app-vote-creator',
   templateUrl: './vote-creator.component.html',
   styleUrls: ['./vote-creator.component.css'],
 })
-export class VoteCreatorComponent {
+export class VoteCreatorComponent implements OnInit, OnDestroy {
   @Output()
   voteConfiguration: EventEmitter<VoteConfiguration> = new EventEmitter<VoteConfiguration>();
 
@@ -21,13 +21,22 @@ export class VoteCreatorComponent {
   private eligibilities: Map<string, boolean> = new Map<string, boolean>();
   votingOptions = new ArraySchema<VoteEntry>();
 
-  constructor(private gameState: GameStateService) {
-    this.gameState.observableState.playerList$.subscribe((playerList: MapSchema<Player>) => {
+  // subscriptions
+  private playerList$$: Subscription;
+
+  constructor(private gameState: GameStateService) {}
+
+  ngOnInit(): void {
+    this.playerList$$ = this.gameState.observableState.playerList$.subscribe((playerList: MapSchema<Player>) => {
       this.playerList = [];
       playerList.forEach((player: Player) => {
         this.playerList.push(player);
       });
     });
+  }
+
+  ngOnDestroy(): void {
+    this.playerList$$.unsubscribe();
   }
 
   isEligible(player: Player): boolean {

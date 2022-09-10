@@ -41,6 +41,8 @@ export class LobbyComponent implements OnInit, OnDestroy {
 
   // subscriptions
   private currentUser$$: Subscription;
+  private activeRoom$$: Subscription;
+  private availableRooms$$: Subscription;
 
   constructor(
     private dialog: MatDialog,
@@ -55,11 +57,11 @@ export class LobbyComponent implements OnInit, OnDestroy {
       this.currentUser = user;
     });
 
-    this.colyseus.activeRoom$.subscribe((room) => {
+    this.activeRoom$$ = this.colyseus.activeRoom$.subscribe((room) => {
       this.activeLobby = room;
     });
 
-    this.colyseus.availableRooms$.subscribe((availableRooms) => {
+    this.availableRooms$$ = this.colyseus.availableRooms$.subscribe((availableRooms) => {
       this.availableRooms = availableRooms;
     });
     this.refetchGameRooms();
@@ -67,6 +69,8 @@ export class LobbyComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.currentUser$$.unsubscribe();
+    this.activeRoom$$.unsubscribe();
+    this.availableRooms$$.unsubscribe();
   }
 
   refetchGameRooms(): void {

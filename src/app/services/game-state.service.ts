@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { ColyseusClientService, MessageCallback } from './colyseus-client.service';
 import { Room } from 'colyseus.js';
 import { MapSchema } from '@colyseus/schema';
@@ -6,7 +6,7 @@ import { GameState } from '../model/state/GameState';
 import { Player } from '../model/state/Player';
 import { Tile } from '../model/state/BoardLayoutState';
 import { MessageType } from '../model/WsData';
-import { AsyncSubject, Observable, ReplaySubject, combineLatest } from 'rxjs';
+import { AsyncSubject, Observable, ReplaySubject, Subscription, combineLatest } from 'rxjs';
 import { combineLatestWith, filter, map, take } from 'rxjs/operators';
 import { GameStateAsObservables } from './colyseus-observable-state';
 import { UserService } from './user.service';
@@ -23,17 +23,21 @@ import { UserService } from './user.service';
 @Injectable({
   providedIn: 'root',
 })
-export class GameStateService {
+export class GameStateService implements OnDestroy {
   /** Scheduling values for the loading process */
   isRoomDataAvailable$: ReplaySubject<boolean> = new ReplaySubject<boolean>(1);
 
   /** Access values for the game state */
   /** @deprecated */
   me_async$: AsyncSubject<Player> = new AsyncSubject<Player>();
-  public me$: Observable<Player>;
 
   room$: ReplaySubject<Room<GameState>>;
   public observableState: GameStateAsObservables;
+
+  // subscriptions
+  private playerList$$: Subscription;
+  private playerChange$$: Subscription;
+  private activeRoom$$: Subscription;
 
   constructor(private colyseus: ColyseusClientService, private userService: UserService) {
     this.room$ = this.colyseus.activeRoom$;
@@ -44,19 +48,19 @@ export class GameStateService {
       .pipe(debounceTime(0))
       .pipe(share());*/
 
-    this.observableState.playerList$.subscribe((playerList: MapSchema<Player>) => {
+    this.playerList$$ = this.observableState.playerList$.subscribe((playerList: MapSchema<Player>) => {
       console.log('playerList update detected', playerList);
       if (!this.me_async$.isStopped) {
         this.me_async$.next(this._resolveMyPlayerObject(playerList));
         this.me_async$.complete();
       }
     });
-    this.observableState.playerChange$.subscribe((player: Player) => {
+    this.playerChange$$ = this.observableState.playerChange$.subscribe((player: Player) => {
       console.log('Player update detected', player);
     });
 
     /** Listen to Room changes ( entering / switching / leaving ) */
-    colyseus.activeRoom$.subscribe((room: Room<GameState>) => {
+    this.activeRoom$$ = colyseus.activeRoom$.subscribe((room: Room<GameState>) => {
       if (room !== undefined) {
         room.onStateChange.once(() => {
           console.info('[GameStateService] Initial GameState was provided. Synchronizing service access values.');
@@ -67,6 +71,12 @@ export class GameStateService {
         this.isRoomDataAvailable$.next(false);
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.playerChange$$.unsubscribe();
+    this.playerList$$.unsubscribe();
+    this.activeRoom$$.unsubscribe();
   }
 
   private _resolveMyPlayerObject(players: MapSchema<Player>): Player {
