@@ -15,7 +15,7 @@ import { PhysicsObjectState } from '../../../../model/state/PhysicsState';
 import { Player } from '../../../../model/state/Player';
 import { BoardItemControlService } from '../../../../services/board-item-control.service';
 import { take } from 'rxjs/operators';
-import { Observable, Observer } from 'rxjs';
+import { Observable, Observer, Subscription } from 'rxjs';
 import { Progress } from '../../../../services/object-loader/loaderTypes';
 import { MapSchema } from '@colyseus/schema';
 
@@ -43,7 +43,18 @@ export class PhysicsCommands {
   addInteractable: (obj: Object3D) => void;
   addPlayer: (mesh: Object3D, name: string) => void;
 
-  constructor(private bic: BoardItemControlService) {}
+  // subscriptions
+  private objectsMoved$$: Subscription;
+
+  constructor(private bic: BoardItemControlService) {
+    this.objectsMoved$$ = this.bic.gameState.observableState.physicsState.objectsMoved$.subscribe((item: PhysicsObjectState) => {
+      this._updateOrGenerateItem(item);
+    });
+  }
+
+  public onDestroy() {
+    this.objectsMoved$$.unsubscribe();
+  }
 
   /**
    * Searches the Object3D tree recursively to try to find the Object3D corresponding

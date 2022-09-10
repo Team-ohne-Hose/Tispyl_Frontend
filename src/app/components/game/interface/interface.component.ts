@@ -7,7 +7,7 @@ import { StateDisplayComponent } from './state-display/state-display.component';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { MatDialog } from '@angular/material/dialog';
 import { ShowAttribComponent } from '../show-attrib/show-attrib.component';
-import { Observable, Subscription, share } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-interface',
@@ -23,8 +23,6 @@ export class InterfaceComponent implements OnInit, OnDestroy {
   @ViewChild('turnOverlay') turnOverlayRef: TurnOverlayComponent;
   @ViewChild('stateDisplay') stateDisplayRef: StateDisplayComponent;
 
-  isMyTurn$: Observable<boolean>;
-
   // subscriptions
   private currentPlayerLogin$$: Subscription;
 
@@ -33,7 +31,6 @@ export class InterfaceComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.isMyTurn$ = this.gameState.isMyTurn$().pipe(share());
     this.currentPlayerLogin$$ = this.gameState.observableState.currentPlayerLogin$.subscribe(() => {
       if (this.turnOverlayRef !== undefined) {
         this.turnOverlayRef.show();

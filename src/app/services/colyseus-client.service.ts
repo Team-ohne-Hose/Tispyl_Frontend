@@ -32,7 +32,7 @@ export interface CreateRoomOpts {
 })
 export class ColyseusClientService implements OnDestroy {
   /** Constants and development parameters */
-  private readonly VERBOSE_CALLBACK_LOGGING = true;
+  private readonly VERBOSE_CALLBACK_LOGGING = false;
   private readonly BACKEND_WS_TARGET = environment.wsEndpoint;
   private readonly CLIENT: Client = new Client(this.BACKEND_WS_TARGET);
 
@@ -85,6 +85,7 @@ export class ColyseusClientService implements OnDestroy {
 
   ngOnDestroy(): void {
     this.activeRoom$$.unsubscribe();
+    this.observableState.onDestroy();
   }
 
   getStateAsObservables(): GameStateAsObservables {

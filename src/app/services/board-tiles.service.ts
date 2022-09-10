@@ -4,8 +4,7 @@ import { ObjectLoaderService } from './object-loader/object-loader.service';
 import { Tile } from '../model/state/BoardLayoutState';
 import { GameStateService } from './game-state.service';
 import { Progress } from './object-loader/loaderTypes';
-import { Observable, Observer, Subscription } from 'rxjs';
-import { take, tap } from 'rxjs/operators';
+import { Observable, Observer, Subscription, filter, take, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -114,6 +113,11 @@ export class BoardTilesService implements OnDestroy {
       addToScene(this.generateField());
       this.gameState
         .getBoardLayoutAsArray$()
+        .pipe(
+          filter((tiles: Tile[]) => {
+            return tiles !== undefined && tiles.find((tile: Tile) => tile === undefined) === undefined;
+          })
+        )
         .pipe(take(1))
         .subscribe((tiles: Tile[]) => {
           this.tiles = tiles;

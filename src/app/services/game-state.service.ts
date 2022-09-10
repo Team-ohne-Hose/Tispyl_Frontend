@@ -6,7 +6,7 @@ import { GameState } from '../model/state/GameState';
 import { Player } from '../model/state/Player';
 import { Tile } from '../model/state/BoardLayoutState';
 import { MessageType } from '../model/WsData';
-import { AsyncSubject, Observable, ReplaySubject, Subscription, combineLatest } from 'rxjs';
+import { Observable, ReplaySubject, Subscription, combineLatest } from 'rxjs';
 import { combineLatestWith, filter, map, take } from 'rxjs/operators';
 import { GameStateAsObservables } from './colyseus-observable-state';
 import { UserService } from './user.service';
@@ -28,9 +28,6 @@ export class GameStateService implements OnDestroy {
   isRoomDataAvailable$: ReplaySubject<boolean> = new ReplaySubject<boolean>(1);
 
   /** Access values for the game state */
-  /** @deprecated */
-  me_async$: AsyncSubject<Player> = new AsyncSubject<Player>();
-
   room$: ReplaySubject<Room<GameState>>;
   public observableState: GameStateAsObservables;
 
@@ -47,17 +44,6 @@ export class GameStateService implements OnDestroy {
       .pipe(filter((p: Player) => p.loginName === this.getMyLoginName()))
       .pipe(debounceTime(0))
       .pipe(share());*/
-
-    this.playerList$$ = this.observableState.playerList$.subscribe((playerList: MapSchema<Player>) => {
-      console.log('playerList update detected', playerList);
-      if (!this.me_async$.isStopped) {
-        this.me_async$.next(this._resolveMyPlayerObject(playerList));
-        this.me_async$.complete();
-      }
-    });
-    this.playerChange$$ = this.observableState.playerChange$.subscribe((player: Player) => {
-      console.log('Player update detected', player);
-    });
 
     /** Listen to Room changes ( entering / switching / leaving ) */
     this.activeRoom$$ = colyseus.activeRoom$.subscribe((room: Room<GameState>) => {
@@ -136,7 +122,6 @@ export class GameStateService implements OnDestroy {
         })
       )
       .pipe(filter((player: Player) => player !== undefined));
-    //return this.observableState.playerChange$.pipe(filter((p: Player) => p.loginName === this.getMyLoginName())).pipe(debounceTime(0));
   }
 
   getCurrentPlayer$(): Observable<Player> {

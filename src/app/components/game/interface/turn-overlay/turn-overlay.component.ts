@@ -1,6 +1,9 @@
-import { Component, Input } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { SoundService } from '../../../../services/sound.service';
+import { GameStateService } from 'src/app/services/game-state.service';
+import { Observable, Subscription, share, withLatestFrom } from 'rxjs';
+import { Player } from 'src/app/model/state/Player';
 
 @Component({
   selector: 'app-turn-overlay',
@@ -27,21 +30,43 @@ import { SoundService } from '../../../../services/sound.service';
     ]),
   ],
 })
-export class TurnOverlayComponent {
+export class TurnOverlayComponent implements OnInit, OnDestroy {
   state = 'faded';
 
-  @Input()
-  ownTurn = true;
+  ownTurn: boolean;
 
-  @Input()
-  currentPlayerName = '';
+  currentPlayerDisplayName$: Observable<string>;
 
-  constructor(private sounds: SoundService) {}
+  // subscriptions
+  private currentPlayer$$: Subscription;
+  private ownTurn$$: Subscription;
 
-  triggerChime(): void {
-    if (this.state === 'active') {
-      this.ownTurn ? this.sounds.play(SoundService.OWN_TURN_SOUND) : this.sounds.play(SoundService.FOREIGN_TURN_SOUND);
-    }
+  constructor(private sounds: SoundService, protected gameStateService: GameStateService) {}
+
+  ngOnInit(): void {
+    /** withLatestFrom is used here because:
+     * The resulting Observable has both values, but is only triggered when the
+     * first Observable(currentPlayerLogin) gets a new value.
+     * Therefore containing the currentPlayerLogin it was triggered with and the latest value of getMe$
+     */
+    this.currentPlayer$$ = this.gameStateService.observableState.currentPlayerLogin$
+      .pipe(withLatestFrom(this.gameStateService.getMe$()))
+      .subscribe((value: [string, Player]) => {
+        this.triggerChime(value[0] === value[1].loginName);
+      });
+    this.ownTurn$$ = this.gameStateService.isMyTurn$().subscribe((ownTurn: boolean) => {
+      this.ownTurn = ownTurn;
+    });
+    this.currentPlayerDisplayName$ = this.gameStateService.getCurrentPlayerDisplayName$().pipe(share());
+  }
+
+  ngOnDestroy(): void {
+    this.currentPlayer$$.unsubscribe();
+    this.ownTurn$$.unsubscribe();
+  }
+
+  triggerChime(ownTurn: boolean): void {
+    ownTurn ? this.sounds.play(SoundService.OWN_TURN_SOUND) : this.sounds.play(SoundService.FOREIGN_TURN_SOUND);
   }
 
   show(): void {

@@ -11,7 +11,6 @@ import { Player } from '../model/state/Player';
 import { Rule } from '../model/state/Rule';
 import { ArraySchema, MapSchema, Schema } from '@colyseus/schema';
 import { VoteState } from '../model/state/VoteState';
-import { OnDestroy } from '@angular/core';
 
 // This line is fine for using Function, since Function is used to exclude types
 export declare type NonFunctionPropNames<T> = {
@@ -56,7 +55,7 @@ export type GameStateAsObservables = {
 
 // Tipp: Hol dir erstmal nen Kaffee, bevor du hier anfängst zu lesen
 
-export class ColyseusObservableState implements OnDestroy {
+export class ColyseusObservableState {
   /** Subjects for State */
   public gameState: GameStateAsObservables = {
     round$: new ReplaySubject<number>(1),
@@ -112,7 +111,7 @@ export class ColyseusObservableState implements OnDestroy {
     this.setupObservables(activeRoom$);
   }
 
-  ngOnDestroy(): void {
+  onDestroy(): void {
     this.activeRoom$$.unsubscribe();
   }
 
@@ -370,12 +369,15 @@ export class ColyseusObservableState implements OnDestroy {
           this.touchCollectionCallbacks<number, MapSchema<number>>(player.itemList, {
             onChange: (item) => {
               this.gameState.playerChange$.next(player);
+              this.gameState.playerList$.next(room.state.playerList);
             },
             onRemove: (item) => {
               this.gameState.playerChange$.next(player);
+              this.gameState.playerList$.next(room.state.playerList);
             },
             onAdd: (item) => {
               this.gameState.playerChange$.next(player);
+              this.gameState.playerList$.next(room.state.playerList);
             },
           });
         },
