@@ -1,12 +1,13 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { Client, Room, RoomAvailable } from 'colyseus.js';
-import { BehaviorSubject, ReplaySubject } from 'rxjs';
+import { BehaviorSubject, ReplaySubject, Subscription } from 'rxjs';
 import { RoomMetaInfo } from '../model/RoomMetaInfo';
 import { GameState } from '../model/state/GameState';
 import { MessageType, WsData } from '../model/WsData';
 import { DataChange } from '@colyseus/schema';
 import { environment } from '../../environments/environment';
 import { Router } from '@angular/router';
+import { ColyseusObservableState, GameStateAsObservables } from './colyseus-observable-state';
 
 export interface MessageCallback {
   filterSubType: number; // -1/undefined for no filter, otherwise the subtype to filter for
@@ -29,9 +30,9 @@ export interface CreateRoomOpts {
 @Injectable({
   providedIn: 'root',
 })
-export class ColyseusClientService {
+export class ColyseusClientService implements OnDestroy {
   /** Constants and development parameters */
-  private readonly VERBOSE_CALLBACK_LOGGING = true;
+  private readonly VERBOSE_CALLBACK_LOGGING = false;
   private readonly BACKEND_WS_TARGET = environment.wsEndpoint;
   private readonly CLIENT: Client = new Client(this.BACKEND_WS_TARGET);
 
@@ -41,13 +42,19 @@ export class ColyseusClientService {
   private messageCallbacks: Map<MessageType, Map<number, MessageCallback>> = new Map<MessageType, Map<number, MessageCallback>>([]);
 
   /** Access values mainly used by the state service */
-  myLoginName: string;
+  myLoginName$: ReplaySubject<string> = new ReplaySubject<string>(1);
   availableRooms$: BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>;
   activeRoom$: ReplaySubject<Room<GameState>>;
+
+  private observableState: ColyseusObservableState;
+
+  // subscriptions
+  private activeRoom$$: Subscription;
 
   constructor(private router: Router) {
     this.availableRooms$ = new BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>([]);
     this.activeRoom$ = new ReplaySubject<Room<GameState>>(1);
+    this.observableState = new ColyseusObservableState(this.activeRoom$);
 
     /** Development logging */
     if (this.VERBOSE_CALLBACK_LOGGING) {
@@ -62,11 +69,10 @@ export class ColyseusClientService {
     }
 
     /** Manage entering and leaving a room */
-    this.activeRoom$.subscribe((r) => {
+    this.activeRoom$$ = this.activeRoom$.subscribe((r) => {
       console.info('[ColyseusService] Active Room changed to:', r);
       if (r !== undefined) {
         this._attachKnownMessageCallbacks(r);
-        this._attachKnownChangeCallbacks(r);
       } else {
         if (this.VERBOSE_CALLBACK_LOGGING) {
           console.info('Known message callbacks after leaving the room:', this._prettyPrintMessageCallbacks());
@@ -74,6 +80,15 @@ export class ColyseusClientService {
         }
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.activeRoom$$.unsubscribe();
+    this.observableState.onDestroy();
+  }
+
+  getStateAsObservables(): GameStateAsObservables {
+    return this.observableState.gameState;
   }
 
   setActiveRoom(newRoom?: Room): void {
@@ -86,7 +101,7 @@ export class ColyseusClientService {
       this.CLIENT.create('game', opts).then((suc) => {
         this.setActiveRoom(suc);
         this.updateAvailableRooms();
-        this.myLoginName = opts.login;
+        this.myLoginName$.next(opts.login);
         this.router.navigateByUrl('/game');
       });
     }
@@ -101,7 +116,7 @@ export class ColyseusClientService {
     };
     this.CLIENT.joinById(roomAva.roomId, options).then((myRoom: Room) => {
       this.setActiveRoom(myRoom);
-      this.myLoginName = loginName;
+      this.myLoginName$.next(loginName);
     });
   }
 
@@ -136,26 +151,9 @@ export class ColyseusClientService {
     });
   }
 
-  registerChangeCallback(cb: ChangeCallback): number {
-    const registerId = this._getUniqueId();
-    this.changeCallbacks.set(registerId, cb);
-    return registerId;
-  }
-
-  clearChangeCallback(id: number): boolean {
-    return this.changeCallbacks.delete(id);
-  }
-
   private _getUniqueId(): number {
     this.registerSeed++;
     return this.registerSeed;
-  }
-
-  private _attachKnownChangeCallbacks(currentRoom: Room<GameState>): void {
-    const bundledChangeFunctions = (changes: DataChange<unknown>[]) => {
-      this.changeCallbacks.forEach((f) => f(changes));
-    };
-    currentRoom.state.onChange = bundledChangeFunctions.bind(this);
   }
 
   /** Debug and Development functions */

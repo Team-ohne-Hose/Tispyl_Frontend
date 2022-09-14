@@ -1,37 +1,47 @@
-import { Component, Input } from '@angular/core';
-import { LoginUser, UserService } from '../../../services/user.service';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { BasicUser, UserService } from '../../../services/user.service';
 import { FileService } from '../../../services/file.service';
 import { ObjectLoaderService } from '../../../services/object-loader/object-loader.service';
 import { JwtTokenService } from 'src/app/services/jwttoken.service';
 import { environmentList, figureList } from '../lobby/lobbyLUTs';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-profile-display',
   templateUrl: './profile-display.component.html',
   styleUrls: ['./profile-display.component.css'],
 })
-export class ProfileDisplayComponent {
+export class ProfileDisplayComponent implements OnInit, OnDestroy {
   // TODO: set at Backend.
   selectedFigure;
   selectedEnv = 9;
 
-  @Input() user: LoginUser;
+  @Input() user: BasicUser;
   profileSource;
 
   figureList = figureList;
   envList = environmentList;
+
+  // subscriptions
+  private activeUser$$: Subscription;
 
   constructor(
     private userManagement: UserService,
     private fileManagement: FileService,
     private objectLoaderService: ObjectLoaderService,
     private AuthService: JwtTokenService
-  ) {
-    this.userManagement.activeUser.subscribe((u) => {
+  ) {}
+
+  ngOnInit(): void {
+    this.activeUser$$ = this.userManagement.activeUser.subscribe((u) => {
       if (u !== undefined) {
         this.profileSource = this.fileManagement.profilePictureSource(u.login_name, true);
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.activeUser$$.unsubscribe();
   }
 
   getDate(): Date {

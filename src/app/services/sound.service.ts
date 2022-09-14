@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { GameSettingsService } from './game-settings.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class SoundService {
+export class SoundService implements OnDestroy {
   public static OWN_TURN_SOUND = 'own_turn';
   public static FOREIGN_TURN_SOUND = 'others_turn';
   public static WAKE_PLAYER = 'wake_player';
@@ -12,10 +13,17 @@ export class SoundService {
   private assetPath = '../../../assets/sounds/';
   private html5Audio: HTMLAudioElement = new Audio();
 
+  // subscriptions
+  private musicVolume$$: Subscription;
+
   constructor(private gss: GameSettingsService) {
-    this.gss.musicVolume.subscribe((volume) => {
+    this.musicVolume$$ = this.gss.musicVolume.subscribe((volume) => {
       this.html5Audio.volume = volume;
     });
+  }
+
+  ngOnDestroy(): void {
+    this.musicVolume$$.unsubscribe();
   }
 
   private sounds: Map<string, string> = new Map<string, string>([

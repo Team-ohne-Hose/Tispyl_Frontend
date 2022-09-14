@@ -3,6 +3,7 @@ import { MessageType, WsData } from '../model/WsData';
 import { GameStateService } from './game-state.service';
 import { ChatMessage } from '../components/game/interface/menu-bar/home-register/helpers/ChatMessage';
 import { ColyseusClientService } from './colyseus-client.service';
+import { Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -12,8 +13,11 @@ export class ChatService implements OnDestroy {
   private chatMessages: ChatMessage[] = [];
   private callbackIds: number[] = [];
 
+  // subscriptions
+  private activeRoom$$: Subscription;
+
   constructor(private gameState: GameStateService, private colyseus: ColyseusClientService) {
-    this.colyseus.activeRoom$.subscribe((r) => {
+    this.activeRoom$$ = this.colyseus.activeRoom$.subscribe((r) => {
       if (r === undefined) {
         console.info('Resetting chat messages');
         this.chatMessages = [];
@@ -25,8 +29,9 @@ export class ChatService implements OnDestroy {
         filterSubType: -1,
         f: (data: WsData) => {
           if (data.type === MessageType.CHAT_MESSAGE) {
-            const dn = this.gameState.getDisplayName(data.authorLoginName);
-            this.onChatMessageReceived(data.message, dn || data.authorLoginName);
+            this.gameState.getDisplayNameOnce$(data.authorLoginName).subscribe((displayName: string) => {
+              this.onChatMessageReceived(data.message, displayName || data.authorLoginName);
+            });
           }
         },
       })
@@ -99,5 +104,6 @@ export class ChatService implements OnDestroy {
     this.callbackIds.forEach((id) => {
       this.gameState.clearMessageCallback(id);
     });
+    this.activeRoom$$.unsubscribe();
   }
 }

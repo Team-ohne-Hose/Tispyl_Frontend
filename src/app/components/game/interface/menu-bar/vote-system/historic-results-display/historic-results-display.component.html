@@ -16,12 +16,12 @@
         <div *ngIf="e.isPlayerEntry" class="icon-wrapper"><i class="fas fa-tags"></i></div>
         <div class="option-text">{{e.text}}</div>
         <div class="vertical-separator"></div>
-        <div class="count">{{e.count}}</div>
+        <div class="count">{{e.castVotes.length}}</div>
       </div>
     </div>
     <div class="ineligible-players">Ineligible player(s):<span
-      *ngIf="currentResult.ineligibles.length === 0">none</span><span
-      *ngFor="let p of currentResult.ineligibles">{{p}}</span></div>
+        *ngIf="currentResult.ineligibles.length === 0">none</span><span
+        *ngFor="let p of currentResult.ineligibles">{{p}}</span></div>
   </div>
 
 </div>

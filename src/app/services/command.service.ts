@@ -10,6 +10,9 @@ import { GameComponent } from '../components/game/game.component';
 import { ObjectLoaderService } from './object-loader/object-loader.service';
 import { BoardItemControlService } from './board-item-control.service';
 import { Item } from './items-service/itemLUT';
+import { take } from 'rxjs';
+import { Room } from 'colyseus.js';
+import { GameState } from '../model/state/GameState';
 
 export interface Command {
   cmd: string;
@@ -191,32 +194,33 @@ export class CommandService {
       });
     };
 
-    // first try login names
-    let targetPlayer: Player = this.gameState.getByLoginName(playerTag);
-    // afterwards try display names
-    if (targetPlayer === undefined) {
-      targetPlayer = this.gameState.getByDisplayName(playerTag);
-    }
-    // send out
-    if (targetPlayer !== undefined) {
-      sendGiveMessage(targetPlayer.loginName);
-    }
+    const sendOutMessage = (targetPlayer: Player | undefined) => {
+      // send out
+      if (targetPlayer !== undefined) {
+        sendGiveMessage(targetPlayer.loginName);
+      }
+    };
+
+    this.gameState.getByLoginNameOnce$(playerTag).subscribe((targetPlayer: Player | undefined) => {
+      if (targetPlayer === undefined) {
+        this.gameState.getByDisplayNameOnce$(playerTag).subscribe((targetPlayer: Player | undefined) => {
+          sendOutMessage(targetPlayer);
+        });
+      } else {
+        sendOutMessage(targetPlayer);
+      }
+    });
   }
 
   private showItems(rawCMD: string, parameters: string[]): void {
-    const myPlayer: Player = this.gameState.getMe();
-    const myItems: Item[] = this.items.getMyItemsList();
-    if (myPlayer !== undefined) {
-      if (myItems.length > 0) {
-        const itemStrings: string[] = myItems.map((it: Item, idx: number) => {
-          return `${idx}. ${it.name} - ${it.description}`;
-        });
-        this.print(itemStrings.join('\r\n\r\n'), '/showItems');
-      } else {
-        this.print('You have no Item', '/showItems');
-      }
+    const myItems: Item[] = this.items.myItems$.getValue();
+    if (myItems.length > 0) {
+      const itemStrings: string[] = myItems.map((it: Item, idx: number) => {
+        return `${idx}. ${it.name} - ${it.description}`;
+      });
+      this.print(itemStrings.join('\r\n\r\n'), '/showItems');
     } else {
-      this.print('Your "Player" object was undefined. This should never happen.', '/showItems');
+      this.print('You have no Item', '/showItems');
     }
   }
 
@@ -224,13 +228,15 @@ export class CommandService {
     const sendUseMessage = (targetLogin: string) => {
       const itemId = Number(parameters[1]);
       this.print('Trying to use Item ' + itemId + (targetLogin === '' ? '' : ' on ' + targetLogin), '/useItem');
-      this.gameState.sendMessage(MessageType.ITEM_MESSAGE, {
-        type: MessageType.ITEM_MESSAGE,
-        subType: ItemMessageType.useItem,
-        playerLoginName: this.gameState.getMyLoginName(),
-        targetLoginName: targetLogin,
-        itemId: itemId,
-        param: '',
+      this.gameState.getMyLoginNameOnce$().subscribe((myLoginName: string) => {
+        this.gameState.sendMessage(MessageType.ITEM_MESSAGE, {
+          type: MessageType.ITEM_MESSAGE,
+          subType: ItemMessageType.useItem,
+          playerLoginName: myLoginName,
+          targetLoginName: targetLogin,
+          itemId: itemId,
+          param: '',
+        });
       });
     };
     if (parameters.length < 2) {
@@ -241,15 +247,20 @@ export class CommandService {
     const playerTag = parameters.slice(2).join(' ');
 
     // first try login names
-    let targetPlayer: Player = this.gameState.getByLoginName(playerTag);
-    // afterwards try display names
-    if (targetPlayer === undefined) {
-      targetPlayer = this.gameState.getByDisplayName(playerTag);
-    }
-    // send out
-    if (targetPlayer !== undefined) {
-      sendUseMessage(targetPlayer.loginName);
-    }
+    this.gameState.getByLoginNameOnce$(playerTag).subscribe((targetPlayer: Player | undefined) => {
+      if (targetPlayer === undefined) {
+        // afterwards try display names
+        this.gameState.getByDisplayNameOnce$(playerTag).subscribe((targetPlayer: Player | undefined) => {
+          // send out
+          if (targetPlayer !== undefined) {
+            sendUseMessage(targetPlayer.loginName);
+          }
+        });
+      } else {
+        // send out
+        sendUseMessage(targetPlayer.loginName);
+      }
+    });
   }
 
   private printHint(rawCMD: string, parameters: string[]): void {
@@ -297,12 +308,17 @@ export class CommandService {
   private askGame(rawCMD: string, parameters: string[]): void {
     const question = parameters.slice(1).join(' ');
 
-    this.gameState.sendMessage(MessageType.CHAT_COMMAND, {
-      type: MessageType.CHAT_COMMAND,
-      subType: ChatCommandType.commandAsk,
-      question: question,
-      authorDisplayName: this.gameState.getMe().displayName,
-    });
+    this.gameState
+      .getMe$()
+      .pipe(take(1))
+      .subscribe((me: Player) => {
+        this.gameState.sendMessage(MessageType.CHAT_COMMAND, {
+          type: MessageType.CHAT_COMMAND,
+          subType: ChatCommandType.commandAsk,
+          question: question,
+          authorDisplayName: me.displayName,
+        });
+      });
   }
 
   private randomNum(rawCMD: string, parameters: string[]): void {
@@ -346,7 +362,9 @@ export class CommandService {
   }
 
   private showLocalState(rawCMD: string, parameters: string[]): void {
-    console.log(`State`, this.gameState.getState());
+    this.gameState.room$.pipe(take(1)).subscribe((room: Room<GameState>) => {
+      console.debug(`State`, room.state);
+    });
   }
 
   private advanceAction(rawCMD: string, parameters: string[]): void {

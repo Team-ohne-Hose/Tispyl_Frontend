@@ -1,9 +1,9 @@
-<div (@fading.start)="triggerChime()" [@fading]="state" class="banner-style">
+<div [@fading]="state" class="banner-style">
 
   <div *ngIf="!ownTurn">
     <div class="faded-line"></div>
     <div class="others-turn">
-      <div>{{currentPlayerName}}'s Zug</div>
+      <div>{{currentPlayerDisplayName$ | async}}'s Zug</div>
     </div>
     <div class="faded-line"></div>
   </div>

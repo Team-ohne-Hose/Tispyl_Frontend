@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { PhysicsCommands } from '../components/game/viewport/helpers/PhysicsCommands';
 import { GameStateService } from './game-state.service';
 import { ObjectLoaderService } from './object-loader/object-loader.service';
@@ -18,7 +18,7 @@ import {
 } from 'three';
 import { Player } from '../model/state/Player';
 import { GameActionType, GameSetTile, MessageType } from '../model/WsData';
-import { Observable, Observer, Subscription } from 'rxjs';
+import { Observable, Observer, Subscription, take } from 'rxjs';
 import { Progress } from './object-loader/loaderTypes';
 import { GameSettingsService } from './game-settings.service';
 
@@ -32,7 +32,7 @@ export interface FigureItem {
 @Injectable({
   providedIn: 'root',
 })
-export class BoardItemControlService {
+export class BoardItemControlService implements OnDestroy {
   rendererDomReference: HTMLCanvasElement;
   sceneTree: Scene;
   camera: PerspectiveCamera;
@@ -44,7 +44,8 @@ export class BoardItemControlService {
   markerGeo = new ConeBufferGeometry(1, 10, 15, 1, false, 0, 2 * Math.PI);
 
   // subscriptions
-  persistentNamePlates$$: Subscription;
+  private persistentNamePlates$$: Subscription;
+  private playerChange$$: Subscription;
 
   constructor(
     public gameState: GameStateService,
@@ -58,14 +59,20 @@ export class BoardItemControlService {
     this.allFigures = [];
 
     this.physics.addPlayer = ((mesh: Object3D, name: string) => {
-      const figure = { mesh: mesh, labelSprite: undefined, name: name, isHidden: false };
-      this.generatePlayerSprite(figure);
-      this.allFigures.push(figure);
-      console.debug('adding to BoardItemManagement´s list of figures', name, mesh, this.allFigures);
+      const figureInList = this.allFigures.find((figureItem: FigureItem) => figureItem.name === name);
+      if (figureInList !== undefined) {
+        console.debug('Player is already in FigureList, updating Mesh', name, mesh);
+        figureInList.mesh = mesh;
+      } else {
+        const figure = { mesh: mesh, labelSprite: undefined, name: name, isHidden: false };
+        this.generatePlayerSprite(figure);
+        this.allFigures.push(figure);
+        console.debug('adding to BoardItemManagement´s list of figures', name, mesh, this.allFigures);
 
-      // add label into scene if nametags are shown
-      if (this.gses.persistentNamePlates.value) {
-        figure.mesh.add(figure.labelSprite);
+        // add label into scene if nametags are shown
+        if (this.gses.persistentNamePlates.value) {
+          figure.mesh.add(figure.labelSprite);
+        }
       }
     }).bind(this);
 
@@ -75,24 +82,22 @@ export class BoardItemControlService {
     });
 
     /** This should be cleaned and clarified */
-    this.gameState.playerListChanges$.subscribe((p: Player) => {
+    this.playerChange$$ = this.gameState.observableState.playerChange$.subscribe((p: Player) => {
       const figureItem = this.allFigures.find((item: FigureItem) => {
         return item.mesh.userData.physicsId === p.figureId;
       });
 
       if (figureItem === undefined) {
-        console.warn('figure hasnt been initialized yet, but hiddenState is to be set', p.figureId, this.allFigures);
+        console.debug('figure hasnt been initialized yet, but playerchange is detected', p.figureId, this.allFigures);
         return;
       }
 
       if (p.figureModel !== undefined) {
-        console.debug('loading new playerTex', p.figureModel);
         // TODO prevent loading Textures all the time/ prevent if not necessary
         this.loader.switchTex(figureItem.mesh, p.figureModel);
       }
 
       if (p.hasLeft !== figureItem.isHidden) {
-        console.debug('changing hiddenState', p.hasLeft, figureItem.isHidden, this.allFigures);
         if (figureItem.isHidden) {
           this.sceneTree.add(figureItem.mesh);
           figureItem.isHidden = false;
@@ -102,6 +107,12 @@ export class BoardItemControlService {
         }
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.persistentNamePlates$$.unsubscribe();
+    this.playerChange$$.unsubscribe();
+    this.physics.onDestroy();
   }
 
   public bind(viewport: ViewportComponent): void {
@@ -142,17 +153,12 @@ export class BoardItemControlService {
     }
   }
 
-  getSpritesPending(): number {
-    return this.allFigures.length;
-  }
-
   createSprites(): Observable<Progress> {
     return new Observable<Progress>((o: Observer<Progress>) => {
       let count = 0;
       o.next([0, this.allFigures.length]);
       this.allFigures.forEach((figure: FigureItem) => {
         if (figure.labelSprite === undefined) {
-          console.debug('adding Sprite for player ', figure.name);
           this.generatePlayerSprite(figure);
         }
 
@@ -168,7 +174,6 @@ export class BoardItemControlService {
   }
 
   private generatePlayerSprite(figure: FigureItem) {
-    console.debug('adding Sprite for player ', figure.name);
     figure.labelSprite = this.loader.createPredefLabelSprite(figure.name);
     figure.labelSprite.position.set(0, 5, 0);
   }
@@ -182,7 +187,6 @@ export class BoardItemControlService {
   private changeNameTagVisibilityInScene(isShown: boolean): void {
     for (const figure of this.allFigures) {
       if (figure.labelSprite === undefined) {
-        console.debug('update: adding Sprite for player ', figure.name);
         figure.labelSprite = this.loader.createPredefLabelSprite(figure.name);
         figure.labelSprite.position.set(0, 5, 0);
       }
@@ -202,29 +206,37 @@ export class BoardItemControlService {
   }
 
   respawnMyFigure(): void {
-    const physID = this.gameState.getMe().figureId;
-    this.physics.setPosition(physID, 0, 15, 0);
-    this.physics.setVelocity(physID, 0, 0, 0);
+    this.gameState
+      .getMe$()
+      .pipe(take(1))
+      .subscribe((me: Player) => {
+        const physID = me.figureId;
+        this.physics.setPosition(physID, 0, 15, 0);
+        this.physics.setVelocity(physID, 0, 0, 0);
+      });
   }
 
   moveGameFigure(object: Object3D, fieldID: number): void {
     console.debug('move Figure to ', fieldID);
     let playerId: string;
     const userData = object.userData;
-    const player = this.gameState.findInPlayerList((p: Player) => {
-      return p.figureId === userData.physicsId;
-    });
-    if (player !== undefined) {
-      playerId = player.loginName;
-    }
-    const msg: GameSetTile = {
-      type: MessageType.GAME_MESSAGE,
-      action: GameActionType.setTile,
-      figureId: userData.physicsId,
-      playerId: playerId,
-      tileId: fieldID,
-    };
-    this.gameState.sendMessage(MessageType.GAME_MESSAGE, msg);
+    this.gameState
+      .findInPlayerListOnce$((p: Player) => {
+        return p.figureId === userData.physicsId;
+      })
+      .subscribe((player: Player | undefined) => {
+        if (player !== undefined) {
+          playerId = player.loginName;
+        }
+        const msg: GameSetTile = {
+          type: MessageType.GAME_MESSAGE,
+          action: GameActionType.setTile,
+          figureId: userData.physicsId,
+          playerId: playerId,
+          tileId: fieldID,
+        };
+        this.gameState.sendMessage(MessageType.GAME_MESSAGE, msg);
+      });
   }
 
   addFlummi(x: number, y: number, z: number, color: number): void {

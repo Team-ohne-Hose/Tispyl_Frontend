@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { APIResponse } from '../model/APIResponse';
-import { BasicUser, LoginUser, UserService } from './user.service';
+import { BasicUser, UserService } from './user.service';
 import moment from 'moment';
 import { RegisterOptions } from '../model/RegisterOptions';
 import { Observable, throwError } from 'rxjs';
@@ -47,8 +47,8 @@ export class JwtTokenService {
         }
       }),
       flatMap(() => this.userService.getUserByLoginName(username)),
-      map((usr: APIResponse<LoginUser>) => {
-        this.userService.setActiveUser(usr.payload as LoginUser);
+      map((usr: APIResponse<BasicUser>) => {
+        this.userService.setActiveUser(usr.payload as BasicUser);
         return usr.payload;
       })
     );

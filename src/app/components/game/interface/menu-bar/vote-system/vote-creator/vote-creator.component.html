@@ -22,9 +22,9 @@
       <div (click)="toggleEligibility(p)" *ngFor="let p of playerList" class="eligibility-selector">
         <app-player-icon [borderThickness]="'3px'" [enableUpload]="false" [loginName]="p.loginName" [size]="'30px'">
         </app-player-icon>
-        <div class="{{eligibilities.get(p.displayName) ? 'info-container eligible' : 'info-container ineligible'}}">
-          <i *ngIf="eligibilities.get(p.displayName)" class="fas fa-check"></i>
-          <i *ngIf="!eligibilities.get(p.displayName)" class="fas fa-times"></i>
+        <div class="{{isEligible(p) ? 'info-container eligible' : 'info-container ineligible'}}">
+          <i *ngIf="isEligible(p)" class="fas fa-check"></i>
+          <i *ngIf="!isEligible(p)" class="fas fa-times"></i>
           <div class="name">{{p.displayName}}</div>
         </div>
       </div>

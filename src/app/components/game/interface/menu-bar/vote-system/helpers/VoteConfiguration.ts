@@ -12,9 +12,9 @@ export class VoteConfiguration extends Schema {
   ineligibles = new ArraySchema<string>();
 
   @type([VoteEntry])
-  votingOptions: VoteEntry[];
+  votingOptions: ArraySchema<VoteEntry>;
 
-  static build(title: string, author: string, eligibilities: Map<string, boolean>, options: VoteEntry[]): VoteConfiguration {
+  static build(title: string, author: string, eligibilities: Map<string, boolean>, options: ArraySchema<VoteEntry>): VoteConfiguration {
     const config = new VoteConfiguration();
     config.title = title;
     config.author = author;

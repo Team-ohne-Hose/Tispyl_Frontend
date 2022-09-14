@@ -88,8 +88,8 @@ export class OpenGamePopupComponent {
     config.showNavigationArrows = false;
 
     const req = this.httpClient.get<APIResponse<TileSet[]>>(OpenGamePopupComponent.requestUrl);
-    req.subscribe(
-      (res: APIResponse<TileSet[]>) => {
+    req.subscribe({
+      next: (res: APIResponse<TileSet[]>) => {
         const ts = res.payload;
         ts.forEach((val: TileSet) => {
           if (val.thumbnailPath === undefined || val.thumbnailPath === null) {
@@ -100,10 +100,10 @@ export class OpenGamePopupComponent {
         this.loadTileSetData(this.tileSetList[0].id);
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (error: any) => {
+      error: (error: any) => {
         console.error('couldnt retrieve list of available decks', error);
-      }
-    );
+      },
+    });
   }
 
   private generateTileListAsSet() {
@@ -121,18 +121,18 @@ export class OpenGamePopupComponent {
 
   private loadTileSetData(id: number) {
     const req = this.httpClient.get<APIResponse<TileSet>>(OpenGamePopupComponent.requestUrl + `:id?id=${id}`);
-    req.subscribe(
-      (res: APIResponse<TileSet>) => {
+    req.subscribe({
+      next: (res: APIResponse<TileSet>) => {
         const ts = res.payload;
         this.selectedTileSet = ts;
         this.generateTileListAsSet();
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (error: any) => {
+      error: (error: any) => {
         this.selectedTileSet = undefined;
         console.error('couldnt retrieve list of available decks', error);
-      }
-    );
+      },
+    });
   }
 
   public closeMe(): void {

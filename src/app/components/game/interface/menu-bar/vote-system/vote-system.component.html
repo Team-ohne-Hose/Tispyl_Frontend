@@ -5,9 +5,8 @@
       <div>Voting System</div>
     </div>
     <div *ngIf="gameState.isRoomDataAvailable$ | async" class="head-progress">
-      <!-- VoteStage 2 should be creation -->
       <i
-        [ngClass]="gameState.getVoteState().voteStage === 2 ? 'fas fa-circle-notch fa-spin highlight' : 'far fa-circle'"></i>
+        [ngClass]="(gameState.observableState.voteState.voteStage$ |async) === stateEnum.creating ? 'fas fa-circle-notch fa-spin highlight' : 'far fa-circle'"></i>
     </div>
     <div *ngIf="!(gameState.isRoomDataAvailable$ | async)" class="head-progress">
       <i class="far fa-circle"></i>
@@ -49,7 +48,8 @@
       <div class="frowny-face"><i class="fas fa-frown"></i></div>
     </div>
     <div class="Ineligible-button-container">
-      <button disabled>{{activeVotesCast}} / 10 Voted</button>
+      <button disabled>{{(gameState.observableState.voteState.voteConfiguration.votingOptions$ | countAllVotes |
+        async)}} / {{eligibleCount$ | async}} Voted</button>
     </div>
   </div>
 
@@ -64,14 +64,15 @@
     <div class="voting-head-container">
       <div *ngIf="gameState.isRoomDataAvailable$ | async" class="voting-head">
         <div class="pre-subscript">Select your option:</div>
-        {{gameState.getVoteState().voteConfiguration.title}}
+        {{(gameState.observableState.voteState.voteConfiguration.title$ | async)}}
       </div>
-      <button *ngIf="this.gameState.getMe().displayName === voteHost" class="abort-button">Cancel</button>
+      <button *ngIf="(gameState.getMe$() | getDisplayName | async ) === voteHost" class="abort-button">Cancel</button>
     </div>
 
 
     <div *ngIf="gameState.isRoomDataAvailable$ | async">
-      <div *ngFor="let ve of this.gameState.getVoteState().voteConfiguration.votingOptions; let i = index"
+      <div
+        *ngFor="let ve of (gameState.observableState.voteState.voteConfiguration.votingOptions$ | async) let i = index"
         class="entry-container disable-user-select">
         <div (click)="castVote(i)" class="vote-entry">
           <div class="info-box">
@@ -92,7 +93,7 @@
         </div>
         <div class="participants-container">
           <div *ngFor="let playerHandle of ve.castVotes" class="participants">
-            <app-player-icon [borderThickness]="'0px'" [loginName]="gameState.getLoginName(playerHandle)"
+            <app-player-icon [borderThickness]="'0px'" [loginName$]="gameState.getLoginNameOnce$(playerHandle)"
               [size]="'15px'"></app-player-icon>
           </div>
         </div>
@@ -100,16 +101,19 @@
     </div>
 
 
-    <div *ngIf="this.gameState.getVoteState().closingIn >= 0" class="closure-alert">
+    <div *ngIf="(gameState.observableState.voteState.closingIn$ | async) >= 0" class="closure-alert">
       <div class="static">The vote is being closed in:</div>
       <div class="count-down">{{timerDisplay}}</div>
     </div>
 
     <div class="host-closure-button">
-      <button (click)="triggerCloseVotingSession()" *ngIf="this.gameState.getMe().displayName === voteHost"
-        class="close-vote-button">Close voting session
+      <button (click)="triggerCloseVotingSession()" *ngIf="(gameState.getMe$() | getDisplayName | async) === voteHost"
+        class="close-vote-button">Close
+        voting session
       </button>
-      <button *ngIf="!(this.gameState.getMe().displayName === voteHost)" disabled>Only {{voteHost}} can close the
+      <button *ngIf="!((gameState.getMe$() | getDisplayName | async) === voteHost)" disabled>
+        Only {{voteHost}} can
+        close the
         voting.
       </button>
     </div>
@@ -121,12 +125,13 @@
     <div class="voting-head-container">
       <div *ngIf="gameState.isRoomDataAvailable$ | async" class="voting-head">
         <div class="pre-subscript">Results:</div>
-        {{gameState.getVoteState().voteConfiguration.title}}
+        {{(gameState.observableState.voteState.voteConfiguration.title$ | async)}}
       </div>
     </div>
 
     <div *ngIf="gameState.isRoomDataAvailable$ | async">
-      <div *ngFor="let ve of this.gameState.getVoteState().voteConfiguration.votingOptions; let i = index"
+      <div
+        *ngFor="let ve of (gameState.observableState.voteState.voteConfiguration.votingOptions$ | async); let i = index"
         [ngClass]="{'entry-container disable-user-select result': true, 'no1': i === 0, 'no2': i === 1, 'no3': i === 2, 'noN': i > 2}">
 
         <div class="metal-border">
@@ -155,7 +160,7 @@
 
         <div class="participants-container">
           <div *ngFor="let playerHandle of ve.castVotes" class="participants">
-            <app-player-icon [borderThickness]="'0px'" [loginName]="gameState.getLoginName(playerHandle)"
+            <app-player-icon [borderThickness]="'0px'" [loginName$]="gameState.getLoginNameOnce$(playerHandle)"
               [size]="'15px'"></app-player-icon>
           </div>
         </div>

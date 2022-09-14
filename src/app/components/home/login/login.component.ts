@@ -95,15 +95,15 @@ export class LoginComponent implements OnInit {
       this.jwtTokenService.logout();
     }
 
-    this.jwtTokenService.login(this.login_name, MD5(this.password_plain)).subscribe(
-      (usr: BasicUser) => {
+    this.jwtTokenService.login(this.login_name, MD5(this.password_plain)).subscribe({
+      next: (usr: BasicUser) => {
         this.isRequesting = false;
         console.debug('Logged in as: ', usr);
         this.router
           .navigate([this.targetRoute], { relativeTo: this.route })
           .catch((reason) => console.warn(`Failed to navigate to [${this.targetRoute}] after login. Reason: ${reason}`));
       },
-      (err) => {
+      error: (err) => {
         this.isRequesting = false;
         switch (err.status) {
           case 0: {
@@ -123,8 +123,8 @@ export class LoginComponent implements OnInit {
             this.setInfoText('Unknown error.', hadError);
           }
         }
-      }
-    );
+      },
+    });
   }
 
   /** Event listener set on all input fields to react on key strokes */
@@ -157,8 +157,8 @@ export class LoginComponent implements OnInit {
       this.isRequesting = true;
       this.resetInfoText();
 
-      this.jwtTokenService.register(formData).subscribe(
-        () => {
+      this.jwtTokenService.register(formData).subscribe({
+        next: () => {
           this.isRequesting = false;
           this.registration.reset();
           this.isSuccessText = true;
@@ -167,7 +167,7 @@ export class LoginComponent implements OnInit {
             this.switch();
           }, 1500);
         },
-        (err) => {
+        error: (err) => {
           this.isRequesting = false;
           switch (err.status) {
             case 0: {
@@ -183,8 +183,8 @@ export class LoginComponent implements OnInit {
               this.setInfoText('Unknown error.', hadError);
             }
           }
-        }
-      );
+        },
+      });
     }
   }
 }

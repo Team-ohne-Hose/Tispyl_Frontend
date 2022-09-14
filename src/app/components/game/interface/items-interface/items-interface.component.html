@@ -4,13 +4,9 @@
     <div class="decor-head">Deine Items:</div>
     <div class="decor-caret-l"></div>
     <div class="decor-caret-r"></div>
-    <div class="decor-help custom-anchor"  (click)="isInfoHidden = false" #info>
+    <div class="decor-help custom-anchor" (click)="hideInfo()" #info>
       <i class="fas fa-question-circle"></i>
-      <app-custom-popover
-        *ngIf="!isInfoHidden"
-        [options]="hintPopoverOpts"
-        [customClass]="'translucentInterface'"
-      >
+      <app-custom-popover *ngIf="!isInfoHidden" [options]="hintPopoverOpts" [customClass]="'translucentInterface'">
         <div class="question-text">
           Diese 'Hot-bar' zeigt deine aktuellen Items. Solltest du der Spielleiter sein, findest du hier
           auch das Menü um bestimmte Feldaktionen auszuführen.
@@ -19,20 +15,15 @@
     </div>
     <div class="content-box">
       <div class="hot-bar">
-        <div
-          *ngFor="let _ of [].constructor(MAX_ITEM_COUNT); let i = index"
-          [ngClass]="{'item': true, 'item-last': i === MAX_ITEM_COUNT && !(isHost$ | async)}"
-        >
+        <div *ngFor="let _ of [].constructor(MAX_ITEM_COUNT); let i = index"
+          [ngClass]="{'item': true, 'item-last': i === MAX_ITEM_COUNT && !(isHost$ | async)}">
           <div class="item-placeholder" (mouseenter)="slotHidden[i]=false" (mouseleave)="slotHidden[i]=true">
             <div class="placeholder-text">{{i+1 | asRomanNumeral}}</div>
             <div *ngIf="itemList[i] !== undefined" class="item-card" (click)="activateItem(i)" @cardMovement>
               <img [src]="itemList[i].imgUrl" [alt]="itemList[i].name">
             </div>
-            <app-custom-popover
-              *ngIf="itemList[i] !== undefined && !slotHidden[i]"
-              [options]="itemPopoverOpts"
-              [customClass]="'translucentInterface mediumCaret'"
-            >
+            <app-custom-popover *ngIf="itemList[i] !== undefined && !slotHidden[i]" [options]="itemPopoverOpts"
+              [customClass]="'translucentInterface mediumCaret'">
               <div class="info-text">
                 <span class="head">{{itemList[i].name}}:</span>
                 <span>{{itemList[i].description}}</span>
@@ -46,11 +37,8 @@
 
     <div *ngIf="(isHost$ | async)" class="host-menu-button" (click)="isHostHidden = false" #host>
       <i class="fas fa-bars"></i>
-      <app-custom-popover
-        *ngIf="!isHostHidden"
-        [options]="hostButtonPopoverOpts"
-        [customClass]="'translucentInterface mediumCaret'"
-        >
+      <app-custom-popover *ngIf="!isHostHidden" [options]="hostButtonPopoverOpts"
+        [customClass]="'translucentInterface mediumCaret'">
         <div class="host-content">
           <div class="head">Spielleiter Befehle</div>
           <div class="content-row">
@@ -62,7 +50,8 @@
           <div class="content-row">
             <span>Item geben:</span>
             <select [(ngModel)]="giveItem_name">
-              <option *ngFor="let p of gameState.getPlayerArray()" [ngValue]="p.displayName">{{p.displayName}}</option>
+              <option *ngFor="let p of (gameState.getPlayerArray$() | async)" [ngValue]="p.displayName">
+                {{p.displayName}}</option>
             </select>
             <select [(ngModel)]="giveItem_itemId">
               <option *ngFor=" let item of ITEM_TABLE.list" [ngValue]="item.id">{{item.name}}</option>

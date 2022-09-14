@@ -1,10 +1,16 @@
 import { Component } from '@angular/core';
+import { Observable, combineLatest, filter, map, share, take } from 'rxjs';
 import { Player } from 'src/app/model/state/Player';
 import { MessageType, RefreshCommandType, RefreshProfilePics } from 'src/app/model/WsData';
 import { FileService } from 'src/app/services/file.service';
 import { GameStateService } from 'src/app/services/game-state.service';
-import { LoginUser, UserService } from 'src/app/services/user.service';
+import { BasicUser, UserService } from 'src/app/services/user.service';
 
+export enum TitleRole {
+  'HOST' = 'Host',
+  'DEV' = 'Dev',
+  'PLAYER' = 'Player',
+}
 @Component({
   selector: 'app-menu-avatar',
   templateUrl: './avatar-section.component.html',
@@ -13,49 +19,55 @@ import { LoginUser, UserService } from 'src/app/services/user.service';
 export class AvatarSectionComponent {
   userImageUrl = '../assets/defaultImage.jpg';
 
-  private user: LoginUser;
-  public currentPlayer: Player;
+  // subscriptions
+  protected timePlayed$: Observable<string>;
+  protected role$: Observable<string>;
 
-  constructor(private fileService: FileService, private userService: UserService, private gameStateService: GameStateService) {
-    this.user = this.userService.activeUser.getValue();
-    this.currentPlayer = this.gameStateService.getMe();
-    this.userImageUrl = this.fileService.profilePictureSource(this.gameStateService.getMe().loginName, true);
+  constructor(private fileService: FileService, private userService: UserService, protected gameStateService: GameStateService) {
+    this.timePlayed$ = this.userService.activeUser
+      .pipe(filter((user: BasicUser) => user !== undefined))
+      .pipe(
+        map((user: BasicUser) => {
+          const min = user.time_played;
+          return `${Math.floor(min / 60)} hours ${Math.floor(min % 60)} minutes`;
+        })
+      )
+      .pipe(share());
+
+    this.role$ = combineLatest({
+      currentUser: this.userService.activeUser.pipe(filter((user: BasicUser) => user !== undefined)),
+      isHost: this.gameStateService.amIHost$(),
+    })
+      .pipe(
+        map((value: { currentUser: BasicUser; isHost: boolean }) => {
+          if (value.isHost) {
+            return TitleRole.HOST;
+          } else if (value.currentUser.is_dev) {
+            return TitleRole.DEV;
+          } else {
+            return TitleRole.PLAYER;
+          }
+        })
+      )
+      .pipe(share());
   }
 
   changeImage(event: { target: HTMLInputElement }): void {
     const file = event.target?.files[0];
     if (file !== undefined) {
-      this.fileService.uploadProfilePicture(file, this.user).subscribe((suc) => {
-        console.log('Uploaded new profile picture: ', suc);
-
-        this.userImageUrl = this.fileService.profilePictureSource(this.gameStateService.getMe().loginName, true);
-        const msg: RefreshProfilePics = {
-          type: MessageType.REFRESH_COMMAND,
-          subType: RefreshCommandType.refreshProfilePic,
-        };
-        this.gameStateService.sendMessage(MessageType.REFRESH_COMMAND, msg);
-      });
-    }
-  }
-
-  getRole(): string {
-    if (this.currentPlayer === undefined) {
-      return 'undefined';
-    } else if (this.currentPlayer.isCurrentHost) {
-      return 'Host';
-    } else if (this.user.is_dev) {
-      return 'Dev';
-    } else {
-      return 'Player';
-    }
-  }
-
-  getTimePlayed(): string {
-    if (this.user !== undefined) {
-      const min = this.user.time_played;
-      return `${Math.floor(min / 60)} hours ${Math.floor(min % 60)} minutes`;
-    } else {
-      return '0 hours 0 minutes';
+      this.gameStateService
+        .getMe$()
+        .pipe(take(1))
+        .subscribe((me: Player) => {
+          this.fileService.uploadProfilePictureByLoginName(file, me.loginName).subscribe((suc) => {
+            this.userImageUrl = this.fileService.profilePictureSource(me.loginName, true);
+            const msg: RefreshProfilePics = {
+              type: MessageType.REFRESH_COMMAND,
+              subType: RefreshCommandType.refreshProfilePic,
+            };
+            this.gameStateService.sendMessage(MessageType.REFRESH_COMMAND, msg);
+          });
+        });
     }
   }
 }

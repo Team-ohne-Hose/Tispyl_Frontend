@@ -26,7 +26,10 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   @ViewChild('loadingRef') loadingScreenRef: LoadingScreenComponent;
 
   isLoading = true;
+
+  // subscriptions
   gameInitialization$$: Subscription;
+  gameInitProgression$$: Subscription;
 
   constructor(
     private router: Router,
@@ -55,32 +58,34 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     }, 1000);
 
     /** Redirect if a user has no Room hes in, notify all players and start the initialization otherwise */
-    this.gameInitialization$$ = this.colyseus.activeRoom$.subscribe(
-      (currentRoom: Room<GameState>) => {
+    this.gameInitialization$$ = this.colyseus.activeRoom$.subscribe({
+      next: ((currentRoom: Room<GameState>) => {
         if (currentRoom !== undefined) {
           clearTimeout(roomTimeoutId);
           this._forceOnChange(currentRoom); // <--- might be useless
-          this.gameInit.init(this).subscribe(
-            (p: Progress) => {
+
+          if (this.gameInitProgression$$ && !this.gameInitProgression$$.closed) this.gameInitProgression$$.unsubscribe();
+          this.gameInitProgression$$ = this.gameInit.init(this).subscribe({
+            next: ((p: Progress) => {
               console.debug('Loading:', p);
               this._handleProgress(p);
-            },
-            (err) => {
+            }).bind(this),
+            error: (err) => {
               console.error(err);
             },
-            () => {
+            complete: (() => {
               this._endLoading();
-            }
-          );
+            }).bind(this),
+          });
         }
-      },
-      (err) => {
+      }).bind(this),
+      error: ((err) => {
         console.error('Failed to retrieve the active room:', err);
         this.router.navigateByUrl('').then(() => {
           alert(`Irgendetwas ist mit dem Raum schief gegangen.\nFehler: ${err}`);
         });
-      }
-    );
+      }).bind(this),
+    });
   }
 
   /** Tasks de backend to propagate an OnChange() event to all players by calling 'triggerAll()' */

@@ -1,16 +1,15 @@
 import { Euler, Group, Mesh, Quaternion, Texture, Vector2, Vector3 } from 'three';
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { ObjectLoaderService } from './object-loader/object-loader.service';
 import { Tile } from '../model/state/BoardLayoutState';
 import { GameStateService } from './game-state.service';
 import { Progress } from './object-loader/loaderTypes';
-import { Observable, Observer } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, Observer, Subscription, filter, take, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-export class BoardTilesService {
+export class BoardTilesService implements OnDestroy {
   centerCoords = {
     x: [-30, -20, -10, 0, 10, 20, 30, 40],
     y: [-35, -25, -15, -5, 5, 15, 25, 35],
@@ -99,20 +98,36 @@ export class BoardTilesService {
     { x: 4, y: 4, r: 2 },
   ];
 
+  // subscriptions
+  private tileTexture$$: Subscription;
+
   constructor(private objectLoader: ObjectLoaderService, private gameState: GameStateService) {}
+  ngOnDestroy(): void {
+    if (!this.tileTexture$$.closed) {
+      this.tileTexture$$.unsubscribe();
+    }
+  }
 
   initialize(addToScene: (grp: Group) => void): Observable<Progress> {
     return new Observable<Progress>((observer: Observer<Progress>) => {
       addToScene(this.generateField());
-      this.gameState.getBoardLayoutAsArray().subscribe((tiles: Tile[]) => {
-        this.tiles = tiles;
-        observer.next([1, this.tiles.length + 1]);
-        console.info(
-          'Tiles are:',
-          this.tiles.map((t) => t.title)
-        );
-        this._updateFields(observer);
-      });
+      this.gameState
+        .getBoardLayoutAsArray$()
+        .pipe(
+          filter((tiles: Tile[]) => {
+            return tiles !== undefined && tiles.find((tile: Tile) => tile === undefined) === undefined;
+          })
+        )
+        .pipe(take(1))
+        .subscribe((tiles: Tile[]) => {
+          this.tiles = tiles;
+          observer.next([1, this.tiles.length + 1]);
+          console.info(
+            'Tiles are:',
+            this.tiles.map((t) => t.title)
+          );
+          this._updateFields(observer);
+        });
     });
   }
 
@@ -222,7 +237,7 @@ export class BoardTilesService {
       if (tileId in this.tiles) {
         const mesh: Mesh = this.tileMeshes[tileId];
         const mat = mesh.material;
-        this.objectLoader
+        this.tileTexture$$ = this.objectLoader
           .loadGameTileTexture(this.tiles[tileId].imageUrl)
           .pipe(
             tap(() => {

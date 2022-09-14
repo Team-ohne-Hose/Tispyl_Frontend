@@ -2,6 +2,8 @@ import { Component, Input } from '@angular/core';
 import { GameActionType, MessageType } from '../../../../../model/WsData';
 import { GameStateService } from '../../../../../services/game-state.service';
 import { Rule } from '../../../../../model/state/Rule';
+import { Player } from 'src/app/model/state/Player';
+import { take } from 'rxjs';
 
 interface StaticRule {
   text: string;
@@ -40,17 +42,20 @@ export class IngameRuleBookComponent {
   }
 
   addRule(inputField: HTMLTextAreaElement): void {
-    console.log('current Rules', this.rules);
     const userInput: string = String(inputField.value).trim();
     inputField.value = '';
     if (userInput !== '') {
-      console.log(userInput);
-      this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
-        type: MessageType.GAME_MESSAGE,
-        action: GameActionType.addRule,
-        text: String(userInput),
-        author: this.gameState.getMe().displayName,
-      });
+      this.gameState
+        .getMe$()
+        .pipe(take(1))
+        .subscribe((player: Player) => {
+          this.gameState.sendMessage(MessageType.GAME_MESSAGE, {
+            type: MessageType.GAME_MESSAGE,
+            action: GameActionType.addRule,
+            text: String(userInput),
+            author: player.displayName,
+          });
+        });
     }
   }
 

@@ -5,7 +5,8 @@
 
   <div class="chat-box">
     <div #textSection class="text-section">
-      <div *ngFor="let msg of chatMessages" [ngClass]="{ 'move-right': msg.sender === myPlayer?.displayName }">
+      <div *ngFor="let msg of chatMessages"
+        [ngClass]="{ 'move-right': msg.sender === (gameStateService.getMe$() | getDisplayName | async)}">
         <div class="chat-message">
           <div class="head-row">
             <div class="sender"><i class="fas fa-user"></i>{{ msg.sender }}</div>
@@ -21,10 +22,8 @@
     <div class="input-section">
       <div class="command-hint" (click)="showChatCmdDropdown = !showChatCmdDropdown">
         <i class="fas fa-terminal"></i>
-        <app-chat-command-list
-          *ngIf="showChatCmdDropdown"
-          (selectCmdEmitter)="selectCmd($event)"
-        ></app-chat-command-list>
+        <app-chat-command-list *ngIf="showChatCmdDropdown" (selectCmdEmitter)="selectCmd($event)">
+        </app-chat-command-list>
       </div>
       <div (keyup)="sendChatMessageByKey($event, chatInput)" class="text-input-container">
         <input #chatInput placeholder="Type here ..." type="text" spellcheck="false" />
@@ -32,5 +31,4 @@
       <div (click)="sendChatMessage(chatInput)" class="post-button"><i class="fas fa-share"></i></div>
     </div>
   </div>
-  <input #fileInput (change)="newProfilePic($event)" style="display: none" type="file" />
 </div>

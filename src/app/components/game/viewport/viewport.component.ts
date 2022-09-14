@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { AmbientLight, DirectionalLight, Object3D, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from 'three';
 import { UserInteractionController } from './helpers/UserInteractionController';
 import { ObjectLoaderService } from '../../../services/object-loader/object-loader.service';
@@ -28,7 +28,7 @@ export class ObjectUserData {
   templateUrl: './viewport.component.html',
   styleUrls: ['./viewport.component.css'],
 })
-export class ViewportComponent implements AfterViewInit {
+export class ViewportComponent implements AfterViewInit, OnDestroy {
   @ViewChild('view') view: ElementRef;
   userInteractionController: UserInteractionController;
   sceneTree: Scene;
@@ -46,6 +46,10 @@ export class ViewportComponent implements AfterViewInit {
     private gss: GameSettingsService
   ) {
     // this.stats = Stats(); TODO: Reintroduce this in the game options
+  }
+
+  ngOnDestroy(): void {
+    this.userInteractionController.onDestroy();
   }
 
   async ngAfterViewInit(): Promise<void> {

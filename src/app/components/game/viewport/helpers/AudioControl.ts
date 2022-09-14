@@ -8,12 +8,17 @@ export class AudioControl {
   sound = new Audio(this.listener);
   audioLoader = new AudioLoader();
 
-  musicVolumeSubscription: Subscription;
+  // subscriptions
+  musicVolume$$: Subscription;
 
   constructor(public gss: GameSettingsService) {
-    this.musicVolumeSubscription = this.gss.musicVolume.subscribe((volume) => {
+    this.musicVolume$$ = this.gss.musicVolume.subscribe((volume) => {
       this.sound.setVolume(volume);
     });
+  }
+
+  onDestroy(): void {
+    this.musicVolume$$.unsubscribe();
   }
 
   initAudio(cam: Camera): void {

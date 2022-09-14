@@ -1,15 +1,11 @@
-<app-player-icon
-  [enableUpload]="true"
-  [player]="currentPlayer"
-  size="65px"
-  borderThickness="5px"
-  style="margin-bottom: 1rem"
-></app-player-icon>
+<app-player-icon [enableUpload]="true" [loginName$]="(gameStateService.getMe$() | getLoginName)" size="65px"
+  borderThickness="5px" style="margin-bottom: 1rem">
+</app-player-icon>
 
 <div class="info-section ms-3 mb-3">
   <div>
-    <div class="user-name">{{ currentPlayer?.displayName || 'Not connected' }}</div>
-    <div class="sub-script">Role: {{ getRole() }}</div>
-    <div class="sub-script">Time played: {{ getTimePlayed() }}</div>
+    <div class="user-name">{{ (gameStateService.getMe$() | getDisplayName | async) || 'Not connected' }}</div>
+    <div class="sub-script">Role: {{ role$ | async }}</div>
+    <div class="sub-script">Time played: {{ timePlayed$ | async }}</div>
   </div>
 </div>

@@ -18,4 +18,8 @@ export class UserInteractionController {
     this.audioControls = new AudioControl(gss);
     bic.camera.add(this.audioControls.listener);
   }
+
+  onDestroy() {
+    this.audioControls.onDestroy();
+  }
 }

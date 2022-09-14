@@ -1,9 +1,11 @@
-import { AfterViewInit, Component, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import * as d3 from 'd3';
 import { GameStateService } from '../../../../../../services/game-state.service';
 import { GameActionType, MessageType } from '../../../../../../model/WsData';
 import { Link } from '../../../../../../model/state/Link';
-import { ArraySchema } from '@colyseus/schema';
+import { ArraySchema, MapSchema } from '@colyseus/schema';
+import { Player } from 'src/app/model/state/Player';
+import { Subscription } from 'rxjs';
 
 export enum Colors {
   Orange = '#ffa822',
@@ -24,39 +26,57 @@ export const ColorPalette = [Colors.Orange, Colors.DarkBlue, Colors.Red, Colors.
   styleUrls: ['./trink-buddy-display.component.css'],
   encapsulation: ViewEncapsulation.None,
 })
-export class TrinkBuddyDisplayComponent implements AfterViewInit {
+export class TrinkBuddyDisplayComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('chart') chart: ElementRef;
 
   errorText = '';
 
   radius = 5;
   svg;
-  simulation = undefined;
+  simulation: d3.Simulation<any, undefined> = undefined;
 
-  links = [];
+  links: { source: string; target: string }[] = [];
+
+  // changes its type when supplied to d3
+  private drawnLinks;
   nodes = [];
 
-  constructor(private gameState: GameStateService) {
-    // TODO: Change callback registration to new version as soon as some one builds one (13/10/20).
-    if (gameState.getState() !== undefined) {
-      gameState.getState().drinkBuddyLinks.onAdd = (link) => {
-        console.log('Link was added: ', link.source, link.target);
-        setTimeout(() => this.refreshChart(), 2000); // find out why this timeout needs to exist !
-      };
-      gameState.getState().drinkBuddyLinks.onRemove = (link) => {
-        console.log('Link was removed: ', link.source, link.target);
-        setTimeout(() => this.refreshChart(), 2000); // find out why this timeout needs to exist !
-      };
-    } else {
-      console.warn(
-        'Unable to register Trinkbuddy-link onAdd & onRemove callbacks. GameStateService.getState() returned: ',
-        gameState.getState()
-      );
-    }
-  }
+  // prevent rendering before view is initialized
+  private viewInitialized = false;
+
+  // subscriptions
+  private drinkBuddyLinks$$: Subscription;
+  private playerList$$: Subscription;
+
+  constructor(private gameState: GameStateService) {}
 
   ngAfterViewInit(): void {
+    this.viewInitialized = true;
     this.refreshChart();
+  }
+
+  ngOnInit(): void {
+    // TODO: Change callback registration to new version as soon as some one builds one (13/10/20).
+    this.drinkBuddyLinks$$ = this.gameState.observableState.drinkBuddyLinks$.subscribe((drinkBuddyLinks: ArraySchema<Link>) => {
+      this.links = drinkBuddyLinks.map((link: Link) => ({ source: link.source, target: link.target }));
+      this.refreshChart();
+    });
+    this.playerList$$ = this.gameState.observableState.playerList$.subscribe((playerList: MapSchema<Player>) => {
+      const nodes = [];
+      playerList.forEach((player: Player) => {
+        nodes.push({ id: player.displayName });
+      });
+      if (nodes.length <= 0) {
+        console.warn('Failed to fetch new node data. Only 0 Nodes exist');
+      }
+      this.nodes = nodes;
+      this.refreshChart();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.drinkBuddyLinks$$.unsubscribe();
+    this.playerList$$.unsubscribe();
   }
 
   addLink(from: HTMLInputElement, to: HTMLInputElement): void {
@@ -70,9 +90,8 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
         source: source,
         target: target,
       });
-    }
-    if (validation.isAlreadyLinked) {
-      this.errorText = target + ' is already the drinking buddy of' + source;
+    } else if (validation.isAlreadyLinked) {
+      this.errorText = `${target} is already the drinking buddy of ${source}`;
     }
   }
 
@@ -87,26 +106,35 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
         source: source,
         target: target,
       });
-    }
-    if (!validation.isAlreadyLinked) {
-      this.errorText = target + ' is not the drinking buddy of' + source;
+    } else if (!validation.isAlreadyLinked) {
+      this.errorText = target + ' is not the drinking buddy of ' + source;
     }
   }
 
   refreshChart(): void {
-    if (this.simulation !== undefined) {
-      this.simulation.stop();
-      this.svg.remove();
+    if (this.viewInitialized) {
+      if (this.simulation !== undefined) {
+        this.simulation.stop();
+        this.svg.remove();
+      }
+      this.simulation = undefined;
+      this.simulation = this.buildSimulation();
     }
-    this.simulation = undefined;
-    this.fetchNodeData();
-    this.fetchLinkData();
-    this.simulation = this.buildSimulation();
   }
 
   private buildSimulation() {
     const chartWidth = this.chart.nativeElement.offsetWidth;
     const chartHeight = this.chart.nativeElement.offsetHeight;
+
+    const knownNodes = this.nodes.map((n) => n.id);
+    this.drawnLinks = this.links
+      .filter((link: Link) => {
+        return knownNodes.indexOf(link.source) !== -1 && knownNodes.indexOf(link.target) !== -1;
+      })
+      .map((link: Link) => {
+        // create an other reference, since d3 changes the link object
+        return { source: link.source, target: link.target };
+      });
 
     // Define simulation
     const simulation = d3
@@ -114,7 +142,7 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
       .force(
         'link',
         d3
-          .forceLink(this.links)
+          .forceLink(this.drawnLinks)
           .id((d) => d['id'])
           .distance(50)
       )
@@ -151,7 +179,7 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
       .attr('class', 'links')
       .attr('stroke-opacity', 1)
       .selectAll('line')
-      .data(this.links)
+      .data(this.drawnLinks)
       .join('line')
       .attr('stroke', () => {
         return ColorPalette[Math.floor(Math.random() * ColorPalette.length)];
@@ -233,63 +261,44 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit {
     const source = String(from.value).trim();
     const target = String(to.value).trim();
 
-    let isFromValid = false;
-    let isToValid = false;
-    let isAlreadyLinked = false;
+    const errors = {
+      isFromValid: false,
+      isToValid: false,
+      isAlreadyLinked: false,
+    };
 
     for (const node of this.nodes) {
       if (node.id === source) {
-        isFromValid = true;
+        errors.isFromValid = true;
       }
       if (node.id === target) {
-        isToValid = true;
+        errors.isToValid = true;
       }
     }
-    for (const link of this.links) {
+    for (const link of this.drawnLinks) {
       if (this.nodes[link.source.index].id === source && this.nodes[link.target.index].id === target) {
-        isAlreadyLinked = true;
+        errors.isAlreadyLinked = true;
       }
     }
 
-    if (!isToValid) {
+    if (!errors.isToValid) {
       this.errorText = 'Target name was not found.';
     }
-    if (!isFromValid) {
+    if (!errors.isFromValid) {
       this.errorText = 'Source name was not found.';
     }
     if (source === '' || target === '') {
       this.errorText = 'At least one name was empty.';
     }
+    if (source === target) {
+      errors.isFromValid = false;
+      errors.isToValid = false;
+      this.errorText = 'Target and source should not be the same.';
+    }
     setTimeout(() => {
       this.errorText = '';
     }, 6000);
 
-    return { isFromValid: isFromValid, isToValid: isToValid, isAlreadyLinked: isAlreadyLinked };
-  }
-
-  private fetchNodeData() {
-    this.nodes = [];
-    this.gameState.forEachPlayer((p) => {
-      this.nodes.push({ id: p.displayName });
-    });
-    if (this.nodes.length <= 0) {
-      console.warn('Failed to fetch new node data, because the game state was not defined. Nodes now: ', this.nodes);
-    }
-  }
-
-  private fetchLinkData() {
-    const state = this.gameState.getState();
-    if (state !== undefined) {
-      this.links = [];
-      const remoteLinks: ArraySchema<Link> = state.drinkBuddyLinks;
-      const knownNodes = this.nodes.map((n) => n.id);
-      remoteLinks.forEach((link: Link) => {
-        if (knownNodes.indexOf(link.source) !== -1 && knownNodes.indexOf(link.target) !== -1) {
-          this.links.push({ source: link.source, target: link.target });
-        }
-      });
-    } else {
-      console.warn('Failed to fetch new link data, because the game state was not defined. Links now: ', this.links);
-    }
+    return errors;
   }
 }

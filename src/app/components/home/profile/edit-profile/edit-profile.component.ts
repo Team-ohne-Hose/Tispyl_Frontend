@@ -23,8 +23,7 @@ export class EditProfileComponent implements OnInit {
 
   @Input() currentUser: BasicUser;
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  @Input() toggleShow: () => {};
+  @Input() toggleShow: () => void;
 
   /** input values */
   username = '';

@@ -1,16 +1,16 @@
-import { Component, Input } from '@angular/core';
-import { Player } from '../../../model/state/Player';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FileService } from '../../../services/file.service';
 import { GameStateService } from '../../../services/game-state.service';
 import { MessageType, RefreshCommandType, RefreshProfilePics } from '../../../model/WsData';
 import { UserService } from '../../../services/user.service';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-player-icon',
   templateUrl: './player-icon.component.html',
   styleUrls: ['./player-icon.component.css'],
 })
-export class PlayerIconComponent {
+export class PlayerIconComponent implements OnInit, OnDestroy {
   @Input()
   size = '100px';
 
@@ -18,10 +18,9 @@ export class PlayerIconComponent {
   borderThickness = '10px';
 
   currentSource = '../../assets/defaultImage.jpg';
-  currentUser = this.userManagement.activeUser.value;
 
   @Input()
-  player: Player = undefined;
+  loginName$: Observable<string> = undefined;
 
   @Input()
   loginName: string = undefined;
@@ -29,29 +28,44 @@ export class PlayerIconComponent {
   @Input()
   enableUpload = false;
 
-  constructor(private fileManagement: FileService, private gameState: GameStateService, private userManagement: UserService) {}
+  private loginNameCached: string;
+
+  // subscriptions
+  private loginName$$: Subscription;
+
+  constructor(private fileService: FileService, private gameState: GameStateService, private userService: UserService) {}
+
+  ngOnInit(): void {
+    // player-icon.component can be fed with either a login name(loginName) or
+    // an Observable of a login name(loginName$). This 'if' handles this behavior
+    // This is also, why loginNameCached is needed
+    if (this.loginName$ !== undefined && this.loginName$ !== null) {
+      this.loginName$$ = this.loginName$.subscribe((loginName: string) => {
+        this.currentSource = this.fileService.profilePictureSource(loginName);
+        this.loginNameCached = loginName;
+      });
+    } else {
+      this.currentSource = this.fileService.profilePictureSource(this.loginName);
+      this.loginNameCached = this.loginName;
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.loginName$$) this.loginName$$.unsubscribe();
+  }
 
   uploadImageFile(event: Event): void {
     const target = event.target as HTMLInputElement;
     const file = target?.files[0];
-    if (this.player !== undefined && file !== undefined) {
-      const sub = this.fileManagement.uploadProfilePicture(file, this.currentUser).subscribe(() => {
-        this.currentSource = this.fileManagement.profilePictureSource(this.player.loginName, true);
+    if (this.loginNameCached !== undefined && file !== undefined) {
+      this.fileService.uploadProfilePicture(file, this.userService.activeUser.getValue()).subscribe(() => {
+        this.currentSource = this.fileService.profilePictureSource(this.loginNameCached, true);
         const msg: RefreshProfilePics = {
           type: MessageType.REFRESH_COMMAND,
           subType: RefreshCommandType.refreshProfilePic,
         };
         this.gameState.sendMessage(MessageType.REFRESH_COMMAND, msg);
-        sub.unsubscribe();
       });
-    }
-  }
-
-  ngOnInit(): void {
-    if (this.player !== undefined) {
-      this.currentSource = this.fileManagement.profilePictureSource(this.player.loginName);
-    } else if (this.loginName !== undefined) {
-      this.currentSource = this.fileManagement.profilePictureSource(this.loginName);
     }
   }
 }

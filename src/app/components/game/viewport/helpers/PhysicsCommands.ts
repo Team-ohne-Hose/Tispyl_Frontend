@@ -11,12 +11,13 @@ import {
   PhysicsEntityVariation,
 } from '../../../../model/WsData';
 import { ObjectUserData } from '../viewport.component';
-import { PhysicsObjectState, PhysicsState } from '../../../../model/state/PhysicsState';
+import { PhysicsObjectState } from '../../../../model/state/PhysicsState';
 import { Player } from '../../../../model/state/Player';
 import { BoardItemControlService } from '../../../../services/board-item-control.service';
-import { map, take } from 'rxjs/operators';
-import { Observable, Observer } from 'rxjs';
+import { take } from 'rxjs/operators';
+import { Observable, Observer, Subscription } from 'rxjs';
 import { Progress } from '../../../../services/object-loader/loaderTypes';
+import { MapSchema } from '@colyseus/schema';
 
 export enum ClickedTarget {
   other,
@@ -42,10 +43,17 @@ export class PhysicsCommands {
   addInteractable: (obj: Object3D) => void;
   addPlayer: (mesh: Object3D, name: string) => void;
 
+  // subscriptions
+  private objectsMoved$$: Subscription;
+
   constructor(private bic: BoardItemControlService) {
-    this.bic.gameState.physicsObjectMoved$.subscribe((item: PhysicsObjectState) => {
+    this.objectsMoved$$ = this.bic.gameState.observableState.physicsState.objectsMoved$.subscribe((item: PhysicsObjectState) => {
       this._updateOrGenerateItem(item);
     });
+  }
+
+  public onDestroy() {
+    this.objectsMoved$$.unsubscribe();
   }
 
   /**
@@ -54,10 +62,10 @@ export class PhysicsCommands {
    * @param physId physicsId that is searched for recursively
    */
   static getObjectByPhysId(toSearch: Object3D, physId: number): Object3D {
-    if (toSearch.userData.physicsId === physId) {
+    if (toSearch?.userData && toSearch.userData.physicsId === physId) {
       return toSearch;
     } else {
-      return toSearch.children.find((obj: Object3D) => {
+      return toSearch?.children?.find((obj: Object3D) => {
         const res = PhysicsCommands.getObjectByPhysId(obj, physId);
         return res !== undefined;
       });
@@ -68,38 +76,18 @@ export class PhysicsCommands {
     return obj.userData.physicsId;
   }
 
-  getInitializePending(): number {
-    const physState: PhysicsState = this.bic.gameState.getPhysicsState();
-    if (physState !== undefined && physState.objects !== undefined) {
-      return physState.objects.size;
-    }
-    return 0;
-  }
-
   initializeFromState(): Observable<Progress> {
     return new Observable<Progress>((observer: Observer<Progress>) => {
-      this.bic.gameState.physicState$
-        .pipe(
-          take(1),
-          map((state: PhysicsState) => {
-            let count = 0;
-            if (state !== undefined) {
-              observer.next([count, state.objects.size]);
-              state.objects.forEach((item: PhysicsObjectState) => {
-                this._updateOrGenerateItem(item);
-                count++;
-                observer.next([count, state.objects.size]);
-              });
-            } else {
-              console.error(
-                'PhysicsState is not accessible in initialization. Ensure loading initialization is done after Room data is available.'
-              );
-            }
-          })
-        )
-        .subscribe(() => {
-          observer.complete();
+      this.bic.gameState.observableState.physicsState.objects$.pipe(take(1)).subscribe((physicsObjects: MapSchema<PhysicsObjectState>) => {
+        let count = 0;
+        observer.next([count, physicsObjects.size]);
+        physicsObjects.forEach((item: PhysicsObjectState) => {
+          this._updateOrGenerateItem(item);
+          count++;
+          observer.next([count, physicsObjects.size]);
         });
+        observer.complete();
+      });
     });
   }
 
@@ -109,7 +97,15 @@ export class PhysicsCommands {
       if (obj !== undefined) {
         this._updateCorrelatedObject(item, obj);
       } else {
-        if (item.entity >= 0 && this.bic.sceneTree.children.length < this.MAX_ALLOWED_OBJECTS) {
+        if (item.entity >= 0 && this.bic.sceneTree === undefined) {
+          /* sceneTree is not yet initialized, this happens if ngAfterView
+           * for viewport hasnt been done yet. This happens when early state
+           * changes prompt changes in the scene, but it is not yet initialized
+           * completly.
+           * Therefore, nothing is done here. The entity is probably gonna be
+           * initialized from normal loading or on a state update in the future.
+           */
+        } else if (item.entity >= 0 && this.bic.sceneTree.children.length < this.MAX_ALLOWED_OBJECTS) {
           if (!this.currentlyLoadingEntities.get(item.objectIDPhysics)) {
             this.currentlyLoadingEntities.set(item.objectIDPhysics, true);
             this._generateEntityFromItem(item);
@@ -246,29 +242,29 @@ export class PhysicsCommands {
         clickRole: undefined,
       };
       model.userData = userData;
-      console.debug('Adding physics object', model.userData.physicsId, model.name, entity, variant);
       this.bic.sceneTree.add(model);
 
-      let player: Player;
       // set the various references in other classes
       switch (entity) {
         case PhysicsEntity.dice:
           this.setClickRole(ClickedTarget.dice, model);
           this.dice = model;
-          // console.log('set dice');
           break;
         case PhysicsEntity.figure:
           this.setClickRole(ClickedTarget.figure, model);
 
           // Load other playermodels
-          player = this.bic.gameState.findInPlayerList((p: Player) => {
-            return p.figureId === physicsId;
-          });
-          if (player !== undefined) {
-            this.bic.loader.switchTex(model, player.figureModel);
-            this.addPlayer(model, player.displayName);
-            model.userData.displayName = player.displayName;
-          }
+          this.bic.gameState
+            .findInPlayerListOnce$((p: Player) => {
+              return p.figureId === physicsId;
+            })
+            .subscribe((player: Player | undefined) => {
+              if (player !== undefined) {
+                this.bic.loader.switchTex(model, player.figureModel);
+                this.addPlayer(model, player.displayName);
+                model.userData.displayName = player.displayName;
+              }
+            });
           break;
       }
       this.currentlyLoadingEntities.set(physicsId, false);

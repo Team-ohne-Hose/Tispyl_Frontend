@@ -3,6 +3,8 @@ import { GameActionType, MessageType } from '../../../../model/WsData';
 import { Player } from '../../../../model/state/Player';
 import { GameStateService } from '../../../../services/game-state.service';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { MapSchema } from '@colyseus/schema';
+import { Observable, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-pregame-banner',
@@ -29,9 +31,12 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 })
 export class PregameBannerComponent {
   @Input()
-  players: Player[];
+  players$: Subject<MapSchema<Player>>;
 
   amIReady = false;
+
+  protected readyPlayers$: Observable<number>;
+  protected totalPlayers$: Observable<number>;
 
   constructor(private gameState: GameStateService) {}
 
@@ -42,9 +47,5 @@ export class PregameBannerComponent {
       action: GameActionType.readyPropertyChange,
       isReady: this.amIReady,
     });
-  }
-
-  countReadyPlayers(): number {
-    return this.players.filter((p) => p.isReady).length;
   }
 }

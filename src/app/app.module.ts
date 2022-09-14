@@ -80,6 +80,15 @@ import { VolumeSlider } from './components/game/interface/menu-bar/settings/volu
 import { AvatarSectionComponent } from './components/game/interface/menu-bar/avatar-section/avatar-section.component';
 import { BottleCapPickerComponent } from './components/game/interface/menu-bar/bottle-cap-picker/bottle-cap-picker.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { environment } from 'src/environments/environment';
+import { GetLoginNamePipe } from './services/game-state-pipes/get-login-name.pipe';
+import { GetDisplayNamePipe } from './services/game-state-pipes/get-display-name.pipe';
+import { FilterReadyPlayersPipe } from './services/game-state-pipes/filter-ready-players.pipe';
+import { CountPlayersPipe } from './services/game-state-pipes/count-players.pipe';
+import { AsPlayerArrayPipe } from './services/game-state-pipes/as-player-array.pipe';
+import { LogFromHTMLPipe } from './services/game-state-pipes/log-from-html.pipe';
+import { CountAllVotesPipe } from './services/game-state-pipes/count-all-votes.pipe';
+import { PlayerAffiliationPipe } from './services/game-state-pipes/player-affiliation.pipe';
 const appRoutes: Routes = [
   {
     path: '',
@@ -112,10 +121,13 @@ const appRoutes: Routes = [
       { path: 'bug', component: PageNotFoundComponent },
     ],
   },
-  { path: '_debug', component: DebugdummyComponent },
   { path: 'game', component: GameComponent },
-  { path: '**', component: PageNotFoundComponent },
 ];
+
+// only enable _debug in dev mode
+// default PageNotFound needs to be the last in array, so it has to be pushed as well
+if (!environment.production) appRoutes.push({ path: '_debug', component: DebugdummyComponent });
+appRoutes.push({ path: '**', component: PageNotFoundComponent });
 
 @NgModule({
   declarations: [
@@ -175,6 +187,14 @@ const appRoutes: Routes = [
     VolumeSlider,
     AvatarSectionComponent,
     BottleCapPickerComponent,
+    GetLoginNamePipe,
+    GetDisplayNamePipe,
+    FilterReadyPlayersPipe,
+    CountPlayersPipe,
+    AsPlayerArrayPipe,
+    LogFromHTMLPipe,
+    CountAllVotesPipe,
+    PlayerAffiliationPipe,
   ],
   imports: [
     RouterModule.forRoot(

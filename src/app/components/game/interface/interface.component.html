@@ -1,26 +1,23 @@
 <div class="interface-bounds">
-  <app-state-display #stateDisplay
-    [action]="gameState.getAction()"
-    [currentPlayerDisplayName]="gameState.getCurrentPlayerDisplayName()"
-    [round]="gameState.getRound()"
-    [disabled]="!gameState.hasStarted()"
-  >
+  <app-state-display #stateDisplay [action]="gameState.observableState.action$ | async"
+    [currentPlayerDisplayName]="gameState.getCurrentPlayerDisplayName$() | async"
+    [round]="gameState.observableState.round$ | async" [disabled]="!(gameState.observableState.hasStarted$ | async)">
   </app-state-display>
-  <app-pregame-banner @fadeOutAnimation *ngIf="!gameState.hasStarted()" [players]="gameState.getPlayerArray()"></app-pregame-banner>
+  <app-pregame-banner @fadeOutAnimation *ngIf="!(gameState.observableState.hasStarted$ | async)"
+    [players$]="gameState.observableState.playerList$">
+  </app-pregame-banner>
   <app-connected-players></app-connected-players>
-  <app-menu-bar
-    [playerList]="gameState.getPlayerArray()"
-    [ruleList]="gameState.getRules()">
+  <app-menu-bar [playerList]="gameState.getPlayerArray$() | async"
+    [ruleList]="gameState.observableState.rules$ | async">
   </app-menu-bar>
-  <app-turn-overlay #turnOverlay
-                    [currentPlayerName]="gameState.getCurrentPlayerDisplayName()" [ownTurn]="isMyTurn$ | async">
+  <app-turn-overlay #turnOverlay>
   </app-turn-overlay>
   <app-items-interface></app-items-interface>
   <div id="othermenus-container">
     <div class="attribution">
       <a (click)="showAttribution()" href="javascript:;">Attribution</a>
     </div>
-    <app-tile-overlay #tileOverlay ></app-tile-overlay>
+    <app-tile-overlay #tileOverlay></app-tile-overlay>
     <app-shortcut-overlay></app-shortcut-overlay>
   </div>
   <app-introduction></app-introduction>

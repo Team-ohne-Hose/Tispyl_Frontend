@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnDestroy, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ItemService } from '../../../../services/items-service/item.service';
 import { Observable, Subscription } from 'rxjs';
 import { Item, executeTypes, itemTable } from '../../../../services/items-service/itemLUT';
@@ -29,7 +29,7 @@ import {
     ]),
   ],
 })
-export class ItemsInterfaceComponent implements OnDestroy {
+export class ItemsInterfaceComponent implements OnInit, OnDestroy {
   /** Constants */
   readonly MAX_ITEM_COUNT = 5;
   readonly ITEM_TABLE = itemTable;
@@ -66,11 +66,16 @@ export class ItemsInterfaceComponent implements OnDestroy {
   random_max: number;
 
   /** Content values */
-  itemList$$: Subscription;
   itemList: Item[] = [];
+
+  // subscriptions
+  itemList$$: Subscription;
 
   constructor(private itemService: ItemService, private commandService: CommandService, public gameState: GameStateService) {
     this.slotHidden = new Array<boolean>(this.MAX_ITEM_COUNT).fill(true, 0, this.MAX_ITEM_COUNT);
+  }
+
+  ngOnInit(): void {
     this.itemList$$ = this.itemService.myItems$.subscribe((list: Item[]) => {
       this.itemList = list;
     });
@@ -149,5 +154,9 @@ export class ItemsInterfaceComponent implements OnDestroy {
 
   nextTurn(): void {
     this.commandService.executeChatCommand('/next');
+  }
+
+  hideInfo(): void {
+    this.isInfoHidden = false;
   }
 }

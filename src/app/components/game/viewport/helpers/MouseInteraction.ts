@@ -3,6 +3,7 @@ import { ClickedTarget, PhysicsCommands } from './PhysicsCommands';
 import { BoardItemControlService } from '../../../../services/board-item-control.service';
 import { Player } from '../../../../model/state/Player';
 import { itemTargetErrorType } from '../../../../services/items-service/item.service';
+import { take } from 'rxjs';
 
 /** See: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button */
 enum mouseButton {
@@ -77,13 +78,24 @@ export class MouseInteraction {
         this.getClickedType(intersects[0].object) === ClickedTarget.figure
       ) {
         const obj = intersects[0].object;
-        const targetFigureId = this.bic.gameState.getMyFigureId();
-        if (targetFigureId !== obj.userData.physicsId) {
-          const targetPlayer: Player = this.bic.gameState.getPlayerArray().find((p) => p.figureId === obj.userData.physicsId);
-          if (targetPlayer !== undefined) {
-            this.bic.itemService.onTargetHover(obj.userData.physicsId);
-          }
-        }
+
+        this.bic.gameState
+          .getMe$()
+          .pipe(take(1))
+          .subscribe((me: Player) => {
+            const targetFigureId = me.figureId;
+            if (targetFigureId !== obj.userData.physicsId) {
+              this.bic.gameState
+                .findInPlayerListOnce$((player: Player) => {
+                  return player.figureId === obj.userData.physicsId;
+                })
+                .subscribe((targetPlayer: Player) => {
+                  if (targetPlayer !== undefined) {
+                    this.bic.itemService.onTargetHover(obj.userData.physicsId);
+                  }
+                });
+            }
+          });
       }
     }
   }
@@ -172,19 +184,27 @@ export class MouseInteraction {
           this.handleBoardTileClick(point);
           this.currentlySelected = undefined;
         } else {
-          if (this.bic.gameState.getMyFigureId() === obj.userData.physicsId) {
-            this.currentlySelected = { obj: obj, oldPos: obj.position.clone() };
-            this.bic.physics.setKinematic(PhysicsCommands.getPhysId(obj), true);
-            this.bic.physics.wakeAll();
-            this.bic.hoverGameFigure(this.currentlySelected.obj, point.x, point.z);
-          } else {
-            if (this.bic.itemService.isTargeting()) {
-              const targetPlayer: Player = this.bic.gameState.getPlayerArray().find((p) => p.figureId === obj.userData.physicsId);
-              this.bic.itemService.onTargetFinish(targetPlayer);
-            } else {
-              console.log('This is not your figure');
-            }
-          }
+          this.bic.gameState
+            .getMe$()
+            .pipe(take(1))
+            .subscribe((me: Player) => {
+              if (me.figureId === obj.userData.physicsId) {
+                this.currentlySelected = { obj: obj, oldPos: obj.position.clone() };
+                this.bic.physics.setKinematic(PhysicsCommands.getPhysId(obj), true);
+                this.bic.physics.wakeAll();
+                this.bic.hoverGameFigure(this.currentlySelected.obj, point.x, point.z);
+              } else {
+                if (this.bic.itemService.isTargeting()) {
+                  this.bic.gameState
+                    .findInPlayerListOnce$((player: Player) => {
+                      return player.figureId === obj.userData.physicsId;
+                    })
+                    .subscribe((targetPlayer: Player) => {
+                      this.bic.itemService.onTargetFinish(targetPlayer);
+                    });
+                }
+              }
+            });
         }
       } else if (type === ClickedTarget.dice) {
         this.bic.throwDice();
