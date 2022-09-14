@@ -33,9 +33,11 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit, OnInit, OnDest
 
   radius = 5;
   svg;
-  simulation = undefined;
+  simulation: d3.Simulation<any, undefined> = undefined;
 
-  links = [];
+  links: { source: string; target: string }[] = [];
+
+  // changes its type when supplied to d3
   private drawnLinks;
   nodes = [];
 
@@ -60,13 +62,14 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit, OnInit, OnDest
       this.refreshChart();
     });
     this.playerList$$ = this.gameState.observableState.playerList$.subscribe((playerList: MapSchema<Player>) => {
-      this.nodes = [];
+      const nodes = [];
       playerList.forEach((player: Player) => {
-        this.nodes.push({ id: player.displayName });
+        nodes.push({ id: player.displayName });
       });
-      if (this.nodes.length <= 0) {
+      if (nodes.length <= 0) {
         console.warn('Failed to fetch new node data. Only 0 Nodes exist');
       }
+      this.nodes = nodes;
       this.refreshChart();
     });
   }
@@ -88,7 +91,7 @@ export class TrinkBuddyDisplayComponent implements AfterViewInit, OnInit, OnDest
         target: target,
       });
     } else if (validation.isAlreadyLinked) {
-      this.errorText = target + ' is already the drinking buddy of ' + source;
+      this.errorText = `${target} is already the drinking buddy of ${source}`;
     }
   }
 

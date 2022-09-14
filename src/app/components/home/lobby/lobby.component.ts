@@ -7,7 +7,7 @@ import { BasicUser, UserService } from '../../../services/user.service';
 import { RoomMetaInfo } from '../../../model/RoomMetaInfo';
 import { JoinGameComponent } from '../dialogs/join-game/join-game.component';
 import { GameState } from '../../../model/state/GameState';
-import { environmentList } from './lobbyLUTs';
+import { Environment, environmentList } from './lobbyLUTs';
 import { ObjectLoaderService } from '../../../services/object-loader/object-loader.service';
 import { DialogResult } from '../dialogs/open-game-popup/open-game-popup.component';
 import { Subscription } from 'rxjs';
@@ -19,7 +19,7 @@ import { Subscription } from 'rxjs';
 })
 export class LobbyComponent implements OnInit, OnDestroy {
   /** General constants */
-  protected environments = environmentList;
+  protected environments: Environment[] = environmentList;
 
   /** Game room & Colyseus values */
   protected currentUser: BasicUser;

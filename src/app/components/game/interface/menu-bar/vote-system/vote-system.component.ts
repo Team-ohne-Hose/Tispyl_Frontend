@@ -99,11 +99,10 @@ export class VoteSystemComponent implements OnInit, OnDestroy {
       me: this.gameState.getMe$(),
     }).subscribe((values: { voteStage: VoteStage; voteHost: string; me: Player }) => {
       if (values.voteStage === VoteStage.CREATION) {
-        if (values.voteHost === values.me.displayName) {
-          this.voteSystemState = VoteSystemState.creating;
-        } else {
-          this.voteSystemState = VoteSystemState.waiting;
-        }
+        this.voteSystemState =
+          values.voteHost === values.me.displayName
+            ? (this.voteSystemState = VoteSystemState.creating)
+            : (this.voteSystemState = VoteSystemState.waiting);
       }
     });
 

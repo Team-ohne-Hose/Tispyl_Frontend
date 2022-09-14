@@ -363,7 +363,7 @@ export class CommandService {
 
   private showLocalState(rawCMD: string, parameters: string[]): void {
     this.gameState.room$.pipe(take(1)).subscribe((room: Room<GameState>) => {
-      console.log(`State`, room.state);
+      console.debug(`State`, room.state);
     });
   }
 

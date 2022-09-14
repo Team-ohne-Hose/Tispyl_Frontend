@@ -18,13 +18,15 @@ export class HomeRegisterComponent {
   @ViewChild('chatInput') chatInput: ElementRef;
 
   protected chatMessages: ChatMessage[] = [];
-  protected showChatCmdDropdown = false;
+  protected showChatCmdDropdown: boolean;
 
   private commandHistory: string[] = [];
   private curCmdHistoryOffset = -1; // -1 means no selection has been made
   private readonly maxCmdHistory = 32;
 
   constructor(private chatService: ChatService, private commandService: CommandService, protected gameStateService: GameStateService) {
+    this.showChatCmdDropdown = false;
+
     this.chatMessages = this.chatService.getChatMessages();
     this.chatService.setMessageCallback(this.onChatMessage.bind(this));
 

@@ -6,7 +6,7 @@
       <div class="player-list">
         <div *ngFor="let p of (players$ | async); index as i"
           [ngClass]="{'player-box-custom-border': true, 'active': p.loginName === (gameState.observableState.currentPlayerLogin$ | async)}"
-          [@turnMovement]="p.loginName === (gameState.observableState.currentPlayerLogin$ | async) ? 'yours' : 'others'">
+          [@turnMovement]="(gameState.observableState.currentPlayerLogin$ | playerAffiliation:p.loginName | async)">
           <div class="player-box">
             <div class="background-layer">
               <div class="index">{{(i + 1) | asRomanNumeral}}</div>

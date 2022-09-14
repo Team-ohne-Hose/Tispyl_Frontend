@@ -10,11 +10,9 @@ export class CountAllVotesPipe implements PipeTransform {
   transform(voteList$: Observable<ArraySchema<VoteEntry>>): Observable<number> {
     return voteList$.pipe(
       map((voteList: ArraySchema<VoteEntry>) => {
-        let voteCount = 0;
-        voteList.forEach((voteEntry: VoteEntry) => {
-          voteCount += voteEntry.castVotes.length;
-        });
-        return voteCount;
+        return voteList.reduce<number>((previousValue: number, currentValue: VoteEntry) => {
+          return previousValue + currentValue.castVotes.length;
+        }, 0);
       })
     );
   }

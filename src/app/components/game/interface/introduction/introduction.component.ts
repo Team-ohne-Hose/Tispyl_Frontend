@@ -9,12 +9,14 @@ import { BasicUser, UserService } from '../../../../services/user.service';
   styleUrls: ['./introduction.component.css'],
 })
 export class IntroductionComponent implements OnInit, OnDestroy {
-  visible = false;
+  visible: boolean;
 
   // subscriptions
   private activeUser$$: Subscription;
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) {
+    this.visible = false;
+  }
 
   ngOnInit(): void {
     this.activeUser$$ = this.userService.activeUser
@@ -22,9 +24,7 @@ export class IntroductionComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(
         ((user: BasicUser) => {
-          if (user.time_played < 300) {
-            this.visible = true;
-          }
+          if (user.time_played < 300) this.visible = true;
         }).bind(this)
       );
   }

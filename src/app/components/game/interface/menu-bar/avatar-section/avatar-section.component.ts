@@ -6,6 +6,11 @@ import { FileService } from 'src/app/services/file.service';
 import { GameStateService } from 'src/app/services/game-state.service';
 import { BasicUser, UserService } from 'src/app/services/user.service';
 
+export enum TitleRole {
+  'HOST' = 'Host',
+  'DEV' = 'Dev',
+  'PLAYER' = 'Player',
+}
 @Component({
   selector: 'app-menu-avatar',
   templateUrl: './avatar-section.component.html',
@@ -36,11 +41,11 @@ export class AvatarSectionComponent {
       .pipe(
         map((value: { currentUser: BasicUser; isHost: boolean }) => {
           if (value.isHost) {
-            return 'Host';
+            return TitleRole.HOST;
           } else if (value.currentUser.is_dev) {
-            return 'Dev';
+            return TitleRole.DEV;
           } else {
-            return 'Player';
+            return TitleRole.PLAYER;
           }
         })
       )
@@ -55,8 +60,6 @@ export class AvatarSectionComponent {
         .pipe(take(1))
         .subscribe((me: Player) => {
           this.fileService.uploadProfilePictureByLoginName(file, me.loginName).subscribe((suc) => {
-            console.log('Uploaded new profile picture: ', suc);
-
             this.userImageUrl = this.fileService.profilePictureSource(me.loginName, true);
             const msg: RefreshProfilePics = {
               type: MessageType.REFRESH_COMMAND,

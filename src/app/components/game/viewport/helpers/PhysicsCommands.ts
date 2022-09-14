@@ -102,7 +102,7 @@ export class PhysicsCommands {
            * for viewport hasnt been done yet. This happens when early state
            * changes prompt changes in the scene, but it is not yet initialized
            * completly.
-           * Therefore, nothing is done here. The entity probably gonna be
+           * Therefore, nothing is done here. The entity is probably gonna be
            * initialized from normal loading or on a state update in the future.
            */
         } else if (item.entity >= 0 && this.bic.sceneTree.children.length < this.MAX_ALLOWED_OBJECTS) {

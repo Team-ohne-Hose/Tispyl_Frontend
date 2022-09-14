@@ -88,6 +88,7 @@ import { CountPlayersPipe } from './services/game-state-pipes/count-players.pipe
 import { AsPlayerArrayPipe } from './services/game-state-pipes/as-player-array.pipe';
 import { LogFromHTMLPipe } from './services/game-state-pipes/log-from-html.pipe';
 import { CountAllVotesPipe } from './services/game-state-pipes/count-all-votes.pipe';
+import { PlayerAffiliationPipe } from './services/game-state-pipes/player-affiliation.pipe';
 const appRoutes: Routes = [
   {
     path: '',
@@ -193,6 +194,7 @@ appRoutes.push({ path: '**', component: PageNotFoundComponent });
     AsPlayerArrayPipe,
     LogFromHTMLPipe,
     CountAllVotesPipe,
+    PlayerAffiliationPipe,
   ],
   imports: [
     RouterModule.forRoot(

@@ -28,7 +28,7 @@ export class PlayerIconComponent implements OnInit, OnDestroy {
   @Input()
   enableUpload = false;
 
-  private loginNameCached;
+  private loginNameCached: string;
 
   // subscriptions
   private loginName$$: Subscription;
@@ -36,6 +36,9 @@ export class PlayerIconComponent implements OnInit, OnDestroy {
   constructor(private fileService: FileService, private gameState: GameStateService, private userService: UserService) {}
 
   ngOnInit(): void {
+    // player-icon.component can be fed with either a login name(loginName) or
+    // an Observable of a login name(loginName$). This 'if' handles this behavior
+    // This is also, why loginNameCached is needed
     if (this.loginName$ !== undefined && this.loginName$ !== null) {
       this.loginName$$ = this.loginName$.subscribe((loginName: string) => {
         this.currentSource = this.fileService.profilePictureSource(loginName);

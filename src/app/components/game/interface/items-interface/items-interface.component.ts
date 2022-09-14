@@ -155,4 +155,8 @@ export class ItemsInterfaceComponent implements OnInit, OnDestroy {
   nextTurn(): void {
     this.commandService.executeChatCommand('/next');
   }
+
+  hideInfo(): void {
+    this.isInfoHidden = false;
+  }
 }

@@ -653,9 +653,7 @@ export class ObjectLoaderService {
     } else {
       this.loadBcapTex(model, (tex, spec) => {
         console.warn('texData not cohesive, loading texture');
-        if (tex === undefined) {
-          console.error('Error loading bcap texture', model);
-        }
+        if (tex === undefined) console.error('Error loading bcap texture', model);
       });
       return undefined;
     }

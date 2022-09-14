@@ -32,9 +32,7 @@ export class InterfaceComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.currentPlayerLogin$$ = this.gameState.observableState.currentPlayerLogin$.subscribe(() => {
-      if (this.turnOverlayRef !== undefined) {
-        this.turnOverlayRef.show();
-      }
+      if (this.turnOverlayRef !== undefined) this.turnOverlayRef.show();
     });
   }
 

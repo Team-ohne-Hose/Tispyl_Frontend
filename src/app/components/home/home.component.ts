@@ -32,7 +32,7 @@ export class HomeComponent implements OnInit, AfterContentInit, OnDestroy {
   /** Carousel auxiliaries */
   private scrollInterval = 5000;
   protected activeSlide = 1;
-  protected originalSourceCount = this.imageSources.length;
+  protected originalSourceCount: number = this.imageSources.length;
   @ViewChild('banner') banner: ElementRef;
 
   /** Navbar auxiliaries */

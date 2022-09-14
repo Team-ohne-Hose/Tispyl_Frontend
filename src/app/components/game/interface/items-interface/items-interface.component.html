@@ -4,7 +4,7 @@
     <div class="decor-head">Deine Items:</div>
     <div class="decor-caret-l"></div>
     <div class="decor-caret-r"></div>
-    <div class="decor-help custom-anchor" (click)="isInfoHidden = false" #info>
+    <div class="decor-help custom-anchor" (click)="hideInfo()" #info>
       <i class="fas fa-question-circle"></i>
       <app-custom-popover *ngIf="!isInfoHidden" [options]="hintPopoverOpts" [customClass]="'translucentInterface'">
         <div class="question-text">

@@ -202,8 +202,6 @@ export class MouseInteraction {
                     .subscribe((targetPlayer: Player) => {
                       this.bic.itemService.onTargetFinish(targetPlayer);
                     });
-                } else {
-                  console.log('This is not your figure');
                 }
               }
             });

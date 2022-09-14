@@ -54,7 +54,6 @@ export class ProfileDisplayComponent implements OnInit, OnDestroy {
   }
 
   logout(): void {
-    console.log('logout');
     this.AuthService.logout();
     this.userManagement.setActiveUser(undefined);
   }

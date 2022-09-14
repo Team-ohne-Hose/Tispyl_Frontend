@@ -28,10 +28,11 @@ export class VoteCreatorComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.playerList$$ = this.gameState.observableState.playerList$.subscribe((playerList: MapSchema<Player>) => {
-      this.playerList = [];
+      const playerListArray = [];
       playerList.forEach((player: Player) => {
-        this.playerList.push(player);
+        playerListArray.push(player);
       });
+      this.playerList = playerListArray;
     });
   }
 
@@ -40,12 +41,9 @@ export class VoteCreatorComponent implements OnInit, OnDestroy {
   }
 
   isEligible(player: Player): boolean {
-    if (this.eligibilities.has(player.displayName)) {
-      return this.eligibilities.get(player.displayName);
-    } else {
-      this.eligibilities.set(player.displayName, true);
-      return true;
-    }
+    if (this.eligibilities.has(player.displayName)) return this.eligibilities.get(player.displayName);
+    this.eligibilities.set(player.displayName, true);
+    return true;
   }
 
   toggleEligibility(player: Player): void {
@@ -103,12 +101,9 @@ export class VoteCreatorComponent implements OnInit, OnDestroy {
       .getMe$()
       .pipe(take(1))
       .subscribe((me: Player) => {
-        let voteConfig: VoteConfiguration;
-        if (me !== undefined) {
-          voteConfig = VoteConfiguration.build(userInput, me.displayName, this.eligibilities, this.votingOptions);
-        } else {
-          voteConfig = VoteConfiguration.build(userInput, 'undefined', this.eligibilities, this.votingOptions);
-        }
+        const voteConfig: VoteConfiguration = me
+          ? VoteConfiguration.build(userInput, me.displayName, this.eligibilities, this.votingOptions)
+          : VoteConfiguration.build(userInput, 'undefined', this.eligibilities, this.votingOptions);
 
         if (voteConfig.votingOptions.length > 1) {
           this.voteConfiguration.emit(voteConfig);

@@ -71,10 +71,6 @@ export class ChatService implements OnDestroy {
     );
   }
 
-  ngOnInit(): void {
-    throw new Error('Method not implemented.');
-  }
-
   sendMessage(currentMessage: string): void {
     if (this.gameState !== undefined) {
       this.gameState.sendMessage(MessageType.CHAT_MESSAGE, { type: MessageType.CHAT_MESSAGE, message: currentMessage });

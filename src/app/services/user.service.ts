@@ -45,7 +45,6 @@ export class UserService {
 
   syncUserData(user: BasicUser): void {
     this.httpClient.get<APIResponse<BasicUser>>(this.userEndpoint + '?login_name=' + user.login_name).subscribe((response) => {
-      console.log('login user', response);
       if (response.payload !== undefined) {
         this.setActiveUser(response.payload as BasicUser);
       } else {

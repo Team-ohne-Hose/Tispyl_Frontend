@@ -5,9 +5,8 @@
       <div>Voting System</div>
     </div>
     <div *ngIf="gameState.isRoomDataAvailable$ | async" class="head-progress">
-      <!-- VoteStage 2 should be creation -->
       <i
-        [ngClass]="(gameState.observableState.voteState.voteStage$ |async) === 2 ? 'fas fa-circle-notch fa-spin highlight' : 'far fa-circle'"></i>
+        [ngClass]="(gameState.observableState.voteState.voteStage$ |async) === stateEnum.creating ? 'fas fa-circle-notch fa-spin highlight' : 'far fa-circle'"></i>
     </div>
     <div *ngIf="!(gameState.isRoomDataAvailable$ | async)" class="head-progress">
       <i class="far fa-circle"></i>
