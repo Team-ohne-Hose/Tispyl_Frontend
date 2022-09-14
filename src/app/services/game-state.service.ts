@@ -40,11 +40,6 @@ export class GameStateService implements OnDestroy {
     this.room$ = this.colyseus.activeRoom$;
     this.observableState = this.colyseus.getStateAsObservables();
 
-    /*this.me$ = this.observableState.playerChange$
-      .pipe(filter((p: Player) => p.loginName === this.getMyLoginName()))
-      .pipe(debounceTime(0))
-      .pipe(share());*/
-
     /** Listen to Room changes ( entering / switching / leaving ) */
     this.activeRoom$$ = colyseus.activeRoom$.subscribe((room: Room<GameState>) => {
       if (room !== undefined) {
@@ -63,12 +58,6 @@ export class GameStateService implements OnDestroy {
     this.playerChange$$.unsubscribe();
     this.playerList$$.unsubscribe();
     this.activeRoom$$.unsubscribe();
-  }
-
-  private _resolveMyPlayerObject(players: MapSchema<Player>): Player {
-    return Array.from(players.values()).find((p: Player) => {
-      return p.loginName === this.colyseus.myLoginName;
-    });
   }
 
   roomOnce$(): Observable<Room<GameState>> {
@@ -101,11 +90,8 @@ export class GameStateService implements OnDestroy {
     return this.isMyTurn$().pipe(take(1));
   }
 
-  /**
-   * @deprecated
-   */
-  getMyLoginName(): string {
-    return this.colyseus.myLoginName;
+  getMyLoginNameOnce$(): Observable<string> {
+    return this.colyseus.myLoginName$.pipe(take(1));
   }
 
   findInPlayerListOnce$(f: (p: Player) => boolean): Observable<Player | undefined> {
@@ -115,10 +101,13 @@ export class GameStateService implements OnDestroy {
   }
 
   getMe$(): Observable<Player> {
-    return this.observableState.playerList$
+    return combineLatest({
+      playerList: this.observableState.playerList$,
+      myLoginName: this.colyseus.myLoginName$,
+    })
       .pipe(
-        map((playerList: MapSchema<Player>) => {
-          return playerList.get(this.getMyLoginName());
+        map((value: { playerList: MapSchema<Player>; myLoginName: string }) => {
+          return value.playerList.get(value.myLoginName);
         })
       )
       .pipe(filter((player: Player) => player !== undefined));

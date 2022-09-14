@@ -59,14 +59,20 @@ export class BoardItemControlService implements OnDestroy {
     this.allFigures = [];
 
     this.physics.addPlayer = ((mesh: Object3D, name: string) => {
-      const figure = { mesh: mesh, labelSprite: undefined, name: name, isHidden: false };
-      this.generatePlayerSprite(figure);
-      this.allFigures.push(figure);
-      console.debug('adding to BoardItemManagement´s list of figures', name, mesh, this.allFigures);
+      const figureInList = this.allFigures.find((figureItem: FigureItem) => figureItem.name === name);
+      if (figureInList !== undefined) {
+        console.debug('Player is already in FigureList, updating Mesh', name, mesh);
+        figureInList.mesh = mesh;
+      } else {
+        const figure = { mesh: mesh, labelSprite: undefined, name: name, isHidden: false };
+        this.generatePlayerSprite(figure);
+        this.allFigures.push(figure);
+        console.debug('adding to BoardItemManagement´s list of figures', name, mesh, this.allFigures);
 
-      // add label into scene if nametags are shown
-      if (this.gses.persistentNamePlates.value) {
-        figure.mesh.add(figure.labelSprite);
+        // add label into scene if nametags are shown
+        if (this.gses.persistentNamePlates.value) {
+          figure.mesh.add(figure.labelSprite);
+        }
       }
     }).bind(this);
 
@@ -82,18 +88,16 @@ export class BoardItemControlService implements OnDestroy {
       });
 
       if (figureItem === undefined) {
-        console.debug('figure hasnt been initialized yet, but hiddenState is to be set', p.figureId, this.allFigures);
+        console.debug('figure hasnt been initialized yet, but playerchange is detected', p.figureId, this.allFigures);
         return;
       }
 
       if (p.figureModel !== undefined) {
-        console.debug('loading new playerTex', p.figureModel);
         // TODO prevent loading Textures all the time/ prevent if not necessary
         this.loader.switchTex(figureItem.mesh, p.figureModel);
       }
 
       if (p.hasLeft !== figureItem.isHidden) {
-        console.debug('changing hiddenState', p.hasLeft, figureItem.isHidden, this.allFigures);
         if (figureItem.isHidden) {
           this.sceneTree.add(figureItem.mesh);
           figureItem.isHidden = false;
@@ -149,17 +153,12 @@ export class BoardItemControlService implements OnDestroy {
     }
   }
 
-  getSpritesPending(): number {
-    return this.allFigures.length;
-  }
-
   createSprites(): Observable<Progress> {
     return new Observable<Progress>((o: Observer<Progress>) => {
       let count = 0;
       o.next([0, this.allFigures.length]);
       this.allFigures.forEach((figure: FigureItem) => {
         if (figure.labelSprite === undefined) {
-          console.debug('adding Sprite for player ', figure.name);
           this.generatePlayerSprite(figure);
         }
 
@@ -175,7 +174,6 @@ export class BoardItemControlService implements OnDestroy {
   }
 
   private generatePlayerSprite(figure: FigureItem) {
-    console.debug('adding Sprite for player ', figure.name);
     figure.labelSprite = this.loader.createPredefLabelSprite(figure.name);
     figure.labelSprite.position.set(0, 5, 0);
   }
@@ -189,7 +187,6 @@ export class BoardItemControlService implements OnDestroy {
   private changeNameTagVisibilityInScene(isShown: boolean): void {
     for (const figure of this.allFigures) {
       if (figure.labelSprite === undefined) {
-        console.debug('update: adding Sprite for player ', figure.name);
         figure.labelSprite = this.loader.createPredefLabelSprite(figure.name);
         figure.labelSprite.position.set(0, 5, 0);
       }

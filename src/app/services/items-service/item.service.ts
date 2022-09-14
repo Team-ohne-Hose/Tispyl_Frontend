@@ -128,15 +128,17 @@ export class ItemService implements OnDestroy {
       targetLogin = target.loginName;
     }
 
-    this.gameState.sendMessage(MessageType.ITEM_MESSAGE, {
-      type: MessageType.ITEM_MESSAGE,
-      subType: ItemMessageType.useItem,
-      playerLoginName: this.gameState.getMyLoginName(),
-      targetLoginName: targetLogin,
-      itemId: item.id,
-      param: '',
-      itemName: item.name,
-      itemDescription: item.description,
+    this.gameState.getMyLoginNameOnce$().subscribe((myLoginName: string) => {
+      this.gameState.sendMessage(MessageType.ITEM_MESSAGE, {
+        type: MessageType.ITEM_MESSAGE,
+        subType: ItemMessageType.useItem,
+        playerLoginName: myLoginName,
+        targetLoginName: targetLogin,
+        itemId: item.id,
+        param: '',
+        itemName: item.name,
+        itemDescription: item.description,
+      });
     });
 
     this.onItemUsedByMe(item, targetLogin);

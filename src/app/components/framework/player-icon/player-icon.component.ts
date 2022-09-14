@@ -38,11 +38,11 @@ export class PlayerIconComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     if (this.loginName$ !== undefined && this.loginName$ !== null) {
       this.loginName$$ = this.loginName$.subscribe((loginName: string) => {
-        //this.currentSource = this.fileService.profilePictureSource(loginName);
+        this.currentSource = this.fileService.profilePictureSource(loginName);
         this.loginNameCached = loginName;
       });
     } else {
-      //this.currentSource = this.fileService.profilePictureSource(this.loginName);
+      this.currentSource = this.fileService.profilePictureSource(this.loginName);
       this.loginNameCached = this.loginName;
     }
   }

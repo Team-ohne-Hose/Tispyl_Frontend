@@ -1,7 +1,7 @@
 /* eslint-disable no-empty-function */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { Room } from 'colyseus.js';
-import { Observable, ReplaySubject, Subscription, debounceTime, map, mergeWith, share } from 'rxjs';
+import { Observable, ReplaySubject, Subscription, debounceTime, filter, map, mergeWith, share } from 'rxjs';
 import { GameState } from '../model/state/GameState';
 import { VoteEntry } from '../components/game/interface/menu-bar/vote-system/helpers/VoteEntry';
 import { Tile } from '../model/state/BoardLayoutState';
@@ -173,7 +173,7 @@ export class ColyseusObservableState {
 
   // Set up all callbacks for correct acting of the observables for the state
   private setupObservables(activeRoom$: ReplaySubject<Room<GameState>>) {
-    this.activeRoom$$ = activeRoom$.subscribe((room: Room<GameState>) => {
+    this.activeRoom$$ = activeRoom$.pipe(filter((room: Room<GameState>) => room !== undefined)).subscribe((room: Room<GameState>) => {
       // easy accessible direct primitives
       room.state.listen('round', this.pushToSubject<number>(this.gameState.round$));
       if (room.state.round) this.gameState.round$.next(room.state.round);

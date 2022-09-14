@@ -394,10 +394,12 @@ export class ObjectLoaderService {
     // filter out non-Mesh Objects, this makes sure to not refer to the group containing the mesh
     while (!(obj.type === 'Mesh')) {
       if (obj.children.length <= 0) {
+        console.warn('Did not find mesh to swap texture(has no children)');
         return;
       }
       obj = obj.children[0];
       if (obj === undefined) {
+        console.warn('Did not find mesh to swap texture(child is undefined)');
         return;
       }
     }
@@ -415,12 +417,12 @@ export class ObjectLoaderService {
       if (subscription !== undefined) {
         subscription.unsubscribe();
       }
-      mesh.userData['textureSubscription'] = this.texList.get(model).subject.subscribe({
-        next: (newTexture: { tex: Texture; spec: Texture }) => {
-          mesh.material = (mesh.material as Material).clone();
-          mesh.material['map'] = newTexture.tex;
-        },
+      mesh.userData['textureSubscription'] = this.texList.get(model).subject.subscribe((newTexture: { tex: Texture; spec: Texture }) => {
+        mesh.material = (mesh.material as Material).clone();
+        mesh.material['map'] = newTexture.tex;
       });
+    } else {
+      console.warn('Material or texture do not have the correct format');
     }
   }
 
@@ -637,9 +639,10 @@ export class ObjectLoaderService {
     }
   }
 
-  private getTexture(model: PlayerModel) {
+  private getTexture(model: PlayerModel): Texture {
     let texData: PlayerModelData = this.texList.get(model);
     if (texData === undefined) {
+      console.warn('texData unknown, returning with default texture');
       texData = this.texList.get(PlayerModel.bcap_NukaCola);
     }
 
@@ -649,10 +652,12 @@ export class ObjectLoaderService {
       return texData.lowResTex;
     } else {
       this.loadBcapTex(model, (tex, spec) => {
+        console.warn('texData not cohesive, loading texture');
         if (tex === undefined) {
           console.error('Error loading bcap texture', model);
         }
       });
+      return undefined;
     }
   }
 

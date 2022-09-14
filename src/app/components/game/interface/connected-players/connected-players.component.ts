@@ -39,8 +39,8 @@ export class ConnectedPlayersComponent implements OnInit, OnDestroy {
     /** GameState bindings */
     this.players$ = this.getActivePlayers$().pipe(share());
     this.neighbours$ = this.getNeighbours$().pipe(share());
-    this.bindIsDevSubject();
     this.playerIsDev$ = new BehaviorSubject<Map<string, boolean>>(new Map());
+    this.bindIsDevSubject();
   }
 
   ngOnDestroy(): void {

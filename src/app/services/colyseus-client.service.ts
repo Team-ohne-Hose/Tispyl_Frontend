@@ -42,8 +42,7 @@ export class ColyseusClientService implements OnDestroy {
   private messageCallbacks: Map<MessageType, Map<number, MessageCallback>> = new Map<MessageType, Map<number, MessageCallback>>([]);
 
   /** Access values mainly used by the state service */
-  /** @deprecated */
-  myLoginName: string;
+  myLoginName$: ReplaySubject<string> = new ReplaySubject<string>(1);
   availableRooms$: BehaviorSubject<RoomAvailable<RoomMetaInfo>[]>;
   activeRoom$: ReplaySubject<Room<GameState>>;
 
@@ -102,7 +101,7 @@ export class ColyseusClientService implements OnDestroy {
       this.CLIENT.create('game', opts).then((suc) => {
         this.setActiveRoom(suc);
         this.updateAvailableRooms();
-        this.myLoginName = opts.login;
+        this.myLoginName$.next(opts.login);
         this.router.navigateByUrl('/game');
       });
     }
@@ -117,7 +116,7 @@ export class ColyseusClientService implements OnDestroy {
     };
     this.CLIENT.joinById(roomAva.roomId, options).then((myRoom: Room) => {
       this.setActiveRoom(myRoom);
-      this.myLoginName = loginName;
+      this.myLoginName$.next(loginName);
     });
   }
 

@@ -99,20 +99,23 @@ export class VoteCreatorComponent implements OnInit, OnDestroy {
 
   emitVoting(titleElement: HTMLInputElement): void {
     const userInput = String(titleElement.value).trim();
-    const currentPlayer = this.playerList.find((p) => p.loginName === this.gameState.getMyLoginName());
+    this.gameState
+      .getMe$()
+      .pipe(take(1))
+      .subscribe((me: Player) => {
+        let voteConfig: VoteConfiguration;
+        if (me !== undefined) {
+          voteConfig = VoteConfiguration.build(userInput, me.displayName, this.eligibilities, this.votingOptions);
+        } else {
+          voteConfig = VoteConfiguration.build(userInput, 'undefined', this.eligibilities, this.votingOptions);
+        }
 
-    let voteConfig: VoteConfiguration;
-    if (currentPlayer !== undefined) {
-      voteConfig = VoteConfiguration.build(userInput, currentPlayer.displayName, this.eligibilities, this.votingOptions);
-    } else {
-      voteConfig = VoteConfiguration.build(userInput, 'undefined', this.eligibilities, this.votingOptions);
-    }
-
-    if (voteConfig.votingOptions.length > 1) {
-      this.voteConfiguration.emit(voteConfig);
-    } else {
-      alert('please ensure u have atleast 2 vote option');
-    }
+        if (voteConfig.votingOptions.length > 1) {
+          this.voteConfiguration.emit(voteConfig);
+        } else {
+          alert('please ensure u have atleast 2 vote option');
+        }
+      });
   }
 
   cancelVoteCreation(): void {

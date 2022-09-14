@@ -228,13 +228,15 @@ export class CommandService {
     const sendUseMessage = (targetLogin: string) => {
       const itemId = Number(parameters[1]);
       this.print('Trying to use Item ' + itemId + (targetLogin === '' ? '' : ' on ' + targetLogin), '/useItem');
-      this.gameState.sendMessage(MessageType.ITEM_MESSAGE, {
-        type: MessageType.ITEM_MESSAGE,
-        subType: ItemMessageType.useItem,
-        playerLoginName: this.gameState.getMyLoginName(),
-        targetLoginName: targetLogin,
-        itemId: itemId,
-        param: '',
+      this.gameState.getMyLoginNameOnce$().subscribe((myLoginName: string) => {
+        this.gameState.sendMessage(MessageType.ITEM_MESSAGE, {
+          type: MessageType.ITEM_MESSAGE,
+          subType: ItemMessageType.useItem,
+          playerLoginName: myLoginName,
+          targetLoginName: targetLogin,
+          itemId: itemId,
+          param: '',
+        });
       });
     };
     if (parameters.length < 2) {
