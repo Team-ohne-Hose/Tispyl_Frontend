@@ -3,7 +3,6 @@ import { GameStateService } from '../../../../../services/game-state.service';
 import { GameActionType, MessageType } from '../../../../../model/WsData';
 import { ArraySchema, MapSchema } from '@colyseus/schema';
 import { VoteSystemState } from './helpers/VoteSystemState';
-import { VoteResult } from './helpers/VoteResult';
 import { VoteEntry } from './helpers/VoteEntry';
 import { VoteConfiguration } from './helpers/VoteConfiguration';
 import { VoteStage } from '../../../../../model/state/VoteState';
@@ -18,9 +17,6 @@ import { Observable, Subscription, combineLatest, map, share, take } from 'rxjs'
 export class VoteSystemComponent implements OnInit, OnDestroy {
   readonly stateEnum = VoteSystemState;
   voteSystemState: VoteSystemState = VoteSystemState.default;
-
-  // Data values
-  resultHistory: VoteResult[] = []; // TODO: (Not used yet) Find way to keep these values without putting them into the state
 
   // Display values
   currentHistoryResult = 0;
@@ -126,20 +122,6 @@ export class VoteSystemComponent implements OnInit, OnDestroy {
     this.closingIn$$.unsubscribe();
     this.voteStage$$.unsubscribe();
     this.voteHost$$.unsubscribe();
-  }
-
-  previousHistoricResult(): void {
-    this.currentHistoryResult--;
-    if (this.currentHistoryResult < 0) {
-      this.currentHistoryResult = this.resultHistory.length - 1;
-    }
-  }
-
-  nextHistoricResult(): void {
-    this.currentHistoryResult++;
-    if (this.currentHistoryResult > this.resultHistory.length - 1) {
-      this.currentHistoryResult = 0;
-    }
   }
 
   // Triggers
