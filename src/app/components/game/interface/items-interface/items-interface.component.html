@@ -50,7 +50,7 @@
           <div class="content-row">
             <span>Item geben:</span>
             <select [(ngModel)]="giveItem_name">
-              <option *ngFor="let p of (gameState.getPlayerArray$() | async)" [ngValue]="p.displayName">
+              <option *ngFor="let p of (gameState.getPlayerArray$() | async)" [ngValue]="p.loginName">
                 {{p.displayName}}</option>
             </select>
             <select [(ngModel)]="giveItem_itemId">
