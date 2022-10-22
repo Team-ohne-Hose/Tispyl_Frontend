@@ -13,7 +13,7 @@
             </div>
             <div class="content-layer">
               <div class="player-icon">
-                <app-player-icon [borderThickness]="'3px'" [enableUpload]="false" [loginName]="p.loginName"
+                <app-player-icon  #playersRef [borderThickness]="'3px'" [enableUpload]="false" [loginName]="p.loginName"
                   [size]="'2rem'"></app-player-icon>
                 <i *ngIf="p.isCurrentHost" title="Diese Person ist der Spielleiter."
                   class="fas fa-crown host-badge"></i>

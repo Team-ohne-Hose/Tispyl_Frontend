@@ -1,13 +1,14 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { Player } from '../../../../model/state/Player';
 import { GameStateService } from '../../../../services/game-state.service';
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { BehaviorSubject, Observable, Subscription, combineLatest } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription, combineLatest, forkJoin } from 'rxjs';
 import { map, mergeMap, share } from 'rxjs/operators';
 import { BasicUser, UserService } from '../../../../services/user.service';
 import { APIResponse } from '../../../../model/APIResponse';
-import { forkJoin } from 'rxjs';
 import { Router } from '@angular/router';
+import { MessageType, RefreshProfilePics } from '../../../../model/WsData';
+import { PlayerIconComponent } from '../../../framework/player-icon/player-icon.component';
 
 @Component({
   selector: 'app-connected-players',
@@ -25,6 +26,9 @@ export class ConnectedPlayersComponent implements OnInit, OnDestroy {
   /** Visibility state */
   players$: Observable<Player[]>;
 
+  @ViewChildren('playersRef')
+  playersRef: QueryList<PlayerIconComponent>;
+
   /** Visibility state - flags */
   // TODO: This is to be extended to retrieve roles instead of just the is_dev flag
   playerIsDev$: BehaviorSubject<Map<string, boolean>>;
@@ -33,7 +37,17 @@ export class ConnectedPlayersComponent implements OnInit, OnDestroy {
   // subscriptions
   playerIsDev$$: Subscription;
 
-  constructor(protected gameState: GameStateService, private userService: UserService, private router: Router) {}
+  // callbackIds
+  playerUpdateId: number;
+
+  constructor(protected gameState: GameStateService, private userService: UserService, private router: Router) {
+    this.playerUpdateId = this.gameState.registerMessageCallback(MessageType.REFRESH_COMMAND, {
+      filterSubType: -1,
+      f: (_: RefreshProfilePics) => {
+        this.playersRef.map((icon) => icon.refresh());
+      },
+    });
+  }
 
   ngOnInit(): void {
     /** GameState bindings */
@@ -49,6 +63,7 @@ export class ConnectedPlayersComponent implements OnInit, OnDestroy {
       this.playerIsDev$$.unsubscribe();
       this.playerIsDev$.complete();
     }
+    this.gameState.clearMessageCallback(this.playerUpdateId);
   }
 
   leaveGame(): void {
