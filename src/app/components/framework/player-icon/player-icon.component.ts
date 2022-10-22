@@ -50,6 +50,15 @@ export class PlayerIconComponent implements OnInit, OnDestroy {
     }
   }
 
+  refresh(): void {
+    if (this.loginNameCached) {
+      console.info(`Refreshing profile picture.`);
+      this.currentSource = this.fileService.profilePictureSource(this.loginNameCached, true);
+    } else {
+      console.warn('Tried to refresh img without cached loginName', this);
+    }
+  }
+
   ngOnDestroy(): void {
     if (this.loginName$$) this.loginName$$.unsubscribe();
   }

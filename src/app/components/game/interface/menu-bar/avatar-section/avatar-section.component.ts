@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
-import { Observable, combineLatest, filter, map, share, take } from 'rxjs';
-import { Player } from 'src/app/model/state/Player';
-import { MessageType, RefreshCommandType, RefreshProfilePics } from 'src/app/model/WsData';
+import { Observable, combineLatest, filter, map, share } from 'rxjs';
 import { FileService } from 'src/app/services/file.service';
 import { GameStateService } from 'src/app/services/game-state.service';
 import { BasicUser, UserService } from 'src/app/services/user.service';
@@ -17,9 +15,6 @@ export enum TitleRole {
   styleUrls: ['./avatar-section.component.css'],
 })
 export class AvatarSectionComponent {
-  userImageUrl = '../assets/defaultImage.jpg';
-
-  // subscriptions
   protected timePlayed$: Observable<string>;
   protected role$: Observable<string>;
 
@@ -50,24 +45,5 @@ export class AvatarSectionComponent {
         })
       )
       .pipe(share());
-  }
-
-  changeImage(event: { target: HTMLInputElement }): void {
-    const file = event.target?.files[0];
-    if (file !== undefined) {
-      this.gameStateService
-        .getMe$()
-        .pipe(take(1))
-        .subscribe((me: Player) => {
-          this.fileService.uploadProfilePictureByLoginName(file, me.loginName).subscribe((suc) => {
-            this.userImageUrl = this.fileService.profilePictureSource(me.loginName, true);
-            const msg: RefreshProfilePics = {
-              type: MessageType.REFRESH_COMMAND,
-              subType: RefreshCommandType.refreshProfilePic,
-            };
-            this.gameStateService.sendMessage(MessageType.REFRESH_COMMAND, msg);
-          });
-        });
-    }
   }
 }
