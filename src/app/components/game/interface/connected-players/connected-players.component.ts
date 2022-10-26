@@ -38,10 +38,10 @@ export class ConnectedPlayersComponent implements OnInit, OnDestroy {
   playerIsDev$$: Subscription;
 
   // callbackIds
-  playerUpdateId: number;
+  steinMoosFickerei: number;
 
   constructor(protected gameState: GameStateService, private userService: UserService, private router: Router) {
-    this.playerUpdateId = this.gameState.registerMessageCallback(MessageType.REFRESH_COMMAND, {
+    this.steinMoosFickerei = this.gameState.registerMessageCallback(MessageType.REFRESH_COMMAND, {
       filterSubType: -1,
       f: (_: RefreshProfilePics) => {
         this.playersRef.map((icon) => icon.refresh());
@@ -63,7 +63,7 @@ export class ConnectedPlayersComponent implements OnInit, OnDestroy {
       this.playerIsDev$$.unsubscribe();
       this.playerIsDev$.complete();
     }
-    this.gameState.clearMessageCallback(this.playerUpdateId);
+    this.gameState.clearMessageCallback(this.steinMoosFickerei);
   }
 
   leaveGame(): void {
