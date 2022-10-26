@@ -1,67 +1,72 @@
-<div class="base-flex">
-  <div class="head-container">
-    <span class="head">Host a new round</span>
-  </div>
 
-  <div class="content">
+  <div class="base-grid">
+
+    <div class="lobby-settings-anchor" #lobbySettings></div>
+    <h2 class="base-header" mat-dialog-title>Erstelle einen neuen Raum</h2>
+
     <div class="lobbySettings">
       <div class="lobbyNameContainer">
+        <p>Raum Einstellungen:</p>
         <label>
-          Lobby name:
+          Name:
           <input [(ngModel)]="roomName">
         </label>
       </div>
-      <div class="switchContainer">
-        <button class="switch" [class.switchActive]="randomizeTiles" (click)="randomizeTiles = !randomizeTiles">
-          Randomize Tiles
-        </button>
-        <button class="switch" [class.switchActive]="enableItems" (click)="enableItems = !enableItems" disabled>
-          Enable Items
-        </button>
-        <button class="switch" [class.switchActive]="enableMultipleItems" (click)="enableMultipleItems = !enableMultipleItems" [disabled]="!enableItems ? true : null">
-          Multiple Items
-        </button>
+      <div>
+        <p>Spiel Optionen:</p>
+        <div title="Ob die Spielfeldkacheln zufällig angeordnet werden sollen oder nicht." class="button-group">
+          <button class="switch" [class.switchActive]="randomizeTiles" (click)="randomizeTiles = !randomizeTiles">
+            Zufällige Felder
+          </button>
+          <button title="Diese Funktion ist noch nicht implementiert." class="switch line-through" [class.switchActive]="enableItems" (click)="enableItems = !enableItems" disabled>
+            Erlaube Items
+          </button>
+          <button title="Diese Funktion ist noch nicht implementiert." class="switch line-through" [class.switchActive]="enableMultipleItems" (click)="enableMultipleItems = !enableMultipleItems" [disabled]="!enableItems ? true : null">
+            Multiple Items
+          </button>
+        </div>
+
       </div>
     </div>
-    <div class="card-deck-select">
-      <div class="carousel-container">
-        <ngb-carousel #deckCarousel (slide)="slide($event)" [showNavigationIndicators]="false">
-          <ng-template ngbSlide id="deckSlide-{{deck.id}}" *ngFor="let deck of this.tileSetList; let i = index" (slid)='slid($event, i)'>
-            <div class="carousel-deck-item">
-              <img [src]="deck.thumbnailPath" alt="{{deck.name}}">
-              <div class="deck-info-container container">
-                <div class="deck-info-header row">
-                  <div class="col-3"><h3>{{deck.name}}</h3></div>
-                  <div class="col-3 font-italic my-auto ms-auto"><h5 class="text-end">{{deck.author.display_name}}</h5></div>
-                </div>
-                <div class="deck-info-tag-container my-2 mx-1 row">
-                  <span *ngFor="let tag of deck.tags" class="badge rounded-pill bg-dark" >{{tag.tag}}</span>
-                </div>
-                <p class="row">{{deck.description}}</p>
-                <div class="row">
-                  <div class="showTileListButtonContainer d-flex justify-content-end">
-                    <button type="button" (click)="this.popoverVisible = !this.popoverVisible">Show</button>
-                    <div class="showTileListPopoverArrow" *ngIf="this.popoverVisible" (click)="this.popoverVisible = false;">
 
-                    </div>
-                  </div>
+    <div class="carousel-container">
+      <ngb-carousel #deckCarousel (slide)="slide($event)" [showNavigationIndicators]="false">
+        <ng-template ngbSlide id="deckSlide-{{deck.id}}" *ngFor="let deck of this.tileSetList; let i = index" (slid)='slid($event, i)'>
+          <div class="carousel-deck-item">
+            <img [src]="deck.thumbnailPath" alt="{{deck.name}}">
+            <div class="deck-info-container container">
+              <div class="deck-info-header row">
+                <div class="col-3"><h3>{{deck.name}}</h3></div>
+                <div class="col-3 font-italic ms-auto"><h5 class="text-end">{{deck.author.display_name}}</h5></div>
+              </div>
+              <div class="deck-info-tag-container my-2 row">
+                <span *ngFor="let tag of deck.tags" class="rounded-pill bg-dark border" >{{tag.tag}}</span>
+              </div>
+              <p class="row">{{deck.description}}</p>
+              <div class="row">
+                <div class="showTileListButtonContainer d-flex justify-content-end">
+                  <button type="button" (click)="this.scrollRight()">Spielfeldkacheln</button>
+
                 </div>
               </div>
             </div>
-          </ng-template>
-        </ngb-carousel>
-        <a role="button" class="carousel-control-prev ng-star-inserted" (click)="this.deckCarousel.prev()"
-           *ngIf="!this.popoverVisible || this.selectedTileSet === undefined">
-          <span aria-hidden="true" class="carousel-control-prev-icon"></span>
-          <span class="sr-only">Previous</span>
-        </a>
-        <a role="button" class="carousel-control-next ng-star-inserted" (click)="this.deckCarousel.next()"
-           *ngIf="!this.popoverVisible || this.selectedTileSet === undefined">
-          <span aria-hidden="true" class="carousel-control-next-icon"></span>
-          <span class="sr-only">Next</span>
-        </a>
-      </div>
-      <div class="deck-list container customScrollBarContainer">
+          </div>
+        </ng-template>
+      </ngb-carousel>
+      <a role="button" class="carousel-control-prev ng-star-inserted" (click)="this.deckCarousel.prev()"
+         *ngIf="!this.popoverVisible || this.selectedTileSet === undefined">
+        <span aria-hidden="true" class="carousel-control-prev-icon"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a role="button" class="carousel-control-next ng-star-inserted" (click)="this.deckCarousel.next()"
+         *ngIf="!this.popoverVisible || this.selectedTileSet === undefined">
+        <span aria-hidden="true" class="carousel-control-next-icon"></span>
+        <span class="sr-only">Next</span>
+      </a>
+    </div>
+
+    <mat-dialog-content class="customScrollBarContainer">
+      <div class="deck-list">
         <div [class]="{'disable-user-select':true, 'deck-list-entry':true, 'py-2':true, 'row':true, 'active': this.selectedTileSetId === i}"
              id="deck-list-entry-{{i}}"
              *ngFor="let deck of this.tileSetList; let i = index"
@@ -75,53 +80,37 @@
               <div class="col-3 font-italic my-auto ms-auto"><h5 class="text-end">{{deck.author.display_name}}</h5></div>
             </div>
             <div class="row deck-info-tag-container my-2 mx-1">
-              <span *ngFor="let tag of deck.tags" class="badge rounded-pill bg-dark" >{{tag.tag}}</span>
+              <span *ngFor="let tag of deck.tags" class="rounded-pill bg-dark border" >{{tag.tag}}</span>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </mat-dialog-content>
 
-  <div class="foot">
-    <button (click)="closeMe()">Cancel</button>
-    <button (click)="createGame()">Create</button>
-  </div>
-</div>
+    <mat-dialog-actions class="foot-one">
+      <button class="large-dialog-button" (click)="closeMe()">Abbrechen</button>
+      <button class="large-dialog-button" (click)="createGame()">Erstellen</button>
+    </mat-dialog-actions>
 
-<div class="tile-list-popover customScrollBarContainer px-auto" *ngIf="this.popoverVisible && this.selectedTileSet !== undefined" (click)="this.popoverVisible = false;">
-  <div class="popTileListContentTile" *ngFor="let tile of this.tileListAsSet | keyvalue">
-    <img [src]="tile.value.bt.path" alt="{{tile.value.bt.name}}" draggable="false">
-    <div class="popTileListCounter">
-      <svg width="40px" height="40px" viewBox="0 0 1000 1000">
-        <!-- 12 pointed-star with radi 500/420, ctrl-point distance 40 -->
-        <path d="M 0 500
-        c 0.0 -40.0 83.96 -70.07, 94.31 -108.7
-        s -47.32 -106.65, -27.32 -141.3
-        s 107.74 -18.7, 136.03 -46.98
-        s 12.34 -116.03, 46.98 -136.03
-        s 102.66 37.68, 141.3 27.32
-        s 68.7 -94.31, 108.7 -94.31
-        s 70.07 83.96, 108.7 94.31
-        s 106.65 -47.32, 141.3 -27.32
-        s 18.7 107.74, 46.98 136.03
-        s 116.03 12.34, 136.03 46.98
-        s -37.68 102.66, -27.32 141.3
-        s 94.31 68.7, 94.31 108.7
-        s -83.96 70.07, -94.31 108.7
-        s 47.32 106.65, 27.32 141.3
-        s -107.74 18.7, -136.03 46.98
-        s -12.34 116.03, -46.98 136.03
-        s -102.66 -37.68, -141.3 -27.32
-        s -68.7 94.31, -108.7 94.31
-        s -70.07 -83.96, -108.7 -94.31
-        s -106.65 47.32, -141.3 27.32
-        s -18.7 -107.74, -46.98 -136.03
-        s -116.03 -12.34, -136.03 -46.98
-        s 37.68 -102.66, 27.32 -141.3
-        s -94.31 -68.7, -94.31 -108.7" stroke="red" fill="red"/>
-        <text x="550" y="550" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="400">x{{tile.value.count}}</text>
-      </svg>
+    <h2 class="tileset-header" mat-dialog-title>
+      Tileset informationen
+    </h2>
+
+    <div class="popover-scroll-container customScrollBarContainer" id="tiles" #tiles>
+        <div class="popTileListContentTile" *ngFor="let tile of this.tileListAsSet | keyvalue" title="{{tile.value.bt.name}}: {{tile.value.bt.description}}">
+          <img [src]="tile.value.bt.path" alt="{{tile.value.bt.name}}" draggable="false">
+          <div class="tile-info">
+            <h5>{{tile.value.bt.name}}</h5>
+            <span>{{tile.value.bt.description}}</span>
+          </div>
+          <div class="frequency-badge" title="Dieses Feld wird bis zu {{tile.value.count}} mal auf dem Spielfeld platziert.">
+            <span>{{tile.value.count}}x</span>
+          </div>
+        </div>
     </div>
+
+    <mat-dialog-actions class="foot-two">
+      <button class="large-dialog-button" (click)="scrollLeft()">Zurück</button>
+    </mat-dialog-actions>
+
   </div>
-</div>
