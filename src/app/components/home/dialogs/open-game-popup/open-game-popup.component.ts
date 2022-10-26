@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
@@ -61,11 +61,10 @@ export interface DialogResult {
   styleUrls: ['./open-game-popup.component.css'],
   providers: [NgbCarouselConfig],
 })
-export class OpenGamePopupComponent {
+export class OpenGamePopupComponent implements AfterViewInit {
   private static readonly defaultThumbPath = '/assets/untitled_ts.png';
   private static readonly requestUrl = environment.endpoint + 'gameboard/tileset/';
   roomName;
-  skinName: string;
   randomizeTiles = false;
   enableItems = false;
   enableMultipleItems = false;
@@ -77,6 +76,8 @@ export class OpenGamePopupComponent {
   popoverVisible = false;
 
   @ViewChild('deckCarousel', { static: true }) deckCarousel: NgbCarousel;
+  @ViewChild('tiles') tiles: ElementRef;
+  @ViewChild('lobbySettings') lobbySettings: ElementRef;
 
   constructor(
     private dialogRef: MatDialogRef<OpenGamePopupComponent, DialogResult>,
@@ -104,6 +105,14 @@ export class OpenGamePopupComponent {
         console.error('couldnt retrieve list of available decks', error);
       },
     });
+  }
+
+  public scrollRight() {
+    this.tiles.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }
+
+  public scrollLeft() {
+    this.lobbySettings.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }
 
   private generateTileListAsSet() {
@@ -180,5 +189,9 @@ export class OpenGamePopupComponent {
       const elmnt = document.getElementById('deck-list-entry-' + i);
       elmnt.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
+  }
+
+  ngAfterViewInit(): void {
+    this.scrollLeft();
   }
 }

@@ -36,7 +36,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
     height: '70%',
     maxHeight: '900px',
     data: {},
-    panelClass: 'modalbox-base',
+    panelClass: 'modalbox-clipping-base',
   };
 
   // subscriptions
@@ -113,6 +113,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
         this.colyseus.createRoom(opts);
       } else {
         console.log('closed Dialog without result');
+        alert('Das Spiel konnte nicht erstellt werden. Bitte stellen Sie sicher das alle Raumeinstellungen gesetzt sind.');
       }
     });
   }
