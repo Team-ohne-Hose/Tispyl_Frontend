@@ -6,7 +6,7 @@
     "start": "ng serve --host 0.0.0.0",
     "startWSL": "ng serve --live-reload -o",
     "build": "ng build",
-    "build prod": "ng build --configuration production",
+    "build:prod": "ng build --configuration production",
     "deploy": "deployment.cmd deployment_rsa",
     "uploadassets": "uploadAssets.cmd deployment_rsa",
     "test": "ng test",
