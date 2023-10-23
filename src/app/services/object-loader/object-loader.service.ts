@@ -18,7 +18,7 @@ import {
   sRGBEncoding,
 } from 'three';
 import { PhysicsEntity, PhysicsEntityVariation, PlayerModel } from '../../model/WsData';
-import { Observable, Observer, Subject, Subscription } from 'rxjs';
+import { Observable, Observer, Subject } from 'rxjs';
 import { Color, CubeMap, EntityList, PlayerModelData, Progress, ResourceData } from './loaderTypes';
 import { ClickedTarget } from 'src/app/components/game/viewport/helpers/PhysicsCommands';
 
@@ -241,6 +241,7 @@ export class ObjectLoaderService {
     [PlayerModel.bcap_countcount, this.texMapEntry('countcount')],
     [PlayerModel.bcap_gude, this.texMapEntry('gude')],
     [PlayerModel.bcap_lordHelmchen, this.texMapEntry('lord_helmchen')],
+    [PlayerModel.bcap_skovald, this.texMapEntry('skovald', 'skovald_spec')],
   ]);
 
   private readonly entities: [PhysicsEntity, PhysicsEntityVariation][] = [
@@ -413,14 +414,19 @@ export class ObjectLoaderService {
       mesh.material = mesh.material.clone();
       mesh.material['map'] = tex;
 
-      const subscription = mesh.userData['textureSubscription'] as Subscription;
-      if (subscription !== undefined) {
-        subscription.unsubscribe();
+      const unsubscribeFunc = mesh.userData['textureUnsubscribeFunc'] as () => void;
+      if (unsubscribeFunc !== undefined) {
+        unsubscribeFunc();
       }
-      mesh.userData['textureSubscription'] = this.texList.get(model).subject.subscribe((newTexture: { tex: Texture; spec: Texture }) => {
-        mesh.material = (mesh.material as Material).clone();
-        mesh.material['map'] = newTexture.tex;
-      });
+      mesh.userData['textureUnsubscribeFunc'] = this.texList
+        .get(model)
+        .subject.subscribe((newTexture: { tex: Texture; spec: Texture }) => {
+          mesh.material = (mesh.material as Material).clone();
+          mesh.material['map'] = newTexture.tex;
+          mesh.material['specularMap'] = newTexture.spec;
+          //mesh.material['glossinessMap'] = newTexture.spec;
+        })
+        .unsubscribe.bind(this);
     } else {
       console.warn('Material or texture do not have the correct format');
     }
