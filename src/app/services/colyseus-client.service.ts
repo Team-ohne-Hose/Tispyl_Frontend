@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Client, Room, RoomAvailable } from 'colyseus.js';
-import { BehaviorSubject, ReplaySubject, Subscription } from 'rxjs';
+import { BehaviorSubject, ReplaySubject, Subscription, take } from 'rxjs';
 import { RoomMetaInfo } from '../model/RoomMetaInfo';
 import { GameState } from '../model/state/GameState';
 import { MessageType, WsData } from '../model/WsData';
@@ -38,6 +38,7 @@ export class ColyseusClientService implements OnDestroy {
 
   /** Internal values */
   private registerSeed = 0;
+  private attachedOnce = false;
   private changeCallbacks: Map<number, ChangeCallback> = new Map<number, ChangeCallback>();
   private messageCallbacks: Map<MessageType, Map<number, MessageCallback>> = new Map<MessageType, Map<number, MessageCallback>>([]);
 
@@ -73,6 +74,7 @@ export class ColyseusClientService implements OnDestroy {
       console.info('[ColyseusService] Active Room changed to:', r);
       if (r !== undefined) {
         this._attachKnownMessageCallbacks(r);
+        this.attachedOnce = true;
       } else {
         if (this.VERBOSE_CALLBACK_LOGGING) {
           console.info('Known message callbacks after leaving the room:', this._prettyPrintMessageCallbacks());
@@ -131,6 +133,17 @@ export class ColyseusClientService implements OnDestroy {
     const callbackMap: Map<number, MessageCallback> = this.messageCallbacks.get(mType) || new Map<number, MessageCallback>();
     callbackMap.set(registerId, cb);
     this.messageCallbacks.set(mType, callbackMap);
+
+    const isNewMType = this.messageCallbacks.get(mType).size == 1;
+    if (this.attachedOnce && isNewMType) {
+      // May not need to be a warning as this could be desired
+      console.warn(`Delayed attachment detected for type: ${MessageType[mType]} (${mType})`);
+      this.activeRoom$.pipe(take(1)).subscribe((r: Room<GameState>) => {
+        r.onMessage(mType, (msg) => {
+          this.messageCallbacks.get(mType).forEach((cb) => cb.f(msg));
+        });
+      });
+    }
     return registerId;
   }
 
