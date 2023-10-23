@@ -197,6 +197,7 @@ export enum PlayerModel {
   bcap_lordHelmchen,
   bcap_gude,
   bcap_Developer,
+  bcap_skovald,
 }
 export interface SetFigure {
   type: MessageType.PLAYER_MESSAGE;

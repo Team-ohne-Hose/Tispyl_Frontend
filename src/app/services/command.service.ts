@@ -174,7 +174,7 @@ export class CommandService {
   }
 
   private printSceneTree(rawCMD: string, parameters: string[]): void {
-    this.print(JSON.stringify(this.bic.sceneTree.toJSON()), rawCMD);
+    console.log(this.bic.sceneTree, rawCMD);
   }
 
   private giveItem(rawCMD: string, parameters: string[]): void {
