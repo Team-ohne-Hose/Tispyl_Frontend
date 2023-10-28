@@ -6,9 +6,9 @@ on:
       - dockerize
 
 jobs:
-  build:
+  build_and_push_to_dockerhub:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -27,7 +27,7 @@ jobs:
 
       - name: Push Docker Containers to Docker Hub
         run:  |
-          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
           docker-compose push
 
       - name: Clean Up
