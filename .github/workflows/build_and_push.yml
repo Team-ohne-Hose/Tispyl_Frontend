@@ -22,5 +22,4 @@ jobs:
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/tispyl-frontend:0.0.2
 
       - name: Clean Up
-      - name: Clean Up
         run: docker logout
