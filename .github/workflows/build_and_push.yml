@@ -13,22 +13,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Set up Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
-          docker-compose version
-        continue-on-error: true
-
-      - name: Build Docker Containers
-        run: |
-          docker-compose build
-        continue-on-error: true
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
 
       - name: Push Docker Containers to Docker Hub
         run:  |
-          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
-          docker-compose push
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/tispyl-frontend:${{ github.ref }} .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/tispyl-frontend:${{ github.ref }}
 
       - name: Clean Up
         run: docker logout
