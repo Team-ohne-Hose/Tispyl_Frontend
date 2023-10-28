@@ -18,8 +18,9 @@ jobs:
 
       - name: Push Docker Containers to Docker Hub
         run:  |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/tispyl-frontend:${{ github.ref }} .
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/tispyl-frontend:${{ github.ref }}
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/tispyl-frontend:0.0.2 .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/tispyl-frontend:0.0.2
 
+      - name: Clean Up
       - name: Clean Up
         run: docker logout
