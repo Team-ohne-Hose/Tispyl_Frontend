@@ -1,0 +1,59 @@
+.code-text {
+  font-family: monospace, monospace;
+  font-size: 14px;
+}
+
+.texture-name-input {
+  color: white;
+}
+
+.cm-img {
+  max-width: 100%;
+  height: auto;
+}
+
+.cube-map-definer {
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-rows: 75px 75px 75px;
+  grid-template-columns: 75px 75px 75px 75px;
+  grid-template-areas:
+    '. yp . .'
+    'xn zp xp zn'
+    '. yn . .';
+}
+
+.img-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border: dashed grey 2px;
+}
+
+.hint {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 16px;
+  color: grey;
+}
+
+.img-xp {
+  grid-area: xp;
+}
+.img-yp {
+  grid-area: yp;
+}
+.img-zp {
+  grid-area: zp;
+}
+.img-xn {
+  grid-area: xn;
+}
+.img-yn {
+  grid-area: yn;
+}
+.img-zn {
+  grid-area: zn;
+}

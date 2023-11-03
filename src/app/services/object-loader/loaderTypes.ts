@@ -31,6 +31,17 @@ export interface PlayerModelData {
   subject: Subject<{ tex: Texture; spec: Texture }>;
 }
 
+export class PlayerModelData {
+  constructor(texFName: string, specFName?: string) {
+    this.texFName = texFName;
+    this.specFName = specFName || 'default_spec';
+    this.lowResTex = undefined;
+    this.tex = undefined;
+    this.spec = undefined;
+    this.subject = new Subject<{ tex: Texture; spec: Texture }>();
+  }
+}
+
 export class Color {
   r: number;
   g: number;
@@ -49,7 +60,7 @@ export class Color {
   }
 }
 
-export interface CubeMap {
+export interface ICubeMap {
   name: string;
   tex: CubeTexture;
   path: string;
@@ -59,6 +70,35 @@ export interface CubeMap {
   nx: string;
   ny: string;
   nz: string;
+}
+
+export class CubeMap implements ICubeMap {
+  constructor(name: string, path: string) {
+    this.name = name;
+    this.path = path;
+    this.tex = undefined;
+    this.px = 'posx.jpg';
+    this.py = 'posy.jpg';
+    this.pz = 'posz.jpg';
+    this.nx = 'negx.jpg';
+    this.ny = 'negy.jpg';
+    this.nz = 'negz.jpg';
+  }
+
+  name: string;
+  nx: string;
+  ny: string;
+  nz: string;
+  path: string;
+  px: string;
+  py: string;
+  pz: string;
+  tex: CubeTexture;
+}
+
+export interface Prop<T> {
+  isLoaded: boolean;
+  instances: T[];
 }
 
 export type Progress = [progress: number, total: number];
