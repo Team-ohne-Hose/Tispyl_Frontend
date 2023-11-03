@@ -1,0 +1,200 @@
+<div class="container-fluid my-5" xmlns="http://www.w3.org/1999/html">
+
+    <div class="row">
+        <div class="col">
+            <div class="card transparent p-3">
+                <h3>Upload Texture</h3>
+                    <input #textureFileInput (change)="onFileChanged(textureFileInput)" type="file">
+                    <input [(ngModel)]="textureName" placeholder="Texture name" class="texture-name-input">
+                    <input [(ngModel)]="textureContribution" placeholder="Give credit" class="texture-name-input">
+                    <button (click)="onUploadTexture()">Upload</button>
+                <div>{{uploadResponseText}}</div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card transparent p-3">
+                <div class="d-flex">
+                    <h3 class="col">Available Textures ({{availableTextures.length}})</h3>
+                    <button (click)="refreshAvailableTextures()">refresh</button>
+                </div>
+                <div *ngFor="let t of availableTextures; index as i" class="code-text">
+                    {{i}}: {{t.name}} <span class="text-muted">@{{t.asset_file}}</span><span class="text-info"> [{{t.contribution !== ""}}]</span>
+                </div>
+                <hr/>
+                <h5 class="col">Orphaned texture files ({{orphanedTextureFiles.length}})</h5>
+                <div *ngFor="let otf of orphanedTextureFiles; index as i" class="code-text">
+                    {{i}}: <span class="text-warning">{{otf}}</span>
+                </div>
+                <hr/>
+                <h5 class="col">Assets missing a texture file ({{missingAssetFiles.length}})</h5>
+                <div *ngFor="let maf of missingAssetFiles; index as i" class="code-text">
+                    {{i}}: {{maf.name}} <span class="text-danger">@{{maf.asset_file}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row pt-4">
+        <div class="col">
+            <div class="card transparent p-3">
+                <h3>Upload GLTF-Model</h3>
+                <input #gltfFileInput (change)="onGltfFileChanged(gltfFileInput)" type="file">
+                <input [(ngModel)]="gltfName" placeholder="GLTF name" class="texture-name-input">
+                <input [(ngModel)]="gltfContribution" placeholder="Give credit" class="texture-name-input">
+                <button (click)="onUploadGltf()">Upload</button>
+                <div>{{uploadResponseTextGltf}}</div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card transparent p-3">
+                <div class="d-flex">
+                    <h3 class="col">Available Models ({{availableGltfs.length}})</h3>
+                    <button (click)="refreshAvailableModels()">refresh</button>
+                </div>
+                <div *ngFor="let g of availableGltfs; index as i" class="code-text">
+                    {{i}}: {{g.name}} <span class="text-muted">@{{g.asset_file}}</span><span class="text-info"> [{{g.contribution !== ""}}]</span>
+                </div>
+                <hr/>
+                <h5 class="col">Orphaned .gltf files ({{orphanedGltfFiles.length}})</h5>
+                <div *ngFor="let ogf of orphanedGltfFiles; index as i" class="code-text">
+                    {{i}}: <span class="text-warning">{{ogf}}</span>
+                </div>
+                <hr/>
+                <h5 class="col">Assets missing a .gltf file ({{missingAssetFilesGltf.length}})</h5>
+                <div *ngFor="let mafg of missingAssetFilesGltf; index as i" class="code-text">
+                    {{i}}: {{mafg.name}} <span class="text-danger">@{{mafg.asset_file}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row pt-4">
+        <div class="col">
+            <div class="card transparent p-3 container-fluid">
+                <h3>Define CubeMap</h3>
+                <div class="row gy-3">
+                    <div class="col cube-map-definer">
+                            <div class="img-wrap img-xp">
+                                <img class="cm-img" *ngIf="cm_xpositive_img" [src]="_env + cm_xpositive_img.asset_file">
+                                <div class="hint">X_pos</div>
+                            </div>
+                            <div class="img-wrap img-yp">
+                                <img class="cm-img" *ngIf="cm_ypositive_img" [src]="_env + cm_ypositive_img.asset_file">
+                                <div class="hint">Y_pos</div>
+                            </div>
+                            <div class="img-wrap img-zp">
+                                <img class="cm-img" *ngIf="cm_zpositive_img" [src]="_env + cm_zpositive_img.asset_file">
+                                <div class="hint">Z_pos</div>
+                            </div>
+                            <div class="img-wrap img-xn">
+                                <img class="cm-img" *ngIf="cm_xnegative_img" [src]="_env + cm_xnegative_img.asset_file">
+                                <div class="hint">X_neg</div>
+                            </div>
+                            <div class="img-wrap img-yn">
+                                <img class="cm-img" *ngIf="cm_ynegative_img" [src]="_env + cm_ynegative_img.asset_file">
+                                <div class="hint">Y_neg</div>
+                            </div>
+                            <div class="img-wrap img-zn">
+                                <img class="cm-img" *ngIf="cm_znegative_img" [src]="_env + cm_znegative_img.asset_file">
+                                <div class="hint">Z_neg</div>
+                            </div>
+                        </div>
+                    <div class="col">
+                        <label>
+                            Name:
+                            <input type="text" placeholder="unnamed" [(ngModel)]="cm_name">
+                        </label>
+
+                        <div>
+                            <label>
+                                X_pos
+                                <select [(ngModel)]="cm_xpositive_img">
+                                    <option value="default"> ... select texture </option>
+                                    <option *ngFor="let t of availableTextures" [ngValue]="t">
+                                        {{t.name}}
+                                    </option>
+                                </select>
+                            </label>
+                            <label>
+                                Y_pos
+                                <select [(ngModel)]="cm_ypositive_img">
+                                    <option value="default"> ... select texture </option>
+                                    <option *ngFor="let t of availableTextures" [ngValue]="t">
+                                        {{t.name}}
+                                    </option>
+                                </select>
+                            </label>
+                            <label>
+                                Z_pos
+                                <select [(ngModel)]="cm_zpositive_img">
+                                    <option value="default"> ... select texture </option>
+                                    <option *ngFor="let t of availableTextures" [ngValue]="t">
+                                        {{t.name}}
+                                    </option>
+                                </select>
+                            </label>
+                            <label>
+                                X_neg
+                                <select [(ngModel)]="cm_xnegative_img">
+                                    <option value="default"> ... select texture </option>
+                                    <option *ngFor="let t of availableTextures" [ngValue]="t">
+                                        {{t.name}}
+                                    </option>
+                                </select>
+                            </label>
+                            <label>
+                                Z_neg
+                                <select [(ngModel)]="cm_ynegative_img">
+                                    <option value="default"> ... select texture </option>
+                                    <option *ngFor="let t of availableTextures" [ngValue]="t">
+                                        {{t.name}}
+                                    </option>
+                                </select>
+                            </label>
+                            <label>
+                                Y_neg
+                                <select [(ngModel)]="cm_znegative_img">
+                                    <option value="default"> ... select texture </option>
+                                    <option *ngFor="let t of availableTextures" [ngValue]="t">
+                                        {{t.name}}
+                                    </option>
+                                </select>
+                            </label>
+                        </div>
+                        <div>
+                            <button (click)="setCubeMap()">Set as cube map</button>
+                            <div>{{uploadResponseTextCM}}</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card transparent p-3">
+                <div class="d-flex">
+                    <h3 class="col">Available CubeMaps ({{availableCubeMaps.length}})</h3>
+                    <button (click)="refreshAvailableCubemaps()">refresh</button>
+                </div>
+                <div class="row">
+                    <div *ngFor="let cm of availableCubeMaps; index as i" class="col code-text">
+                        <div>{{i}}: {{cm.name}}</div>
+                        <ul>
+                            <li>x_pos: {{cm.texture_pos_x.name}}</li>
+                            <li>y_pos: {{cm.texture_pos_y.name}}</li>
+                            <li>z_pos: {{cm.texture_pos_z.name}}</li>
+                            <li>x_pos: {{cm.texture_neg_x.name}}</li>
+                            <li>y_pos: {{cm.texture_neg_y.name}}</li>
+                            <li>z_pos: {{cm.texture_neg_z.name}}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

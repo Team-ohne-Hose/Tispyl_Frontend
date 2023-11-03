@@ -174,7 +174,7 @@ export class BoardItemControlService implements OnDestroy {
   }
 
   private generatePlayerSprite(figure: FigureItem) {
-    figure.labelSprite = this.loader.createPredefLabelSprite(figure.name);
+    figure.labelSprite = this.loader.createPlayerLabelSprite(figure.name);
     figure.labelSprite.position.set(0, 5, 0);
   }
 
@@ -187,8 +187,7 @@ export class BoardItemControlService implements OnDestroy {
   private changeNameTagVisibilityInScene(isShown: boolean): void {
     for (const figure of this.allFigures) {
       if (figure.labelSprite === undefined) {
-        figure.labelSprite = this.loader.createPredefLabelSprite(figure.name);
-        figure.labelSprite.position.set(0, 5, 0);
+        this.generatePlayerSprite(figure);
       }
       if (isShown) {
         figure.mesh.add(figure.labelSprite);
