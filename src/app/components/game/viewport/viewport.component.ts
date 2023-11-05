@@ -49,12 +49,12 @@ export class ViewportComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // TODO: This was an early attempt to get insights into the dispose behavior. This needs to be done properly.
     this.userInteractionController.onDestroy();
     console.log(this.renderer.info);
     this.renderer.dispose();
     console.log(this.renderer.info);
     this.camera.clear();
-    this.objectLoaderService.dispose();
     this.sceneTree.clear();
     this.animate = undefined;
   }
