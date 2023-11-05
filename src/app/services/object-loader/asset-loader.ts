@@ -10,15 +10,15 @@ import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
  */
 export class AssetLoader {
   /** Loader objects */
-  private textureLoader: TextureLoader = new TextureLoader();
-  private cubeTextureLoader: CubeTextureLoader = new CubeTextureLoader();
-  private gltfLoader: GLTFLoader = new GLTFLoader();
+  private static readonly textureLoader: TextureLoader = new TextureLoader();
+  private static readonly cubeTextureLoader: CubeTextureLoader = new CubeTextureLoader();
+  private static readonly gltfLoader: GLTFLoader = new GLTFLoader();
 
   /** Available assets and asset paths */
-  private readonly gltfBasePath: string = '/assets/models/';
-  public readonly defaultTileTexturePath: string = '/assets/board/default.png';
-  public readonly defaultGameboardTexturePath: string = '/assets/tischspiel_clear.png';
-  public readonly cubeMaps: CubeMap[] = [
+  private static readonly gltfBasePath: string = '/assets/models/';
+  public static readonly defaultTileTexturePath: string = '/assets/board/default.png';
+  public static readonly defaultGameboardTexturePath: string = '/assets/tischspiel_clear.png';
+  public static cubeMaps: CubeMap[] = [
     new CubeMap('Ryfjallet', '/assets/cubemaps/mountain-skyboxes/Ryfjallet/'),
     new CubeMap('Maskonaive1', '/assets/cubemaps/mountain-skyboxes/Maskonaive/'),
     new CubeMap('Maskonaive2', '/assets/cubemaps/mountain-skyboxes/Maskonaive2/'),
@@ -37,7 +37,7 @@ export class AssetLoader {
     new CubeMap('Bridge2', '/assets/cubemaps/bridge-skyboxes/Bridge2/'),
   ];
 
-  public readonly playerModels: Map<PlayerModel, PlayerModelData> = new Map<PlayerModel, PlayerModelData>([
+  public static readonly playerModels: Map<PlayerModel, PlayerModelData> = new Map<PlayerModel, PlayerModelData>([
     [PlayerModel.bcap_NukaCola, new PlayerModelData('default')],
     [PlayerModel.bcap_CocaCola, new PlayerModelData('cocaCola')],
     [PlayerModel.bcap_Developer, new PlayerModelData('dev')],
@@ -57,8 +57,8 @@ export class AssetLoader {
     [PlayerModel.bcap_skovald, new PlayerModelData('skovald', 'skovald_spec')],
   ]);
 
-  public readonly playerModelThumbnailPath = '../assets/models/otherTex/';
-  public readonly availableDice: DiceVariations<ResourceData> = {
+  public static readonly playerModelThumbnailPath = '../assets/models/otherTex/';
+  public static readonly availableDice: DiceVariations<ResourceData> = {
     default: {
       cname: 'diceDefault',
       fname: 'diceDefault.glb',
@@ -76,7 +76,7 @@ export class AssetLoader {
     },
   };
 
-  public readonly availableFigures: FigureVariations<ResourceData> = {
+  public static readonly availableFigures: FigureVariations<ResourceData> = {
     default: {
       cname: 'figureDefault',
       fname: 'figureDefault.glb',
@@ -85,24 +85,27 @@ export class AssetLoader {
   };
 
   /** Helper functions to make loader access cleaner */
-  public loadTexture(
+  public static loadTexture(
     path: string,
     onLoad?: (texture: Texture) => void,
     onProgress?: (event: ProgressEvent) => void,
     onError?: (event: ErrorEvent) => void
   ): Texture {
     console.log('Loading texture: ', path);
-    const default_onLoad = (t: Texture) => {
+    const _onLoad = (t: Texture) => {
       t.encoding = sRGBEncoding;
       t.anisotropy = 16;
+      if (onLoad) {
+        onLoad(t);
+      }
     };
     const default_onError = (err: ErrorEvent) => {
       console.error(err);
     };
-    return this.textureLoader.load(path, onLoad || default_onLoad, onProgress, onError || default_onError);
+    return this.textureLoader.load(path, _onLoad, onProgress, onError || default_onError);
   }
 
-  public loadCubeTexture(idx: number): CubeTexture {
+  public static loadCubeTexture(idx: number): CubeTexture {
     console.log('Loading cube texture: ', idx);
     return this.cubeTextureLoader
       .setPath(this.cubeMaps[idx].path)
@@ -116,7 +119,7 @@ export class AssetLoader {
       ]);
   }
 
-  public loadGLTF(
+  public static loadGLTF(
     url: string,
     onLoad: (gltf: GLTF) => void,
     onProgress?: (event: ProgressEvent) => void,

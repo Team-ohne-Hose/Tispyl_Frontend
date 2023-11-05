@@ -96,9 +96,4 @@ export class CubeMap implements ICubeMap {
   tex: CubeTexture;
 }
 
-export interface Prop<T> {
-  isLoaded: boolean;
-  instances: T[];
-}
-
 export type Progress = [progress: number, total: number];

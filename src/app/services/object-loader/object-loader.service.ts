@@ -13,7 +13,6 @@ import {
   SpriteMaterial,
   Texture,
   Vector2,
-  sRGBEncoding,
 } from 'three';
 import { PhysicsEntity, PhysicsEntityVariation, PlayerModel } from '../../model/WsData';
 import { Observable, Observer } from 'rxjs';
@@ -27,7 +26,6 @@ type Disposable = Mesh | BoxBufferGeometry | Texture | Material;
   providedIn: 'root',
 })
 export class ObjectLoaderService {
-  private al: AssetLoader = new AssetLoader();
   private loadedObjects: Disposable[] = [];
   private currentCubeMap = 2;
 
@@ -41,7 +39,7 @@ export class ObjectLoaderService {
 
   private readonly lowResSuffix = '_256';
   // we are currently not using specific specular maps, to use those, the subject has to also update those
-  private playermodels: Map<PlayerModel, PlayerModelData> = this.al.playerModels;
+  private playermodels: Map<PlayerModel, PlayerModelData> = AssetLoader.playerModels;
 
   private readonly entities: [PhysicsEntity, PhysicsEntityVariation][] = [
     [PhysicsEntity.dice, PhysicsEntityVariation.default],
@@ -49,7 +47,7 @@ export class ObjectLoaderService {
   ];
 
   constructor() {
-    this.defaultTileTexture = this.al.loadTexture(this.al.defaultTileTexturePath);
+    this.defaultTileTexture = AssetLoader.loadTexture(AssetLoader.defaultTileTexturePath);
     this.gameBoardGeo = new BoxBufferGeometry(100, 1, 100);
     this.gameTileGeo = new BoxBufferGeometry(10, 1, 10);
     this.gameBoardMat = new MeshStandardMaterial({ color: 0xffffff });
@@ -68,7 +66,7 @@ export class ObjectLoaderService {
 
   getBCapTextureThumbPath(modelId: number): string {
     const playerModel: PlayerModelData = this.playermodels.get(modelId);
-    return this.al.playerModelThumbnailPath + (playerModel === undefined ? 'default' : playerModel.texFName) + '_128.png';
+    return AssetLoader.playerModelThumbnailPath + (playerModel === undefined ? 'default' : playerModel.texFName) + '_128.png';
   }
 
   loadCommonObjects(): Observable<Progress> {
@@ -105,7 +103,7 @@ export class ObjectLoaderService {
   setCurrentCubeMap(cubeMapId: number): void {
     if (cubeMapId >= 0) {
       const cubemap = this.getCubeMap(cubeMapId);
-      console.debug('Using Cubemap:', this.al.cubeMaps[cubeMapId].name, cubeMapId, this.al.cubeMaps[cubeMapId]);
+      console.debug('Using Cubemap:', AssetLoader.cubeMaps[cubeMapId].name, cubeMapId, AssetLoader.cubeMaps[cubeMapId]);
       this.currentCubeMap = cubeMapId;
 
       this.gameBoundaryMat.envMap = cubemap;
@@ -118,10 +116,10 @@ export class ObjectLoaderService {
 
   getCubeMap(cubeMapId?: number): CubeTexture {
     cubeMapId = cubeMapId || this.currentCubeMap;
-    if (this.al.cubeMaps[cubeMapId].tex === undefined) {
-      this.al.cubeMaps[cubeMapId].tex = this.al.loadCubeTexture(cubeMapId);
+    if (AssetLoader.cubeMaps[cubeMapId].tex === undefined) {
+      AssetLoader.cubeMaps[cubeMapId].tex = AssetLoader.loadCubeTexture(cubeMapId);
     }
-    return this.al.cubeMaps[cubeMapId].tex;
+    return AssetLoader.cubeMaps[cubeMapId].tex;
   }
 
   loadObject(obj: PhysicsEntity, variation: PhysicsEntityVariation, callback: (model: Object3D) => void): void {
@@ -129,7 +127,7 @@ export class ObjectLoaderService {
     if (resource.objectCache !== undefined) {
       callback(resource.objectCache.clone(true));
     } else {
-      this.al.loadGLTF(resource.fname, (gltf: GLTF) => {
+      AssetLoader.loadGLTF(resource.fname, (gltf: GLTF) => {
         gltf.scene.name = resource.cname + ' (loaded)';
         gltf.scene.castShadow = true;
         gltf.scene.receiveShadow = true;
@@ -187,8 +185,8 @@ export class ObjectLoaderService {
   }
 
   loadTex(fname: string, fnameSpec: string): { tex: Texture; spec: Texture } {
-    const texture = this.al.loadTexture('/assets/models/otherTex/' + fname + '.png');
-    const gloss = this.al.loadTexture('/assets/models/otherTex/' + fnameSpec + '.png');
+    const texture = AssetLoader.loadTexture('/assets/models/otherTex/' + fname + '.png');
+    const gloss = AssetLoader.loadTexture('/assets/models/otherTex/' + fnameSpec + '.png');
     gloss.encoding = LinearEncoding;
     return { tex: texture, spec: gloss };
   }
@@ -238,20 +236,18 @@ export class ObjectLoaderService {
     gameBoard.name = 'gameboard';
     gameBoard.userData.clickRole = ClickedTarget.board;
     this.gameBoardMat.roughness = 0.475;
-    this.gameBoardMat.map = this.al.loadTexture(this.al.defaultGameboardTexturePath);
+    this.gameBoardMat.map = AssetLoader.loadTexture(AssetLoader.defaultGameboardTexturePath);
     this.gameBoardMat.needsUpdate = true;
     return gameBoard;
   }
 
   loadGameTileTexture(texUrl: string): Observable<Texture> {
-    const defaultTileTexture: Texture = this.al.loadTexture(this.al.defaultTileTexturePath);
+    const defaultTileTexture: Texture = AssetLoader.loadTexture(AssetLoader.defaultTileTexturePath);
     this.loadedObjects.push(defaultTileTexture);
     return new Observable<Texture>((observer: Observer<Texture>) => {
-      const t: Texture = this.al.loadTexture(
-        'http://localhost:25670/api/assets/static/asset_1698709289146.png',
+      const t: Texture = AssetLoader.loadTexture(
+        texUrl,
         (texture: Texture) => {
-          texture.encoding = sRGBEncoding;
-          texture.anisotropy = 16;
           observer.next(texture);
           observer.complete();
         },
@@ -352,13 +348,13 @@ export class ObjectLoaderService {
       case PhysicsEntity.dice:
         switch (variation) {
           case PhysicsEntityVariation.default:
-            return this.al.availableDice.default;
+            return AssetLoader.availableDice.default;
         }
         break;
       case PhysicsEntity.figure:
         switch (variation) {
           case PhysicsEntityVariation.default:
-            return this.al.availableFigures.default;
+            return AssetLoader.availableFigures.default;
         }
         break;
     }
@@ -425,21 +421,5 @@ export class ObjectLoaderService {
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
-  }
-
-  dispose(): void {
-    this.loadedObjects.forEach((disposable) => {
-      if (disposable instanceof Texture) {
-        console.log('Found Texture =)', disposable);
-      } else if (disposable instanceof BoxBufferGeometry) {
-        console.log('Found BoxBufferGeometry =)', disposable);
-      } else if (disposable instanceof Mesh) {
-        console.log('Found Mesh =)', disposable);
-      } else if (disposable instanceof Material) {
-        console.log('Found Material =)', disposable);
-      } else {
-        console.warn('Unknown disposable found, cant dispose. Memory leak likely.', disposable);
-      }
-    });
   }
 }
