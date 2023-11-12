@@ -3,7 +3,7 @@ import { AmbientLight, DirectionalLight, Object3D, PerspectiveCamera, Scene, Vec
 import { UserInteractionController } from './helpers/UserInteractionController';
 import { ObjectLoaderService } from '../../../services/object-loader/object-loader.service';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
-import { ClickedTarget } from './helpers/PhysicsCommands';
+import { ClickRole } from './helpers/PhysicsCommands';
 import { PhysicsEntity, PhysicsEntityVariation } from '../../../model/WsData';
 import { BoardTilesService } from '../../../services/board-tiles.service';
 import { GameStateService } from '../../../services/game-state.service';
@@ -17,7 +17,7 @@ export class ObjectUserData {
   physicsId: number;
   entityType: PhysicsEntity;
   variation: PhysicsEntityVariation;
-  clickRole: ClickedTarget;
+  clickRole: ClickRole;
 }
 
 /**
@@ -51,11 +51,10 @@ export class ViewportComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     // TODO: This was an early attempt to get insights into the dispose behavior. This needs to be done properly.
     this.userInteractionController.onDestroy();
-    console.log(this.renderer.info);
     this.renderer.dispose();
-    console.log(this.renderer.info);
     this.camera.clear();
     this.sceneTree.clear();
+    //this.objectLoaderService.dispose();
     this.animate = undefined;
   }
 
@@ -146,7 +145,10 @@ export class ViewportComponent implements AfterViewInit, OnDestroy {
     o.next([2, 4]);
 
     /** Load texture objects that require heavy operations */
-    this.sceneTree.background = this.objectLoaderService.getCubeMap(); // sky box
+    this.objectLoaderService.getCubeMap(1).subscribe((suc) => {
+      this.sceneTree.background = suc;
+    });
+    // This does not represent the correct state of loading the skybox anymore
     o.next([3, 4]);
     const gameBoard = this.objectLoaderService.generateGameBoard(); // game board
     this.sceneTree.add(gameBoard);
