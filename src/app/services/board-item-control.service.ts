@@ -5,17 +5,7 @@ import { ObjectLoaderService } from './object-loader/object-loader.service';
 import { BoardTilesService } from './board-tiles.service';
 import { ItemService } from './items-service/item.service';
 import { ViewportComponent } from '../components/game/viewport/viewport.component';
-import {
-  ConeBufferGeometry,
-  Mesh,
-  MeshStandardMaterial,
-  Object3D,
-  PerspectiveCamera,
-  Scene,
-  SphereBufferGeometry,
-  Sprite,
-  Vector3,
-} from 'three';
+import { ConeBufferGeometry, Mesh, MeshStandardMaterial, Object3D, PerspectiveCamera, Scene, Sprite, Vector3 } from 'three';
 import { Player } from '../model/state/Player';
 import { GameActionType, GameSetTile, MessageType } from '../model/WsData';
 import { Observable, Observer, Subscription, take } from 'rxjs';
@@ -74,6 +64,7 @@ export class BoardItemControlService implements OnDestroy {
           figure.mesh.add(figure.labelSprite);
         }
       }
+      this.physics.wakeAll();
     }).bind(this);
 
     // Subscribe to Overriding setting to display Name Plates
@@ -174,7 +165,7 @@ export class BoardItemControlService implements OnDestroy {
   }
 
   private generatePlayerSprite(figure: FigureItem) {
-    figure.labelSprite = this.loader.createPlayerLabelSprite(figure.name);
+    figure.labelSprite = this.loader.generatePlayerLabelSprite(figure.name);
     figure.labelSprite.position.set(0, 5, 0);
   }
 
@@ -236,17 +227,6 @@ export class BoardItemControlService implements OnDestroy {
         };
         this.gameState.sendMessage(MessageType.GAME_MESSAGE, msg);
       });
-  }
-
-  addFlummi(x: number, y: number, z: number, color: number): void {
-    // const geometry = new SphereGeometry( 2, 32, 32 );
-    const geometry = new SphereBufferGeometry(2, 32, 32);
-    const material = new MeshStandardMaterial({ color: color });
-    const sphere = new Mesh(geometry, material);
-    sphere.position.set(x, y, z);
-    // this.scene.add( sphere );
-    // TODO rebuild Flummis, because important
-    // this.physics.setVelocity(physId, (2 * Math.random() - 1) * 15, Math.random() * 15, (2 * Math.random() - 1) * 15);
   }
 
   addMarker(x: number, y: number, z: number, col: number): void {

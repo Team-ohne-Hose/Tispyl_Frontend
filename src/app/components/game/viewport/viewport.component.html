@@ -2,9 +2,9 @@
   #view
   (keydown)="userInteractionController.keyboardInteractions.keyDown($event)"
   (keyup)="userInteractionController.keyboardInteractions.keyUp($event)"
-  (mousedown)="userInteractionController.mouseInteractions.mouseDown($event)"
-  (mousemove)="userInteractionController.mouseInteractions.mouseMoved($event)"
-  (mouseup)="userInteractionController.mouseInteractions.mouseUp($event)"
+  (mousedown)="userInteractionController.mouseInteractions.onMouseDown($event)"
+  (mousemove)="userInteractionController.mouseInteractions.onMouseMoved($event)"
+  (mouseup)="userInteractionController.mouseInteractions.onMouseUp($event)"
   (window:resize)="onWindowResize($event)"
   [ngStyle]="{ cursor: this.itemService.target$ !== undefined ? 'url(\'assets/crosshair.svg\') 64 64, auto' : '' }"
   id="viewport-container"
