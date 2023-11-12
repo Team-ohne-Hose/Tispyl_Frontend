@@ -54,8 +54,8 @@ export class ViewportComponent implements AfterViewInit, OnDestroy {
     this.renderer.dispose();
     this.camera.clear();
     this.sceneTree.clear();
-    //this.objectLoaderService.dispose();
-    this.animate = undefined;
+    this.objectLoaderService.dispose();
+    this.renderer.info.reset();
   }
 
   async ngAfterViewInit(): Promise<void> {

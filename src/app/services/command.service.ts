@@ -124,12 +124,6 @@ export class CommandService {
     },
     { cmd: '/coinflip', function: this.coinflip.bind(this), description: 'Flip a coin', prototype: '/coinflip' },
     {
-      cmd: '/hires',
-      function: this.objectLoader.loadHiResTex.bind(this.objectLoader),
-      description: 'load the HiRes Textures',
-      prototype: '/hires',
-    },
-    {
       cmd: '/printSceneTree',
       function: this.printSceneTree.bind(this),
       description: 'prints the current SceneTree for debugging purposes',
