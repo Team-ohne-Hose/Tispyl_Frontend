@@ -19,7 +19,7 @@ import { Observable, Observer, Subscription } from 'rxjs';
 import { Progress } from '../../../../services/object-loader/loaderTypes';
 import { MapSchema } from '@colyseus/schema';
 
-export enum ClickedTarget {
+export enum ClickRole {
   other,
   board,
   dice,
@@ -93,7 +93,13 @@ export class PhysicsCommands {
 
   private _updateOrGenerateItem(item: PhysicsObjectState): void {
     if (!item.disabled) {
-      const obj = PhysicsCommands.getObjectByPhysId(this.bic.sceneTree, item.objectIDPhysics);
+      let obj: Object3D;
+      this.bic.sceneTree.traverse((o) => {
+        if (o.userData.physicsId === item.objectIDPhysics) {
+          obj = o;
+        }
+      });
+      //console.log(item.objectIDPhysics, item.disabled, item.position, obj)
       if (obj !== undefined) {
         this._updateCorrelatedObject(item, obj);
       } else {
@@ -133,11 +139,10 @@ export class PhysicsCommands {
     }
   }
 
-  setClickRole(clickRole: ClickedTarget, obj: Object3D): void {
+  setClickRole(clickRole: ClickRole, obj: Object3D): void {
     if (obj !== undefined) {
       obj.userData.clickRole = clickRole;
       this.addInteractable(obj);
-      obj.children.forEach((value) => this.setClickRole(clickRole, value));
     }
   }
 
@@ -232,14 +237,16 @@ export class PhysicsCommands {
     rotY = rotY || 0;
     rotZ = rotZ || 0;
     rotW = rotW || 0;
-    this.bic.loader.loadObject(entity, variant, (model: Object3D) => {
+
+    this.bic.loader.loadObject(entity).subscribe((model: Object3D) => {
       model.quaternion.set(rotX, rotY, rotZ, rotW);
       model.position.set(posX, posY, posZ);
+      model.traverse((o) => (o.userData = {}));
       const userData: ObjectUserData = {
         physicsId: physicsId,
         entityType: entity,
-        variation: variant,
-        clickRole: undefined,
+        variation: 0,
+        clickRole: 0,
       };
       model.userData = userData;
       this.bic.sceneTree.add(model);
@@ -247,11 +254,11 @@ export class PhysicsCommands {
       // set the various references in other classes
       switch (entity) {
         case PhysicsEntity.dice:
-          this.setClickRole(ClickedTarget.dice, model);
+          this.setClickRole(ClickRole.dice, model);
           this.dice = model;
           break;
         case PhysicsEntity.figure:
-          this.setClickRole(ClickedTarget.figure, model);
+          this.setClickRole(ClickRole.figure, model);
 
           // Load other playermodels
           this.bic.gameState
@@ -267,6 +274,7 @@ export class PhysicsCommands {
             });
           break;
       }
+      console.log('Bound: ', entity, variant, physicsId, ' To: ', model.userData);
       this.currentlyLoadingEntities.set(physicsId, false);
     });
   }
