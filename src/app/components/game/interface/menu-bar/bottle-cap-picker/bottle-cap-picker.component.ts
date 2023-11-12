@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { ReplaySubject, Subscription, take } from 'rxjs';
 import { Player } from 'src/app/model/state/Player';
-import { MessageType, PlayerMessageType, PlayerModel, SetFigure } from 'src/app/model/WsData';
+import { MessageType, PlayerMessageType, SetFigure } from 'src/app/model/WsData';
 import { GameStateService } from 'src/app/services/game-state.service';
 import { ObjectLoaderService } from 'src/app/services/object-loader/object-loader.service';
 
@@ -12,54 +12,62 @@ import { ObjectLoaderService } from 'src/app/services/object-loader/object-loade
 })
 export class BottleCapPickerComponent implements OnInit, OnDestroy {
   protected bottleCapUrl: string;
-  private numberOfBottleCaps: number;
-  private currentCapId: PlayerModel;
+  private numberOfBottleCaps$: ReplaySubject<number> = new ReplaySubject<number>(1);
+  private currentCapId = 0;
   private player: Player;
 
   // subscriptions
   private player$$: Subscription;
+  private numberOfBottleCaps$$: Subscription;
 
   constructor(private objectLoaderService: ObjectLoaderService, private gameStateService: GameStateService) {
-    this.numberOfBottleCaps = this.objectLoaderService.getBCapCount();
+    this.numberOfBottleCaps$$ = this.objectLoaderService.getBCapCount().subscribe((n) => this.numberOfBottleCaps$.next(n));
   }
 
   ngOnInit(): void {
     this.player$$ = this.gameStateService.getMe$().subscribe((player: Player) => {
       this.player = player;
-      this.currentCapId = player.figureModel || PlayerModel.bcap_NukaCola;
-      this.bottleCapUrl = this.objectLoaderService.getBCapTextureThumbPath(this.currentCapId);
+    });
+    this.objectLoaderService.getBCapTextureThumbPath(this.currentCapId).subscribe((suc) => {
+      this.bottleCapUrl = suc;
     });
   }
 
   ngOnDestroy(): void {
     this.player$$.unsubscribe();
+    this.numberOfBottleCaps$$.unsubscribe();
   }
 
   nextBCap(): void {
-    this.currentCapId++;
-    if (this.currentCapId > this.numberOfBottleCaps) {
-      this.currentCapId = 1;
-    }
-    this.setBCap();
+    this.numberOfBottleCaps$.pipe(take(1)).subscribe((n) => {
+      this.currentCapId++;
+      if (this.currentCapId > n - 1) {
+        this.currentCapId = 0;
+      }
+      this.setBCap();
+    });
   }
 
   prevBCap(): void {
-    this.currentCapId--;
-    if (this.currentCapId < 1) {
-      this.currentCapId = this.numberOfBottleCaps;
-    }
-    this.setBCap();
+    this.numberOfBottleCaps$.pipe(take(1)).subscribe((n) => {
+      this.currentCapId = this.currentCapId - 1;
+      if (this.currentCapId < 0) {
+        this.currentCapId = n - 1;
+      }
+      this.setBCap();
+    });
   }
 
   private setBCap(): void {
-    this.bottleCapUrl = this.objectLoaderService.getBCapTextureThumbPath(this.currentCapId);
-
-    const msg: SetFigure = {
-      type: MessageType.PLAYER_MESSAGE,
-      subType: PlayerMessageType.setFigure,
-      playerId: this.player.loginName,
-      playerModel: this.currentCapId,
-    };
-    this.gameStateService.sendMessage(MessageType.PLAYER_MESSAGE, msg);
+    this.objectLoaderService.getBCapTextureThumbPath(this.currentCapId).subscribe((suc) => {
+      this.bottleCapUrl = suc;
+      const msg: SetFigure = {
+        type: MessageType.PLAYER_MESSAGE,
+        subType: PlayerMessageType.setFigure,
+        playerId: this.player.loginName,
+        playerModel: this.currentCapId,
+      };
+      this.gameStateService.sendMessage(MessageType.PLAYER_MESSAGE, msg);
+    });
   }
 }

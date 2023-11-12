@@ -1,14 +1,13 @@
-import { BoxBufferGeometry, CanvasTexture, Mesh, MeshStandardMaterial, Sprite, SpriteMaterial, Vector2 } from 'three';
+import { BoxBufferGeometry, CanvasTexture, Mesh, MeshStandardMaterial, Sprite, SpriteMaterial, Texture, Vector2 } from 'three';
 import { ClickRole } from '../../components/game/viewport/helpers/PhysicsCommands';
-import { AssetLoader } from './asset-loader';
 import { Color } from './loaderTypes';
 
 export class PredefinedObjectGenerator {
-  public static generateGameBoard(): Mesh {
+  public static generateGameBoard(tex: Texture): Mesh {
     const gameBoardGeometry = new BoxBufferGeometry(100, 1, 100);
     const gameBoardMat = new MeshStandardMaterial({ color: 0xffffff });
     gameBoardMat.roughness = 0.475;
-    gameBoardMat.map = AssetLoader.loadTexture(AssetLoader.defaultGameboardTexturePath);
+    gameBoardMat.map = tex;
     gameBoardMat.needsUpdate = true;
 
     const gameBoard: Mesh<BoxBufferGeometry, MeshStandardMaterial> = new Mesh(gameBoardGeometry, gameBoardMat);
