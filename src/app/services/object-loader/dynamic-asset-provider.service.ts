@@ -4,7 +4,7 @@ import { Observable, Observer, ReplaySubject, Subscription, take } from 'rxjs';
 import { CubeTexture, Object3D, Texture, TextureLoader, sRGBEncoding } from 'three';
 import { map, mergeMap } from 'rxjs/operators';
 import { CubeTextureLoader } from 'three/src/loaders/CubeTextureLoader';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -57,8 +57,9 @@ export class DynamicAssetProviderService implements OnDestroy {
   }
 
   private _loadGltf(bGltf: BackendGltf): Observable<Object3D> {
+    // ToDo: This doe snot provide ample data to dispose of thee gltf afterwards. This should be fixed
     return new Observable<Object3D>((o: Observer<Object3D>) => {
-      this.gltfLoader.load(bGltf.asset_file, (g) => {
+      this.gltfLoader.load(bGltf.asset_file, (g: GLTF) => {
         g.scene.name = 'gltf_' + bGltf.name;
         g.scene.castShadow = true;
         g.scene.receiveShadow = true;
@@ -91,19 +92,36 @@ export class DynamicAssetProviderService implements OnDestroy {
     );
   }
 
+  public loadTextureByName(name: string): Observable<Texture> {
+    return this.availableTextures$.pipe(
+      take(1),
+      map((bTextures) => {
+        const bTex = bTextures.find((t) => t.name === name);
+        if (bTex) {
+          console.debug(`Loading Texture, name: ${name} object:`, bTex);
+          return this._loadTexture(bTex);
+        }
+        throw Error(`Could not find Texture with the name: ${name}`);
+      })
+    );
+  }
+
   public loadTexture(id: number): Observable<Texture> {
     return this.availableTextures$.pipe(
       take(1),
       map((bTextures) => {
-        console.debug(`Loading texture, id:${id} object: ${bTextures[id]}`);
-        const bTexture = bTextures[id];
-        return this.textureLoader.load(bTexture.asset_file, (t) => {
-          t.encoding = sRGBEncoding;
-          t.anisotropy = 16;
-          t.name = 'texture_' + bTexture.name;
-        });
+        console.debug(`Loading texture, id:${id} object: `, bTextures[id]);
+        return this._loadTexture(bTextures[id]);
       })
     );
+  }
+
+  private _loadTexture(bTexture: BackendTexture) {
+    return this.textureLoader.load(bTexture.asset_file, (t) => {
+      t.encoding = sRGBEncoding;
+      t.anisotropy = 16;
+      t.name = 'texture_' + bTexture.name;
+    });
   }
 
   public refreshAvailableAssets() {
@@ -141,6 +159,10 @@ export class DynamicAssetProviderService implements OnDestroy {
         this.availableCubeMaps$.next([]);
       },
     });
+  }
+
+  public pathOf(fileCarryingObject: BackendTexture | BackendGltf): string {
+    return this.basePath + fileCarryingObject.asset_file;
   }
 
   ngOnDestroy(): void {
