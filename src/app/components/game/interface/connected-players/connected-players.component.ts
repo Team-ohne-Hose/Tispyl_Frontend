@@ -1,33 +1,35 @@
-import { Component, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Player } from '../../../../model/state/Player';
 import { GameStateService } from '../../../../services/game-state.service';
-import { animate, state, style, transition, trigger } from '@angular/animations';
 import { BehaviorSubject, Observable, Subscription, combineLatest, forkJoin } from 'rxjs';
-import { map, mergeMap, share } from 'rxjs/operators';
+import { distinct, map, mergeMap, share, withLatestFrom } from 'rxjs/operators';
 import { BasicUser, UserService } from '../../../../services/user.service';
 import { APIResponse } from '../../../../model/APIResponse';
 import { Router } from '@angular/router';
 import { MessageType, RefreshProfilePics } from '../../../../model/WsData';
-import { PlayerIconComponent } from '../../../framework/player-icon/player-icon.component';
+import { Breakpoints } from '@angular/cdk/layout';
 
+export interface ConnectedPlayersComponentView {
+  refreshPlayerIcons: () => void;
+  onNextPlayer?: (playerLogin: string) => void;
+  onPlayerListChange?: (playerLogin: string) => void;
+}
 @Component({
   selector: 'app-connected-players',
   templateUrl: './connected-players.component.html',
   styleUrls: ['./connected-players.component.css'],
-  animations: [
-    trigger('turnMovement', [
-      state('yours', style({ transform: 'translate(0rem)' })),
-      state('others', style({ transform: 'translate(-1rem)' })),
-      transition('yours <=> others', [animate('0.25s ease-out')]),
-    ]),
-  ],
 })
-export class ConnectedPlayersComponent implements OnInit, OnDestroy {
+export class ConnectedPlayersComponent implements OnInit, OnDestroy, AfterViewInit {
+  @Input() currentBreakpoint: string;
+
+  @ViewChild('cpComponent', { static: false })
+  connectedPlayersComponent: ConnectedPlayersComponentView;
+
+  // make Breakpoints visible in .html file
+  Breakpoints = Breakpoints;
+
   /** Visibility state */
   players$: Observable<Player[]>;
-
-  @ViewChildren('playersRef')
-  playersRef: QueryList<PlayerIconComponent>;
 
   /** Visibility state - flags */
   // TODO: This is to be extended to retrieve roles instead of just the is_dev flag
@@ -36,15 +38,19 @@ export class ConnectedPlayersComponent implements OnInit, OnDestroy {
 
   // subscriptions
   playerIsDev$$: Subscription;
+  currentPlayerLogin$$: Subscription;
+  playerListChange$$: Subscription;
 
   // callbackIds
+
+  // TODO: Ask Kevin(a. Berlin) if we can change the name of this variable
   steinMoosFickerei: number;
 
   constructor(protected gameState: GameStateService, private userService: UserService, private router: Router) {
     this.steinMoosFickerei = this.gameState.registerMessageCallback(MessageType.REFRESH_COMMAND, {
       filterSubType: -1,
       f: (_: RefreshProfilePics) => {
-        this.playersRef.map((icon) => icon.refresh());
+        this.connectedPlayersComponent.refreshPlayerIcons();
       },
     });
   }
@@ -55,6 +61,27 @@ export class ConnectedPlayersComponent implements OnInit, OnDestroy {
     this.neighbours$ = this.getNeighbours$().pipe(share());
     this.playerIsDev$ = new BehaviorSubject<Map<string, boolean>>(new Map());
     this.bindIsDevSubject();
+
+    if (!window.PointerEvent) {
+      console.error('no Pointer support!');
+    }
+  }
+
+  ngAfterViewInit(): void {
+    this.currentPlayerLogin$$ = this.gameState.observableState.currentPlayerLogin$.subscribe((playerLogin: string) => {
+      if (this.connectedPlayersComponent.onNextPlayer) this.connectedPlayersComponent.onNextPlayer(playerLogin);
+    });
+    this.playerListChange$$ = this.players$
+      .pipe(
+        distinct((players: Player[]) => players.length),
+        withLatestFrom(this.gameState.observableState.currentPlayerLogin$)
+      )
+      .subscribe((value: [Player[], string]) => {
+        if (this.connectedPlayersComponent.onPlayerListChange) {
+          const playerLogin = value[1];
+          this.connectedPlayersComponent.onPlayerListChange(playerLogin);
+        }
+      });
   }
 
   ngOnDestroy(): void {
@@ -63,6 +90,8 @@ export class ConnectedPlayersComponent implements OnInit, OnDestroy {
       this.playerIsDev$$.unsubscribe();
       this.playerIsDev$.complete();
     }
+    this.currentPlayerLogin$$?.unsubscribe();
+    this.playerListChange$$?.unsubscribe();
     this.gameState.clearMessageCallback(this.steinMoosFickerei);
   }
 

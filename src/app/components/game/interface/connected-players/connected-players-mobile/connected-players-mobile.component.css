@@ -1,0 +1,103 @@
+.anchor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  filter: drop-shadow(3px 3px 8px rgb(0, 0, 0));
+  overflow: hidden;
+}
+
+.playerListContainer {
+  display: block;
+
+  cursor: default;
+  /* supported by Chrome and Opera */
+  user-select: none;
+  /* Safari */
+  -webkit-user-select: none;
+  /* Firefox */
+  -moz-user-select: none;
+  /* Internet Explorer/Edge */
+  -ms-user-select: none;
+
+  /* Hide Scrollbars to make swipable*/
+  overflow-x: scroll;
+  scroll-behavior: smooth;
+  /* IE & Edge */
+  -ms-overflow-style: none;
+  /* Firefox */
+  scrollbar-width: none;
+
+  --mask: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 8% 92%, rgba(0, 0, 0, 0) 100%) 0% 0% / 100% 100% repeat-y;
+
+  -webkit-mask: var(--mask);
+  mask: var(--mask);
+
+  scroll-snap-type: x mandatory;
+}
+
+.playerListContainer::-webkit-scrollbar {
+  /* Chrome,Safari,Opera */
+  display: none;
+}
+
+.player-list {
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2vw;
+
+  touch-action: pan-x;
+  padding-left: 42.5vw;
+  padding-right: 42.5vw;
+  padding-bottom: 10px;
+
+  min-width: 100%;
+}
+
+.player-box {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+}
+
+.player-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 1rem;
+  max-width: 17vw;
+  font-size: smaller;
+}
+
+.active .player-text {
+  max-width: 24vw;
+  font-size: normal;
+}
+
+.player-text .name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12);
+}
+
+.centerline {
+  position: absolute;
+  left: 41vw;
+  right: 41vw;
+  background-color: #ff3636;
+  height: 100%;
+}
+
+.active {
+  /*background: var(--golden-radial-bg);
+    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12);*/
+}
+
+.player-icon {
+  /*pointer-events: visibleFill;
+    margin-left: 0.25rem;
+    position: relative;*/
+}

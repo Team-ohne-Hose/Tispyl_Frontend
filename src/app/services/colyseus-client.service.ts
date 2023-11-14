@@ -120,9 +120,10 @@ export class ColyseusClientService implements OnDestroy {
     });
   }
 
-  updateAvailableRooms(): void {
-    this.CLIENT.getAvailableRooms('game').then((rooms) => {
+  updateAvailableRooms(): Promise<RoomAvailable<any>[]> {
+    return this.CLIENT.getAvailableRooms('game').then((rooms) => {
       this.availableRooms$.next(rooms);
+      return rooms;
     });
   }
 

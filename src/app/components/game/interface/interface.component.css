@@ -1,36 +1,4 @@
-nav a {
-  font-size: small;
-  color: #8fff00;
-}
-
-nav a:visited {
-  color: #5aa300;
-}
-
-.basic-window {
-  pointer-events: visibleFill;
-  display: inline-block;
-  background-color: rgba(0, 0, 0, 0.76);
-}
-
-.window-handle {
-  background-color: rgba(0, 0, 0, 0.51);
-  color: darkgrey;
-  font-size: small;
-  padding: 2px;
-}
-
-.chat-window {
-  background-color: transparent;
-  border: 0;
-  color: darkgrey;
-}
-
-.window-content {
-  padding: 8px;
-}
-
-.interface-bounds {
+.bp_web.interface-bounds {
   pointer-events: none;
   position: absolute;
   height: 100%;
@@ -48,26 +16,31 @@ nav a:visited {
     'other_menus items sidebar';
   grid-gap: 0.2rem;
 }
-app-connected-players {
-  grid-area: player_display;
-  justify-self: start;
-  align-self: start;
-}
-app-state-display {
+
+.bp_web app-state-display {
   grid-area: game_state;
   justify-self: center;
   align-self: start;
 }
-app-menu-bar {
+
+.bp_web app-connected-players {
+  grid-area: player_display;
+  justify-self: start;
+  align-self: start;
+}
+
+.bp_web app-menu-bar {
   grid-area: sidebar;
   justify-self: end;
 }
-app-items-interface {
+
+.bp_web app-items-interface {
   grid-area: items;
   justify-self: center;
   align-self: end;
 }
-#othermenus-container {
+
+.bp_web #othermenus-container {
   grid-area: other_menus;
   display: grid;
   /* minmax is needed to enforce same column-size to keep center column centered*/
@@ -76,12 +49,14 @@ app-items-interface {
   grid-template-areas: 'attribution tile_overlay shortcuts';
   grid-row-gap: 0.2rem;
 }
-app-tile-overlay {
+
+.bp_web app-tile-overlay {
   grid-area: tile_overlay;
   justify-self: center;
   align-self: end;
 }
-app-shortcut-overlay {
+
+.bp_web app-shortcut-overlay {
   grid-area: shortcuts;
   justify-self: center;
   align-self: end;

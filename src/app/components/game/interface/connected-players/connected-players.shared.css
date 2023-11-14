@@ -1,0 +1,63 @@
+/* -- Badges -- */
+.player-icon .disconnect-badge {
+  position: absolute;
+  filter: drop-shadow(0 0 2px black);
+  bottom: 0;
+  left: 0;
+  transform: translate(-25%, 10%);
+  font-size: large;
+  color: #ff3636;
+}
+
+.player-icon .dev-badge {
+  position: absolute;
+  filter: drop-shadow(0 0 2px black);
+  bottom: 0;
+  right: 0;
+  transform: translate(25%, 10%);
+  font-size: medium;
+  color: goldenrod;
+}
+
+.player-icon .host-badge {
+  position: absolute;
+  filter: drop-shadow(0 0 2px black);
+  top: 0;
+  right: 0;
+  transform: translate(25%, -10%);
+  font-size: small;
+  color: goldenrod;
+}
+
+.clip-arrow {
+  background-image: linear-gradient(to bottom right, #ffe5ab, rgb(185, 134, 2));
+}
+
+.clip-arrow.up {
+  clip-path: polygon(0% 100%, 0% 50%, 50% 0%, 100% 50%, 100% 100%, 50% 65%);
+}
+
+.clip-arrow.down {
+  clip-path: polygon(0% 0%, 0% 50%, 50% 100%, 100% 50%, 100% 0%, 50% 35%);
+}
+
+.clip-arrow.right {
+  clip-path: polygon(0% 0%, 50% 0%, 100% 50%, 50% 100%, 0% 100%, 35% 50%);
+}
+
+.clip-arrow.left {
+  clip-path: polygon(100% 0%, 50% 0%, 0% 50%, 50% 100%, 100% 100%, 65% 50%);
+}
+
+.spacer {
+  flex-grow: 1;
+  background-image: linear-gradient(to bottom right, #ffe5ab, rgb(185, 134, 2));
+}
+
+.spacer.vertical {
+  width: 1px;
+}
+
+.spacer.horizontal {
+  height: 1px;
+}

@@ -1,0 +1,48 @@
+<div class="anchor">
+    <div class="centerline"></div>
+    <div class="playerListContainer">
+      <div class="player-list" (touchend)="scrollPlayerListBack($event)"
+      (touchcancel)="scrollPlayerListBack($event)">
+        <div *ngFor="let p of (players$ | extendPlayerlist | async); index as i"
+          [ngClass]="{'active': (!p.isGhost) && p.player.loginName === (gameState.observableState.currentPlayerLogin$ | async)}"
+          [@turnMovement]="(gameState.observableState.currentPlayerLogin$ | playerAffiliation:p.player.loginName | async)">
+          <div class="player-box" #playerBoxes [attr.loginName]="p.player.loginName" [attr.isGhost]="p.isGhost">
+            <div class="player-icon">
+              <app-player-icon #playersRef [borderThickness]="'3px'" [enableUpload]="false" [loginName]="p.player.loginName"
+                [size]="(!p.isGhost) && p.player.loginName === (gameState.observableState.currentPlayerLogin$ | async) ? '18vw' : '15vw'"></app-player-icon>
+              <i *ngIf="p.player.isCurrentHost" title="Diese Person ist der Spielleiter." class="fas fa-crown host-badge"></i>
+              <i *ngIf="!p.player.isConnected"
+                title="Diese Person hat das Fenster geschlossen und wird in 2 Minuten raus geworfen."
+                class="fas fa-wifi disconnect-badge"></i>
+              <!-- TODO: Retrieve this value from the DB using roles. Roles should be implemented correctly first -->
+              <i *ngIf="(playerIsDev$ | async).get(p.player.loginName)" title="Diese Person ist ein Entwickler des Spiels."
+                class="fab fa-dev dev-badge"></i>
+            </div>
+  
+            <div class="player-text">
+              <div *ngIf="false && p.player.loginName === (gameState.getMe$() | getLoginName | async)" class="pre-script">Du
+                selbst
+              </div>
+              <span class="name">{{p.player.displayName}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <div *ngIf="false" title="Zeigt die Zugreihenfolge an." class="turn-direction">
+        <div *ngIf="(gameState.observableState.reversed$ | async)" class="arrows">
+          <div class="clip-arrow left"></div>
+          <div class="clip-arrow left"></div>
+          <div class="clip-arrow left"></div>
+        </div>
+  
+        <div class="spacer horizontal"></div>
+  
+        <div *ngIf="!(gameState.observableState.reversed$ | async)" class="arrows">
+          <div class="clip-arrow right"></div>
+          <div class="clip-arrow right"></div>
+          <div class="clip-arrow right"></div>
+        </div>
+      </div>
+    </div>
+  </div>

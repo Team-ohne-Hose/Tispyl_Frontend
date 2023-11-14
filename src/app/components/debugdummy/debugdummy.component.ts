@@ -45,54 +45,67 @@ export class DebugdummyComponent implements OnInit, OnDestroy {
     }
   }
 
-  setNames() {
-    const debugRoom = this.findDebugRoom();
-    let id = 0;
-    if (debugRoom) {
-      id = debugRoom.clients;
-    }
-    this.loginName = DebugdummyComponent.ANON_NAME_PREFIX + id;
-    this.displayName = DebugdummyComponent.ANON_NAME_PREFIX + ' ' + id;
-    console.log('setting name to ', this.displayName);
-  }
-
-  findDebugRoom(): RoomAvailable<RoomMetaInfo> {
-    return this.availableRooms.find((room: RoomAvailable<RoomMetaInfo>) => {
-      return room.metadata.roomName === DebugdummyComponent.ROOM_NAME;
+  setNames(): Promise<RoomAvailable<RoomMetaInfo>> {
+    return this.findDebugRoom().then((debugRoom: RoomAvailable<RoomMetaInfo>) => {
+      console.log('setNames', debugRoom);
+      let id = 0;
+      if (debugRoom) {
+        id = debugRoom.clients;
+      }
+      this.loginName = DebugdummyComponent.ANON_NAME_PREFIX + id;
+      this.displayName = DebugdummyComponent.ANON_NAME_PREFIX + ' ' + id;
+      console.log('setting name to ', this.displayName);
+      return debugRoom;
     });
   }
 
+  findDebugRoom(): Promise<RoomAvailable<RoomMetaInfo>> {
+    return this.colyseus.updateAvailableRooms().then((rooms: RoomAvailable<RoomMetaInfo>[]) => {
+      return rooms.find((room: RoomAvailable<RoomMetaInfo>) => {
+        return room.metadata.roomName === DebugdummyComponent.ROOM_NAME;
+      });
+    });
+    /*
+    return this.availableRooms.find((room: RoomAvailable<RoomMetaInfo>) => {
+      return room.metadata.roomName === DebugdummyComponent.ROOM_NAME;
+    });*/
+  }
+
   createOrJoin() {
-    if (this.findDebugRoom()) {
-      this.join();
-    } else {
-      this.createLobby();
-    }
+    this.findDebugRoom().then((debugRoom: RoomAvailable<RoomMetaInfo>) => {
+      if (debugRoom) {
+        this.join();
+      } else {
+        this.createLobby();
+      }
+    });
   }
 
   createLobby() {
-    this.setNames();
-    console.log('creating lobby');
-    const opts: CreateRoomOpts = {
-      roomName: DebugdummyComponent.ROOM_NAME,
-      author: this.displayName,
-      login: this.loginName,
-      displayName: this.displayName,
-      tileSetId: DebugdummyComponent.TILESET_ID,
-      randomizeTiles: DebugdummyComponent.RAND_TILES,
-      enableItems: DebugdummyComponent.ENABLE_ITEMS,
-      enableMultipleItems: DebugdummyComponent.ENABLE_MULTIPLE_ITEMS,
-    };
+    this.setNames().then((debugRoom: RoomAvailable<RoomMetaInfo>) => {
+      console.log('creating lobby');
+      const opts: CreateRoomOpts = {
+        roomName: DebugdummyComponent.ROOM_NAME,
+        author: this.displayName,
+        login: this.loginName,
+        displayName: this.displayName,
+        tileSetId: DebugdummyComponent.TILESET_ID,
+        randomizeTiles: DebugdummyComponent.RAND_TILES,
+        enableItems: DebugdummyComponent.ENABLE_ITEMS,
+        enableMultipleItems: DebugdummyComponent.ENABLE_MULTIPLE_ITEMS,
+      };
 
-    this.objectLoader.setCurrentCubeMap(DebugdummyComponent.CUBE_MAP);
-    this.colyseus.createRoom(opts);
+      this.objectLoader.setCurrentCubeMap(DebugdummyComponent.CUBE_MAP);
+      this.colyseus.createRoom(opts);
+    });
   }
 
   join() {
-    this.setNames();
-    this.colyseus.joinActiveRoom(this.findDebugRoom(), this.loginName, this.displayName);
-    this.objectLoader.setCurrentCubeMap(DebugdummyComponent.CUBE_MAP);
-    this.router.navigateByUrl('/game');
+    this.setNames().then((debugRoom: RoomAvailable<RoomMetaInfo>) => {
+      this.colyseus.joinActiveRoom(debugRoom, this.loginName, this.displayName);
+      this.objectLoader.setCurrentCubeMap(DebugdummyComponent.CUBE_MAP);
+      this.router.navigateByUrl('/game');
+    });
   }
 
   backHome() {

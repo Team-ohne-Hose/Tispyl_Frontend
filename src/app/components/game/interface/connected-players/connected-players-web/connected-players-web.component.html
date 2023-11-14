@@ -1,0 +1,69 @@
+<div class="anchor">
+    <div class="decor-box">
+        <div class="box">
+            <div class="title">Aktuelle Spieler</div>
+
+            <div class="player-list">
+                <div *ngFor="let p of (players$ | async); index as i"
+                    [ngClass]="{'player-box-custom-border': true, 'active': p.loginName === (gameState.observableState.currentPlayerLogin$ | async)}"
+                    [@turnMovement]="(gameState.observableState.currentPlayerLogin$ | playerAffiliation:p.loginName | async)">
+                    <div class="player-box">
+                        <div class="background-layer">
+                            <div class="index">{{(i + 1) | asRomanNumeral}}</div>
+                        </div>
+                        <div class="content-layer">
+                            <div class="player-icon">
+                                <app-player-icon #playersRef [borderThickness]="'3px'" [enableUpload]="false"
+                                    [loginName]="p.loginName" [size]="'2rem'"></app-player-icon>
+                                <i *ngIf="p.isCurrentHost" title="Diese Person ist der Spielleiter."
+                                    class="fas fa-crown host-badge"></i>
+                                <i *ngIf="!p.isConnected"
+                                    title="Diese Person hat das Fenster geschlossen und wird in 2 Minuten raus geworfen."
+                                    class="fas fa-wifi disconnect-badge"></i>
+                                <!-- TODO: Retrieve this value from the DB using roles. Roles should be implemented correctly first -->
+                                <i *ngIf="(playerIsDev$ | async).get(p.loginName)"
+                                    title="Diese Person ist ein Entwickler des Spiels."
+                                    class="fab fa-dev dev-badge"></i>
+                            </div>
+
+                            <div class="player-text">
+                                <div *ngIf="p.loginName === (gameState.getMe$() | getLoginName | async)"
+                                    class="pre-script">Du selbst
+                                </div>
+                                <div *ngIf="p.loginName !== (gameState.getMe$() | getLoginName | async)"
+                                    class="pre-script">
+                                    {{neighbours$ | async | prescript:
+                                    i}}</div>
+                                <span class="name">{{p.displayName}}</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div title="Zeigt die Zugreihenfolge an." class="turn-direction">
+                <div *ngIf="(gameState.observableState.reversed$ | async)" class="arrows">
+                    <div class="clip-arrow up"></div>
+                    <div class="clip-arrow up"></div>
+                    <div class="clip-arrow up"></div>
+                </div>
+
+                <div class="spacer vertical"></div>
+
+                <div *ngIf="!(gameState.observableState.reversed$ | async)" class="arrows">
+                    <div class="clip-arrow down"></div>
+                    <div class="clip-arrow down"></div>
+                    <div class="clip-arrow down"></div>
+                </div>
+            </div>
+        </div>
+        <div class="decor-notch">
+            <div class="rect">
+                <button title="Spiel verlassen" class="leave-game" (click)="leaveGame()"><i
+                        class="fas fa-door-open"></i></button>
+            </div>
+            <div class="triangle"></div>
+        </div>
+    </div>
+</div>

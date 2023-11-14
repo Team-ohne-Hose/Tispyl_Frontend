@@ -89,6 +89,10 @@ import { AsPlayerArrayPipe } from './services/game-state-pipes/as-player-array.p
 import { LogFromHTMLPipe } from './services/game-state-pipes/log-from-html.pipe';
 import { CountAllVotesPipe } from './services/game-state-pipes/count-all-votes.pipe';
 import { PlayerAffiliationPipe } from './services/game-state-pipes/player-affiliation.pipe';
+import { LayoutModule } from '@angular/cdk/layout';
+import { ConnectedPlayersWebComponent } from './components/game/interface/connected-players/connected-players-web/connected-players-web.component';
+import { ConnectedPlayersMobileComponent } from './components/game/interface/connected-players/connected-players-mobile/connected-players-mobile.component';
+import { ExtendPlayerlistPipe } from './components/framework/extend-playerlist.pipe';
 const appRoutes: Routes = [
   {
     path: '',
@@ -195,6 +199,9 @@ appRoutes.push({ path: '**', component: PageNotFoundComponent });
     LogFromHTMLPipe,
     CountAllVotesPipe,
     PlayerAffiliationPipe,
+    ConnectedPlayersWebComponent,
+    ConnectedPlayersMobileComponent,
+    ExtendPlayerlistPipe,
   ],
   imports: [
     RouterModule.forRoot(
@@ -223,6 +230,7 @@ appRoutes.push({ path: '**', component: PageNotFoundComponent });
     CdkStepperModule,
     NgbModule,
     FontAwesomeModule,
+    LayoutModule,
   ],
   providers: [
     {

@@ -1,4 +1,4 @@
-<div class="interface-bounds">
+<div class="interface-bounds bp_web" *ngIf="currentBreakpoint == Breakpoints.Web">
   <app-state-display #stateDisplay [action]="gameState.observableState.action$ | async"
     [currentPlayerDisplayName]="gameState.getCurrentPlayerDisplayName$() | async"
     [round]="gameState.observableState.round$ | async" [disabled]="!(gameState.observableState.hasStarted$ | async)">
@@ -6,7 +6,7 @@
   <app-pregame-banner @fadeOutAnimation *ngIf="!(gameState.observableState.hasStarted$ | async)"
     [players$]="gameState.observableState.playerList$">
   </app-pregame-banner>
-  <app-connected-players></app-connected-players>
+  <app-connected-players [currentBreakpoint]="currentBreakpoint"></app-connected-players>
   <app-menu-bar [playerList]="gameState.getPlayerArray$() | async"
     [ruleList]="gameState.observableState.rules$ | async">
   </app-menu-bar>
@@ -21,4 +21,10 @@
     <app-shortcut-overlay></app-shortcut-overlay>
   </div>
   <app-introduction></app-introduction>
+</div>
+<div class="interface-bounds bp_mobile" *ngIf="currentBreakpoint == Breakpoints.HandsetPortrait">
+  <app-connected-players [currentBreakpoint]="currentBreakpoint"></app-connected-players>
+</div>
+<div class="interface-bounds bp_landscape" *ngIf="currentBreakpoint == Breakpoints.HandsetLandscape">
+  Landscape not supported.
 </div>
