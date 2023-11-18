@@ -4,4 +4,8 @@
   overflow: hidden;
 }
 
-
+.fps-tracker {
+  position: absolute;
+  top: 50%;
+  left: 0;
+}
