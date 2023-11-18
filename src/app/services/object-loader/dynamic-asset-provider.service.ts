@@ -1,11 +1,12 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { BackendCubeMap, BackendGltf, BackendTexture, FileService } from '../file.service';
 import { Observable, Observer, ReplaySubject, Subscription, take } from 'rxjs';
-import { CubeTexture, Object3D, Texture, TextureLoader, sRGBEncoding } from 'three';
+import { CubeTexture, Material, Object3D, Texture, TextureLoader, sRGBEncoding } from 'three';
 import { map, mergeMap } from 'rxjs/operators';
 import { CubeTextureLoader } from 'three/src/loaders/CubeTextureLoader';
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { environment } from '../../../environments/environment';
+import { Disposable } from './object-loader.service';
 
 @Injectable({
   providedIn: 'root',
@@ -32,34 +33,41 @@ export class DynamicAssetProviderService implements OnDestroy {
     this.refreshAvailableAssets();
   }
 
-  public loadGltfByName(name: string): Observable<Object3D> {
+  public loadGltfByName(name: string, onDisposable?: (d: Disposable) => void): Observable<Object3D> {
     return this.availableModels$.pipe(
       take(1),
       mergeMap((gltfs) => {
         const gltf = gltfs.find((g) => g.name === name);
         if (gltf) {
           console.debug(`Loading gltf, name: ${name} object:`, gltf);
-          return this._loadGltf(gltf);
+          return this._loadGltf(gltf, onDisposable);
         }
         throw Error(`Could not find gltf with the name: ${name}`);
       })
     );
   }
 
-  public loadGltf(id: number): Observable<Object3D> {
+  public loadGltf(id: number, onDisposable?: (d: Disposable) => void): Observable<Object3D> {
     return this.availableModels$.pipe(
       take(1),
       mergeMap((bGltfs) => {
         console.debug(`Loading gltf, id:${id} object:`, bGltfs[id]);
-        return this._loadGltf(bGltfs[id]);
+        return this._loadGltf(bGltfs[id], onDisposable);
       })
     );
   }
 
-  private _loadGltf(bGltf: BackendGltf): Observable<Object3D> {
+  private _loadGltf(bGltf: BackendGltf, onDisposable?: (d: Disposable) => void): Observable<Object3D> {
     // ToDo: This doe snot provide ample data to dispose of thee gltf afterwards. This should be fixed
     return new Observable<Object3D>((o: Observer<Object3D>) => {
       this.gltfLoader.load(bGltf.asset_file, (g: GLTF) => {
+        if (onDisposable) {
+          for (const k of g.parser.associations.keys()) {
+            if (k instanceof Material || k instanceof Texture) {
+              onDisposable(k as Disposable);
+            }
+          }
+        }
         g.scene.name = 'gltf_' + bGltf.name;
         g.scene.castShadow = true;
         g.scene.receiveShadow = true;

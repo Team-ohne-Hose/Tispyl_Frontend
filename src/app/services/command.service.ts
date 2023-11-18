@@ -385,7 +385,8 @@ export class CommandService {
 
   private toggleFpsDisplay(rawCMD: string, parameters: string[]): void {
     if (this.gameComponent !== undefined) {
-      this.gameComponent.viewRef.stats.dom.hidden = !this.gameComponent.viewRef.stats.dom.hidden;
+      console.warn('This feature was disabled in favor of a custom solution.');
+      //this.gameComponent.viewRef.stats.dom.hidden = !this.gameComponent.viewRef.stats.dom.hidden;
     }
   }
 
