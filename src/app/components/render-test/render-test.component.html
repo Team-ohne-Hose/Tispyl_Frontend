@@ -1,0 +1,15 @@
+<div class="card transparent h-100 p-3" >
+  <div id="viewport" #view></div>
+  <div>
+    {{info | json}}
+  </div>
+  <button (click)='remove()'>remove</button>
+  <button (click)='add()'>add</button>
+  <button (click)='startRendering()'>start</button>
+  <button (click)='stopRendering()'>stop</button>
+  <div>
+    {{fps | number:'.0-0'}}FPS | {{dt | number:'.0-0'}}ms
+  </div>
+</div>
+
+

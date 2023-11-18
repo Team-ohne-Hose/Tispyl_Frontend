@@ -76,7 +76,7 @@ export class PhysicsCommands {
     return obj.userData.physicsId;
   }
 
-  initializeFromState(): Observable<Progress> {
+  initializeFromPhysicsState(): Observable<Progress> {
     return new Observable<Progress>((observer: Observer<Progress>) => {
       this.bic.gameState.observableState.physicsState.objects$.pipe(take(1)).subscribe((physicsObjects: MapSchema<PhysicsObjectState>) => {
         let count = 0;
