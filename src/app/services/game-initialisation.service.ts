@@ -45,7 +45,8 @@ export class GameInitialisationService {
     /** Build the list of heavy operations that need to be done and bind the total progress to them */
     const operations: Observable<Progress>[] = [
       game.viewRef.initializeScene(),
-      this.bic.physics.initializeFromPhysicsState(),
+      //this.objectLoader.loadCommonObjects(),
+      this.bic.physics.initializeFromState(),
       this.boardTilesService.initialize((grp: Group) => game.viewRef.sceneTree.add(grp)),
       this.bic.createSprites(),
     ].map((o: Observable<Progress>) => this._asProgressChunk(o, totalProgress, observer));
