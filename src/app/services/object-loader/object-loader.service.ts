@@ -1,17 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  BoxBufferGeometry,
-  BufferGeometry,
-  Color,
-  CubeTexture,
-  Material,
-  Mesh,
-  MeshStandardMaterial,
-  Object3D,
-  Scene,
-  Sprite,
-  Texture,
-} from 'three';
+import { BoxBufferGeometry, BufferGeometry, CubeTexture, Material, Mesh, MeshStandardMaterial, Object3D, Sprite, Texture } from 'three';
 import { PhysicsEntity, PlayerModel } from '../../model/WsData';
 import { Observable, Observer, take } from 'rxjs';
 import { AssetLoader } from './asset-loader';
@@ -19,7 +7,7 @@ import { DynamicAssetProviderService } from './dynamic-asset-provider.service';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { PredefinedObjectGenerator } from './predefined-object-generator';
 
-export type Disposable = BufferGeometry | CubeTexture | Texture | Material;
+type Disposable = BufferGeometry | CubeTexture | Texture | Material;
 
 @Injectable({
   providedIn: 'root',
@@ -55,23 +43,7 @@ export class ObjectLoaderService {
     this.disposableAssets.push(this.gameBoundaryMat);
   }
 
-  public disassembleScene(scene: Scene) {
-    if (scene.background !== null && scene.background['isTexture']) {
-      const ct = scene.background as Texture;
-      scene.background = new Color(0, 0, 0);
-      ct.dispose();
-    }
-    const objs: Object3D[] = [];
-    scene.traverse((o) => objs.push(o));
-    scene.clear();
-    objs.forEach((o) => {
-      o.parent = null;
-      o.clear();
-    });
-    this._dispose();
-  }
-
-  private _dispose(): void {
+  dispose(): void {
     console.log(`Disposing ${this.disposableAssets.length} assets.`, this.disposableAssets);
     this.disposableAssets.map((d) => d.dispose());
     this.disposableAssets = [];
@@ -151,10 +123,10 @@ export class ObjectLoaderService {
     let obs: Observable<Object3D>;
     switch (obj) {
       case PhysicsEntity.dice:
-        obs = this.dynamicAssets.loadGltfByName(this.DEFAULT_DICE, (d) => this.disposableAssets.push(d));
+        obs = this.dynamicAssets.loadGltfByName(this.DEFAULT_DICE);
         break;
       case PhysicsEntity.figure:
-        obs = this.dynamicAssets.loadGltfByName(this.DEFAULT_FIGURE, (d) => this.disposableAssets.push(d));
+        obs = this.dynamicAssets.loadGltfByName(this.DEFAULT_FIGURE);
         break;
     }
     return obs.pipe(tap(this._make_gltf_disposable.bind(this)));
@@ -203,9 +175,9 @@ export class ObjectLoaderService {
   generateGameBoard(): Mesh {
     const tex = AssetLoader.loadTexture(AssetLoader.defaultGameboardTexturePath);
     const gb = PredefinedObjectGenerator.generateGameBoard(tex);
-    this.disposableAssets.push(gb.geometry);
-    this.disposableAssets.push(gb.material as Material);
     this.disposableAssets.push(tex);
+    this.disposableAssets.push(gb.material as Material);
+    this.disposableAssets.push(gb.geometry);
     return gb;
   }
 

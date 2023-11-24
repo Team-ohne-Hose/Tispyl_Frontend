@@ -1,16 +1,4 @@
-import {
-  AmbientLight,
-  BoxBufferGeometry,
-  CanvasTexture,
-  DirectionalLight,
-  Mesh,
-  MeshStandardMaterial,
-  Object3D,
-  Sprite,
-  SpriteMaterial,
-  Texture,
-  Vector2,
-} from 'three';
+import { BoxBufferGeometry, CanvasTexture, Mesh, MeshStandardMaterial, Sprite, SpriteMaterial, Texture, Vector2 } from 'three';
 import { ClickRole } from '../../components/game/viewport/helpers/PhysicsCommands';
 import { Color } from './loaderTypes';
 
@@ -130,8 +118,6 @@ export class PredefinedObjectGenerator {
     context.fillText(text, borderThickness, fontSize + borderThickness);
   }
 
-  // Written by big berlin boy sweet K
-  // Its just about the D in the right spot
   private static drawSvgBackground(ctx, x, y, w, h, r) {
     ctx.beginPath();
     ctx.moveTo(x + r, y);
@@ -146,30 +132,5 @@ export class PredefinedObjectGenerator {
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
-  }
-
-  public static generateDirectionalLight() {
-    const sun = new DirectionalLight(0xf7eee4, 4.5); // warm yellow-ish sun light
-    sun.name = 'sun';
-    const sunTarget = new Object3D().translateY(5);
-    sun.position.set(20, 100, 90);
-    sun.shadow.camera.left = -60;
-    sun.shadow.camera.right = 60;
-    sun.shadow.camera.top = 60;
-    sun.shadow.camera.bottom = -60;
-    sun.shadow.camera.far = 200;
-    sun.shadow.camera.updateProjectionMatrix();
-    sun.shadow.mapSize.width = 4096;
-    sun.shadow.mapSize.height = 4096;
-    sun.shadow.bias = -0.00015;
-    sun.target = sunTarget;
-    sun.castShadow = true;
-    return sun;
-  }
-
-  public static generateAmbientLight() {
-    const ambient = new AmbientLight(0xb1e1ff, 0.8); // soft blue-ish ambient light
-    ambient.name = 'ambient light';
-    return ambient;
   }
 }
