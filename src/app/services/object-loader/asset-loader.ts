@@ -91,7 +91,7 @@ export class AssetLoader {
     onProgress?: (event: ProgressEvent) => void,
     onError?: (event: ErrorEvent) => void
   ): Texture {
-    //console.log('Loading texture: ', path);
+    console.log('Loading texture: ', path);
     const _onLoad = (t: Texture) => {
       t.encoding = sRGBEncoding;
       t.anisotropy = 16;
@@ -106,7 +106,7 @@ export class AssetLoader {
   }
 
   public static loadCubeTexture(idx: number): CubeTexture {
-    //console.log('Loading cube texture: ', idx);
+    console.log('Loading cube texture: ', idx);
     return this.cubeTextureLoader
       .setPath(this.cubeMaps[idx].path)
       .load([

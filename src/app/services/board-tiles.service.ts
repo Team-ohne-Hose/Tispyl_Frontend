@@ -5,7 +5,6 @@ import { Tile } from '../model/state/BoardLayoutState';
 import { GameStateService } from './game-state.service';
 import { Progress } from './object-loader/loaderTypes';
 import { Observable, Observer, Subscription, filter, take, tap } from 'rxjs';
-import { PredefinedObjectGenerator } from './object-loader/predefined-object-generator';
 
 @Injectable({
   providedIn: 'root',
@@ -150,14 +149,14 @@ export class BoardTilesService implements OnDestroy {
     const landscapeBoundary = (x1: number, x2: number, y: number) => {
       const len = this.borderCoords.x[x2] - this.borderCoords.x[x1];
       const vec = new Vector2((this.borderCoords.x[x2] + this.borderCoords.x[x1]) / 2, this.borderCoords.y[y]);
-      const boundary = PredefinedObjectGenerator.generateBordBoundary(len, true, vec);
+      const boundary = this.objectLoader.createBoundary(len, true, vec);
       boundary.name = 'boundaryLandscape_y' + y;
       group.add(boundary);
     };
     const portraitBoundary = (x: number, y1: number, y2: number) => {
       const len = this.borderCoords.y[y2] - this.borderCoords.y[y1];
       const vec = new Vector2(this.borderCoords.x[x], (this.borderCoords.y[y2] + this.borderCoords.y[y1]) / 2);
-      const boundary = PredefinedObjectGenerator.generateBordBoundary(len, false, vec);
+      const boundary = this.objectLoader.createBoundary(len, false, vec);
       boundary.name = 'boundaryPortrait_x' + x;
       group.add(boundary);
     };
