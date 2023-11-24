@@ -92,39 +92,34 @@ export class PhysicsCommands {
   }
 
   private _updateOrGenerateItem(item: PhysicsObjectState): void {
-    if (item.disabled) {
-      return;
-    }
-
-    let obj: Object3D;
-    this.bic.sceneTree.traverse((o) => {
-      if (o.userData.physicsId === item.objectIDPhysics) {
-        obj = o;
+    if (!item.disabled) {
+      let obj: Object3D;
+      this.bic.sceneTree.traverse((o) => {
+        if (o.userData.physicsId === item.objectIDPhysics) {
+          obj = o;
+        }
+      });
+      //console.log(item.objectIDPhysics, item.disabled, item.position, obj)
+      if (obj !== undefined) {
+        this._updateCorrelatedObject(item, obj);
+      } else {
+        if (item.entity >= 0 && this.bic.sceneTree === undefined) {
+          /* sceneTree is not yet initialized, this happens if ngAfterView
+           * for viewport hasnt been done yet. This happens when early state
+           * changes prompt changes in the scene, but it is not yet initialized
+           * completly.
+           * Therefore, nothing is done here. The entity is probably gonna be
+           * initialized from normal loading or on a state update in the future.
+           */
+        } else if (item.entity >= 0 && this.bic.sceneTree.children.length < this.MAX_ALLOWED_OBJECTS) {
+          if (!this.currentlyLoadingEntities.get(item.objectIDPhysics)) {
+            this.currentlyLoadingEntities.set(item.objectIDPhysics, true);
+            this._generateEntityFromItem(item);
+          }
+        } else {
+          console.error('cannot find/generate object', item.objectIDPhysics, item);
+        }
       }
-    });
-
-    //console.log(item.objectIDPhysics, item.disabled, item.position, obj)
-    if (obj !== undefined) {
-      this._updateCorrelatedObject(item, obj);
-      return;
-    }
-
-    if (item.entity >= 0 && this.bic.sceneTree === undefined) {
-      /* sceneTree is not yet initialized, this happens if ngAfterView
-       * for viewport hasnt been done yet. This happens when early state
-       * changes prompt changes in the scene, but it is not yet initialized
-       * completly.
-       * Therefore, nothing is done here. The entity is probably gonna be
-       * initialized from normal loading or on a state update in the future.
-       */
-    } else if (item.entity >= 0 && this.bic.sceneTree.children.length < this.MAX_ALLOWED_OBJECTS) {
-      console.log(this.currentlyLoadingEntities, item.objectIDPhysics);
-      if (!this.currentlyLoadingEntities.get(item.objectIDPhysics)) {
-        this.currentlyLoadingEntities.set(item.objectIDPhysics, true);
-        this._generateEntityFromItem(item);
-      }
-    } else {
-      console.error('cannot find/generate object', item.objectIDPhysics, item);
     }
   }
 
@@ -279,6 +274,7 @@ export class PhysicsCommands {
             });
           break;
       }
+      console.log('Bound: ', entity, variant, physicsId, ' To: ', model.userData);
       this.currentlyLoadingEntities.set(physicsId, false);
     });
   }
