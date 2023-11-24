@@ -21,6 +21,5 @@ export class UserInteractionController {
 
   onDestroy() {
     this.audioControls.onDestroy();
-    this.cameraControls.dispose();
   }
 }

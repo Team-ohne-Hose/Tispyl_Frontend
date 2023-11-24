@@ -238,7 +238,7 @@ export class PhysicsCommands {
     rotZ = rotZ || 0;
     rotW = rotW || 0;
 
-    this.bic.loader.getNewObject(entity).subscribe((model: Object3D) => {
+    this.bic.loader.loadObject(entity).subscribe((model: Object3D) => {
       model.quaternion.set(rotX, rotY, rotZ, rotW);
       model.position.set(posX, posY, posZ);
       model.traverse((o) => (o.userData = {}));

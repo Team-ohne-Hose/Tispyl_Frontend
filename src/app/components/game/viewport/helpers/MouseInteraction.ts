@@ -82,7 +82,7 @@ export class MouseInteraction {
 
   /** Throttled version of the mouseMove function to avoid too many ray casts */
   public onMouseMoved(event: MouseEvent): void {
-    this.throttled(10, this._onMouseMoved.bind(this))(event);
+    this.throttled(1, this._onMouseMoved.bind(this))(event);
   }
 
   /** This is used to avoid calling too many mouseMove events */
@@ -169,7 +169,7 @@ export class MouseInteraction {
     const obj: Object3D = this._first_interactable_ancester(inter.object);
     if (obj.userData.clickRole === ClickRole.figure) {
       if (this.hoveringFigure !== undefined) {
-        //this.handleBoardTileClick(inter.point);
+        this.handleBoardTileClick(inter.point);
         this.hoveringFigure = undefined;
       } else {
         this.bic.gameState
@@ -199,6 +199,7 @@ export class MouseInteraction {
   private startFigureHover(figure: Object3D, inter: Intersection) {
     this.hoveringFigure = { obj: figure, oldPos: figure.position.clone() };
     this.bic.physics.setKinematic(figure.userData.physicsId, true);
+    this.bic.physics.wakeAll();
     this.bic.hoverGameFigure(this.hoveringFigure.obj, inter.point.x, inter.point.z);
   }
 
@@ -231,7 +232,7 @@ export class MouseInteraction {
       const tileId = this.bic.boardTiles.getId(coords.x, coords.y);
       this.bic.boardTiles.getTile(tileId);
       if (this.hoveringFigure !== undefined) {
-        this.bic.moveGameFigure(this.hoveringFigure.obj, tileId);
+        //this.bic.moveGameFigure(this.hoveringFigure.obj, tileId); <--- why though?
         this.bic.physics.setKinematic(this.hoveringFigure.obj.userData.physicsId, false);
         return true;
       }
