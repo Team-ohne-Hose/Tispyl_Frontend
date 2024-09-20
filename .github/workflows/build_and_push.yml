@@ -1,9 +1,6 @@
 name: "Build and Push Docker Image"
 
 on:
-  push:
-    branches:
-      - dockerize
   create:
     tags:
       - 'v*'
@@ -38,8 +35,7 @@ jobs:
           context: .
           file: ./docker/Dockerfile
           push: true
-         # tags: ${{ secrets.DOCKERHUB_USERNAME }}/tispyl-frontend:${{ steps.extract_tag.outputs.tag }}
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tispyl-frontend:0.0.4
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tispyl-frontend:${{ steps.extract_tag.outputs.tag }}
 
       - name: Clean Up
         run: docker logout
