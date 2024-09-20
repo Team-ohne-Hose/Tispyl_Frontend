@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2  
+        uses: actions/checkout@v2
 
       - name: Test
         run: |
@@ -24,8 +24,9 @@ jobs:
 
       - name: Push Docker Containers to Docker Hub
         run:  |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/tispyl-frontend:0.0.2 -f ./docker/Dockerfile .
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/tispyl-frontend:0.0.2
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/tispyl-frontend:0.0.3 -f ./docker/Dockerfile .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/tispyl-frontend:0.0.3
 
       - name: Clean Up
         run: docker logout
+
